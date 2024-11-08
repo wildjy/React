@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 600;
+	font-display: swap;
+	src: local('Pretendard SemiBold'),
+			 url('../public/fonts/Pretendard-SemiBold.woff2') format('woff2'),
+			 url('../public/fonts/Pretendard-SemiBold.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 700;
+	font-display: swap;
+	src: local('Pretendard Bold'),
+			 url('../public/fonts/Pretendard-Bold.woff2') format('woff2'),
+			 url('../public/fonts/Pretendard-Bold.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 400;
+	font-display: swap;
+	src: local('Pretendard Regular'),
+			 url('../public/fonts/Pretendard-Regular.woff2') format('woff2'),
+			 url('../public/fonts/Pretendard-Regular.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 300;
+	font-display: swap;
+	src: local('Pretendard Light'),
+			 url('../public/fonts/Pretendard-Light.woff2') format('woff2'),
+			 url('../public/fonts/Pretendard-Light.woff') format('woff');
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html, body {
+  @apply text-mobile md:text-base;
+}
+
+body {
+  color: var(--foreground);
+  line-height: 1.43;
+  background: var(--background);
+}
+
+table {
+  @apply w-full border-0 border-collapse border-spacing-0;
+}
+
+table th, td {
+  @apply px-4 py-4 border;
+}
+
+caption {
+  @apply hidden;
+}
+
+@layer {
+}
+
+input {
+  ~ label {
+    @apply sr-only;
+  }
+}
+
+.inputCustom {
+  &.focus {
+    input {
+      @apply placeholder-transparent focus:border-blue-500;
+    }
+    label {
+      @apply not-sr-only absolute left-0 -top-5 text-gray-600 text-sm transition-all
+      peer-placeholder-shown:top-1.5
+      peer-placeholder-shown:text-base
+      peer-placeholder-shown:text-gray-400
+      peer-focus:-top-5
+      peer-focus:text-sm;
+    }
+  }
+}
+
+/* layout : start */
+#wrapper, #contents {
+  @apply w-full;
+}
+
+#contents {
+}
+
+.container {
+  @apply px-6 max-w-full m-center bg-white
+  md:px-7
+  md:max-w-full
+  lg:w-tablet
+  xl:w-laptop
+  xl:px-10 xl:py-9;
+}
+/* layout : end */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.btn-wrapper {
+  @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+}
+
+.btn-wrapper:hover {
+  @apply bg-blue-700;
+}
+
+.btn-wrapper:active {
+  @apply bg-blue-800;
+}
+
+/* 내부에서 정의한, 커스텀 유틸리티 클래스 tailwind 클래스 처럼 요소에서 바로 쓰기 가능*/
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
