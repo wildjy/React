@@ -62,14 +62,23 @@ const HighSchoolPage: React.FC = () => {
   };
 
   // checkbox
+  //const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<{
-    [key: string]
-  }}>(false);
+    [key: string]: boolean
+  }>({
+    checkbox_1: false,
+    checkbox_2: false,
+    checkbox_3: false,
+  });
 
   const handleCheckChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
-    setIsChecked(checked);
-    console.log("Checked status:", checked);
+    // const checked = e.target.checked;
+    const { value, checked } = e.target;
+    setIsChecked((prevChecked) => ({
+      ...prevChecked,
+      [value]: checked,
+    }));
+    console.log(`Checked status: ${value}`, checked);
   };
 
   return (
@@ -236,6 +245,7 @@ const HighSchoolPage: React.FC = () => {
                     checked={selectedOptions.sexType === "sexType_2"}
                     onChange={handleRadioChange}
                   />
+                  <p className=""><a href="#self" className="">수능성적 입력페이지</a> 에서 성별 수정이 가능합니다.</p>
                 </div>
               </td>
             </tr>
@@ -247,14 +257,20 @@ const HighSchoolPage: React.FC = () => {
                 <div className="flex gap-4 flex-wrap">
                   <CheckBox
                     value="checkbox_1"
-                    label="체크박스"
-                    checked={isChecked}
+                    label="체크박스 1"
+                    checked={isChecked["checkbox_1"] || false}
                     onChange={handleCheckChange}
                   />
                   <CheckBox
                     value="checkbox_2"
-                    label="체크박스"
-                    checked={isChecked}
+                    label="체크박스 2"
+                    checked={isChecked["checkbox_2"] || false}
+                    onChange={handleCheckChange}
+                  />
+                  <CheckBox
+                    value="checkbox_3"
+                    label="체크박스 3"
+                    checked={isChecked["checkbox_3"] || false}
                     onChange={handleCheckChange}
                   />
                 </div>

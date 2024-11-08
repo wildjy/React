@@ -1,7 +1,7 @@
 import React from "react";
 import MakeButton  from "../highschool/MakeButton";
 
-const HighSchoolPage: React.FC = () => {
+const SamplePage: React.FC = () => {
   return (
       <div className="bg-gray-50">
         <div className="px-10 py-9 w-cont m-center bg-white">
@@ -69,4 +69,4 @@ const HighSchoolPage: React.FC = () => {
   );
 };
 
-export default HighSchoolPage;
+export default SamplePage;
