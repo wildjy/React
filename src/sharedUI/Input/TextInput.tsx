@@ -50,6 +50,7 @@ interface InputProps
   label?: string;
   addClass?: string;
   addId?: string;
+  disabled?: string;
   icon?: React.ReactElement;
 }
 
@@ -63,6 +64,7 @@ const TextInput : FC<InputProps> = ({
   addClass,
   addId = "",
   onChange,
+  disabled,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   readOnly,
   ...props
@@ -91,6 +93,7 @@ const TextInput : FC<InputProps> = ({
         onChange={onChange}
         id={addId}
         placeholder={label}
+        disabled={!!className}
         {...props}
       />
       <label htmlFor={addId} className="flex justify-center items-center gap-3">

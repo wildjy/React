@@ -102,7 +102,7 @@ const HighSchoolPage: React.FC = () => {
                   type="text"
                   mode="base"
                   inputSize="md"
-                  color="base"
+                  color="disabled"
                   addClass="border-gray-400"
                   addId="inp-1"
                   label="수험생 이름"
