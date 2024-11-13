@@ -4,6 +4,7 @@ import { useState, ChangeEvent } from "react";
 import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 import Radio from "../../sharedUI/Input/Radio";
+import Select from "../../sharedUI/Input/Select";
 
 const HighSchoolPage: React.FC = () => {
   // input
@@ -81,6 +82,38 @@ const HighSchoolPage: React.FC = () => {
     console.log(`Checked status: ${value}`, checked);
   };
 
+  // select
+  // 여러 Select 요소의 상태를 객체로 관리
+  const [selectedValues, setSelectedValues] = useState<{ [key: string]: string }>({
+    select1: 'option1', // selected option
+    select2: '',
+    select3: '',
+  });
+
+  // Select의 변경 사항을 관리하는 함수
+  const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setSelectedValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
+
+  const selectOptions = {
+    select1: [
+      { value: 'option1', label: 'Option 1' },
+      { value: 'option2', label: 'Option 2' },
+    ],
+    select2: [
+      { value: 'optionA', label: 'Option A' },
+      { value: 'optionB', label: 'Option B' },
+    ],
+    select3: [
+      { value: 'item1', label: 'Item 1' },
+      { value: 'item2', label: 'Item 2' },
+    ],
+  };
+
   return (
     <div id="contents" className="bg-gray-50">
       <div className="container">
@@ -150,6 +183,21 @@ const HighSchoolPage: React.FC = () => {
               </th>
               <td>
                 <div className="flex items-center gap-4">
+                  <Select
+                    addClass="text-blue-300"
+                    name="select1"
+                    options={selectOptions.select1}
+                    value={selectedValues.select1}
+                    onChange={handleSelectChange}                  
+                  />
+                  
+                  <Select
+                    addClass="text-blue-300"
+                    name="select2"
+                    options={selectOptions.select2}
+                    value={selectedValues.select2}
+                    onChange={handleSelectChange}                  
+                  />
                   <select name="" id="" className="p-2 border border-gray-400">
                     <option value="0">- 졸업년도 선택 -</option>
                   </select>

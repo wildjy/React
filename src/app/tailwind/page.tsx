@@ -111,7 +111,7 @@ interface DivProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof D
         </div>
 
         <div className="mb-5">
-          <p className="mb-4">4. Interface setting </p>
+          <p className="mb-4">4. Component setting </p>
           <div className="p-6 border border-gray-400">
             <p className="mb-3"></p>
             <div>
