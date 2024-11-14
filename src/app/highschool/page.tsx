@@ -85,7 +85,7 @@ const HighSchoolPage: React.FC = () => {
   // select
   // 여러 Select 요소의 상태를 객체로 관리
   const [selectedValues, setSelectedValues] = useState<{ [key: string]: string }>({
-    select1: 'option1', // selected option
+    select1: '', // selected option
     select2: '',
     select3: '',
   });
@@ -101,12 +101,12 @@ const HighSchoolPage: React.FC = () => {
 
   const selectOptions = {
     select1: [
-      { value: 'option1', label: 'Option 1' },
-      { value: 'option2', label: 'Option 2' },
+      { value: 'option1', label: '2000' },
+      { value: 'option2', label: '1999' },
     ],
     select2: [
-      { value: 'optionA', label: 'Option A' },
-      { value: 'optionB', label: 'Option B' },
+      { value: 'optionA', label: 'ㅇㅇ고등학교' },
+      { value: 'optionB', label: 'ㅇㅇ고등학교 1' },
     ],
     select3: [
       { value: 'item1', label: 'Item 1' },
@@ -135,10 +135,10 @@ const HighSchoolPage: React.FC = () => {
                   type="text"
                   mode="base"
                   inputSize="md"
-                  color="disabled"
                   addClass="border-gray-400"
                   addId="inp-1"
                   label="수험생 이름"
+                  disabled="disabled"
                   value={inputValue[0].name}
                   onChange={(e) => handleInputChange(e, 0, "name")}
                 />
@@ -184,23 +184,14 @@ const HighSchoolPage: React.FC = () => {
               <td>
                 <div className="flex items-center gap-4">
                   <Select
-                    addClass="text-blue-300"
                     name="select1"
+                    label="- 졸업년도 선택 -"
                     options={selectOptions.select1}
                     value={selectedValues.select1}
-                    onChange={handleSelectChange}                  
+                    onChange={handleSelectChange}
                   />
-                  
-                  <Select
-                    addClass="text-blue-300"
-                    name="select2"
-                    options={selectOptions.select2}
-                    value={selectedValues.select2}
-                    onChange={handleSelectChange}                  
-                  />
-                  <select name="" id="" className="p-2 border border-gray-400">
-                    <option value="0">- 졸업년도 선택 -</option>
-                  </select>
+                  <p>{selectedValues.select1}</p>
+
                   <TextInput
                     type="text"
                     mode="base"
@@ -233,17 +224,29 @@ const HighSchoolPage: React.FC = () => {
                 <label htmlFor="inp-4">출신 고등학교</label>
               </th>
               <td>
-                <TextInput
-                  type="text"
-                  mode="base"
-                  inputSize="md"
-                  color="base"
-                  addClass="border-gray-400"
-                  addId="inp-4"
-                  label="고등학교 검색"
-                  value={inputValue[0].school}
-                  onChange={(e) => handleInputChange(e, 0, "school")}
-                />
+                <div className="flex items-center gap-4">
+                  <TextInput
+                    type="text"
+                    mode="base"
+                    inputSize="md"
+                    color="base"
+                    addClass="border-gray-400"
+                    addId="inp-4"
+                    label="고등학교 검색"
+                    value={inputValue[0].school}
+                    onChange={(e) => handleInputChange(e, 0, "school")}
+                  />
+
+                  <Select
+                    name="select2"
+                    color="ghost"
+                    label="- 고등학교 유형선택 -"
+                    options={selectOptions.select2}
+                    value={selectedValues.select2}
+                    onChange={handleSelectChange}
+                  />
+                  <p>{selectedValues.select2}</p>
+                </div>
               </td>
             </tr>
             <tr>
@@ -280,7 +283,7 @@ const HighSchoolPage: React.FC = () => {
                   <Radio
                     type="radio"
                     name="sexType"
-                    label="일반학생"
+                    label="남자"
                     value="sexType_1"
                     checked={selectedOptions.sexType === "sexType_1"}
                     onChange={handleRadioChange}
@@ -288,12 +291,22 @@ const HighSchoolPage: React.FC = () => {
                   <Radio
                     type="radio"
                     name="sexType"
-                    label="직업과정 위탁생"
+                    label="여자"
                     value="sexType_2"
                     checked={selectedOptions.sexType === "sexType_2"}
                     onChange={handleRadioChange}
                   />
-                  <p className=""><a href="#self" className="">수능성적 입력페이지</a> 에서 성별 수정이 가능합니다.</p>
+                </div>
+                <p className="mt-3"><a href="#self" className="text-blue-600 underline">수능성적 입력페이지</a> 에서 성별 수정이 가능합니다.</p>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" className="border-t-gray-900 bg-gray-50">
+                <label htmlFor="checkbox_1">지원성향</label>
+              </th>
+              <td>
+                <div className="flex gap-4 flex-wrap">
+                  <p>희망 전공 : <a href="#self" className="text-blue-600 underline">[설정하기]</a></p>
                 </div>
               </td>
             </tr>

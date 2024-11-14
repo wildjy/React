@@ -1,6 +1,6 @@
 "use client";
-import ModuleInput from "../../sharedUI/Input/TextInput";
 import { useState, useEffect, useCallback, useRef, ChangeEvent } from "react";
+import Select from './TestSelect';
 import throttle from 'lodash/throttle';
 import debounce from 'lodash/debounce';
 
@@ -24,16 +24,83 @@ export default function Page() {
   }, [count]); // count가 변경될 때마다 실행
   // input
 
+  const [user, setUsers] = useState<{[key: string]: string}>({
+    name: 'abcd',
+    age: '10',
+  })
+
+  const handleControl = (newUsers) => {
+    // setUsers((prevUsers) => ({
+    //   ...prevUsers,
+    //   name: newUsers
+    // }))
+
+    setUsers((prev) => {
+      console.log(prev)
+      return {
+        ...prev,
+        name: newUsers
+      }
+    })
+  }
+
+  const [testArray, setTestArray] = useState([
+    {
+      name: 'F-16',
+      type: 'light',
+    },
+    {
+      name: 'su-57',
+      type: 'heavy',
+    },
+  ])
+
+  // return prevValues.map((item, i) =>
+  //   i === index ? { ...item, [filed] : newValue } : item
+
+  const handleType = (index: number, newName: string, newType: string) => {
+    setTestArray((prevType) => {
+      console.log('prevType', prevType)
+      return prevType.map((item, i) => {
+        console.log(index);
+        console.log(i);
+         return i === index ? {...item, name: newName, type: newType} : item;
+      })
+    })
+  }
+
   const [textValue, setTextValue] = useState<string>('');
 
+  console.log(textValue);
   const handleChange = ( e: ChangeEvent<HTMLInputElement>) => {
     setTextValue(e.target.value);
   };
 
+  const [selectRadio, setSelectRadio] = useState<{[key: string]: string}>({
+    type: '',
+    sex: '',
+    grade: '',
+  });
+  console.log(selectRadio);
+
+  const [checkCheckBox, setCheckCheckBox] = useState<{[key: string]: boolean}>({
+    type: false,
+    sex: false,
+    grade: false,
+  });
+  console.log(checkCheckBox);
+
+  const [number, setNumber] = useState<{[key: string]: number}>({
+    type: 1,
+    sex: 2,
+    grade: 3,
+  })
+  console.log(number);
+
   const [inputValue, setInputValue] = useState([
     {
       name: "",
-      phone: "112",
+      phone: "010-112-1234",
     },
     {
       name: "리액트",
@@ -59,11 +126,11 @@ export default function Page() {
     });
   };
 
+  // useEffect
   useEffect(() => {
-    console.log(inputValue[0].name);
-    inputValue[0].name = "실행됨"
-    console.log(inputValue[0].name);
     console.log(inputValue)
+    console.log(inputValue[0].phone);
+    inputValue[0].name = "실행됨"
     return () => {
       inputValue[0].name = "클린업";
       console.log(inputValue)
@@ -90,22 +157,54 @@ export default function Page() {
     debounce((newQuery) => {
       console.log('debounce for', newQuery)
     }, 500),
+    []
   );
 
-  const handleDebounceChange = (event) => {
-    const newQuery = event.target.value;
+  const handleDebounceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = e.target.value;
     setQuery(newQuery);
     handleDebounce(newQuery);
   };
 
   // useRef
   const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   // const inputRef = useRef(null); // 문법오류 발생
 
   // ?.은 inputRef.current가 존재할 때만 .focus() 메서드를 호출한다는 의미입니다.
   useEffect(() => {
-    inputRef.current?.focus();
+    // inputRef.current?.focus();
+    // buttonRef.current?.focus();
   }, [])
+
+  const [selectValue, setSelectValue] = useState<{[key: string]: string}>({
+    select1: '',
+    select2: '',
+    select3: '',
+  })
+
+  const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    const {name, value} = e.target;
+    setSelectValue((prevValue) => ({
+      ...prevValue,
+      [name]: value,
+    }))
+  }
+
+  const selectOptions = {
+    select1: [
+      { value: 'option1', label: '2000' },
+      { value: 'option2', label: '1999' },
+    ],
+    select2: [
+      { value: 'optionA', label: 'ㅇㅇ고등학교' },
+      { value: 'optionB', label: 'ㅇㅇ고등학교 1' },
+    ],
+    select3: [
+      { value: 'item1', label: 'Item 1' },
+      { value: 'item2', label: 'Item 2' },
+    ],
+  };
 
 
   return (
@@ -113,7 +212,7 @@ export default function Page() {
       <div className="p-6 w-tablet m-center">
 
         <h1 className="mb-5 text-2xl"><b>React Study</b></h1>
-
+        <button className="p-5 py-2 border border-gray-600" onClick={() => handleControl(0, 'Su-57')}>click handleControl</button>
         {/* useState */}
         <div className="mb-8">
           <p className="mb-4">1. useState</p>
@@ -128,6 +227,25 @@ export default function Page() {
                 const [count, setCount] = useState(0);
                 const [state, setState] = useState(initialValue);
                 // console : count = 0, state = initialValue
+
+                useState의 타입을 지정할 때는 제네릭 타입 (<string>)을 사용해야 합니다.
+
+                const [name, setName] = useState<string>('');
+                const [age, setAge] = useState<number>(0);
+
+                const [selectRadio, setSelectRadio] = useState({[key: string] : string})({
+                  type: '',
+                  sex: '',
+                  grade: '',
+                })
+                // {type: '', sex: '', grade: ''}
+
+                const [checkCheckBox, setCheckCheckBox] = useState({[key: string]: string})({
+                  type: false,
+                  sex: false,
+                  grade: false,
+                })
+                // {type: false, sex: false, grade: false}
                 `}
               </pre>
             </div>
@@ -139,6 +257,7 @@ export default function Page() {
                 type="button"
                 className="px-5 py-2 border border-gray-500 rounded"
                 onClick={ handleCount }
+                ref={buttonRef}
                 >
                 <span className="text-error">Click!</span> count + 1
               </button>
@@ -179,13 +298,10 @@ export default function Page() {
             </div>
 
             <div className="mt-3">
-              <b className="block text-gray-900">3. 여러 상태 변수 관리
-                <span>하나의 컴포넌트에서 여러개의 useState를 사용 가능.</span>
-              </b>
+              <b className="block text-gray-900">3. 여러 상태 변수 관리</b>
+              <span>하나의 컴포넌트에서 여러개의 useState를 사용 가능.</span>
               <pre>
                 {`
-                useState의 타입을 지정할 때는 제네릭 타입 (<string>)을 사용해야 합니다.
-
                 const [name, setName] = useState<string>('');
                 const [age, setAge] = useState<number>(0);
                 `}
@@ -213,11 +329,41 @@ export default function Page() {
                 ])
 
                 const handleNameChange = (newName) => {
-                  setUser((prevName) => ({
+                  setUsers((prevName) => ({
                     ...prevName,
                     name: newName
-                  }));
+                  }))
+
+                  // setUsers((prevName) = {
+                  //   console.log(prevName)
+                  //   return {
+                  //     ...prevName,
+                  //     name: newName
+                  //   }
+                  // })
                 };
+
+                // Use
+                <button onClick={ () => handleNameChange('new name!!')}></button>
+
+
+                const handleMultiValue = (index: number, newName: string) => {
+                  setUsers((prevName) => {
+                    console.log('prevName', prevName)
+                    return prevName.map((item, i) => {
+                      console.log(item)
+                      return i === index ? {...item, name: newName} : item;
+                    })
+                  })
+                }
+                // prevName
+                // 0:{name: 'useState', age: '0'}
+                // 1:{name: 'useEffect', age: '10'}
+                // item
+                // {name: 'useState', age: '0'} {name: 'useEffect', age: '10'}
+
+                // Use
+                <button onClick={() => {handleMultiValue(0, 'F-5'), handleMultiValue(1, 'F-22')}}>click handleType</button>
                 `}
               </pre>
             </div>
@@ -517,8 +663,8 @@ export default function Page() {
                 ]);
 
                 const handleInputChange = ( e: changeEvent<HTMLInputElement>,
-                index: number, // 업데이트할 배열의 index
-                filed: string // 업데이트할 배열의 필드이름
+                  index: number, // 업데이트할 배열의 index
+                  filed: string // 업데이트할 배열의 필드이름
                 ) => {
                   const newValue = e.target.value; // 변경된 입력 값
                   setInputValue((prevValues) => {
@@ -563,6 +709,23 @@ export default function Page() {
           </div>
         </div>
 
+      <Select
+        name="select1"
+        value={selectValue.select1}
+        options={selectOptions.select1}
+        onChange={handleSelect}
+      />
+
+      <Select
+        name="select2"
+        value={selectValue.select2}
+        options={selectOptions.select2}
+        onChange={handleSelect}
+      />
+      <p>{selectValue.select1}{selectValue.select2}</p>
+      <button className="p-5 py-2 border border-gray-600" onClick={() => {handleType(0, 'FGR-4', 'middle'), handleType(1, 'F-111', 'attack')}}>click handleType</button>
+      <p>{[testArray[0].name, testArray[0].type]}</p>
+      <p>{testArray[1].name}{testArray[1].type}</p>
       </div>
     </>
   );

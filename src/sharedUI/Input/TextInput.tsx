@@ -93,7 +93,7 @@ const TextInput : FC<InputProps> = ({
         onChange={onChange}
         id={addId}
         placeholder={label}
-        disabled={!!className}
+        disabled={!!disabled}
         {...props}
       />
       <label htmlFor={addId} className="flex justify-center items-center gap-3">
