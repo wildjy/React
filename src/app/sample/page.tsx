@@ -5,9 +5,27 @@ const SamplePage: React.FC = () => {
   return (
       <div className="bg-gray-50">
         <div className="px-10 py-9 w-cont m-center bg-white">
-          <h1 className="p-4  text-xxs">High School Page</h1>
-          <h1 className="text-xs">High School Page</h1>
-          <h1 className="text-sm">High School Page</h1>
+          <div className="p-4 border border-blue-900">
+            <h1 className="p-2 text-3xs font-thin">[11px] High School Page</h1>
+            <h1 className="p-2 text-3xs font-thin">가나다라마바사아자차카타파하</h1>
+            <h1 className="p-2 text-3xs font-thin">앓았앎격삷</h1>
+          </div>
+          <div className=" mt-5 p-4 border border-blue-900">
+            <h1 className="p-2 text-2xs font-thin">[12px] High School Page</h1>
+            <h1 className="p-2 text-2xs font-thin">가나다라마바사아자차카타파하</h1>
+            <h1 className="p-2 text-2xs font-thin">앓았앎격삷</h1>
+          </div>
+          <div className=" mt-5 p-4 border border-blue-900">
+            <h1 className="p-2 text-xs font-thin">[13px] High School Page</h1>
+            <h1 className="p-2 text-xs font-thin">가나다라마바사아자차카타파하</h1>
+            <h1 className="p-2 text-xs font-thin">앓았앎격삷</h1>
+          </div>
+          <div className=" mt-5 p-4 border border-blue-900">
+            <h1 className="p-2 text-s font-thin">[14px] High School Page</h1>
+            <h1 className="p-2 text-s font-thin">가나다라마바사아자차카타파하</h1>
+            <h1 className="p-2 text-s font-thin">앓았앎격삷</h1>
+          </div>
+          <h1 className="text-md">High School Page</h1>
           <h1 className="text-base">High School Page</h1>
           <h1 className="text-base">High School Page</h1>
           <h1 className="text-base font-semi">High School Page</h1>
@@ -16,6 +34,15 @@ const SamplePage: React.FC = () => {
           <h1 className="text-xl">High School Page</h1>
           <h1 className="text-2xl">High School Page</h1>
           <h1 className="text-3xl">High School Page</h1>
+          <h1 className="text-4xl">High School Page</h1>
+          <h1 className="text-5xl">High School Page</h1>
+          <h1 className="text-6xl">High School Page</h1>
+          <h1 className="text-7xl">High School Page</h1>
+          <h1 className="text-8xl">High School Page</h1>
+          <h1 className="text-8xl font-thin">High School Page</h1>
+          <h1 className="text-8xl font-light">High School Page</h1>
+          <h1 className="text-8xl font-semi">High School Page</h1>
+          <h1 className="text-8xl font-bold">High School Page</h1>
           <h1 className="font-bold mb-4">High School Page</h1>
           <p className="bg-gray-50">Welcome to the high school page</p>
           <p className="bg-gray-100">Welcome to the high school page</p>

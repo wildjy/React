@@ -15,6 +15,7 @@ const SelectVariants = cva(
       color: {
         base: 'base',
         ghost: 'ghost',
+        disabled: 'disabled',
       }
     },
     defaultVariants: {
@@ -27,11 +28,12 @@ const SelectVariants = cva(
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement>,
 VariantProps<typeof SelectVariants> {
   size?: "sm" | "md" | "lg";
-  color?: "base" | "ghost";
+  color?: "base" | "ghost" | "disabled";
   addClass?: string;
   name?: string;
   value?: string;
   label?: string;
+  disabled?: string;
   options: {value: string; label: string}[];
   onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
 }
@@ -45,6 +47,7 @@ const Select: FC<SelectProps> =({
   name,
   value,
   label,
+  disabled,
   options,
   onChange,
   ...props
@@ -52,7 +55,7 @@ const Select: FC<SelectProps> =({
 
   const className = SelectVariants ({
     size: size as "sm" | "md" | "lg" | undefined,
-    color: color as "base" | "ghost" | undefined,
+    color: color as "base" | "ghost" | "disabled" | undefined,
   })
 
   return (
@@ -63,6 +66,7 @@ const Select: FC<SelectProps> =({
       id={name}
       value={value}
       onChange={onChange}
+      disabled={!!disabled}
       className={cn(className, addClass)}
       {...props}
       >

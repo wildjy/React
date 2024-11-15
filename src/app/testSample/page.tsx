@@ -1,37 +1,34 @@
 "use client";
 import React from "react";
 import { useState, ChangeEvent } from 'react';
-import MakeButton  from "../highschool/MakeButton";
 import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 import Radio from "../../sharedUI/Input/Radio";
-
-
-import Input  from "../highschool/inputClsx";
-import TestInput  from "../highschool/inputCva";
+import Select from "../../sharedUI/Input/Select";
+import Button from "../../sharedUI/Button/ButtonUi";
 
 const HighSchoolPage: React.FC = () => {
-
+  // input
   const [inputValue, setInputValue] = useState([
     {
-      name: '',
-      phone: '',
-      grade: '',
-      class: '',
-      school: '',
-      icon: 'https://image.jinhak.com/renewal2020/svg/input_radio.svg'
+      name: "",
+      phone: "",
+      grade: "",
+      class: "",
+      school: "",
+      icon: "https://image.jinhak.com/renewal2020/svg/input_radio.svg",
     },
     {
-      name: 'ㄱㄴㄷ',
-      phone: '111-1111-1111',
-      icon: ''
-    }
+      name: "ㄱㄴㄷ",
+      phone: "111-1111-1111",
+      icon: "",
+    },
   ]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement>,
-    index:number,
-    field:string
+    index: number,
+    field: string
   ) => {
     const newValue = e.target.value;
 
@@ -40,190 +37,242 @@ const HighSchoolPage: React.FC = () => {
 
       return prevValues.map((item, i) =>
         i === index ? { ...item, [field]: newValue } : item
-      )
+      );
     });
   };
 
   // radio
+  // const [selectedOption , setSelectedOption] = useState<string>('');
+  const [selectedOptions, setSelectedOptions] = useState<{
+    [key: string]: string;
+  }>({
+    type: '',
+    studentType: '',
+    sex: '',
+  });
 
-  const [selectedOption , setSelectedOption] = useState<string>('');
   const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSelectedOption(e.target.value);
-    console.log("Selected option:", e.target.value);
+    const { name, value } = e.target;
+    setSelectedOptions((prevOptions) => {
+      console.log(prevOptions)
+      return {
+        ...prevOptions,
+        [name]: value,
+      }
+    });
+    console.log(`selected ${name} :`, value);
   };
 
   // checkbox
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  //const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [isChecked, setIsChecked] = useState<{
+    [key: string]: boolean
+  }>({
+    checkbox_1: false,
+    checkbox_2: false,
+    checkbox_3: false,
+  });
+
   const handleCheckChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
-    setIsChecked(checked);
-    console.log("Checked status:", checked);
+    // const checked = e.target.checked;
+    const { value, checked } = e.target;
+    setIsChecked((prevChecked) => ({
+      ...prevChecked,
+      [value]: checked,
+    }));
+    console.log(`Checked status: ${value}`, checked);
+  };
+
+  // select
+  // 여러 Select 요소의 상태를 객체로 관리
+  const [selectedValues, setSelectedValues] = useState<{ [key: string]: string }>({
+    select1: '', // selected option
+    select2: '',
+    select3: '',
+  });
+
+  const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setSelectedValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
+
+  const selectOptions = {
+    select1: [
+      { value: 'option1', label: '2000' },
+      { value: 'option2', label: '1999' },
+    ],
+    select2: [
+      { value: 'optionA', label: 'ㅇㅇ고등학교' },
+      { value: 'optionB', label: 'ㅇㅇ고등학교 1' },
+    ],
+    select3: [
+      { value: 'item1', label: 'Item 1' },
+      { value: 'item2', label: 'Item 2' },
+    ],
   };
 
   return (
     <div id="contents" className="bg-gray-50">
       <div className="container">
 
-        <h2 className="p-4 text-3xl font-bold">출신고교(필수)</h2>
+      <div className="p-5 flex gap-y-7 flex-wrap">
+        <div className="input_text w-full">
+          <h2 className="p-4 text-3xl font-bold">Input [Type=text]</h2>
+          <div className="flex gap-3 flex-wrap">
+            <TextInput
+              type="text"
+              mode="base"
+              inputSize="sm"
+              color="base"
+              addClass="border-gray-400"
+              addId="inp-2"
+              label="반"
+              value={inputValue[0].grade}
+              onChange={(e) => handleInputChange(e, 0, "grade")}
+            />
+            <TextInput
+              type="text"
+              mode="base"
+              inputSize="md"
+              addClass="border-gray-400"
+              addId="inp-1"
+              label="수험생 이름"
+              value={inputValue[0].name}
+              onChange={(e) => handleInputChange(e, 0, "name")}
+            />
+            <TextInput
+              type="text"
+              mode="base"
+              color="disabled"
+              disabled="disabled"
+              inputSize="md"
+              addClass="border-gray-400"
+              addId="inp-1"
+              label="수험생 이름"
+              value={inputValue[0].name}
+              onChange={(e) => handleInputChange(e, 0, "phone")}
+            />
+            <TextInput
+              type="text"
+              mode="focus"
+              value={inputValue[0].name}
+              onChange={(e) => handleInputChange(e, 1, 'grade')}
+              size="sm"
+              color="ghost"
+              addClass="py-4"
+              addId="inp"
+              icon={<img src={inputValue[0].icon} className='w-6 h-6' />}
+              label="수험생 연락처"
+            />
+          </div>
+        </div>
 
-        <table className="border-t border-gray-900">
-          <caption>출신고교 테이블</caption>
-          <colgroup>
-            <col style={{"width": "20%"}} />
-            <col style={{"width": "80%"}} />
-          </colgroup>
-          <tbody>
-            <tr>
-              <th scope="row" className="border-t-gray-900 bg-gray-50">
-                <label htmlFor="inp-1">수험생 이름</label>
-              </th>
-              <td className="border-t-gray-900">
-                <TextInput
-                  type="text"
-                  mode="base"
-                  size="md"
-                  color="base"
-                  addClass="border-gray-400"
-                  addId="inp-1"
-                  label="수험생 이름"
-                  value={inputValue[0].name}
-                  onChange={(e) => handleInputChange(e, 0, 'name')}
-                />
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" className="border-t-gray-900 bg-gray-50">
-                <label htmlFor="inp-2">학생구분</label>
-              </th>
-              <td>
-                <div className="flex gap-4 flex-wrap">
-                  <Radio
-                    type="radio"
-                    name="type"
-                    label="고등학교 졸업(예정)자"
-                    value="gradeType_1"
-                    checked={ selectedOption === 'gradeType_1' }
-                    onChange={ handleRadioChange }
-                  />
-                  <Radio
-                    type="radio"
-                    name="type"
-                    label="검정고시 출신자"
-                    value="gradeType_2"
-                    checked={ selectedOption === 'gradeType_2' }
-                    onChange={ handleRadioChange }
-                  />
-                  <Radio
-                    type="radio"
-                    name="type"
-                    label="현 고1,2 학생"
-                    value="gradeType_3"
-                    checked={ selectedOption === 'gradeType_3' }
-                    onChange={ handleRadioChange }
-                  />
-                  <Radio
-                    type="radio"
-                    name="studentType"
-                    label="2 학생"
-                    value="studentType_1"
-                    checked={ selectedOption === 'studentType_1' }
-                    onChange={ handleRadioChange }
-                  />
-                  <Radio
-                    type="radio"
-                    name="studentType"
-                    label="학생"
-                    value="studentType_2"
-                    checked={ selectedOption === 'studentType_2' }
-                    onChange={ handleRadioChange }
-                  />
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" className="border-t-gray-900 bg-gray-50">
-                <label htmlFor="">졸업년도</label>
-              </th>
-              <td>
-                <div className="flex items-center gap-4">
-                  <select name="" id="" className="p-2 border border-gray-400">
-                    <option value="0">- 졸업년도 선택 -</option>
-                  </select>
+        <div className="select w-full">
+          <h2 className="p-4 text-3xl font-bold">Select</h2>
+          <div className="flex gap-3 flex-wrap">
 
-                  <TextInput
-                    type="text"
-                    mode="base"
-                    size="sm"
-                    color="base"
-                    addClass="border-gray-400"
-                    addId="inp-2"
-                    label="반"
-                    value={inputValue[0].grade}
-                    onChange={(e) => handleInputChange(e, 0, 'grade')}
-                  /> 반
+            <Select
+              name="select1"
+              label="- 년도 선택 -"
+              options={selectOptions.select1}
+              value={selectedValues.select1}
+              onChange={handleSelectChange}
+            />
 
-                  <TextInput
-                    type="text"
-                    mode="base"
-                    size="sm"
-                    color="base"
-                    addClass="border-gray-400"
-                    addId="inp-3"
-                    label="번"
-                    value={inputValue[0].class}
-                    onChange={(e) => handleInputChange(e, 0, 'class')}
-                  /> 번
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" className="border-t-gray-900 bg-gray-50">
-                <label htmlFor="inp-3">출신 고등학교</label>
-              </th>
-              <td>
-                <TextInput
-                  type="text"
-                  mode="base"
-                  size="md"
-                  color="base"
-                  addClass="border-gray-400"
-                  addId="inp-4"
-                  label="고등학교 검색"
-                  value={inputValue[0].school}
-                  onChange={(e) => handleInputChange(e, 0, 'school')}
-                />
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" className="border-t-gray-900 bg-gray-50">
-                <label htmlFor="inp-3">학생유형</label>
-              </th>
-              <td>
-                <div className="flex gap-4 flex-wrap">
-                  <CheckBox
-                    type="checkbox"
-                    value="checkbox_1"
-                    label="체크박스"
-                    checked={ isChecked }
-                    onChange={ handleCheckChange }
-                  />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <Select
+              name="select2"
+              label="- 고등학교 선택 -"
+              options={selectOptions.select2}
+              value={selectedValues.select2}
+              onChange={handleSelectChange}
+            />
 
-        <TextInput
-          type="text"
-          value={inputValue[1].name}
-          onChange={(e) => handleInputChange(e, 1, 'name')}
-          size="sm"
-          color="ghost"
-          addClass="py-4"
-          addId="inp"
-          icon={<img src={inputValue[0].icon} className='w-6 h-6' />}
-          label="수험생 연락처"
-        />
+            <Select
+              name="select3"
+              color="disabled"
+              disabled="disabled"
+              label="- item select -"
+              options={selectOptions.select3}
+              value={selectedValues.select3}
+              onChange={handleSelectChange}
+            />
+
+          </div>
+        </div>
+
+        <div className="checkbox w-full">
+          <h2 className="p-4 text-3xl font-bold">Input [Type=checkbox]</h2>
+          <div className="flex gap-3 flex-wrap">
+
+          <CheckBox
+            size="sm"
+            value="checkbox_1"
+            label="체크박스 1"
+            checked={isChecked["checkbox_1"] || false}
+            onChange={handleCheckChange}
+          />
+          <CheckBox
+            value="checkbox_2"
+            label="체크박스 2"
+            checked={isChecked["checkbox_2"] || false}
+            onChange={handleCheckChange}
+          />
+          <CheckBox
+            size="lg"
+            color="disabled"
+            disabled="disabled"
+            value="checkbox_3"
+            label="체크박스 3"
+            checked={isChecked["checkbox_3"] || false}
+            onChange={handleCheckChange}
+          />
+          </div>
+        </div>
+
+        <div className="radio w-full">
+          <h2 className="p-4 text-3xl font-bold">Input [Type=radio]</h2>
+          <div className="flex gap-3 flex-wrap">
+            <Radio
+              type="radio"
+              size="sm"
+              name="type"
+              label="고등학교 졸업(예정)자"
+              value="gradeType_1"
+              checked={selectedOptions.type === "gradeType_1"}
+              onChange={handleRadioChange}
+            />
+            <Radio
+              type="radio"
+              name="type"
+              label="검정고시 출신자"
+              value="gradeType_2"
+              checked={selectedOptions.type === "gradeType_2"}
+              onChange={handleRadioChange}
+            />
+            <Radio
+              type="radio"
+              size="lg"
+              color="disabled"
+              disabled="disabled"
+              name="type"
+              label="현 고1,2 학생"
+              value="gradeType_3"
+              checked={selectedOptions.type === "gradeType_3"}
+              onChange={handleRadioChange}
+            />
+          </div>
+        </div>
+
+        <div className="button w-full">
+        <h2 className="p-4 text-3xl font-bold">Button</h2>
+          <Button
+            name="확인"
+          />
+        </div>
+      </div>
 
 
         {/* <Input baseTy onChange={handleChange} />
@@ -236,7 +285,6 @@ const HighSchoolPage: React.FC = () => {
         <TestInput type="password" size="sm" color="error" onChange={handleChange} disabled="disabled" /> */}
 
 
-        <MakeButton  />
       </div>
     </div>
   );

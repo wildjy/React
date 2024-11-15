@@ -8,9 +8,9 @@ const InputVariants = cva(
   {
     variants: {
       size: {
-        sm: "",
+        sm: "w-4 h-4 after:h-3 after:w-3 after:top-0.5 after:left-0.5 ",
         md: "w-6 h-6 after:h-5 after:w-5 after:top-0.5 after:left-0.5 ",
-        lg: "",
+        lg: "w-8 h-8 after:h-7 after:w-7 after:top-2 after:left-2 ",
         full: "",
       },
       color: {

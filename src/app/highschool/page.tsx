@@ -122,8 +122,8 @@ const HighSchoolPage: React.FC = () => {
         <table className="border-t border-gray-900">
           <caption>출신고교 테이블</caption>
           <colgroup>
-            <col style={{ width: "20%" }} />
-            <col style={{ width: "80%" }} />
+            <col className="w-1/4 md:w-1/5" />
+            <col className="w-3/4 md:w-4/5" />
           </colgroup>
           <tbody>
             <tr>
@@ -138,7 +138,6 @@ const HighSchoolPage: React.FC = () => {
                   addClass="border-gray-400"
                   addId="inp-1"
                   label="수험생 이름"
-                  disabled="disabled"
                   value={inputValue[0].name}
                   onChange={(e) => handleInputChange(e, 0, "name")}
                 />
@@ -190,7 +189,6 @@ const HighSchoolPage: React.FC = () => {
                     value={selectedValues.select1}
                     onChange={handleSelectChange}
                   />
-                  <p>{selectedValues.select1}</p>
 
                   <TextInput
                     type="text"
@@ -202,7 +200,7 @@ const HighSchoolPage: React.FC = () => {
                     label="반"
                     value={inputValue[0].grade}
                     onChange={(e) => handleInputChange(e, 0, "grade")}
-                  />{" "}
+                  />
                   반
                   <TextInput
                     type="text"
@@ -214,7 +212,7 @@ const HighSchoolPage: React.FC = () => {
                     label="번"
                     value={inputValue[0].class}
                     onChange={(e) => handleInputChange(e, 0, "class")}
-                  />{" "}
+                  />
                   번
                 </div>
               </td>
@@ -228,7 +226,6 @@ const HighSchoolPage: React.FC = () => {
                   <TextInput
                     type="text"
                     mode="base"
-                    inputSize="md"
                     color="base"
                     addClass="border-gray-400"
                     addId="inp-4"
@@ -245,7 +242,6 @@ const HighSchoolPage: React.FC = () => {
                     value={selectedValues.select2}
                     onChange={handleSelectChange}
                   />
-                  <p>{selectedValues.select2}</p>
                 </div>
               </td>
             </tr>
@@ -297,7 +293,7 @@ const HighSchoolPage: React.FC = () => {
                     onChange={handleRadioChange}
                   />
                 </div>
-                <p className="mt-3"><a href="#self" className="text-blue-600 underline">수능성적 입력페이지</a> 에서 성별 수정이 가능합니다.</p>
+                <p className="mt-3 text-sm"><a href="#self" className="text-blue-600 underline">수능성적 입력페이지</a> 에서 성별 수정이 가능합니다.</p>
               </td>
             </tr>
             <tr>
@@ -305,36 +301,12 @@ const HighSchoolPage: React.FC = () => {
                 <label htmlFor="checkbox_1">지원성향</label>
               </th>
               <td>
-                <div className="flex gap-4 flex-wrap">
+                <div className="flex-1 md:flex gap-2 md:gap-4 flex-wrap">
                   <p>희망 전공 : <a href="#self" className="text-blue-600 underline">[설정하기]</a></p>
+                  <p>희망 지역 : <a href="#self" className="text-blue-600 underline">[설정하기]</a></p>
+                  <p>희망 전형 : <a href="#self" className="text-blue-600 underline">[설정하기]</a></p>
                 </div>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" className="border-t-gray-900 bg-gray-50">
-                <label htmlFor="checkbox_1">학생 성별</label>
-              </th>
-              <td>
-                <div className="flex gap-4 flex-wrap">
-                  <CheckBox
-                    value="checkbox_1"
-                    label="체크박스 1"
-                    checked={isChecked["checkbox_1"] || false}
-                    onChange={handleCheckChange}
-                  />
-                  <CheckBox
-                    value="checkbox_2"
-                    label="체크박스 2"
-                    checked={isChecked["checkbox_2"] || false}
-                    onChange={handleCheckChange}
-                  />
-                  <CheckBox
-                    value="checkbox_3"
-                    label="체크박스 3"
-                    checked={isChecked["checkbox_3"] || false}
-                    onChange={handleCheckChange}
-                  />
-                </div>
+                <p className="mt-3 text-sm text-gray-500">- 지원하고자 하는 지역,계열을 선택해 주시기 바랍니다. 추천대학, 인기대학에서 개인화된 검색결과를 보여 드립니다.</p>
               </td>
             </tr>
           </tbody>
