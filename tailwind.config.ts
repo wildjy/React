@@ -12,7 +12,7 @@ const config: Config = {
     extend: {
       screens: {
         'sm': '360px', // 360px
-        'md': '720px', // 720px
+        'md': '720px', // 720px : mobile
         'lg': '1024px', // 1024px
         'xl': '1440px',
         '2xl': '1920px',
@@ -21,15 +21,22 @@ const config: Config = {
         sans: ['Pretendard', 'Arial', 'sans-serif'],
       },
       fontSize: {
-        xxs: '0.688rem', // 11px
-        xs: '0.75rem', // 12px
-        sm: '0.875rem', // 14px
+        '3xs': '0.688rem', // 11px
+        '2xs': '0.75rem', // 12px
+        xs: '0.813rem', // 13px
+        s: '0.875rem', // 14px
+        md: '0.938rem', // 15px
         base: '1rem', // base: 16px
-        mobile: '3.33vw', // base: 24px
+        mobile: '3.33vw', // mobile:  24px
         lg: '1.125rem', // 18px
-        xl: '1.25rem', // 20px
-        '2xl': '1.375rem', // 22px
+        xl: '1.25rem', // 20px :2.77vw
+        '2xl': '1.375rem', // 22px : 3.03vw
         '3xl': '1.5rem', // 24px
+        '4xl': '1.625rem', // 26px
+        '5xl': '2rem', // 32px
+        '6xl': '2.375rem', // 38px
+        '7xl': '2.625rem', // 42px
+        '8xl': '2.875rem', // 46px
       },
       fontWeight: {
         'thin': '100',
