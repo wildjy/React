@@ -64,9 +64,14 @@ export default function Page() {
       return prevType.map((item, i) => {
         console.log(index);
         console.log(i);
-         return i === index ? {...item, name: newName, type: newType} : item;
+        return i === index ? {...item, name: newName, type: newType} : item;
       })
     })
+    // setTestArray((prevType) => {
+    //   return prevType.map((item, i) =>
+    //     i === index ? {...item, name: newName, type: newType} : item
+    //   )
+    // })
   }
 
   const [textValue, setTextValue] = useState<string>('');
@@ -185,10 +190,19 @@ export default function Page() {
 
   const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const {name, value} = e.target;
-    setSelectValue((prevValue) => ({
-      ...prevValue,
-      [name]: value,
-    }))
+    // setSelectValue((prevValue) => ({
+    //   ...prevValue,
+    //   [name]: value,
+    // }))
+
+    setSelectValue((prevValue) => {
+      console.log(name)
+      console.log(prevValue)
+      return {
+        ...prevValue,
+        [name]: value,
+      }
+    })
   }
 
   const selectOptions = {
@@ -293,6 +307,50 @@ export default function Page() {
                 const handleCount = () => {
                   setCount((prevCount) => prevCount + 1) ;
                 }
+
+                const handleCount = () => {
+                  setCount((prevCount) => {
+                    // console.log(prevCount);
+                    return {
+                      prevCount + 1;
+                    }
+                  })
+                }
+
+
+                // 1. 동적필드 [name]
+                const [value, setValue] = useState<>({
+                  type1: '',
+                  type2: '',
+                })
+
+                const handleValue = (e: ChangeEvent<HTMLSelectElement>) => {
+                  const {name, value} = e.target;
+                  setValue((prevValue) => ({
+                    ...prevValue,
+                    [name]: value,
+                  }))
+                }
+
+                // 1. 특정필드 name
+                const [testArray, setTestArray] = useState([
+                  {
+                    name: 'F-16',
+                    type: 'light',
+                  },
+                  {
+                    name: 'su-57',
+                    type: 'heavy',
+                  },
+                ])
+
+                const handleChange = (index: number, newName: string, newType: string) => {
+                  setTestArray((prevValue) => {
+                    return prevValue.map((item, i) =>
+                      i === index ? {...item, name: newName, type: newType} : item
+                    )
+                  })
+                }
                 `}
               </pre>
             </div>
@@ -347,23 +405,29 @@ export default function Page() {
                 <button onClick={ () => handleNameChange('new name!!')}></button>
 
 
-                const handleMultiValue = (index: number, newName: string) => {
+                const handleMultiValue = (index: number, newName: string, newAge: number) => {
                   setUsers((prevName) => {
                     console.log('prevName', prevName)
                     return prevName.map((item, i) => {
                       console.log(item)
-                      return i === index ? {...item, name: newName} : item;
+                      return i === index ? {...item, name: newName, age: newAge} : item;
                     })
                   })
                 }
                 // prevName
                 // 0:{name: 'useState', age: '0'}
                 // 1:{name: 'useEffect', age: '10'}
+
                 // item
                 // {name: 'useState', age: '0'} {name: 'useEffect', age: '10'}
 
                 // Use
-                <button onClick={() => {handleMultiValue(0, 'F-5'), handleMultiValue(1, 'F-22')}}>click handleType</button>
+                <button onClick={() => {
+                  handleMultiValue(0, 'F-5', '5');
+                  handleMultiValue(1, 'F-22', '8');
+                }}
+                >click handleType</button>
+                // {name: 'F-5', age: '6'} {name: 'F-22', age: '8'}
                 `}
               </pre>
             </div>
@@ -723,7 +787,7 @@ export default function Page() {
         onChange={handleSelect}
       />
       <p>{selectValue.select1}{selectValue.select2}</p>
-      <button className="p-5 py-2 border border-gray-600" onClick={() => {handleType(0, 'FGR-4', 'middle'), handleType(1, 'F-111', 'attack')}}>click handleType</button>
+      <button className="p-5 py-2 border border-gray-600" onClick={() => {handleType(0, 'FGR-4', 'middle'); handleType(1, 'F-111', 'attack');}}>click handleType</button>
       <p>{[testArray[0].name, testArray[0].type]}</p>
       <p>{testArray[1].name}{testArray[1].type}</p>
       </div>
