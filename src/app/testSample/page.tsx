@@ -6,6 +6,8 @@ import CheckBox from "../../sharedUI/Input/CheckBox";
 import Radio from "../../sharedUI/Input/Radio";
 import Select from "../../sharedUI/Input/Select";
 import Button from "../../sharedUI/Button/ButtonUi";
+import StepBars from "../../sharedUI/Stepbar/Step";
+import StepBar from "../../sharedUI/Stepbar/Stepbar";
 
 const HighSchoolPage: React.FC = () => {
   // input
@@ -112,6 +114,20 @@ const HighSchoolPage: React.FC = () => {
       { value: 'item1', label: 'Item 1' },
       { value: 'item2', label: 'Item 2' },
     ],
+  };
+
+  // step
+  const [currentStep, setCurrentStep] = useState(0);
+  console.log(currentStep)
+  const steps = [
+    { label: "Step 1", isCompleted: currentStep > 0 },
+    { label: "Step 2", isCompleted: currentStep > 1 },
+    { label: "Step 3", isCompleted: currentStep > 2 },
+    { label: "Step 4", isCompleted: currentStep > 3 },
+  ];
+
+  const handleStepClick = (stepIndex: number) => {
+    setCurrentStep(stepIndex);
   };
 
   return (
@@ -271,6 +287,43 @@ const HighSchoolPage: React.FC = () => {
           <Button
             name="확인"
           />
+
+          <StepBars steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+            <button
+              onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
+              disabled={currentStep === 0}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#ccc",
+                border: "none",
+                cursor: currentStep === 0 ? "not-allowed" : "pointer",
+                opacity: currentStep === 0 ? 0.5 : 1,
+              }}
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))}
+              disabled={currentStep === steps.length - 1}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#4caf50",
+                color: "white",
+                border: "none",
+                cursor: currentStep === steps.length - 1 ? "not-allowed" : "pointer",
+                opacity: currentStep === steps.length - 1 ? 0.5 : 1,
+              }}
+            >
+              Next
+            </button>
+          </div>
+
+          <StepBar step={steps} currentStep={currentStep} />
+
+
+
+
         </div>
       </div>
 
