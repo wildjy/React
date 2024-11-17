@@ -291,7 +291,7 @@ const HighSchoolPage: React.FC = () => {
           <StepBars steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
             <button
-              onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
+              onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))} // 값들중 큰값을 반환, 0을 넘지 않음
               disabled={currentStep === 0}
               style={{
                 padding: "10px 20px",
@@ -304,7 +304,7 @@ const HighSchoolPage: React.FC = () => {
               Previous
             </button>
             <button
-              onClick={() => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))}
+              onClick={() => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))} // 값들중 작은값을 반환, steps.length(최대)을 넘지 않음
               disabled={currentStep === steps.length - 1}
               style={{
                 padding: "10px 20px",
