@@ -18,7 +18,7 @@ const ButtonVariants = cva(
         tertiary: " ",
       },
       round: {
-        default: "rounded", 
+        default: "rounded",
         full: "rounded-full"
       }
       // ...props
@@ -56,7 +56,7 @@ const Button: FC<ButtonProps> = ({
   });
 
   return (
-    <div className="button-Box flex-1 text-center">
+    <>
       <button
         className={cn(className, addClass)}
         value={value}
@@ -64,7 +64,7 @@ const Button: FC<ButtonProps> = ({
       >
         {name}
       </button>
-    </div>
+    </>
   );
 };
 

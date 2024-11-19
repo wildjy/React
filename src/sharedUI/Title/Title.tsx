@@ -5,9 +5,9 @@ import { HTMLAttributes, FC } from "react";
 const TitleStyle = cva('mb-5', {
   variants: {
     mode: {
-      base: '',
-      line: '',
-      number: '',
+      base: 'base',
+      line: 'line',
+      number: 'number',
     },
     size: {
       sm: 'text-s',
@@ -15,8 +15,8 @@ const TitleStyle = cva('mb-5', {
       lg: 'text-4xl',
     },
     color: {
-      base: '',
-      red: '',
+      base: 'base',
+      red: 'text-red',
       blue: 'text-blue-700',
     },
     bold: {
@@ -37,10 +37,10 @@ const TitleStyle = cva('mb-5', {
   }
 })
 
-interface titleProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof TitleStyle> {
+interface titleProps extends HTMLAttributes<HTMLHeadingElement>, VariantProps<typeof TitleStyle> {
   title: string;
   className?: string;
-  addClass: string;
+  addClass?: string;
 }
 
 const Title: React.FC<titleProps> = ({
@@ -59,7 +59,7 @@ const Title: React.FC<titleProps> = ({
 
   return (
     <>
-      <h2 className={cn(className, addClass)}> { title } </h2>
+      <h2 className={cn(className, addClass)} {...props}> { title } </h2>
     </>
   );
 };

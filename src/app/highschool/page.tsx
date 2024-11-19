@@ -136,7 +136,7 @@ const HighSchoolPage: React.FC = () => {
                 <TextInput
                   type="text"
                   mode="base"
-                  inputSize="md"
+                  size="md"
                   addClass="border-gray-400"
                   addId="inp-1"
                   label="수험생 이름"
@@ -195,7 +195,7 @@ const HighSchoolPage: React.FC = () => {
                   <TextInput
                     type="text"
                     mode="base"
-                    inputSize="sm"
+                    size="sm"
                     color="base"
                     addClass="border-gray-400"
                     addId="inp-2"
@@ -207,7 +207,7 @@ const HighSchoolPage: React.FC = () => {
                   <TextInput
                     type="text"
                     mode="base"
-                    inputSize="sm"
+                    size="sm"
                     color="base"
                     addClass="border-gray-400"
                     addId="inp-3"

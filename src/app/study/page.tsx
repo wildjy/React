@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useCallback, useRef, ChangeEvent } from "react";
-import Select from './TestSelect';
 import throttle from 'lodash/throttle';
 import debounce from 'lodash/debounce';
 
@@ -825,68 +824,56 @@ const handleRemoveItem = (index: number) => {
           </div>
         </div>
 
-      <Select
-        name="select1"
-        value={selectValue.select1}
-        options={selectOptions.select1}
-        onChange={handleSelect}
-      />
+        <button className="p-5 py-2 border border-gray-600" onClick={() => {handleType(0, 'FGR-4', 'middle'); handleType(1, 'F-111', 'attack');}}>click handleType</button>
+        <p>{[testArray[0].name, testArray[0].type]}</p>
+        <p>{testArray[1].name}{testArray[1].type}</p>
 
-      <Select
-        name="select2"
-        value={selectValue.select2}
-        options={selectOptions.select2}
-        onChange={handleSelect}
-      />
-      <p>{selectValue.select1}{selectValue.select2}</p>
-      <button className="p-5 py-2 border border-gray-600" onClick={() => {handleType(0, 'FGR-4', 'middle'); handleType(1, 'F-111', 'attack');}}>click handleType</button>
-      <p>{[testArray[0].name, testArray[0].type]}</p>
-      <p>{testArray[1].name}{testArray[1].type}</p>
-      </div>
+        <div id="violence" className="w-[300px] relative">
+          {/* Title */}
+          <div
+            className="val_tit cursor-pointer border px-4 py-2"
+            onClick={handleToggleDropdown}
+          >
+            {selectedTitle}
+          </div>
 
+          {/* Dropdown */}
+          {dropdownVisible && (
+            <div id="save_list" className="absolute z-10 mt-1 border bg-white w-full shadow-md">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="item cursor-pointer px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleSelectItem(item)}
+                >
+                  {item.name}
+                </div>
+              ))}
+            </div>
+          )}
 
-      <div id="violence" className="relative">
-        {/* Title */}
-        <div
-          className="val_tit cursor-pointer border px-4 py-2"
-          onClick={handleToggleDropdown}
-        >
-          {selectedTitle}
-        </div>
-
-        {/* Dropdown */}
-        {dropdownVisible && (
-          <div id="save_list" className="absolute z-10 mt-1 border bg-white w-full shadow-md">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="item cursor-pointer px-4 py-2 hover:bg-gray-100"
-                onClick={() => handleSelectItem(item)}
-              >
-                {item.name}
+          {/* Selected Items */}
+          <div className="mt-4">
+            {selectedItems.map((item, index) => (
+              <div key={`${item.id}-${index}`} className="item flex items-center mb-2">
+                <span className="mr-2">{item.name}</span>
+                <button
+                  onClick={() => handleRemoveItem(index)}
+                  className="text-red-500 underline"
+                >
+                  삭제
+                </button>
               </div>
             ))}
           </div>
-        )}
-
-        {/* Selected Items */}
-        <div className="mt-4">
-          {selectedItems.map((item, index) => (
-            <div key={`${item.id}-${index}`} className="item flex items-center mb-2">
-              <span className="mr-2">{item.name}</span>
-              <button
-                onClick={() => handleRemoveItem(index)}
-                className="text-red-500 underline"
-              >
-                삭제
-              </button>
-            </div>
-          ))}
+          {selectedItems.length >= limit && (
+            <p className="info_txt">최대 {limit}개까지 선택 가능합니다.</p>
+          )}
         </div>
-        {selectedItems.length >= limit && (
-          <p className="info_txt">최대 {limit}개까지 선택 가능합니다.</p>
-        )}
+
+
       </div>
+
 
     </>
   );

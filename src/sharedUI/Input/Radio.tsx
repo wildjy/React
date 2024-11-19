@@ -4,13 +4,13 @@ import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
 const InputVariants = cva(
-  'relative peer border rounded-full after:rounded-full after:content-[""] after:border after_center',
+  'relative peer border rounded-full after_center after:rounded-full after:content-[""] after:border after:transition-all',
   {
     variants: {
       size: {
-        sm: "w-6 h-6 after:h-[1rem] after:w-[1rem]",
-        md: "w-7 h-7 after:h-[1.125rem] after:w-[1.125rem]",
-        lg: "w-8 h-8 after:h-[1.5rem] after:w-[1.5rem]",
+        sm: "w-[1.5rem] h-[1.5rem] after:h-[1rem] after:w-[1rem]",
+        md: "w-[1.75rem] h-[1.75rem] after:h-[1.125rem] after:w-[1.125rem]",
+        lg: "w-[2rem] h-[2rem] after:h-[1.5rem] after:w-[1.5rem]",
         full: "",
       },
       mode: {
@@ -35,6 +35,7 @@ interface InputProps
   label?: string;
   addClass?: string;
   value?: string;
+  disabled?: string;
   icon?: React.ReactElement;
 }
 
@@ -45,15 +46,13 @@ const Radio: FC<InputProps> = ({
   label,
   addClass,
   value = "",
+  disabled,
   onChange,
   ...props
 }) => {
   const className = InputVariants({
     size: size as "sm" | "md" | "lg" | "full" | undefined,
-    mode: mode as
-      | "base"
-      | "check"
-      | undefined,
+    mode: mode as | "base" | "check" | undefined,
   });
 
   return (
@@ -68,6 +67,7 @@ const Radio: FC<InputProps> = ({
         value={value}
         className="sr-only peer"
         onChange={onChange}
+        disabled={mode === "disabled"}
         placeholder={label}
         {...props}
       />

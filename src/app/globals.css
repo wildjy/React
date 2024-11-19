@@ -88,14 +88,20 @@ input {
 }
 
 /* align = top: 50% left: 50% */
+.x_center {
+  @apply absolute left-[50%] transform -translate-x-1/2;
+}
+.y_center {
+  @apply absolute top-[50%] transform -translate-y-1/2;
+}
 .center_center {
-  @apply absolute top-[50%] left-[50%] transition-all transform -translate-x-1/2 -translate-y-1/2;
+  @apply absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2;
 }
 .before_center {
-  @apply before:absolute before:top-[50%] before:left-[50%] before:transition-all before:transform before:-translate-x-1/2 before:-translate-y-1/2;
+  @apply before:absolute before:top-[50%] before:left-[50%] before:transform before:-translate-x-1/2 before:-translate-y-1/2;
 }
 .after_center {
-  @apply after:absolute after:top-[50%] after:left-[50%] after:transition-all after:transform after:-translate-x-1/2 after:-translate-y-1/2;
+  @apply after:absolute after:top-[50%] after:left-[50%] after:transform after:-translate-x-1/2 after:-translate-y-1/2;
 }
 
 .inputCustom {

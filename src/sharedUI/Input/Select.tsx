@@ -4,7 +4,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { SelectHTMLAttributes, FC, ChangeEvent } from "react";
 
 const SelectVariants = cva(
-  'p-2 border border-gray-400',
+  'w-full md:w-auto p-5 border border-gray-400 leading-none focus:outline-none rounded-lg appearance-none',
   {
     variants: {
       size: {
@@ -12,15 +12,15 @@ const SelectVariants = cva(
         md: '',
         lg: '',
       },
-      color: {
+      mode: {
         base: 'base',
         ghost: 'ghost',
-        disabled: 'disabled',
+        disabled: 'disabled bg-baseGray',
       }
     },
     defaultVariants: {
-      size: "",
-      color: "",
+      size: "md",
+      mode: "base",
     },
   },
 );
@@ -28,7 +28,7 @@ const SelectVariants = cva(
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement>,
 VariantProps<typeof SelectVariants> {
   size?: "sm" | "md" | "lg";
-  color?: "base" | "ghost" | "disabled";
+  mode?: "base" | "ghost" | "disabled";
   addClass?: string;
   name?: string;
   value?: string;
@@ -42,7 +42,7 @@ VariantProps<typeof SelectVariants> {
 
 const Select: FC<SelectProps> =({
   size,
-  color,
+  mode,
   addClass,
   name,
   value,
@@ -55,7 +55,7 @@ const Select: FC<SelectProps> =({
 
   const className = SelectVariants ({
     size: size as "sm" | "md" | "lg" | undefined,
-    color: color as "base" | "ghost" | "disabled" | undefined,
+    mode: mode as "base" | "ghost" | "disabled" | undefined,
   })
 
   return (
@@ -66,7 +66,7 @@ const Select: FC<SelectProps> =({
       id={name}
       value={value}
       onChange={onChange}
-      disabled={!!disabled}
+      disabled={mode === "disabled"}
       className={cn(className, addClass)}
       {...props}
       >

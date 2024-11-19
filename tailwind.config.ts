@@ -27,7 +27,7 @@ const config: Config = {
         s: '0.875rem', // 14px
         md: '0.938rem', // 15px
         base: '1rem', // base: 16px
-        mobile: '3.33vw', // mobile:  24px
+        mobile: '2.22vw', // mobile: 16px 2.22vw, 24px=3.33vw
         lg: '1.125rem', // 18px
         xl: '1.25rem', // 20px :2.77vw
         '2xl': '1.375rem', // 22px : 3.03vw
@@ -73,7 +73,7 @@ const config: Config = {
         'baseGray': '#EEEEEE',
         'success': '#07bc0c',
         'warning': '#f1c40f',
-        'error': '#e74c3c',
+        'error': '#FF2361',
         'blue': {
           '50': '#E3F2FD',
           '100': '#BBDEFC',

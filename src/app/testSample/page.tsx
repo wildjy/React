@@ -16,15 +16,17 @@ const HighSchoolPage: React.FC = () => {
     {
       name: "",
       phone: "",
-      grade: "",
+      readonly: "readonly",
       class: "",
       school: "",
       icon: "https://image.jinhak.com/renewal2020/svg/input_radio.svg",
     },
     {
-      name: "ㄱㄴㄷ",
+      name: "",
       phone: "111-1111-1111",
-      icon: "",
+      success: "Success",
+      error: "Error",
+      icon: "https://image.jinhak.com/renewal2020/svg/input_radio.svg",
     },
   ]);
 
@@ -36,8 +38,7 @@ const HighSchoolPage: React.FC = () => {
     const newValue = e.target.value;
 
     setInputValue((prevValues) => {
-      console.log("Previous Values:", prevValues);
-
+      // console.log("Previous Values:", prevValues);
       return prevValues.map((item, i) =>
         i === index ? { ...item, [field]: newValue } : item
       );
@@ -49,7 +50,7 @@ const HighSchoolPage: React.FC = () => {
   const [selectedOptions, setSelectedOptions] = useState<{
     [key: string]: string;
   }>({
-    type: '',
+    type: 'type_1',
     studentType: '',
     sex: '',
   });
@@ -57,13 +58,12 @@ const HighSchoolPage: React.FC = () => {
   const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSelectedOptions((prevOptions) => {
-      console.log(prevOptions)
+      // console.log(prevOptions)
       return {
         ...prevOptions,
         [name]: value,
       }
     });
-    console.log(`selected ${name} :`, value);
   };
 
   // checkbox
@@ -71,10 +71,11 @@ const HighSchoolPage: React.FC = () => {
   const [isChecked, setIsChecked] = useState<{
     [key: string]: boolean
   }>({
-    checkbox_1: false,
+    checkbox_1: true,
     checkbox_2: false,
     checkbox_3: false,
     checkbox_4: false,
+    checkbox_5: true,
   });
 
   const handleCheckChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -84,7 +85,7 @@ const HighSchoolPage: React.FC = () => {
       ...prevChecked,
       [value]: checked,
     }));
-    console.log(`Checked status: ${value}`, checked);
+    // console.log(`Checked status: ${value}`, checked);
   };
 
   // select
@@ -119,6 +120,7 @@ const HighSchoolPage: React.FC = () => {
     ],
   };
 
+
   // step
   const [currentStep, setCurrentStep] = useState(0);
   const steps = [
@@ -129,72 +131,93 @@ const HighSchoolPage: React.FC = () => {
   ];
 
   const handleStepClick = (stepIndex: number) => {
+    console.log(stepIndex)
     setCurrentStep(stepIndex);
   };
 
-  // const [title, setTitle] = useState<string>('');
-
-  // const handleTitle = () => {
-  //   setTitle((prevTitle) =>  prevTitle);
-  // }
+  // isCheck addClass
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const handleCheckVisible = () => {
+    setIsVisible((checkStatus) => !checkStatus);
+  }
 
   return (
     <div id="contents" className="bg-gray-50">
       <div className="container">
       <div className="p-5 flex gap-y-7 flex-wrap">
+
+        <div>
+          <div className={`layer-popup ${ isVisible ? "is-visible border border-blue-700" : ""}`}>
+            layer-popup
+          </div>
+          <Button name="체크" onClick={handleCheckVisible} />
+
+          <select name="" id="">
+            <option value="">select..</option>
+            {
+              selectOptions.select1.map ((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))
+            }
+          </select>
+        </div>
+
         <div className="input_text w-full">
+          <Title title="Input [Type=text]" mode="base" size="md" color="base" bold="semi" />
 
-          <Title title="Input [Type=text]" size="md" bold="semi" />
-
-          <div className="flex gap-3 flex-wrap">
+          <div className="md:flex md:gap-3 md:flex-wrap">
             <TextInput
               type="text"
+              size="sm"
               mode="base"
-              inputSize="sm"
-              color="base"
               addId="inp-2"
-              label="반"
-              value={inputValue[0].grade}
-              onChange={(e) => handleInputChange(e, 0, "grade")}
-            />
-            <TextInput
-              type="text"
-              mode="base"
-              inputSize="md"
-              addId="inp-1"
-              label="수험생 이름"
+              label="이름"
               value={inputValue[0].name}
               onChange={(e) => handleInputChange(e, 0, "name")}
             />
             <TextInput
               type="text"
-              mode="base"
-              color="disabled"
-              disabled="disabled"
-              inputSize="md"
+              mode="readonly"
+              size="md"
               addId="inp-1"
               label="수험생 이름"
-              value={inputValue[0].name}
-              onChange={(e) => handleInputChange(e, 0, "phone")}
+              value={inputValue[0].readonly}
+              onChange={(e) => handleInputChange(e, 0, "readonly")}
             />
             <TextInput
               type="text"
-              mode="focus"
-              value={inputValue[0].name}
-              onChange={(e) => handleInputChange(e, 1, 'grade')}
-              size="sm"
-              color="ghost"
+              mode="disabled"
+              size="md"
+              addId="inp-1"
+              label="수험생 이름"
+              value={inputValue[0].class}
+              onChange={(e) => handleInputChange(e, 0, "class")}
+            />
+            <TextInput
+              type="text"
+              mode="success"
               addId="inp"
-              icon={<img src={inputValue[0].icon} className='w-6 h-6' />}
-              label="수험생 연락처"
+              label="success.."
+              value={inputValue[1].success}
+              onChange={(e) => handleInputChange(e, 1, 'success')}
+              icon={<img src={inputValue[1].icon} className='w-6 h-6' />}
+            />
+            <TextInput
+              type="text"
+              mode="error"
+              addId="inp"
+              label="error.."
+              value={inputValue[1].error}
+              onChange={(e) => handleInputChange(e, 1, 'error')}
+              icon={<img src={inputValue[1].icon} className='w-6 h-6' />}
             />
           </div>
         </div>
 
         <div className="select w-full">
           <Title title="Select" size="md" bold="semi" addClass="text-error" />
-          <div className="flex gap-3 flex-wrap">
 
+          <div className="md:flex md:gap-3 md:flex-wrap">
             <Select
               name="select1"
               label="- 년도 선택 -"
@@ -214,8 +237,7 @@ const HighSchoolPage: React.FC = () => {
 
             <Select
               name="select3"
-              color="disabled"
-              disabled="disabled"
+              mode="disabled"
               label="- item select -"
               options={selectOptions.select3}
               value={selectedValues.select3}
@@ -250,11 +272,17 @@ const HighSchoolPage: React.FC = () => {
             onChange={handleCheckChange}
           />
           <CheckBox
-            color="disabled"
-            disabled="disabled"
+            mode="disabled"
             value="checkbox_4"
             label="체크박스 4"
             checked={isChecked["checkbox_4"] || false}
+            onChange={handleCheckChange}
+          />
+          <CheckBox
+            mode="check"
+            value="checkbox_5"
+            label="체크박스 5"
+            checked={isChecked["checkbox_5"] || false}
             onChange={handleCheckChange}
           />
           </div>
@@ -268,16 +296,16 @@ const HighSchoolPage: React.FC = () => {
               size="sm"
               name="type"
               label="고등학교 졸업(예정)자"
-              value="gradeType_1"
-              checked={selectedOptions.type === "gradeType_1"}
+              value="type_1"
+              checked={selectedOptions.type === "type_1"}
               onChange={handleRadioChange}
             />
             <Radio
               type="radio"
               name="type"
               label="검정고시 출신자"
-              value="gradeType_2"
-              checked={selectedOptions.type === "gradeType_2"}
+              value="type_2"
+              checked={selectedOptions.type === "type_2"}
               onChange={handleRadioChange}
             />
             <Radio
@@ -286,18 +314,17 @@ const HighSchoolPage: React.FC = () => {
               mode="check"
               name="type"
               label="현 고1,2 학생"
-              value="gradeType_3"
-              checked={selectedOptions.type === "gradeType_3"}
+              value="type_3"
+              checked={selectedOptions.type === "type_3"}
               onChange={handleRadioChange}
             />
             <Radio
               type="radio"
               mode="disabled"
-              disabled="disabled"
               name="type"
               label="현 고1,2 학생"
-              value="gradeType_4"
-              checked={selectedOptions.type === "gradeType_4"}
+              value="type_4"
+              checked={selectedOptions.type === "type_4"}
               onChange={handleRadioChange}
             />
           </div>
@@ -320,38 +347,29 @@ const HighSchoolPage: React.FC = () => {
         <div className="button w-full">
           <Title title="StepBar" size="md" bold="semi" />
 
-          {/* <StepBars steps={steps} currentStep={currentStep} onStepClick={handleStepClick} /> */}
+          <StepBars steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
 
-          <StepBar step={steps} currentStep={currentStep} />
+          <StepBar step={steps} currentStep={currentStep} onStepClick={handleStepClick} />
 
           <div className="mt-5 w-full flex justify-between">
-            <button
+            <Button
+              name="Previous"
               onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))} // 값들중 큰값을 반환, 0을 넘지 않음
               disabled={currentStep === 0}
               style={{
-                padding: "10px 20px",
-                backgroundColor: "#ccc",
-                border: "none",
                 cursor: currentStep === 0 ? "not-allowed" : "pointer",
                 opacity: currentStep === 0 ? 0.5 : 1,
               }}
-            >
-              Previous
-            </button>
-            <button
+            />
+            <Button
+              name="Next"
               onClick={() => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))} // 값들중 작은값을 반환, steps.length(최대)을 넘지 않음
               disabled={currentStep === steps.length - 1}
               style={{
-                padding: "10px 20px",
-                backgroundColor: "#4caf50",
-                color: "white",
-                border: "none",
                 cursor: currentStep === steps.length - 1 ? "not-allowed" : "pointer",
                 opacity: currentStep === steps.length - 1 ? 0.5 : 1,
               }}
-            >
-              Next
-            </button>
+             />
           </div>
 
         </div>

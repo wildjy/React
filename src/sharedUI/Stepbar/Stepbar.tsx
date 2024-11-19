@@ -50,7 +50,6 @@ const StepLines = cva(
   }
 );
 
-
 interface Step {
   label: string;
   isCompleted: boolean;
@@ -60,7 +59,6 @@ interface StepBarProps extends HTMLAttributes<HTMLDivElement>{
   step: Step[];
   currentStep: number;
   onStepClick?: (stepIndex: number) => void;
-
   addClass?: string;
   value?: string;
 };
@@ -69,6 +67,7 @@ const StepBar: FC<StepBarProps> = ({
   addClass,
   step,
   currentStep,
+  onStepClick,
   ...props
 }) => {
   return (
@@ -76,24 +75,28 @@ const StepBar: FC<StepBarProps> = ({
       <div className="flex justify-end md:justify-between items-top gap-4 md:gap-0">
         {
           step.map((item, index) => {
-            console.log(item)
-            console.log(index)
-            return <div key={index} className={StepItems({status:
-              index < currentStep ? "true" : index === currentStep ? "completed" : "false",
-            })}
+            return (
+            //  step
+            <div key={index} className={
+              StepItems({status: index < currentStep ? "true" : index === currentStep ? "completed" : "false",})
+              }
             >
-
-              <div className={StepPoints({status: (index <= currentStep ? `true` : `false`)})}>
+              {/* points */}
+              <div className={StepPoints({status: (index <= currentStep ? `true` : `false`)})}
+            onClick={() => onStepClick && onStepClick(index)}>
                 {index <= currentStep ? `` : index + 1}
+              </div>
 
-                </div>
+              {/* label */}
               <div className={StepLabels({label: (index <= currentStep ? `true` : `false`)})}>{item.label}</div>
 
-
+              {/* line */}
               {index < step.length - 1 && (
                 <div className={StepLines({line: 'true'})}></div>
               )}
+
             </div>
+            )
           })
         }
       </div>
