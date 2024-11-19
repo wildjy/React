@@ -40,9 +40,13 @@ const config: Config = {
       },
       fontWeight: {
         'thin': '100',
+        'exlight': '200',
         'light': '300',
+        'normal': '400',
+        'md': '500',
         'semi': '600',
         'bold': '700',
+        'exbold': '800',
       },
       spacing: {
         '1': '0.125rem', // 2px
@@ -109,6 +113,9 @@ const config: Config = {
           '900': '#212529',
           '1000': '#070809',
         },
+      },
+      borderRadius: {
+        'full': '5rem'
       },
     },
   },

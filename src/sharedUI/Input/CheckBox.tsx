@@ -4,17 +4,17 @@ import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
 const InputVariants = cva(
-  'relative peer rounded after:rounded after:content-[""] after:absolute after:border after:transition-all',
+  'relative peer rounded after:rounded after:content-[""] after_center',
   {
     variants: {
       size: {
-        sm: "w-4 h-4 after:h-3 after:w-3 after:top-0.5 after:left-0.5 ",
-        md: "w-6 h-6 after:h-5 after:w-5 after:top-0.5 after:left-0.5 ",
-        lg: "w-8 h-8 after:h-7 after:w-7 after:top-2 after:left-2 ",
+        sm: "w-5 h-5 after:h-5 after:w-5",
+        md: "w-6 h-6 after:h-6 after:w-6",
+        lg: "w-8 h-8 after:h-8 after:w-8",
         full: "",
       },
       color: {
-        base: "bg-gray-200 peer-checked:bg-blue-500 peer-checked:after:bg-white after:bg-white",
+        base: "border border-gray-200 peer-checked:bg-blue-500 peer-checked:after:bg-blue-700 after:bg-center after:bg-[length:60%_60%] peer-checked:after:bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checkbox_checked.svg')] after:bg-no-repeat",
         ghost: "ghost border-b rounded-none",
         success: "border border-success",
         warning: "border border-warning",

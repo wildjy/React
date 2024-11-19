@@ -16,7 +16,7 @@ const DivVariants = cva("inputCustom ", {
 });
 
 const InputVariants = cva(
-  "w-full px-3 py-2 border-gray-900 focus:outline-none rounded peer",
+  "w-full px-3 py-2 focus:outline-none rounded peer",
   {
     variants: {
       inputSize: {
@@ -26,12 +26,12 @@ const InputVariants = cva(
         full: "input-full w-full",
       },
       color: {
-        base: "border",
+        base: "border border-gray-200",
         ghost: "ghost border-b rounded-none",
         success: "border border-success",
         warning: "border border-warning",
         error: "border border-error",
-        disabled: "bg-baseGray",
+        disabled: "border border-warning bg-baseGray",
       },
     },
     defaultVariants: {

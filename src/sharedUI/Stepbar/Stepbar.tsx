@@ -1,46 +1,45 @@
-
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 
-const StepItems = cva( //  
-  'StepItems.. flex-1 last:flex-none relative after:content-[""] after:block after:bg-gray-300',
+const StepItems = cva( //
+  'StepItems.. md:flex-1 last:flex-none relative after:content-[""] after:block after:bg-gray-300', //
   {
     variants: {
       status: {
-        completed: "completed",
-        true: "active ", //after:h-[1px] after:w-full after:bg-blue-300
+        completed: "mr-auto completed", //
+        true: "active ", // flex-1  after:h-[1px] after:w-full after:bg-blue-300
         false: "inactive",
       },
     },
   }
 );
 const StepPoints = cva(
-  'StepPoints.. relative z-10 w-9 h-9 flex justify-center items-center rounded-full border bg-white',
+  'StepPoints.. relative z-10 w-9 h-9 flex justify-center items-center rounded-full border',
   {
     variants: {
       status: {
         completed: "completed",
-        true: "active bg-blue-700",
-        false: "inactive",
+        true: "flex-1 active bg-blue-700 bg-center bg-[length:55%_55%] bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checkbox_checked.svg')] bg-no-repeat",
+        false: "inactive bg-white",
       },
     },
   }
 );
 
 const StepLabels = cva(
-  'StepLabels.. w-full',
+  'StepLabels..  md:block w-full',
   {
     variants: {
       label: {
-        true: "active text-blue-700",
-        false: "inactive",
+        true: "block active text-blue-700",
+        false: "hidden inactive",
       },
     },
   }
 );
 const StepLines = cva(
-  'StepLines.. absolute top-6 left-0 w-full h-[1px] bg-gray-300',
+  'StepLines.. hidden md:block absolute top-6 left-0 w-full h-[1px] bg-gray-300',
   {
     variants: {
       line: {
@@ -74,15 +73,20 @@ const StepBar: FC<StepBarProps> = ({
 }) => {
   return (
     <>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-end md:justify-between items-top gap-4 md:gap-0">
         {
           step.map((item, index) => {
             console.log(item)
             console.log(index)
-            return <div key={index} className={StepItems({status: (index <= currentStep ? `true` : `false`)})}
+            return <div key={index} className={StepItems({status:
+              index < currentStep ? "true" : index === currentStep ? "completed" : "false",
+            })}
             >
-              
-              <div className={StepPoints({status: (index <= currentStep ? `true` : `false`)})}>{index + 1}</div>
+
+              <div className={StepPoints({status: (index <= currentStep ? `true` : `false`)})}>
+                {index <= currentStep ? `` : index + 1}
+
+                </div>
               <div className={StepLabels({label: (index <= currentStep ? `true` : `false`)})}>{item.label}</div>
 
 

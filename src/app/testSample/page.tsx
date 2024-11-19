@@ -8,6 +8,7 @@ import Select from "../../sharedUI/Input/Select";
 import Button from "../../sharedUI/Button/ButtonUi";
 import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
+import Title from "../../sharedUI/Title/Title";
 
 const HighSchoolPage: React.FC = () => {
   // input
@@ -73,6 +74,7 @@ const HighSchoolPage: React.FC = () => {
     checkbox_1: false,
     checkbox_2: false,
     checkbox_3: false,
+    checkbox_4: false,
   });
 
   const handleCheckChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +93,7 @@ const HighSchoolPage: React.FC = () => {
     select1: '', // selected option
     select2: '',
     select3: '',
+    select4: '',
   });
 
   const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -118,7 +121,6 @@ const HighSchoolPage: React.FC = () => {
 
   // step
   const [currentStep, setCurrentStep] = useState(0);
-  console.log(currentStep)
   const steps = [
     { label: "Step 1", isCompleted: currentStep > 0 },
     { label: "Step 2", isCompleted: currentStep > 1 },
@@ -130,20 +132,26 @@ const HighSchoolPage: React.FC = () => {
     setCurrentStep(stepIndex);
   };
 
+  // const [title, setTitle] = useState<string>('');
+
+  // const handleTitle = () => {
+  //   setTitle((prevTitle) =>  prevTitle);
+  // }
+
   return (
     <div id="contents" className="bg-gray-50">
       <div className="container">
-
       <div className="p-5 flex gap-y-7 flex-wrap">
         <div className="input_text w-full">
-          <h2 className="p-4 text-3xl font-bold">Input [Type=text]</h2>
+
+          <Title title="Input [Type=text]" size="md" bold="semi" />
+
           <div className="flex gap-3 flex-wrap">
             <TextInput
               type="text"
               mode="base"
               inputSize="sm"
               color="base"
-              addClass="border-gray-400"
               addId="inp-2"
               label="반"
               value={inputValue[0].grade}
@@ -153,7 +161,6 @@ const HighSchoolPage: React.FC = () => {
               type="text"
               mode="base"
               inputSize="md"
-              addClass="border-gray-400"
               addId="inp-1"
               label="수험생 이름"
               value={inputValue[0].name}
@@ -165,7 +172,6 @@ const HighSchoolPage: React.FC = () => {
               color="disabled"
               disabled="disabled"
               inputSize="md"
-              addClass="border-gray-400"
               addId="inp-1"
               label="수험생 이름"
               value={inputValue[0].name}
@@ -178,7 +184,6 @@ const HighSchoolPage: React.FC = () => {
               onChange={(e) => handleInputChange(e, 1, 'grade')}
               size="sm"
               color="ghost"
-              addClass="py-4"
               addId="inp"
               icon={<img src={inputValue[0].icon} className='w-6 h-6' />}
               label="수험생 연락처"
@@ -187,7 +192,7 @@ const HighSchoolPage: React.FC = () => {
         </div>
 
         <div className="select w-full">
-          <h2 className="p-4 text-3xl font-bold">Select</h2>
+          <Title title="Select" size="md" bold="semi" addClass="text-error" />
           <div className="flex gap-3 flex-wrap">
 
             <Select
@@ -200,6 +205,7 @@ const HighSchoolPage: React.FC = () => {
 
             <Select
               name="select2"
+              size="lg"
               label="- 고등학교 선택 -"
               options={selectOptions.select2}
               value={selectedValues.select2}
@@ -220,7 +226,7 @@ const HighSchoolPage: React.FC = () => {
         </div>
 
         <div className="checkbox w-full">
-          <h2 className="p-4 text-3xl font-bold">Input [Type=checkbox]</h2>
+          <Title title="Input [Type=checkbox]" size="md" bold="semi" />
           <div className="flex gap-3 flex-wrap">
 
           <CheckBox
@@ -238,18 +244,24 @@ const HighSchoolPage: React.FC = () => {
           />
           <CheckBox
             size="lg"
-            color="disabled"
-            disabled="disabled"
             value="checkbox_3"
             label="체크박스 3"
             checked={isChecked["checkbox_3"] || false}
+            onChange={handleCheckChange}
+          />
+          <CheckBox
+            color="disabled"
+            disabled="disabled"
+            value="checkbox_4"
+            label="체크박스 4"
+            checked={isChecked["checkbox_4"] || false}
             onChange={handleCheckChange}
           />
           </div>
         </div>
 
         <div className="radio w-full">
-          <h2 className="p-4 text-3xl font-bold">Input [Type=radio]</h2>
+          <Title title="Input [Type=radio]" size="md" bold="semi" />
           <div className="flex gap-3 flex-wrap">
             <Radio
               type="radio"
@@ -271,25 +283,48 @@ const HighSchoolPage: React.FC = () => {
             <Radio
               type="radio"
               size="lg"
-              color="disabled"
-              disabled="disabled"
+              mode="check"
               name="type"
               label="현 고1,2 학생"
               value="gradeType_3"
               checked={selectedOptions.type === "gradeType_3"}
               onChange={handleRadioChange}
             />
+            <Radio
+              type="radio"
+              mode="disabled"
+              disabled="disabled"
+              name="type"
+              label="현 고1,2 학생"
+              value="gradeType_4"
+              checked={selectedOptions.type === "gradeType_4"}
+              onChange={handleRadioChange}
+            />
           </div>
         </div>
 
         <div className="button w-full">
-        <h2 className="p-4 text-3xl font-bold">Button</h2>
+          <Title title="Button" size="md" bold="semi" />
+
           <Button
             name="확인"
           />
+          <Button
+            mode="secondary"
+            round="full"
+            name="ㅇㅇㅇ바로가기"
+          />
 
-          <StepBars steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+        </div>
+
+        <div className="button w-full">
+          <Title title="StepBar" size="md" bold="semi" />
+
+          {/* <StepBars steps={steps} currentStep={currentStep} onStepClick={handleStepClick} /> */}
+
+          <StepBar step={steps} currentStep={currentStep} />
+
+          <div className="mt-5 w-full flex justify-between">
             <button
               onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))} // 값들중 큰값을 반환, 0을 넘지 않음
               disabled={currentStep === 0}
@@ -318,11 +353,6 @@ const HighSchoolPage: React.FC = () => {
               Next
             </button>
           </div>
-
-          <StepBar step={steps} currentStep={currentStep} />
-
-
-
 
         </div>
       </div>
