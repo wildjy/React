@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useState, ChangeEvent } from "react";
+import Title from "../../sharedUI/Title/Title";
 import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 import Radio from "../../sharedUI/Input/Radio";
@@ -117,7 +118,8 @@ const HighSchoolPage: React.FC = () => {
   return (
     <div id="contents" className="bg-gray-50">
       <div className="container">
-        <h2 className="p-4 text-3xl font-bold">출신고교(필수)</h2>
+
+        <Title title="출신고교(필수)" size="md" bold="semi" />
 
         <table className="border-t border-gray-900">
           <caption>출신고교 테이블</caption>
