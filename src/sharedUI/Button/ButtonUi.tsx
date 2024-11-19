@@ -4,38 +4,45 @@ import { cva, VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, FC } from "react";
 
 const ButtonVariants = cva(
-  ' px-5 py-4 leading-none border radius',
+  ' leading-none border rounded',
   {
     variants: {
       size: {
         sm: "",
-        md: "",
+        md: "px-5 py-[0.906rem]",
         lg: "",
       },
-      color: {
-        primary: "border-blue-700",
-        secondary: " ",
+      mode: {
+        primary: "text-white bg-blue-700",
+        secondary: "border-blue-700",
         tertiary: " ",
       },
+      round: {
+        default: "rounded", 
+        full: "rounded-full"
+      }
       // ...props
     },
     defaultVariants: {
-      size: "",
-      color: "primary",
+      size: "md",
+      mode: "primary",
+      round: "default",
     },
   }
 );
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLDivElement>, VariantProps<typeof ButtonVariants> {
   size?: "sm" | "md" | "lg" | "full";
-  color?: "primary" | "secondary" | "tertiary";
+  mode?: "primary" | "secondary" | "tertiary";
+  round?: "default" | "full";
   addClass?: string;
   value?: string;
 };
 
 const Button: FC<ButtonProps> = ({
   size,
-  color,
+  mode,
+  round,
   addClass,
   name,
   value,
@@ -44,7 +51,8 @@ const Button: FC<ButtonProps> = ({
 
   const className = ButtonVariants ({
     size: size as "sm" | "md" | "lg" | "full" | undefined,
-    color: color as "primary" | "secondary" | "tertiary" | "full" | undefined,
+    mode: mode as "primary" | "secondary" | "tertiary" | "full" | undefined,
+    round: round as "default" | "full" | undefined,
   });
 
   return (
