@@ -1,5 +1,6 @@
 "use client";
 import { useState, ChangeEvent } from "react";
+import DivComponent from './cva';
 
 const TailwindGuidePage: React.FC = () => {
   return (
@@ -99,8 +100,8 @@ const DivVariants = cva(
               <pre>
                 {`
 interface DivProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof DivVariants> {
-  size?: "sm" | "md" | "lg" | "full";
-  color?: "base" | "ghost" | "disabled";
+  size?: string;
+  color?: string;
   addClass?: string;
   value?: string;
 };
@@ -146,13 +147,56 @@ export default DivComponent;
               </pre>
             </div>
 
-            <div className="mt-4 p-6 border border-gray-400">
-              <p><b>Sample</b></p>
-
-            </div>
           </div>
         </div>
 
+        <div className="mb-5">
+          <p className="mb-4">1. 조건별 Style </p>
+
+          <DivComponent />
+
+          <div className="p-6 border border-gray-400">
+            <p className="mb-3"></p>
+            <div>
+              <pre>
+                {`
+const ParentStyle = cva('default css..', {
+  variants: {
+    status: {
+      true: 'text-sm active',
+      false: 'text-lg inactive',
+    },
+  },
+});
+
+const ChildrenStyle = 'p-4 border border-blue-700';
+
+interface DivProps { }
+
+const DivComponent: FC<DivProps> = ({ ...props }) => {
+  return (
+    <>
+      <div className={ParentStyle()}> // default css..
+        test. cva 개별 Style
+      </div>
+      <div className={ParentStyle({status: 'true'})}>  // default css.. text-sm active
+        status : true
+        <p className={ChildrenStyle}>Children Style : className={ ChildrenStyle }</p> // p-4 border border-blue-700
+      </div>
+      <div className={ParentStyle({status: 'false'})}>  // default css.. text-lg inactive
+        status : false
+      </div>
+    </>
+  );
+};
+
+export default DivComponent;
+                `}
+              </pre>
+            </div>
+
+          </div>
+        </div>
       </div>
     </>
   );
