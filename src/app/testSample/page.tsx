@@ -51,8 +51,8 @@ const HighSchoolPage: React.FC = () => {
     [key: string]: string;
   }>({
     type: 'type_1',
-    studentType: '',
-    sex: '',
+    studentType: 'Go3',
+    sex: 'male',
   });
 
   const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -68,14 +68,17 @@ const HighSchoolPage: React.FC = () => {
 
   // checkbox
   //const [isChecked, setIsChecked] = useState<boolean>(false);
-  const [isChecked, setIsChecked] = useState<{
-    [key: string]: boolean
-  }>({
+  const [isChecked, setIsChecked] = useState<{ [key: string]: boolean }>({
     checkbox_1: true,
     checkbox_2: false,
     checkbox_3: false,
     checkbox_4: false,
     checkbox_5: true,
+    checkbox_6: false,
+    checkbox_7: false,
+    checkbox_8: false,
+    checkbox_9: false,
+    checkbox_10: false,
   });
 
   const handleCheckChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -186,10 +189,11 @@ const HighSchoolPage: React.FC = () => {
             />
             <TextInput
               type="text"
-              mode="disabled"
+              mode="base"
               size="md"
               addId="inp-1"
-              label="수험생 이름"
+              disabled="disabled"
+              label="disabled"
               value={inputValue[0].class}
               onChange={(e) => handleInputChange(e, 0, "class")}
             />
@@ -237,8 +241,9 @@ const HighSchoolPage: React.FC = () => {
 
             <Select
               name="select3"
-              mode="disabled"
+              mode="base"
               label="- item select -"
+              disabled="disabled"
               options={selectOptions.select3}
               value={selectedValues.select3}
               onChange={handleSelectChange}
@@ -254,7 +259,7 @@ const HighSchoolPage: React.FC = () => {
           <CheckBox
             size="sm"
             value="checkbox_1"
-            label="체크박스 1"
+            label="체크박스 sm"
             checked={isChecked["checkbox_1"] || false}
             onChange={handleCheckChange}
           />
@@ -267,15 +272,16 @@ const HighSchoolPage: React.FC = () => {
           <CheckBox
             size="lg"
             value="checkbox_3"
-            label="체크박스 3"
+            label="disabled "
+            disabled="disabled"
             checked={isChecked["checkbox_3"] || false}
             onChange={handleCheckChange}
           />
           <CheckBox
-            mode="disabled"
             value="checkbox_4"
-            label="체크박스 4"
-            checked={isChecked["checkbox_4"] || false}
+            label="Checked 일때"
+            disabled="disabled"
+            checked={isChecked["checkbox_4"] || true}
             onChange={handleCheckChange}
           />
           <CheckBox
@@ -283,6 +289,43 @@ const HighSchoolPage: React.FC = () => {
             value="checkbox_5"
             label="체크박스 5"
             checked={isChecked["checkbox_5"] || false}
+            onChange={handleCheckChange}
+          />
+          <CheckBox
+            mode="rectangle"
+            value="checkbox_6"
+            label="체크박스 6"
+            checked={isChecked["checkbox_6"] || false}
+            onChange={handleCheckChange}
+          />
+          <CheckBox
+            mode="rectangle"
+            value="checkbox_7"
+            label="체크박스 7"
+            disabled="disabled"
+            checked={isChecked["checkbox_7"] || false}
+            onChange={handleCheckChange}
+          />
+          <CheckBox
+            mode="text"
+            value="checkbox_8"
+            label="체크박스 8"
+            checked={isChecked["checkbox_8"] || false}
+            onChange={handleCheckChange}
+          />
+          <CheckBox
+            mode="text"
+            value="checkbox_9"
+            label="체크박스 9"
+            disabled="disabled"
+            checked={isChecked["checkbox_9"] || false}
+            onChange={handleCheckChange}
+          />
+          <CheckBox
+            mode="icon"
+            value="checkbox_10"
+            label="체크박스 10"
+            checked={isChecked["checkbox_10"] || false}
             onChange={handleCheckChange}
           />
           </div>
@@ -293,38 +336,73 @@ const HighSchoolPage: React.FC = () => {
           <div className="flex gap-3 flex-wrap">
             <Radio
               type="radio"
-              size="sm"
-              name="type"
               label="고등학교 졸업(예정)자"
+              name="type"
               value="type_1"
-              checked={selectedOptions.type === "type_1"}
+              checked={selectedOptions.type === "type_1"} // checked
               onChange={handleRadioChange}
             />
             <Radio
               type="radio"
-              name="type"
               label="검정고시 출신자"
+              name="type"
               value="type_2"
               checked={selectedOptions.type === "type_2"}
               onChange={handleRadioChange}
             />
             <Radio
               type="radio"
-              size="lg"
-              mode="check"
+              label="검정고시 출신자"
               name="type"
-              label="현 고1,2 학생"
               value="type_3"
+              disabled="disabled"
               checked={selectedOptions.type === "type_3"}
               onChange={handleRadioChange}
             />
             <Radio
               type="radio"
-              mode="disabled"
-              name="type"
-              label="현 고1,2 학생"
-              value="type_4"
-              checked={selectedOptions.type === "type_4"}
+              mode="check"
+              label="고3"
+              name="studentType"
+              value="Go3"
+              checked={selectedOptions.studentType === "Go3"} // checked
+              onChange={handleRadioChange}
+            />
+            <Radio
+              type="radio"
+              mode="check"
+              label="고1,2"
+              name="studentType"
+              value="Go12"
+              checked={selectedOptions.studentType === "Go12"}
+              onChange={handleRadioChange}
+            />
+            <Radio
+              type="radio"
+              mode="check"
+              label="고1,2"
+              name="studentType"
+              value="Go4"
+              disabled="disabled"
+              checked={selectedOptions.studentType === "Go4"}
+              onChange={handleRadioChange}
+            />
+            <Radio
+              type="radio"
+              size="sm"
+              label="성별"
+              name="sex"
+              value="male"
+              checked={selectedOptions.sex === "male"} // checked
+              onChange={handleRadioChange}
+            />
+            <Radio
+              type="radio"
+              size="lg"
+              label="성별"
+              name="sex"
+              value="female"
+              checked={selectedOptions.sex === "female"}
               onChange={handleRadioChange}
             />
           </div>

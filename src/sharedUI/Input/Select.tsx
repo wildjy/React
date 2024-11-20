@@ -1,10 +1,11 @@
 "use client";
+import clsx from 'clsx'
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { SelectHTMLAttributes, FC, ChangeEvent } from "react";
 
 const SelectVariants = cva(
-  'w-full md:w-auto p-5 border border-gray-400 leading-none focus:outline-none rounded-lg appearance-none',
+  'w-full md:w-auto p-5 border border-gray-400 leading-none focus:outline-none rounded-lg cursor-pointer appearance-none',
   {
     variants: {
       size: {
@@ -15,7 +16,7 @@ const SelectVariants = cva(
       mode: {
         base: 'base',
         ghost: 'ghost',
-        disabled: 'disabled bg-baseGray',
+        disabled: 'disabled bg-disabled-bg',
       }
     },
     defaultVariants: {
@@ -66,8 +67,8 @@ const Select: FC<SelectProps> =({
       id={name}
       value={value}
       onChange={onChange}
-      disabled={mode === "disabled"}
-      className={cn(className, addClass)}
+      disabled={!!disabled}
+      className={cn(className, addClass, {"text-gray-500 bg-disabled-bg peer-checked:after:bg-disabled-bg cursor-default" : disabled })}
       {...props}
       >
         <option value="">{label}</option>

@@ -1,4 +1,5 @@
 "use client";
+import clsx from 'clsx'
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
@@ -8,15 +9,15 @@ const InputVariants = cva(
   {
     variants: {
       size: {
-        sm: "w-[1.5rem] h-[1.5rem] after:h-[1rem] after:w-[1rem]",
+        sm: "w-[1.25rem] h-[1.25rem] after:h-[0.85rem] after:w-[0.85rem]",
         md: "w-[1.75rem] h-[1.75rem] after:h-[1.125rem] after:w-[1.125rem]",
         lg: "w-[2rem] h-[2rem] after:h-[1.5rem] after:w-[1.5rem]",
         full: "",
       },
       mode: {
         base: "border-gray-200 peer-checked:border-blue-700 peer-checked:bg-white peer-checked:after:bg-blue-700 after:bg-white",
-        check: "after:h-[100%] after:w-[100%] after:border-none peer-checked:bg-blue-500 peer-checked:after:bg-blue-700 after:bg-center after:bg-[length:55%_55%] peer-checked:after:bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checkbox_checked.svg')] after:bg-no-repeat",
-        disabled: "bg-baseGray",
+        check: "after:h-[100%] after:w-[100%] after:content-none after:border-none peer-checked:bg-blue-700 bg-center bg-[length:55%_55%] bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checkbox_checked.svg')] bg-no-repeat",
+        disabled: "bg-disabled-bg",
       },
     },
     defaultVariants: {
@@ -58,7 +59,7 @@ const Radio: FC<InputProps> = ({
   return (
     <label
       htmlFor={value}
-      className="relative inline-flex items-center cursor-pointer"
+      className={cn('relative inline-flex items-center cursor-pointer', addClass, {"cursor-default" : disabled })}
     >
       <input
         type="radio"
@@ -67,11 +68,11 @@ const Radio: FC<InputProps> = ({
         value={value}
         className="sr-only peer"
         onChange={onChange}
-        disabled={mode === "disabled"}
+        disabled={!!disabled}
         placeholder={label}
         {...props}
       />
-      <div className={cn(className, addClass)}></div>
+      <div className={cn(className, addClass, {"text-gray-500 bg-disabled-bg peer-checked:bg-disabled-bg peer-checked:border-bg-disabled-bg after:bg-disabled-bg peer-checked:after:bg-disabled-bg cursor-default" : disabled })}></div>
       <span className="ml-3 text-gray-900">{label}</span>
     </label>
   );

@@ -22,7 +22,7 @@ const InputVariants = cva(
         warning: "peer border border-warning",
         error: "peer border border-error",
         readonly: "border focus:ring-0",
-        disabled: "border bg-baseGray",
+        disabled: "border bg-disabled-bg",
       },
     },
     defaultVariants: {
@@ -70,8 +70,8 @@ const TextInput : FC<InputProps> = ({
         onChange={onChange}
         id={addId}
         placeholder={label}
-        disabled={mode === "disabled"}
-        readOnly={mode === "readonly"}
+        disabled={!!disabled}
+        readOnly={!!readonly}
         {...props}
       />
       <label htmlFor={addId} className="">

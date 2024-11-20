@@ -70,6 +70,8 @@ const config: Config = {
         'desktop': '1920px',
       },
       colors: {
+        'disabled-text': '#999999',
+        'disabled-bg': '#EEEEEE',
         'baseGray': '#EEEEEE',
         'success': '#07bc0c',
         'warning': '#f1c40f',
