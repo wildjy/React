@@ -81,12 +81,6 @@ caption {
 @layer {
 }
 
-input {
-  ~ label {
-    @apply sr-only;
-  }
-}
-
 /* align = top: 50% left: 50% */
 .x_center {
   @apply absolute left-[50%] transform -translate-x-1/2;
@@ -104,28 +98,16 @@ input {
   @apply after:absolute after:top-[50%] after:left-[50%] after:transform after:-translate-x-1/2 after:-translate-y-1/2;
 }
 
-.inputCustom {
-  &.focus {
-    input {
-      @apply placeholder-transparent focus:border-blue-500;
-    }
-    label {
-      @apply not-sr-only absolute left-0 -top-5 text-gray-600 text-sm transition-all
-      peer-placeholder-shown:top-1.5
-      peer-placeholder-shown:text-base
-      peer-placeholder-shown:text-gray-400
-      peer-focus:-top-5
-      peer-focus:text-sm;
-    }
-  }
-}
-
 /* layout : start */
 #wrapper, #contents {
   @apply w-full;
 }
 
 #contents {
+}
+
+.swiper-slide {
+  /* @apply w-auto; */
 }
 
 .container {

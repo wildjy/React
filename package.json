@@ -20,6 +20,7 @@
     "next": "14.2.16",
     "react": "^18",
     "react-dom": "^18",
+    "swiper": "^11.1.15",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-pseudo-elements": "^2.0.0"
   },
@@ -43,7 +44,7 @@
     "eslint-plugin-storybook": "^0.10.1",
     "postcss": "^8",
     "storybook": "^8.3.6",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^3.4.15",
     "typescript": "^5"
   }
 }

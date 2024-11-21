@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useState, ChangeEvent } from 'react';
+import { useRef, useState, ChangeEvent } from 'react';
 import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 import Radio from "../../sharedUI/Input/Radio";
@@ -9,6 +9,7 @@ import Button from "../../sharedUI/Button/ButtonUi";
 import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
 import Title from "../../sharedUI/Title/Title";
+import SwiperComponent from './swiper';
 
 const HighSchoolPage: React.FC = () => {
   // input
@@ -70,11 +71,13 @@ const HighSchoolPage: React.FC = () => {
   //const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<{ [key: string]: boolean }>({
     checkbox_1: true,
-    checkbox_2: false,
+    checkbox_2: true,
     checkbox_3: false,
     checkbox_4: false,
     checkbox_5: true,
     checkbox_6: false,
+    checkbox_6_1: false,
+    checkbox_6_2: false,
     checkbox_7: false,
     checkbox_8: false,
     checkbox_9: false,
@@ -144,6 +147,9 @@ const HighSchoolPage: React.FC = () => {
     setIsVisible((checkStatus) => !checkStatus);
   }
 
+  const slides = ['슬라이드 1', '슬라이드 2', '슬라이드 3', '슬라이드 4', '슬라이드 4', '슬라이드 4'];
+
+
   return (
     <div id="contents" className="bg-gray-50">
       <div className="container">
@@ -171,36 +177,31 @@ const HighSchoolPage: React.FC = () => {
           <div className="md:flex md:gap-3 md:flex-wrap">
             <TextInput
               type="text"
-              size="sm"
-              mode="base"
-              addId="inp-2"
+              addId="inp-1"
               label="이름"
               value={inputValue[0].name}
               onChange={(e) => handleInputChange(e, 0, "name")}
             />
             <TextInput
               type="text"
-              mode="readonly"
-              size="md"
-              addId="inp-1"
+              addId="inp-2"
               label="수험생 이름"
+              readonly="readonly"
               value={inputValue[0].readonly}
               onChange={(e) => handleInputChange(e, 0, "readonly")}
             />
             <TextInput
               type="text"
-              mode="base"
-              size="md"
-              addId="inp-1"
-              disabled="disabled"
+              addId="inp-3"
               label="disabled"
+              disabled={true}
               value={inputValue[0].class}
               onChange={(e) => handleInputChange(e, 0, "class")}
             />
             <TextInput
               type="text"
               mode="success"
-              addId="inp"
+              addId="inp-4"
               label="success.."
               value={inputValue[1].success}
               onChange={(e) => handleInputChange(e, 1, 'success')}
@@ -209,11 +210,20 @@ const HighSchoolPage: React.FC = () => {
             <TextInput
               type="text"
               mode="error"
-              addId="inp"
+              addId="inp-5"
               label="error.."
               value={inputValue[1].error}
               onChange={(e) => handleInputChange(e, 1, 'error')}
               icon={<img src={inputValue[1].icon} className='w-6 h-6' />}
+            />
+            <TextInput
+              type="text"
+              mode="ghost"
+              addId="inp-6"
+              label="ghost.."
+              disabled={false}
+              value={inputValue[0].school}
+              onChange={(e) => handleInputChange(e, 0, "school")}
             />
           </div>
         </div>
@@ -243,7 +253,7 @@ const HighSchoolPage: React.FC = () => {
               name="select3"
               mode="base"
               label="- item select -"
-              disabled="disabled"
+              disabled={true}
               options={selectOptions.select3}
               value={selectedValues.select3}
               onChange={handleSelectChange}
@@ -254,80 +264,108 @@ const HighSchoolPage: React.FC = () => {
 
         <div className="checkbox w-full">
           <Title title="Input [Type=checkbox]" size="md" bold="semi" />
-          <div className="flex gap-3 flex-wrap">
+          <div className="default_checkbox flex gap-3 flex-wrap">
+            <CheckBox
+              value="checkbox_1"
+              label="체크박스 sm"
+              checked={isChecked["checkbox_1"] || false}
+              onChange={handleCheckChange}
+            />
+            <CheckBox
+              size="sm"
+              value="checkbox_2"
+              color="lineCheck"
+              label="체크박스 2"
+              checked={isChecked["checkbox_2"] || false}
+              onChange={handleCheckChange}
+            />
+            <CheckBox
+              size="lg"
+              value="checkbox_3"
+              label="disabled "
+              disabled={true}
+              checked={isChecked["checkbox_3"] || false}
+              onChange={handleCheckChange}
+            />
+            <CheckBox
+              value="checkbox_4"
+              label="Checked 일때"
+              disabled={true}
+              checked={isChecked["checkbox_4"] || true}
+              onChange={handleCheckChange}
+            />
+            <CheckBox
+              round="full"
+              value="checkbox_5"
+              label="체크박스 5"
+              checked={isChecked["checkbox_5"] || false}
+              onChange={handleCheckChange}
+            />
+          </div>
 
-          <CheckBox
-            size="sm"
-            value="checkbox_1"
-            label="체크박스 sm"
-            checked={isChecked["checkbox_1"] || false}
-            onChange={handleCheckChange}
-          />
-          <CheckBox
-            value="checkbox_2"
-            label="체크박스 2"
-            checked={isChecked["checkbox_2"] || false}
-            onChange={handleCheckChange}
-          />
-          <CheckBox
-            size="lg"
-            value="checkbox_3"
-            label="disabled "
-            disabled="disabled"
-            checked={isChecked["checkbox_3"] || false}
-            onChange={handleCheckChange}
-          />
-          <CheckBox
-            value="checkbox_4"
-            label="Checked 일때"
-            disabled="disabled"
-            checked={isChecked["checkbox_4"] || true}
-            onChange={handleCheckChange}
-          />
-          <CheckBox
-            mode="check"
-            value="checkbox_5"
-            label="체크박스 5"
-            checked={isChecked["checkbox_5"] || false}
-            onChange={handleCheckChange}
-          />
-          <CheckBox
-            mode="rectangle"
-            value="checkbox_6"
-            label="체크박스 6"
-            checked={isChecked["checkbox_6"] || false}
-            onChange={handleCheckChange}
-          />
-          <CheckBox
-            mode="rectangle"
-            value="checkbox_7"
-            label="체크박스 7"
-            disabled="disabled"
-            checked={isChecked["checkbox_7"] || false}
-            onChange={handleCheckChange}
-          />
-          <CheckBox
-            mode="text"
-            value="checkbox_8"
-            label="체크박스 8"
-            checked={isChecked["checkbox_8"] || false}
-            onChange={handleCheckChange}
-          />
-          <CheckBox
-            mode="text"
-            value="checkbox_9"
-            label="체크박스 9"
-            disabled="disabled"
-            checked={isChecked["checkbox_9"] || false}
-            onChange={handleCheckChange}
-          />
-          <CheckBox
-            mode="icon"
-            value="checkbox_10"
-            label="체크박스 10"
-            checked={isChecked["checkbox_10"] || false}
-            onChange={handleCheckChange}
-          />
+          <div className="rectangle_checkbox flex gap-3 flex-wrap mt-5">
+            <CheckBox
+              mode="rectangle"
+              value="checkbox_6"
+              label="체크박스 6"
+              checked={isChecked["checkbox_6"] || false}
+              onChange={handleCheckChange}
+            />
+            <CheckBox
+              round="full"
+              mode="rectangle"
+              value="checkbox_6_1"
+              label="체크박스 6_1"
+              disabled={false}
+              checked={isChecked["checkbox_6_1"] || false}
+              onChange={handleCheckChange}
+            />
+            <CheckBox
+              color="fill"
+              round="full"
+              mode="rectangle"
+              value="checkbox_6_2"
+              label="checkbox_6_2"
+              checked={isChecked["checkbox_6_2"] || false}
+              onChange={handleCheckChange}
+            />
+            <CheckBox
+              mode="rectangle"
+              value="checkbox_7"
+              label="disabled"
+              disabled={true}
+              checked={isChecked["checkbox_7"] || false}
+              onChange={handleCheckChange}
+            />
+          </div>
+
+          <div className="text_checkbox flex gap-3 flex-wrap mt-5">
+            <CheckBox
+              mode="text"
+              value="checkbox_8"
+              label="체크박스 8"
+              checked={isChecked["checkbox_8"] || false}
+              onChange={handleCheckChange}
+            />
+            <CheckBox
+              mode="text"
+              value="checkbox_9"
+              label="disabled"
+              disabled={true}
+              checked={isChecked["checkbox_9"] || false}
+              onChange={handleCheckChange}
+            />
+          </div>
+
+          <div className="icon_checkbox flex gap-3 flex-wrap mt-5">
+            <CheckBox
+              mode="icon"
+              value="checkbox_10"
+              label="체크박스 10"
+              disabled={false}
+              checked={isChecked["checkbox_10"] || false}
+              onChange={handleCheckChange}
+            />
           </div>
         </div>
 
@@ -355,7 +393,7 @@ const HighSchoolPage: React.FC = () => {
               label="검정고시 출신자"
               name="type"
               value="type_3"
-              disabled="disabled"
+              disabled={true}
               checked={selectedOptions.type === "type_3"}
               onChange={handleRadioChange}
             />
@@ -383,7 +421,7 @@ const HighSchoolPage: React.FC = () => {
               label="고1,2"
               name="studentType"
               value="Go4"
-              disabled="disabled"
+              disabled={true}
               checked={selectedOptions.studentType === "Go4"}
               onChange={handleRadioChange}
             />
@@ -422,10 +460,20 @@ const HighSchoolPage: React.FC = () => {
 
         </div>
 
-        <div className="button w-full">
+        <div className="stepbar w-full">
           <Title title="StepBar" size="md" bold="semi" />
 
-          <StepBars steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
+          <div >
+            <h1>Swiper Demo</h1>
+            <SwiperComponent slides={slides} />
+          </div>
+
+        </div>
+
+        <div className="stepbar w-full">
+          <Title title="StepBar" size="md" bold="semi" />
+
+          {/* <StepBars steps={steps} currentStep={currentStep} onStepClick={handleStepClick} /> */}
 
           <StepBar step={steps} currentStep={currentStep} onStepClick={handleStepClick} />
 
@@ -456,12 +504,12 @@ const HighSchoolPage: React.FC = () => {
 
         {/* <Input baseTy onChange={handleChange} />
         <Input value="aa" ghost onChange={handleChange} readonly="readonly" />
-        <Input onChange={handleChange} disabled="disabled"  />
+        <Input onChange={handleChange} disabled={true}  />
 
         <TestInput type="password" size="sm" color="base" onChange={handleChange} />
         <TestInput type="password" size="sm" color="success" onChange={handleChange} />
         <TestInput type="password" size="sm" color="warning" onChange={handleChange} />
-        <TestInput type="password" size="sm" color="error" onChange={handleChange} disabled="disabled" /> */}
+        <TestInput type="password" size="sm" color="error" onChange={handleChange} disabled={true} /> */}
 
 
       </div>

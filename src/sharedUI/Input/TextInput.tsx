@@ -6,39 +6,38 @@ import { Success } from "./storybook/InputText.stories";
 
 
 const InputVariants = cva(
-  "w-full md:w-auto px-7 py-5 leading-none focus:outline-none rounded-lg ",
+  "w-full md:w-auto peer leading-none border border-gray-500 focus:outline-none rounded-lg",
   {
     variants: {
       size: {
-        sm: "input-sm",
-        md: "input-md",
-        lg: "input-lg",
+        base: "px-7 py-5",
+        sm: "input-sm..",
+        md: "input-sm..",
+        lg: "input-lg..",
         full: "input-full w-full",
       },
       mode: {
-        base: "border border-gray-200 focus:ring-1 focus:ring-blue-700",
-        ghost: "peer ghost border-b rounded-none",
-        success: "peer border focus:ring-1 focus:ring-success",
-        warning: "peer border border-warning",
-        error: "peer border border-error",
-        readonly: "border focus:ring-0",
-        disabled: "border bg-disabled-bg",
+        base: "focus:border-blue-700 focus:ring-blue-700",
+        ghost: "focus:border-blue-700 border-0 border-b rounded-none placeholder-transparent ",
+        success: "focus:border-success", // border-success
+        warning: "border-warning", // focus:ring-1 focus:ring-warning
+        error: "border-error", // focus:ring-1 focus:ring-error
       },
     },
     defaultVariants: {
-      size: "md",
+      size: "base",
       mode: "base",
     },
   }
 );
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement>, VariantProps<typeof InputVariants> {
-  size?: "sm" | "md" | "lg" | "full";
-  mode?: "base" | "ghost" | "success" | "warning" | "error" | "readonly" | "disabled";
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">, VariantProps<typeof InputVariants> {
+  size?: "base" | "sm" | "md" | "lg" | "full";
+  mode?: "base" | "ghost" | "success" | "warning" | "error";
   label?: string;
   addClass?: string;
   addId?: string;
-  disabled?: string;
+  disabled?: boolean;
   readonly?: string;
   icon?: React.ReactElement;
 }
@@ -53,20 +52,25 @@ const TextInput : FC<InputProps> = ({
   onChange,
   disabled,
   readonly,
-  readOnly,
   ...props
 }) => {
   const className = InputVariants({
-    size: size as "sm" | "md" | "lg" | "full" | undefined,
-    mode: mode as | "base" | "ghost" | "success" | "warning" | "error" | "readonly" | "disabled" | undefined,
+    size: size as "base" | "sm" | "md" | "lg" | "full" | undefined,
+    mode: mode as | "base" | "ghost" | "success" | "warning" | "error" | undefined,
     // icon,
   });
+
+  const atType = ["ghost"].includes(mode);
 
   return (
     <div className="relative">
       <input
         type="text"
-        className={cn(className, addClass)}
+        className={cn(className, addClass,
+        {
+          "border-gray-200": disabled,
+          "focus:border-gray-500": readonly,
+        })}
         onChange={onChange}
         id={addId}
         placeholder={label}
@@ -74,7 +78,10 @@ const TextInput : FC<InputProps> = ({
         readOnly={!!readonly}
         {...props}
       />
-      <label htmlFor={addId} className="">
+      <label htmlFor={addId} className={cn('sr-only', addClass,
+        {
+          "not-sr-only absolute text-sm text-gray-600 transition-all left-0 -top-4 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-4 peer-focus:text-sm" : atType
+        })}>
         {icon && icon} {label}
       </label>
       { mode === "success" && (
@@ -82,14 +89,14 @@ const TextInput : FC<InputProps> = ({
         peer-[:not(:placeholder-shown)]:not-sr-only
         peer-[:not(:placeholder-shown)]:absolute
         peer-[:not(:placeholder-shown)]:right-5
-        "><img src="https://image.jinhak.com/jinhakImages/react/icon/icon_input_success.svg" alt="" /></span>
+        "><img src="https://image.jinhak.com/jinhakImages/react/icon/icon_input_success.svg" className="w-[1.5rem] md:w-full" alt="" /></span>
       )}
       { mode === "error" && (
         <span className="sr-only y_center
         peer-[:not(:placeholder-shown)]:not-sr-only
         peer-[:not(:placeholder-shown)]:absolute
         peer-[:not(:placeholder-shown)]:right-5
-        "><img src="https://image.jinhak.com/jinhakImages/react/icon/icon_input_error.svg" alt="" /></span>
+        "><img src="https://image.jinhak.com/jinhakImages/react/icon/icon_input_error.svg" className="w-[1.5rem] md:w-full" alt="" /></span>
       )}
     </div>
   );

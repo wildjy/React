@@ -142,20 +142,20 @@ export default function Page() {
   }, [])
 
   // resize
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  useEffect(() => {
-    const handleResize = throttle(() => { // debounce
-      setWindowWidth(windowWidth);
-      console.log(window.innerWidth)
-    }, 200);
+  // useEffect(() => {
+  //   const handleResize = throttle(() => { // debounce
+  //     setWindowWidth(windowWidth);
+  //     console.log(window.innerWidth)
+  //   }, 200);
 
-    window.addEventListener('resize', handleResize);
-    console.log(windowWidth)
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  //   window.addEventListener('resize', handleResize);
+  //   console.log(windowWidth)
+  //   return () => {
+  //     window.removeEventListener('resize', handleResize);
+  //   };
+  // }, []);
 
   // debounce
   const [query, setQuery] = useState<string>('');
@@ -600,7 +600,7 @@ const handleRemoveItem = (index: number) => {
               </pre>
               <div className="mt-4 p-6 border border-gray-400">
                 <p><b>Sample</b></p>
-                <p>window Width = {windowWidth}px</p>
+                {/* <p>window Width = {windowWidth}px</p> */}
                 <input
                   type="text"
                   className="p-3 border border-gray-600 rounded-lg"

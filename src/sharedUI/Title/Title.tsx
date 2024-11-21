@@ -38,7 +38,11 @@ const TitleStyle = cva('mb-5', {
   }
 })
 
-interface titleProps extends HTMLAttributes<HTMLHeadingElement>, VariantProps<typeof TitleStyle> {
+interface titleProps extends Omit<HTMLAttributes<HTMLHeadingElement>, "mode">, VariantProps<typeof TitleStyle> {
+  mode?: "base" | "line" | "number";
+  size?: "sm" | "md" | "lg";
+  color?: "base" | "red" | "blue";
+  bold?: "thin" | "light" | "normal" | "md" | "semi" | "bold";
   title: string;
   className?: string;
   addClass?: string;
