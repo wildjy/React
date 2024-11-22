@@ -105,6 +105,15 @@ interface DivProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof D
   addClass?: string;
   value?: string;
 };
+
+// Omit 사용 이유: HTML 기본 속성 중 특정 속성을 제거하여 커스터마이징하거나, 다른 인터페이스와의 충돌을 방지하기 위함.
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">,
+VariantProps<typeof InputVariants> {
+  size?: string;
+  color?: string;
+  addClass?: string;
+  value?: string;
+};
                 `}
               </pre>
             </div>

@@ -10,6 +10,7 @@ import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
 import Title from "../../sharedUI/Title/Title";
 import SwiperComponent from './swiper';
+import SwiperCustom from './swiperCustom';
 
 const HighSchoolPage: React.FC = () => {
   // input
@@ -147,7 +148,58 @@ const HighSchoolPage: React.FC = () => {
     setIsVisible((checkStatus) => !checkStatus);
   }
 
-  const slides = ['슬라이드 1', '슬라이드 2', '슬라이드 3', '슬라이드 4', '슬라이드 4', '슬라이드 4'];
+  const slidesCustom = [
+    {
+      width: 'auto',
+      title: '슬라이드 1',
+      sub_txt: "텍스트111~",
+    },
+    {
+      width: 'auto',
+      title: '슬라이드 1',
+      sub_txt: "텍스트111~",
+    },
+    {
+      padding: '60px',
+      scale: '1.2',
+      width: '400px',
+      title: '슬라이드 2',
+      sub_txt: "텍스트222~",
+    },
+    {
+      width: 'auto',
+      title: '슬라이드 3',
+      sub_txt: "텍스트 333~",
+    },
+    {
+      width: 'auto',
+      title: '슬라이드 4',
+      sub_txt: "텍스트 444~",
+    },
+  ];
+
+  const slides = [
+    {
+      title: '슬라이드 1',
+      sub_txt: "텍스트111~",
+    },
+    {
+      title: '슬라이드 1',
+      sub_txt: "텍스트111~",
+    },
+    {
+      title: '슬라이드 2',
+      sub_txt: "텍스트222~",
+    },
+    {
+      title: '슬라이드 3',
+      sub_txt: "텍스트 333~",
+    },
+    {
+      title: '슬라이드 4',
+      sub_txt: "텍스트 444~",
+    },
+  ];
 
 
   return (
@@ -462,12 +514,6 @@ const HighSchoolPage: React.FC = () => {
 
         <div className="stepbar w-full">
           <Title title="StepBar" size="md" bold="semi" />
-
-          <div >
-            <h1>Swiper Demo</h1>
-            <SwiperComponent slides={slides} />
-          </div>
-
         </div>
 
         <div className="stepbar w-full">
@@ -499,6 +545,19 @@ const HighSchoolPage: React.FC = () => {
           </div>
 
         </div>
+
+        <div className="stepbar w-full">
+          <Title title="Swiper" size="md" bold="semi" />
+
+          <div>
+            <SwiperComponent slides={slides} />
+            <SwiperComponent slides={slides} />
+            {/* <SwiperCustom slidesCustom={slidesCustom} /> */}
+          </div>
+
+        </div>
+
+        <div className="h-[500px]"></div>
       </div>
 
 

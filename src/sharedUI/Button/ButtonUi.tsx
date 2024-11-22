@@ -32,8 +32,8 @@ const ButtonVariants = cva(
   }
 );
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLDivElement>, VariantProps<typeof ButtonVariants> {
-  size?: "sm" | "md" | "lg" | "full";
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof ButtonVariants> {
+  size?: "sm" | "md" | "lg";
   mode?: "primary" | "secondary" | "tertiary";
   round?: "default" | "full";
   addClass?: string;
@@ -51,8 +51,8 @@ const Button: FC<ButtonProps> = ({
 }) => {
 
   const className = ButtonVariants ({
-    size: size as "sm" | "md" | "lg" | "full" | undefined,
-    mode: mode as "primary" | "secondary" | "tertiary" | "full" | undefined,
+    size: size as "sm" | "md" | "lg" | undefined,
+    mode: mode as "primary" | "secondary" | "tertiary" | undefined,
     round: round as "default" | "full" | undefined,
   });
 
