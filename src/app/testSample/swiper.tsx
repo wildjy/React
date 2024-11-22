@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { cn } from "../../sharedUI/common/cn";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperClass } from 'swiper';
@@ -27,21 +27,31 @@ const SwiperComponent: React.FC<SwiperComponentProps> = ({  slides }) => {
       return '<span class="' + className + '">' + (index + 1) + '</span>';
     },
   };
+  
+  const [isSwiperEnabled, setIsSwiperEnabled] = useState(window.innerWidth < 1024);
 
-  useEffect(() => {
+
+  useLayoutEffect(() => {
+    let timer: number;
     const handleResize = () => {
-      const breakPoint = window.innerWidth;
-      if (breakPoint < 1024) {
-        setIsNavigationEnabled(true);
-      } else {
-        setIsNavigationEnabled(false);
-      }
+      clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        const breakPoint = window.innerWidth;
+
+        console.log(breakPoint)
+        if (breakPoint < 1024) {
+          setIsNavigationEnabled(true);
+        } else {
+          setIsNavigationEnabled(false);
+        }
+      }, 200);
     };
 
     handleResize();
     window.addEventListener('resize', handleResize);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
@@ -113,7 +123,7 @@ const SwiperComponent: React.FC<SwiperComponentProps> = ({  slides }) => {
         {slides.map((slide, index) => (
           <SwiperSlide
             key={index}
-            className="ml-2 first:ml-0"
+            className=""
             style={{width: "auto" }} // 슬라이드의 너비 설정
           >
             <div className="px-5 py-5 text-center font-bold text-white bg-slate-400  rounded-lg">{slide.title} {slide.sub_txt}</div>
@@ -121,7 +131,8 @@ const SwiperComponent: React.FC<SwiperComponentProps> = ({  slides }) => {
         ))}
       </Swiper>
 
-      <div className={!isNavigationEnabled ? 'hidden':''}>
+      {isNavigationEnabled ? "Navigation Enabled" : "Navigation Disabled"}
+      <div className={visible ? 'hidden':''}>
         <button onClick={handlePrev} className={isBeginning ? 'opacity-50' : ''}>왼쪽 버튼</button>
         <div>
           <span>{swiperIndex + 1}</span>
