@@ -280,7 +280,7 @@ const handleRemoveItem = (index: number) => {
         <button className="p-5 py-2 border border-gray-600" onClick={() => handleControl('Su-57')}>click handleControl</button>
         {/* useState */}
         <div className="mb-8">
-          <p className="mb-4">1. useState</p>
+          <p className="mb-4"><b>1. useState</b></p>
           <p className="mb-4">- 상태(state) 관리 훅, 함수형 컴포넌트에서 상태를 추가/관리, 동적으로 변하는 데이터를 추적하여 재렌더링</p>
           <div className="p-6 border border-gray-400">
             <p className="mb-3">count = 상태변수(초기값), setCount =  상태 업데이트 함수, useState(0) = 초기값은 0</p>
@@ -487,8 +487,9 @@ const handleRemoveItem = (index: number) => {
 
         {/*  useEffect, useRef : 라이프사이클과 DOM 접근, 값의 참조, 상태변화에 따른 작업처리 */}
         <div className="mb-8">
-          <p className="mb-4">1. useEffect</p>
-          <p className="mb-4">- 마운트될 때, 업데이트될 때, 언마운트될 때 수행</p>
+          <p className="mb-4"><b>1. useEffect</b></p>
+          <p className="mb-4">- 마운트될 때, 업데이트될 때, 언마운트될 때 수행 <b>비동기적, DOM이 업데이트 된 후</b> </p>
+          <p className="mb-4">- <b className="text-red-600">useLayoutEffect</b> <b>동기적, DOM이 업데이트 되기 전</b> </p>
           <div className="p-6 border border-gray-400">
             <p className="mb-3">첫번째 인자 = 콜백함수(실행할 작업),  정리 작업 =  return(cleanup)</p>
             <div>

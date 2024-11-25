@@ -3,23 +3,30 @@ import { cn } from "../../sharedUI/common/cn";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperClass } from 'swiper';
 import { FreeMode, Navigation, Pagination, Autoplay , Scrollbar, A11y } from 'swiper/modules';
+import SlideTabs from './SlideTab';
 import 'swiper/swiper-bundle.css';
 
-interface SwiperComponentProps {
-  slides: {title: string, sub_txt: string}[];
+interface SwiperSliderProps {
+  slides: {active: string, title: string, sub_txt: string}[];
+  // initialSlide: number;
+  auto: boolean;
+  delay: number;
+  speed: number;
+  loop: boolean;
 }
 
-const SwiperComponent: React.FC<SwiperComponentProps> = ({  slides }) => {
+const SwiperSlider: React.FC<SwiperSliderProps> = ({ slides, loop, auto, delay, speed}) => {
   const [swiperIndex, setSwiperIndex] = useState(0); // -> 페이지네이션용
   const [swiperTotalIndex, setSwiperTotalIndex] = useState(0); // -> 페이지네이션용
-  const [visible, setVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [isBeginning, setIsBeginning] = useState(true); // 처음 상태
   const [isEnd, setIsEnd] = useState(false); // 마지막 상태
   const [swiper, setSwiper] = useState<SwiperClass>(); // -> 슬라이드용
   const [isNavigationEnabled, setIsNavigationEnabled] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const swiperRef = useRef<any>(null);
 
   const paginationRef = useRef(null);
-
   const pagination = {
     el: paginationRef.current,
     clickable: true,
@@ -27,9 +34,6 @@ const SwiperComponent: React.FC<SwiperComponentProps> = ({  slides }) => {
       return '<span class="' + className + '">' + (index + 1) + '</span>';
     },
   };
-  
-  const [isSwiperEnabled, setIsSwiperEnabled] = useState(window.innerWidth < 1024);
-
 
   useLayoutEffect(() => {
     let timer: number;
@@ -38,17 +42,24 @@ const SwiperComponent: React.FC<SwiperComponentProps> = ({  slides }) => {
       timer = window.setTimeout(() => {
         const breakPoint = window.innerWidth;
 
-        console.log(breakPoint)
         if (breakPoint < 1024) {
           setIsNavigationEnabled(true);
         } else {
           setIsNavigationEnabled(false);
         }
-      }, 200);
+      }, 50);
     };
 
     handleResize();
     window.addEventListener('resize', handleResize);
+
+    // active slide
+    const slides = document.querySelectorAll('.swiper-slide a');
+    slides.forEach((slide, index) => {
+      if (slide.classList.contains('active')) {
+        swiperRef.current?.slideTo(index, 100, false);
+      }
+    });
 
     return () => {
       clearTimeout(timer);
@@ -56,9 +67,9 @@ const SwiperComponent: React.FC<SwiperComponentProps> = ({  slides }) => {
     };
   }, []);
 
-  swiper?.on('slideChange', () => {
-    console.log('Slide changed to:', swiper.activeIndex);
-  });
+  // swiper?.on('slideChange', () => {
+  //   console.log('Slide changed to:', swiper.activeIndex);
+  // });
 
   const handlePrev = () => {
     swiper?.slidePrev()
@@ -77,73 +88,82 @@ const SwiperComponent: React.FC<SwiperComponentProps> = ({  slides }) => {
     setIsEnd(swiper.isEnd);
   };
 
+useEffect(() => {
+}, [])
+
   return (
     <>
       <Swiper
-        modules={[FreeMode, Navigation, Pagination, Autoplay,  Navigation]} // ...(isNavigationEnabled ? [Navigation] : [])
-        navigation={isNavigationEnabled}
+        modules={[FreeMode, Navigation, Pagination, Autoplay, ...(isNavigationEnabled ? [Navigation] : [])]} // ...(isNavigationEnabled ? [Navigation] : [])
+        freeMode={false}
+        // initialSlide={ initialSlide }
+        slidesPerView= "auto"
+        spaceBetween={0}
+        autoplay={
+          auto ? {
+            delay: delay,
+            disableOnInteraction: false,
+          }: false
+        }
+        speed={speed}
+        loop={loop}
         // navigation={true}
-        spaceBetween={10}
-        freeMode={true}
-        slidesPerView= "auto" // 슬라이드 너비가 CSS로 지정됨
-        loop={false}
-        // autoplay={{
-        //   delay: 0,
-        //   disableOnInteraction: false,
-        // }}
+        navigation={isNavigationEnabled}
         pagination={pagination} // {{ clickable: true }}
+        onSwiper={(e) => {
+          // e.slideTo(2);
+          swiperRef.current = e
+          handleSwiperInit;
+          setActiveIndex(e.activeIndex);
+          console.log('activeIndex', e.activeIndex);
+          console.log('e.pagination.el', e.pagination);
+          console.log('e.pagination.el', e.pagination.bullets.length);
+          console.log('e.pagination.el', e.pagination.el === null);
+          // setIsVisible(e.pagination.el === null);
+        }}
         onSlideChange={(e) => {
-          console.log('슬라이드가 변경되었습니다!', e);
+          // console.log('슬라이드가 변경되었습니다!', e);
           updateNavigationState(e)
+          setActiveIndex(e.activeIndex);
+          // console.log('슬라이드가 변경되었습니다!', e.activeIndex);
         }}
         onActiveIndexChange={(e) => {
-          setSwiperIndex(e.realIndex)
-        }}
-        onSwiper={(e) => {
-          handleSwiperInit
-          // setSwiper(e);
-          console.log('Swiper 0인스턴스:', e.pagination.el)
-          // console.log('Swiper 인스턴스:', e.pagination.el.childElementCount)
+          setSwiperIndex(e.realIndex);
         }}
         onBeforeInit={(e) => {
-          // 초기화 전에 네비게이션 버튼을 swiper에 할당합니다.
           setSwiper(e);
-          console.log('Swiper 0인스턴스:', e)
         }}
         onResize={(e) => {
           setSwiper(e);
-          // console.log('Swiper 0인스턴스:', e)
-          // console.log('Swiper total bullet:', e.pagination.el.childElementCount)
           setSwiperTotalIndex(e.pagination.el.childElementCount);
-          setVisible(e.pagination.el.childElementCount === 1);
-          // console.log(e.slidesEl.firstElementChild)
+          // setIsVisible(e.pagination.el.childElementCount === 1);
+          // console.log('e.pagination.el.childElementCount', e.pagination.el);
         }}
-        className={`w-full`}
+        className={`swiper_lnb w-full`}
       >
         {slides.map((slide, index) => (
-          <SwiperSlide
-            key={index}
-            className=""
-            style={{width: "auto" }} // 슬라이드의 너비 설정
-          >
-            <div className="px-5 py-5 text-center font-bold text-white bg-slate-400  rounded-lg">{slide.title} {slide.sub_txt}</div>
+          <SwiperSlide key={index} className="mr-[3.75rem]" style={{width: "auto" }}>
+            {/* slide.. */}
+            <SlideTabs slide={ slide } isActive={ activeIndex === index } />
+            {/* slide.. */}
           </SwiperSlide>
         ))}
       </Swiper>
 
-      {isNavigationEnabled ? "Navigation Enabled" : "Navigation Disabled"}
-      <div className={visible ? 'hidden':''}>
-        <button onClick={handlePrev} className={isBeginning ? 'opacity-50' : ''}>왼쪽 버튼</button>
+      <div className={!isNavigationEnabled ? 'hidden':''}>
+        <button onClick={handlePrev} className={isBeginning ? 'opacity-70' : ''}>왼쪽 버튼</button>
         <div>
           <span>{swiperIndex + 1}</span>
           <span>{'/'}</span>
           <span>{swiperTotalIndex}</span>
         </div>
         <div ref={paginationRef}></div>
-        <button onClick={handleNext} className={isEnd ? 'opacity-50' : ''}>오른쪽 버튼</button>
+        <button onClick={handleNext} className={isEnd ? 'opacity-70' : ''}>오른쪽 버튼</button>
       </div>
+
+      <p>{isVisible ? "Navigation Enabled" : "Navigation Disabled"}</p>
     </>
   );
 };
 
-export default SwiperComponent;
+export default SwiperSlider;

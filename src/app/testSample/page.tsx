@@ -9,7 +9,7 @@ import Button from "../../sharedUI/Button/ButtonUi";
 import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
 import Title from "../../sharedUI/Title/Title";
-import SwiperComponent from './swiper';
+import SwiperSlider from './Swiper';
 import SwiperCustom from './swiperCustom';
 
 const HighSchoolPage: React.FC = () => {
@@ -180,25 +180,35 @@ const HighSchoolPage: React.FC = () => {
 
   const slides = [
     {
-      title: '슬라이드 1',
+      active: '',
+      title: '3월 학력평가',
       sub_txt: "텍스트111~",
     },
     {
-      title: '슬라이드 1',
+      active: '',
+      title: '5월 학력평가',
       sub_txt: "텍스트111~",
     },
     {
-      title: '슬라이드 2',
+      active: 'active',
+      title: '6월 학력평가',
       sub_txt: "텍스트222~",
     },
     {
-      title: '슬라이드 3',
+      active: '',
+      title: '7월 학력평가',
       sub_txt: "텍스트 333~",
     },
-    {
-      title: '슬라이드 4',
-      sub_txt: "텍스트 444~",
-    },
+    // {
+    //   active: '',
+    //   title: '9월 학력평가',
+    //   sub_txt: "텍스트 444~",
+    // },
+    // {
+    //   active: '',
+    //   title: '10월 학력평가',
+    //   sub_txt: "텍스트 444~",
+    // },
   ];
 
 
@@ -550,8 +560,13 @@ const HighSchoolPage: React.FC = () => {
           <Title title="Swiper" size="md" bold="semi" />
 
           <div>
-            <SwiperComponent slides={slides} />
-            <SwiperComponent slides={slides} />
+            {/* Tab */}
+            <SwiperSlider slides={slides} loop={false} auto={false} delay={0} speed={3000} />
+            {/*  */}
+            <SwiperSlider slides={slides} loop={false} auto={true} delay={0} speed={3000} />
+            {/*  */}
+            <SwiperSlider slides={slides} loop={false} auto={false} delay={200} speed={500} />
+            {/* <SwiperSlider slides={slides} /> */}
             {/* <SwiperCustom slidesCustom={slidesCustom} /> */}
           </div>
 

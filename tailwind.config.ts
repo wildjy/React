@@ -21,6 +21,7 @@ const config: Config = {
         sans: ['Pretendard', 'Arial', 'sans-serif'],
       },
       fontSize: {
+        '0': '0',
         '3xs': '0.688rem', // 11px
         '2xs': '0.75rem', // 12px
         xs: '0.813rem', // 13px
