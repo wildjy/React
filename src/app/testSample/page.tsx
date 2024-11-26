@@ -10,6 +10,7 @@ import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
 import Title from "../../sharedUI/Title/Title";
 import SwiperSlider from './Swiper';
+import SwiperThumeSlider from './SwiperThume';
 import SwiperCustom from './swiperCustom';
 
 const HighSchoolPage: React.FC = () => {
@@ -190,6 +191,39 @@ const HighSchoolPage: React.FC = () => {
       sub_txt: "텍스트111~",
     },
     {
+      active: '',
+      title: '6월 학력평가',
+      sub_txt: "텍스트222~",
+    },
+    {
+      active: '',
+      title: '7월 학력평가',
+      sub_txt: "텍스트 333~",
+    },
+    {
+      active: '',
+      title: '9월 학력평가',
+      sub_txt: "텍스트 444~",
+    },
+    {
+      active: 'active',
+      title: '10월 학력평가',
+      sub_txt: "텍스트 444~",
+    },
+  ];
+
+  const slides_1 = [
+    {
+      active: '',
+      title: '3월 학력평가',
+      sub_txt: "텍스트111~",
+    },
+    {
+      active: '',
+      title: '5월 학력평가',
+      sub_txt: "텍스트111~",
+    },
+    {
       active: 'active',
       title: '6월 학력평가',
       sub_txt: "텍스트222~",
@@ -199,18 +233,55 @@ const HighSchoolPage: React.FC = () => {
       title: '7월 학력평가',
       sub_txt: "텍스트 333~",
     },
-    // {
-    //   active: '',
-    //   title: '9월 학력평가',
-    //   sub_txt: "텍스트 444~",
-    // },
-    // {
-    //   active: '',
-    //   title: '10월 학력평가',
-    //   sub_txt: "텍스트 444~",
-    // },
+    {
+      active: '',
+      title: '9월 학력평가',
+      sub_txt: "텍스트 444~",
+    },
+    {
+      active: '',
+      title: '10월 학력평가',
+      sub_txt: "텍스트 444~",
+    },
+    {
+      active: '',
+      title: '9월 학력평가',
+      sub_txt: "텍스트 444~",
+    },
   ];
 
+  const slides_img = [
+    {
+      active: '',
+      url: 'https://swiperjs.com/demos',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/육군학과.jpg',
+    },
+    {
+      active: '',
+      url: '#self',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/덕성여대(2).jpg',
+    },
+    {
+      active: '',
+      url: '#self',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/국어_최서희.jpg',
+    },
+    {
+      active: '',
+      url: '#self',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/20240902_272M.jpg',
+    },
+    {
+      active: 'active',
+      url: '#self',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/국어_최서희.jpg',
+    },
+    {
+      active: '',
+      url: '#self',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/20240902_272M.jpg',
+    },
+  ];
 
   return (
     <div id="contents" className="bg-gray-50">
@@ -561,12 +632,14 @@ const HighSchoolPage: React.FC = () => {
 
           <div>
             {/* Tab */}
-            <SwiperSlider slides={slides} loop={false} auto={false} delay={0} speed={3000} />
+            {/* <SwiperSlider slides={slides_img} space={'2rem'} loop={false} auto={false}  /> */}
             {/*  */}
-            <SwiperSlider slides={slides} loop={false} auto={true} delay={0} speed={3000} />
+            <SwiperSlider id={"swiper-1"} slides={slides} pager={true} space={'1rem'} />
             {/*  */}
-            <SwiperSlider slides={slides} loop={false} auto={false} delay={200} speed={500} />
-            {/* <SwiperSlider slides={slides} /> */}
+            <SwiperSlider id={"swiper-2"} slides={slides_1} pager={true} freeMode={false} space={'3rem'} loop={false} auto={true} delay={300} speed={1500} />
+            {/*  */}
+            <SwiperThumeSlider id={"swiper-3"} slidesThume={slides_img} space={'30px'} />
+            {/*  */}
             {/* <SwiperCustom slidesCustom={slidesCustom} /> */}
           </div>
 
