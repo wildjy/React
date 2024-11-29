@@ -14,6 +14,7 @@ const SlideThumbs: React.FC<slideProps> = ({ slide, isActive }) => {
     <div className={`text-center ${ isActive ? '' : ''}`}>
       <a href={slide.url} className={`${slide.active} block py-2 font-bold ${slide.active ? '' : ''}`}>
         <img src={slide.imgUrl} alt="" />
+        {/* <p>{slide.url}</p> */}
       </a>
     </div>
   )

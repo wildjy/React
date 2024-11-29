@@ -201,12 +201,12 @@ const HighSchoolPage: React.FC = () => {
       sub_txt: "텍스트 333~",
     },
     {
-      active: '',
+      active: 'active',
       title: '9월 학력평가',
       sub_txt: "텍스트 444~",
     },
     {
-      active: 'active',
+      active: '',
       title: '10월 학력평가',
       sub_txt: "텍스트 444~",
     },
@@ -224,7 +224,7 @@ const HighSchoolPage: React.FC = () => {
       sub_txt: "텍스트111~",
     },
     {
-      active: 'active',
+      active: '',
       title: '6월 학력평가',
       sub_txt: "텍스트222~",
     },
@@ -248,6 +248,16 @@ const HighSchoolPage: React.FC = () => {
       title: '9월 학력평가',
       sub_txt: "텍스트 444~",
     },
+    {
+      active: '',
+      title: '10월 학력평가',
+      sub_txt: "텍스트 444~",
+    },
+    {
+      active: 'active',
+      title: '9월 학력평가',
+      sub_txt: "텍스트 444~",
+    },
   ];
 
   const slides_img = [
@@ -267,18 +277,30 @@ const HighSchoolPage: React.FC = () => {
       imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/국어_최서희.jpg',
     },
     {
-      active: '',
-      url: '#self',
+      active: 'active',
+      url: '',
       imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/20240902_272M.jpg',
+    },
+  ];
+  const slides_img2 = [
+    {
+      active: '',
+      url: 'https://swiperjs.com/demos',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/육군학과.jpg',
     },
     {
       active: 'active',
-      url: '#self',
-      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/국어_최서희.jpg',
+      url: 'https://swiperjs.com/demos',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/20240902_272M.jpg',
     },
     {
       active: '',
-      url: '#self',
+      url: 'https://swiperjs.com/demos',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/육군학과.jpg',
+    },
+    {
+      active: '',
+      url: '',
       imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/20240902_272M.jpg',
     },
   ];
@@ -634,18 +656,19 @@ const HighSchoolPage: React.FC = () => {
             {/* Tab */}
             {/* <SwiperSlider slides={slides_img} space={'2rem'} loop={false} auto={false}  /> */}
             {/*  */}
-            <SwiperSlider id={"swiper-1"} slides={slides} pager={true} space={'1rem'} />
+            <SwiperSlider id={"1"} slides={slides} pager={true} space={'1rem'} />
             {/*  */}
-            <SwiperSlider id={"swiper-2"} slides={slides_1} pager={true} freeMode={false} space={'3rem'} loop={false} auto={true} delay={300} speed={1500} />
+            <SwiperSlider id={"2"} slides={slides_1} pager={true} freeMode={false} space={'3rem'} loop={false} auto={false} delay={300} speed={1500} />
             {/*  */}
-            <SwiperThumeSlider id={"swiper-3"} slidesThume={slides_img} space={'30px'} />
-            {/*  */}
+            <SwiperThumeSlider id={'3'} slides={slides_img} pager={true} freeMode={false} loop={false} auto={false} delay={300} speed={1500} space={'1rem'} />
+            {/*   */}
             {/* <SwiperCustom slidesCustom={slidesCustom} /> */}
+
           </div>
 
         </div>
 
-        <div className="h-[500px]"></div>
+        <div className="w-full h-[500px] portrait:bg-blue-500 max-950:landscape:bg-green-500"></div>
       </div>
 
 

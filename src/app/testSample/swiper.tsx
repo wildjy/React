@@ -1,14 +1,18 @@
-import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
-import { cn } from "../../sharedUI/common/cn";
+import React, { useRef, useState, useLayoutEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { SwiperProps } from 'swiper/react';
 import { Swiper as SwiperClass } from 'swiper';
-import { FreeMode, Navigation, Pagination, Autoplay , Scrollbar, A11y } from 'swiper/modules';
+import { FreeMode, Navigation, Pagination, Autoplay} from 'swiper/modules'; // Scrollbar, A11y
 import SlideTabs from './SlideTab';
-import SlideThumbs from './SlideImage';
 import 'swiper/swiper-bundle.css';
 interface SwiperSliderProps {
-  // slides: {active: string, imgUrl: string}[];
-  slides: {active: string, title: string, sub_txt: string}[];
+  slides: {
+    active?: string,
+    title?: string,
+    sub_tit?: string,
+    url?: string,
+    imgUrl?: string
+  }[],
   id?: string;
   freeMode?: boolean;
   pager?: boolean;
@@ -23,7 +27,8 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
   id,
   freeMode = true,
   pager = false,
-  slides, loop,
+  slides,
+  loop,
   auto,
   space,
   delay = 400,
@@ -33,11 +38,10 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
   const [swiperTotalIndex, setSwiperTotalIndex] = useState(0); // -> 페이지네이션용
   const [isBeginning, setIsBeginning] = useState(true); // 처음 상태
   const [isEnd, setIsEnd] = useState(false); // 마지막 상태
-  const [swiper, setSwiper] = useState<SwiperClass>(); // -> 슬라이드용
   const [isNavigationEnabled, setIsNavigationEnabled] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [visible, setIsVisible] = useState(false);
-  const swiperRef = useRef<any>(null);
+  const swiperRefs = useRef<SwiperClass[]>([]);
 
   useLayoutEffect(() => {
     let timer: number;
@@ -47,7 +51,8 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
         const slides = swiperWrap.querySelectorAll('.swiper-slide a');
         slides.forEach((slide, index) => {
           if (slide.classList.contains('active')) {
-            swiperRef.current?.slideTo(index, 100, false);
+            swiperRefs.current[swiperIndex]?.slideTo(index, 100, false);
+            console.log(swiperRefs.current[swiperIndex]);
           }
         });
       }
@@ -67,7 +72,7 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
     };
 
     const multiHandler = () => {
-      // handleResize();
+      handleResize();
       activeSlide();
     }
 
@@ -83,11 +88,11 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
   }, []);
 
   const handlePrev = () => {
-    swiperRef.current?.slidePrev()
+    swiperRefs.current[swiperIndex]?.slidePrev()
   }
 
   const handleNext = () => {
-    swiperRef.current?.slideNext()
+    swiperRefs.current[swiperIndex]?.slideNext()
   }
 
   const handleSwiperInit = (swiper: SwiperClass) => {
@@ -109,7 +114,7 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
     },
   };
 
-  const swiperOption: any = {
+  const swiperOption: SwiperProps  = {
     freeMode: freeMode,
     slidesPerView: "auto",
     spaceBetween: "0",
@@ -120,9 +125,11 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
     pagination: pagination,
     // updateOnWindowResize: false,
     onSwiper: (swiper: SwiperClass) => {
-      swiperRef.current = swiper;
-      handleSwiperInit;
+      swiperRefs.current[swiperIndex] = swiper;
+      handleSwiperInit(swiper);
       setActiveIndex(swiper.activeIndex);
+      const paginationCount = swiper.pagination.el?.childElementCount || 0;
+      // console.log(paginationCount)
     },
     onSlideChange: (swiper: SwiperClass) => {
       // console.log('슬라이드가 변경되었습니다!', e);
@@ -133,17 +140,18 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
       setSwiperIndex(swiper.realIndex);
     },
     onBeforeInit: (swiper: SwiperClass) => {
-      setSwiper(swiper);
+      setSwiperIndex(swiper.realIndex);
     },
     onResize: (swiper: SwiperClass) => {
-      setSwiperTotalIndex(swiper.pagination.el.childElementCount);
-      // console.log(swiper.pagination.el.childElementCount)
-      const paginationCount = swiper.pagination.el?.childElementCount || 0;
-      console.log(paginationCount)
-      setIsVisible(paginationCount >= 2);
+      if(swiper) {
+        const paginationCount = swiper.pagination.el?.childElementCount || 0;
+        setSwiperTotalIndex(paginationCount);
+        console.log(paginationCount)
+        setIsVisible(paginationCount > 1);
+      }
       if(auto) {
-        if (swiperRef.current?.autoplay) {
-          swiperRef.current.autoplay.start();
+        if (swiperRefs.current[swiperIndex].autoplay) {
+          swiperRefs.current[swiperIndex].autoplay.start();
         }
       }
     },
@@ -170,9 +178,9 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
           ))}
         </Swiper>
 {/* !isNavigationEnabled &&  */}
-        <div className={`controller ${!visible ? 'hidden':''}`}>
+        <div className={`controller ${visible ? '':'hidden'}`}>
           <button onClick={handlePrev} className={isBeginning ? 'opacity-70' : ''}>왼쪽 버튼</button>
-          <div className={`pagination ${!pager && visible ? 'hidden' : ''}`}>
+          <div className={`pagination ${pager ? '' : 'hidden'}`}>
             <div>
               <span>{swiperIndex + 1}</span>
               <span>{'/'}</span>

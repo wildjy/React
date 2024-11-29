@@ -1,14 +1,16 @@
-import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
-import { cn } from "../../sharedUI/common/cn";
+import React, { useRef, useState, useLayoutEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { SwiperProps } from 'swiper/react';
 import { Swiper as SwiperClass } from 'swiper';
-import { FreeMode, Navigation, Pagination, Autoplay , Scrollbar, A11y } from 'swiper/modules';
+import { FreeMode, Navigation, Pagination, Autoplay} from 'swiper/modules';
 import SlideThumbs from './SlideImage';
 import 'swiper/swiper-bundle.css';
 
 interface SwiperSliderProps {
-  slidesThume: {active: string, url: string, imgUrl: string}[];
+  slides: {active: string, url: string, imgUrl: string}[];
   id?: string;
+  freeMode?: boolean;
+  pager?: boolean;
   auto?: boolean;
   space?: string;
   delay?: number;
@@ -16,30 +18,40 @@ interface SwiperSliderProps {
   loop?: boolean;
 }
 
-const SwiperThumeSlider: React.FC<SwiperSliderProps> = ({ id, slidesThume, loop, auto, space, delay = 400, speed = '500'}) => {
-  const [swiperIndex, setSwiperIndex] = useState(0); // -> 페이지네이션용
+const SwiperThumeSlider: React.FC<SwiperSliderProps> = ({
+  id,
+  freeMode = true,
+  pager = false,
+  slides,
+  loop,
+  auto,
+  space,
+  delay = 400,
+  speed = '500'
+}) => {
+  const [swiperIndex, setSwiperIndex] = useState(0); //
   const [swiperTotalIndex, setSwiperTotalIndex] = useState(0); // -> 페이지네이션용
   const [isBeginning, setIsBeginning] = useState(true); // 처음 상태
   const [isEnd, setIsEnd] = useState(false); // 마지막 상태
-  const [swiper, setSwiper] = useState<SwiperClass>(); // -> 슬라이드용
   const [isNavigationEnabled, setIsNavigationEnabled] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [visible, setIsVisible] = useState(false);
-  const swiperRef = useRef<any>(null);
+  const swiperRefs = useRef<SwiperClass[]>([]);
 
   useLayoutEffect(() => {
     let timer: number;
     const activeSlide = () => {
-      const container = document.querySelector(`.swiper-container-${id}`);
-      if(container) {
-        const slides = container.querySelectorAll('.swiper-slide a');
+      const swiperWrap = document.querySelector(`.swiper-${id}`);
+      if(swiperWrap) {
+        const slides = swiperWrap.querySelectorAll('.swiper-slide a');
         slides.forEach((slide, index) => {
           if (slide.classList.contains('active')) {
-            swiperRef.current?.slideTo(index, 100, false);
+            swiperRefs.current[swiperIndex]?.slideTo(index, 100, false);
           }
         });
       }
     }
+
     const handleResize = () => {
       clearTimeout(timer);
       timer = window.setTimeout(() => {
@@ -59,7 +71,6 @@ const SwiperThumeSlider: React.FC<SwiperSliderProps> = ({ id, slidesThume, loop,
     }
 
     multiHandler();
-
     window.addEventListener('resize', multiHandler);
 
     // active slide
@@ -71,11 +82,11 @@ const SwiperThumeSlider: React.FC<SwiperSliderProps> = ({ id, slidesThume, loop,
   }, []);
 
   const handlePrev = () => {
-    swiperRef.current?.slidePrev()
+    swiperRefs.current[swiperIndex]?.slidePrev()
   }
 
   const handleNext = () => {
-    swiperRef.current?.slideNext()
+    swiperRefs.current[swiperIndex]?.slideNext()
   }
 
   const handleSwiperInit = (swiper: SwiperClass) => {
@@ -97,22 +108,26 @@ const SwiperThumeSlider: React.FC<SwiperSliderProps> = ({ id, slidesThume, loop,
     },
   };
 
-  const swiperOption: any = {
-    freeMode: false,
+  const swiperOption: SwiperProps = {
+    freeMode: freeMode,
     slidesPerView: "auto",
     spaceBetween: "0",
     autoplay: auto ? { delay: delay, disableOnInteraction: false, } : false,
     speed: speed,
     loop: loop,
-    navigation: delay <= 400 && loop === true ? false : isNavigationEnabled, //true
+    // navigation: delay <= 400 && loop === true ? false : isNavigationEnabled, //true isNavigationEnabled
     pagination: pagination,
     // updateOnWindowResize: false,
     onSwiper: (swiper: SwiperClass) => {
-      swiperRef.current = swiper;
-      handleSwiperInit;
+      swiperRefs.current[swiperIndex] = swiper;
+      handleSwiperInit(swiper);
+      // console.log(swiper)
       setActiveIndex(swiper.activeIndex);
+      const paginationCount = swiper;
+      // console.log(paginationCount)
     },
     onSlideChange: (swiper: SwiperClass) => {
+      // console.log('슬라이드가 변경되었습니다!', e);
       updateNavigationState(swiper)
       setActiveIndex(swiper.activeIndex);
     },
@@ -120,16 +135,17 @@ const SwiperThumeSlider: React.FC<SwiperSliderProps> = ({ id, slidesThume, loop,
       setSwiperIndex(swiper.realIndex);
     },
     onBeforeInit: (swiper: SwiperClass) => {
-      setSwiper(swiper);
+      setSwiperIndex(swiper.realIndex);
     },
     onResize: (swiper: SwiperClass) => {
-      setSwiperTotalIndex(swiper.pagination.el.childElementCount);
-      // console.log(swiper.pagination.el.childElementCount)
+      setSwiperTotalIndex(swiper.pagination.el.childElementCount || 0);
       const paginationCount = swiper.pagination.el?.childElementCount || 0;
+      setSwiperTotalIndex(paginationCount);
+      console.log(paginationCount)
       setIsVisible(paginationCount > 1);
       if(auto) {
-        if (swiperRef.current?.autoplay) {
-          swiperRef.current.autoplay.start();
+        if (swiperRefs.current[swiperIndex]?.autoplay) {
+          swiperRefs.current[swiperIndex].autoplay.start();
         }
       }
     },
@@ -137,32 +153,34 @@ const SwiperThumeSlider: React.FC<SwiperSliderProps> = ({ id, slidesThume, loop,
 
   return (
     <>
-      <Swiper
-        modules={[FreeMode, Navigation, Pagination, Autoplay, ...(isNavigationEnabled ? [Navigation] : [])]} // ...(isNavigationEnabled ? [Navigation] : [])
-        {...swiperOption}
+      <div className={`swiper-${id}`}>
+        <Swiper
+          modules={[FreeMode, Navigation, Pagination, Autoplay, ...(isNavigationEnabled ? [Navigation] : [])]} // ...(isNavigationEnabled ? [Navigation] : [])
+          {...swiperOption}
 
-        className={`swiper-container-${id} swiper_lnb w-full`}
-      >
-        {slidesThume.map((slide, index) => (
-          <SwiperSlide key={index} style={{width: "auto" }}> {/* className={`mr-[3.75rem]`} */}
-            <div style={{marginRight: `${space}` }} >
-              {/* slide.. */}
-              <SlideThumbs slide={ slide } isActive={ activeIndex === index } />
-              {/* slide.. */}
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+          className={`swiper-container-${id} swiper_lnb w-full`}
+        >
+          {slides.map((slide, index) => (
+            <SwiperSlide key={index} style={{width: "auto" }}> {/* className={`mr-[3.75rem]`} */}
+              <div style={{marginRight: `${space || '4'}` }} >
+                {/* slide.. */}
+                <SlideThumbs slide={ slide } isActive={ activeIndex === index } />
+                {/* slide.. */}
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
 
-      <div className={!isNavigationEnabled && !setIsVisible ? 'hidden':''}>
-        <button onClick={handlePrev} className={isBeginning ? 'opacity-70' : ''}>왼쪽 버튼</button>
-        <div>
-          <span>{swiperIndex + 1}</span>
-          <span>{'/'}</span>
-          <span>{swiperTotalIndex}</span>
+        <div className={`controller ${visible ? '':'hidden'}`}>
+          <button onClick={handlePrev} className={isBeginning ? 'opacity-70' : ''}>왼쪽 버튼</button>
+          <div className={`pagination ${pager ? '' : 'hidden'}`}>
+            <span>{swiperIndex + 1}</span>
+            <span>{'/'}</span>
+            <span>{swiperTotalIndex}</span>
+          </div>
+          <div ref={paginationRef}></div>
+          <button onClick={handleNext} className={isEnd ? 'opacity-70' : ''}>오른쪽 버튼</button>
         </div>
-        <div ref={paginationRef}></div>
-        <button onClick={handleNext} className={isEnd ? 'opacity-70' : ''}>오른쪽 버튼</button>
       </div>
     </>
   );

@@ -8,12 +8,16 @@ const config: Config = {
     "./src/sharedUI/**/*.{js,ts,jsx,tsx}",
     "./src/**/*.{js,ts ,jsx,tsx}",
   ],
+  // important: true,
   theme: {
     extend: {
       screens: {
+        portrait: { raw: '(orientation: portrait)' }, // 세로 화면
+        landscape: { raw: '(orientation: landscape)' }, // 가로 화면
+        'max-950': { max: '950px' }, // 360px
         'sm': '360px', // 360px
         'md': '720px', // 720px : mobile
-        'lg': '1024px', // 1024px
+        'lg': '1280px', // 1024px
         'xl': '1440px',
         '2xl': '1920px',
       },
@@ -28,7 +32,7 @@ const config: Config = {
         s: '0.875rem', // 14px
         md: '0.938rem', // 15px
         base: '1rem', // base: 16px
-        mobile: '3.03vw', // mobile: 22px 2.22vw, 24px=3.33vw
+        mobile: '1.875vw', // mobile: 22px 1280/21.71vw, 1280/24px=1.875vw
         lg: '1.125rem', // 18px
         xl: '1.25rem', // 20px :2.77vw
         '2xl': '1.375rem', // 22px : 3.03vw
