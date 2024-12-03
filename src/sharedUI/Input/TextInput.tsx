@@ -11,7 +11,7 @@ const InputVariants = cva(
     variants: {
       size: {
         base: "px-7 py-5",
-        sm: "input-sm..",
+        sm: "input-sm.. px-4 py-2",
         md: "input-sm..",
         lg: "input-lg..",
         full: "input-full w-full",

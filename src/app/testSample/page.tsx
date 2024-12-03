@@ -9,8 +9,8 @@ import Button from "../../sharedUI/Button/ButtonUi";
 import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
 import Title from "../../sharedUI/Title/Title";
-import SwiperSlider from './swiper';
-import SwiperCustom from './swiperCustom';
+import SwiperSlider from "../../sharedUI/Swiper/Swiper";
+// import SwiperSlider from './swiper';
 
 const HighSchoolPage: React.FC = () => {
   // input
@@ -431,7 +431,6 @@ const HighSchoolPage: React.FC = () => {
           <div className="default_checkbox flex gap-3 flex-wrap">
             <CheckBox
               value="checkbox_1"
-              label="체크박스 sm"
               checked={isChecked["checkbox_1"] || false}
               onChange={handleCheckChange}
             />
@@ -662,16 +661,18 @@ const HighSchoolPage: React.FC = () => {
           <Title title="Swiper" size="md" bold="semi" />
 
           <div>
-            {/* Tab */}
-            {/* <SwiperSlider slides={slides_img} space={'2rem'} loop={false} auto={false}  /> */}
-            {/*  */}
-
+            {/*
             <SwiperSlider id={"1"} slides={slides} pager={true} space={'1rem'} />
-            {/*  */}
             <SwiperSlider id={"2"} slides={slides_img} images={true} pager={true} freeMode={false} space={'3rem'} loop={false} auto={false} delay={300} speed={1500} />
-            {/*  */}
             <SwiperSlider id={'3'} slides={slides_img2} images={true} pager={true} freeMode={false} loop={false} auto={false} delay={300} speed={1500} space={'1rem'} />
-            {/*   */}
+            */}
+
+            <div className="border-b border-gray-300">
+              <SwiperSlider id={1} slides={slides} arrow={true} pager={false} />
+            </div>
+
+            <SwiperSlider id={2} slides={slides_img} image={true} arrow={true} pager={true} />
+
 
           </div>
 

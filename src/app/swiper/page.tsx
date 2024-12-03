@@ -2,7 +2,7 @@
 import React from "react";
 import { useEffect, useRef, useState, ChangeEvent } from 'react';
 import Title from "../../sharedUI/Title/Title";
-import SwiperComponent from "../../sharedUI/Swiper/Swiper";
+import SwiperSlider from "../../sharedUI/Swiper/Swiper";
 
 const SwiperPage: React.FC = () => {
   const [activeIndexes, setActiveIndexes] = useState<{ [key: string]: number }>({});
@@ -144,10 +144,10 @@ const SwiperPage: React.FC = () => {
           <div>
 
             <div className="border-b border-gray-300">
-              <SwiperComponent id={1} slides={slides} arrow={false} pager={false} onSlideChange={(swiper) => handleSlideChange(1, swiper)} />
+              <SwiperSlider id={1} slides={slides} arrow={false} pager={false} onSlideChange={(swiper) => handleSlideChange(1, swiper)} />
             </div>
 
-            <SwiperComponent id={2} slides={slides_img} image={true} arrow={true} pager={false} onSlideChange={(swiper) => handleSlideChange(2, swiper)} />
+            <SwiperSlider id={2} slides={slides_img} image={true} arrow={true} pager={false} onSlideChange={(swiper) => handleSlideChange(2, swiper)} />
 
             <p>Active index for Swiper 1: {activeIndexes[1]}</p>
             <p>Active index for Swiper 2: {activeIndexes[2]}</p>

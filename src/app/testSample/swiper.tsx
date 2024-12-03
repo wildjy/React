@@ -161,7 +161,6 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
     },
   }
 
-
   return (
     <>
       <div className={`swiper-${id}`}>

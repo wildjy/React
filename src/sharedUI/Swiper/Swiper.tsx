@@ -19,7 +19,7 @@ interface swiperProps {
     url?: string,
     imgUrl?: string
   }[],
-  onSlideChange?: (swiper: any) => void,
+  onSlideChange?: (swiper: SwiperClass) => void,
 }
 
 const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow = true, pager, onSlideChange }) => {
@@ -34,27 +34,28 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
     const activeButton = () => {
       const swiperWrap = document.querySelector(`.swipers-${id}`);
       if(swiperWrap) {
-        const contentWidth = window.innerWidth;
+        // const contentWidth = window.innerWidth;
         const width = swiperWrap.querySelector('.swiper-slide')?.clientWidth || 0;
         const length = swiperWrap.querySelectorAll('.swiper-slide').length;
-        const value = contentWidth < width * length;
-        setIsVisible(value);
+        const activeValue = contentWidth < width * length;
+        setIsVisible(activeValue);
       };
     }
 
     const timer = setTimeout(() => {
-      swiperRef.current?.update(); // Swiper 상태 업데이트
-      console.log(swiperRef.current?.update())
-      activeButton();
-    }, 50); // 최적화된 딜레이
+      swiperRef.current?.update();
+    }, 50);
 
     const handleResize = () => {
       if (swiperRef.current) {
-        setContentWidth(window.innerWidth); // 현재 브라우저 너비 저장
+        const contWidth = document.querySelector(`.container`);
+        setContentWidth(contWidth?.clientWidth || 0);
         swiperRef.current?.update();
         activeButton();
       }
     };
+
+    handleResize();
 
     window.addEventListener('resize', handleResize);
     return () => {
@@ -78,7 +79,6 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
       const swiperWrap = document.querySelector(`.swipers-${id}`);
       if(swiperWrap) {
         const slides = swiperWrap.querySelectorAll('.swiper-slide a');
-        const isPager = swiperWrap.querySelectorAll(`.swiper-pagination`);
         slides.forEach((slide, index) => {
           if (slide.classList.contains('active')) {
             swiperRef.current?.slideTo(index, 100, false)
@@ -88,7 +88,6 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
     }
     activeSlide();
   }, [])
-
 
   const handleSwiperInit = (swiper: SwiperClass) => {
     setIsBeginning(swiper.isBeginning);
@@ -124,10 +123,10 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
     slidesPerView: 'auto',
     className: 'visible !important',
     watchOverflow: true,
-    // navigation= {{
-    //   nextEl: `.swiper-${id}-next`,
-    //   prevEl: `.swiper-${id}-prev`,
-    // }}
+    navigation: {
+      nextEl: `.swiper-${id}-next`,
+      prevEl: `.swiper-${id}-prev`,
+    },
     pagination: pagination, // {{type: 'fraction', clickable: true }}
     onSwiper: (swiper: SwiperClass) => {
       // console.log(swiper)
@@ -177,13 +176,13 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
         </Swiper>
 
         <div className={`controller ${isVisible ? ''  : 'hidden'}`}>
-          <button onClick={handlePrev} className={`absolute y_center left-4 z-10 bg-white rounded-full swiper-${id}-prev ${isBeginning ? 'opacity-70' : ''} ${arrow ? '' : 'hidden'}`}>
+          <button className={`swiper-${id}-prev absolute y_center left-4 z-10 bg-white rounded-full ${arrow ? '' : 'hidden'}`}>
             <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_off.svg" className='w-8 md:w-9' alt="" />
           </button>
           <div className={` ${pager ? '' : 'hidden'}`}>
             <div ref={paginationRef} className={`swiper-pagination`}></div>
           </div>
-          <button onClick={handleNext} className={`absolute y_center right-4 z-10 bg-white rounded-full swiper-${id}-next ${isEnd ? 'opacity-70' : ''} ${arrow ? '' : 'hidden'}`}>
+          <button className={`swiper-${id}-next absolute y_center right-4 z-10 bg-white rounded-full ${arrow ? '' : 'hidden'}`}>
             <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg" className='w-8 md:w-9' alt="" />
           </button>
         </div>

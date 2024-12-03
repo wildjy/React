@@ -85,7 +85,10 @@ const Radio: FC<InputProps> = ({
       { // disabled setting
         "text-gray-500 bg-gray-300 peer-checked:bg-gray-300 peer-checked:border-gray-300 after:bg-gray-300 after:border-none peer-checked:after:bg-gray-300 cursor-default" : disabled
       })}></div>
-      <span className="ml-3 text-gray-900">{label}</span>
+
+      { label && (
+        <span className="ml-3 text-gray-900">{label}</span>
+      )}
     </label>
   );
 };
