@@ -9,8 +9,7 @@ import Button from "../../sharedUI/Button/ButtonUi";
 import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
 import Title from "../../sharedUI/Title/Title";
-import SwiperSlider from './Swiper';
-import SwiperThumeSlider from './SwiperThume';
+import SwiperSlider from './swiper';
 import SwiperCustom from './swiperCustom';
 
 const HighSchoolPage: React.FC = () => {
@@ -275,6 +274,16 @@ const HighSchoolPage: React.FC = () => {
       active: '',
       url: '#self',
       imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/국어_최서희.jpg',
+    },
+    {
+      active: '',
+      url: 'https://swiperjs.com/demos',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/육군학과.jpg',
+    },
+    {
+      active: '',
+      url: '#self',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/덕성여대(2).jpg',
     },
     {
       active: 'active',
@@ -656,13 +665,13 @@ const HighSchoolPage: React.FC = () => {
             {/* Tab */}
             {/* <SwiperSlider slides={slides_img} space={'2rem'} loop={false} auto={false}  /> */}
             {/*  */}
+
             <SwiperSlider id={"1"} slides={slides} pager={true} space={'1rem'} />
             {/*  */}
-            <SwiperSlider id={"2"} slides={slides_1} pager={true} freeMode={false} space={'3rem'} loop={false} auto={false} delay={300} speed={1500} />
+            <SwiperSlider id={"2"} slides={slides_img} images={true} pager={true} freeMode={false} space={'3rem'} loop={false} auto={false} delay={300} speed={1500} />
             {/*  */}
-            <SwiperThumeSlider id={'3'} slides={slides_img} pager={true} freeMode={false} loop={false} auto={false} delay={300} speed={1500} space={'1rem'} />
+            <SwiperSlider id={'3'} slides={slides_img2} images={true} pager={true} freeMode={false} loop={false} auto={false} delay={300} speed={1500} space={'1rem'} />
             {/*   */}
-            {/* <SwiperCustom slidesCustom={slidesCustom} /> */}
 
           </div>
 

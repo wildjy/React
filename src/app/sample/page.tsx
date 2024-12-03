@@ -4,7 +4,7 @@ import MakeButton  from "../highschool/MakeButton";
 const SamplePage: React.FC = () => {
   return (
       <div className="bg-gray-50">
-        <div className="px-10 py-9 w-cont m-center bg-white">
+        <div className="px-7 py-5 w-cont m-center bg-white">
           <div className="p-4 border border-blue-900">
             <h1 className="p-2 text-3xs font-thin">[11px] High School Page</h1>
             <h1 className="p-2 text-3xs font-thin">가나다라마바사아자차카타파하</h1>
