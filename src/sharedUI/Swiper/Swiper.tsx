@@ -23,13 +23,11 @@ interface swiperProps {
 }
 
 const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow = true, pager, onSlideChange }) => {
-  //const [swiperIndex, setSwiperIndex] = useState(0);
-  // const [isVisible, setIsVisible] = useState(false); // 처음 상태
-  // const [isBeginning, setIsBeginning] = useState(true); // 처음 상태
-  // const [isEnd, setIsEnd] = useState(false); // 마지막 상태
   const [contentWidth, setContentWidth] = useState<number>(0);
 	const swiperRef = useRef<SwiperClass | null>(null);
   const paginationRef = useRef(null);
+
+  // pagination
   const pagination = {
     el: paginationRef.current,
     clickable: true,
@@ -44,18 +42,7 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
     }
   };
 
-
   useEffect(() => {
-    // const activeButton = () => {
-    //   const swiperWrap = document.querySelector(`.swipers-${id}`);
-    //   if(swiperWrap) {
-    //     const width = swiperWrap.querySelector('.swiper-slide')?.clientWidth || 0;
-    //     const length = swiperWrap.querySelectorAll('.swiper-slide').length;
-    //     const activeValue = contentWidth < width * length;
-    //     setIsVisible(activeValue);
-    //   };
-    // }
-
     const timer = setTimeout(() => {
       swiperRef.current?.update();
     }, 50);
@@ -65,7 +52,6 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
         const contWidth = document.querySelector(`.container`);
         setContentWidth(contWidth?.clientWidth || 0);
         swiperRef.current?.update();
-        // activeButton();
       }
     };
 
@@ -94,30 +80,10 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
 		activeSlide();
 	}, []);
 
-  // const handleSwiperInit = (swiper: SwiperClass) => {
-  //   setIsBeginning(swiper.isBeginning);
-  //   setIsEnd(swiper.isEnd);
-  // };
-
-  // const updateNavigationState = (swiper: SwiperClass) => {
-  //   setIsBeginning(swiper.isBeginning);
-  //   setIsEnd(swiper.isEnd);
-  // };
-
-  // const handlePrev = () => {
-  //   swiperRef.current?.slidePrev()
-  // }
-
-  // const handleNext = () => {
-  //   swiperRef.current?.slideNext()
-  // }
-
   const multiOnSlideChange = (swiper: SwiperClass) => {
     if(onSlideChange){
       onSlideChange(swiper);
     }
-    // setSwiperIndex(swiper.realIndex);
-    // updateNavigationState(swiper)
   }
 
   const swiperOption: SwiperProps = {
@@ -134,9 +100,7 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
     },
     pagination: pagination, // {{type: 'fraction', clickable: true }}
     onSwiper: (swiper: SwiperClass) => {
-      // console.log(swiper)
       swiperRef.current = swiper;
-      // handleSwiperInit(swiper);
     },
     onActiveIndexChange: (swiper: SwiperClass) => {
       console.log(swiper)
