@@ -9,8 +9,13 @@ import Button from "../../sharedUI/Button/ButtonUi";
 import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
 import Title from "../../sharedUI/Title/Title";
-import SwiperSlider from "../../sharedUI/Swiper/Swiper";
+// import SwiperSlider from "../../sharedUI/Swiper/Swiper";
 // import SwiperSlider from './swiper';
+import dynamic from 'next/dynamic';
+
+const SwiperSlider = dynamic(() => import('../../sharedUI/Swiper/Swiper'), {
+  ssr: false
+});
 
 const HighSchoolPage: React.FC = () => {
   // input
