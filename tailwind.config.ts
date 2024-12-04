@@ -34,7 +34,7 @@ const config: Config = {
         smMobile: '4.166vw', // 480 : 20px = 4.166vw
         mobile: '3.125vw', // 768 : 24px = 3.125vw
         tablet: '1.75vw', // 1024 : 16px = 1.56, 18px = 1.75
-        half: '1.25vw', // 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
+        half: '1.4vw', // 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
         base: '1rem', // base: 16px
         lg: '1.125rem', // 18px
         xl: '1.25rem', // 20px :2.77vw
