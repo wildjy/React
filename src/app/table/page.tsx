@@ -5,8 +5,10 @@ import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 
 const theadThStyle = 'p-0 md:py-5 w-full h-9 md:h-auto flex border-b-0 last:border-b md:border-b border-r-0 md:w-auto md:table-cell items-center justify-center';
-const tbodyTdStyle = 'p-0 md:py-5 w-full h-9 md:h-auto flex border-b-0 last:border-b md:border-b md:w-auto md:table-cell items-center';
+const tbodyTdStyle = 'p-0 md:p-0 md:py-0  w-full h-9 md:h-auto flex border-b-0 last:border-b md:border-b md:w-auto md:table-cell items-center';
 const tbodyTdDivStyle = 'w-full flex md:flex-wrap text-center';
+const tbodyTdDivPTopStyle = 'w-full md:py-5 md:border-b ';
+const tbodyTdDivPBottomStyle = 'w-full md:py-5';
 
 const TablePage: React.FC = () => {
   // input
@@ -17,6 +19,7 @@ const TablePage: React.FC = () => {
       score3: "",
       score4: "",
       score5: "",
+      score6: "",
     },
   ]);
 
@@ -124,89 +127,89 @@ const TablePage: React.FC = () => {
           <tr className="block md:table-row">
             <th scope="col" className={tbodyTdStyle}>
               <div className={tbodyTdDivStyle}>
-                <p className="w-full">영역</p>
-                <p className="w-full">선택과목</p>
+                <div className={tbodyTdDivPTopStyle}>영역</div>
+                <div className={tbodyTdDivPBottomStyle}>선택과목</div>
               </div>
             </th>
             <td className={tbodyTdStyle}>
               <div className={tbodyTdDivStyle}>
-                <p className="w-full">한국사</p>
+                <div className="w-full">한국사</div>
               </div>
             </td>
             <td className={tbodyTdStyle}>
               <div className={tbodyTdDivStyle}>
-                <p className="w-full">국어</p>
-                <p className="w-full">
+                <div className={tbodyTdDivPTopStyle}>국어</div>
+                <div className={tbodyTdDivPBottomStyle}>
                   <select title="수학 구분">
                     <option>--선택--</option>
                     <option>확률과통계</option>
                     <option>미적분</option>
                     <option>기하</option>
                   </select>
-                </p>
-              </div>
-            </td>
-            <td className={tbodyTdStyle}>
-              <div className={tbodyTdDivStyle}>
-                <p className="w-full">수학</p>
-                <p className="w-full">
-                  <select title="수학 구분">
-                    <option>--선택--</option>
-                    <option>확률과통계</option>
-                    <option>미적분</option>
-                    <option>기하</option>
-                  </select>
-                </p>
-              </div>
-            </td>
-            <td className={tbodyTdStyle}>
-              <div className={tbodyTdDivStyle}>
-                <p className="w-full">영어</p>
-              </div>
-            </td>
-            <td className={`${tbodyTdStyle} md:p-0 md:py-0`}>
-              <div className={tbodyTdDivStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <p className="w-full md:p-5 md:border-b">
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </p>
-                </div>
-                <div className={tbodyTdDivStyle}>
-                  <p className="w-full md:p-5 md:w-1/2">
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </p>
-                  <p className="w-full md:p-5 md:w-1/2">
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </p>
                 </div>
               </div>
             </td>
             <td className={tbodyTdStyle}>
               <div className={tbodyTdDivStyle}>
-                <p className="w-full">제2외국어</p>
-                <p className="w-full">
+                <div className={tbodyTdDivPTopStyle}>수학</div>
+                <div className={tbodyTdDivPBottomStyle}>
                   <select title="수학 구분">
                     <option>--선택--</option>
                     <option>확률과통계</option>
                     <option>미적분</option>
                     <option>기하</option>
                   </select>
-                </p>
+                </div>
+              </div>
+            </td>
+            <td className={tbodyTdStyle}>
+              <div className={tbodyTdDivStyle}>
+                <div className="w-full">영어</div>
+              </div>
+            </td>
+            <td className={`${tbodyTdStyle}`}>
+              <div className={tbodyTdDivStyle}>
+                <div className={tbodyTdDivStyle}>
+                  <div className={tbodyTdDivPTopStyle}>
+                    <select title="수학 구분">
+                      <option>--선택--</option>
+                      <option>확률과통계</option>
+                      <option>미적분</option>
+                      <option>기하</option>
+                    </select>
+                  </div>
+                </div>
+                <div className={tbodyTdDivStyle}>
+                  <div className="w-full md:p-5 md:w-1/2">
+                    <select title="수학 구분">
+                      <option>--선택--</option>
+                      <option>확률과통계</option>
+                      <option>미적분</option>
+                      <option>기하</option>
+                    </select>
+                  </div>
+                  <div className="w-full md:p-5 md:w-1/2">
+                    <select title="수학 구분">
+                      <option>--선택--</option>
+                      <option>확률과통계</option>
+                      <option>미적분</option>
+                      <option>기하</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td className={tbodyTdStyle}>
+              <div className={tbodyTdDivStyle}>
+                <div className={tbodyTdDivPTopStyle}>제2외국어</div>
+                <div className={tbodyTdDivPBottomStyle}>
+                  <select title="수학 구분">
+                    <option>--선택--</option>
+                    <option>확률과통계</option>
+                    <option>미적분</option>
+                    <option>기하</option>
+                  </select>
+                </div>
               </div>
             </td>
           </tr>
@@ -253,7 +256,7 @@ const TablePage: React.FC = () => {
                 onChange={handleCheckChange}
               />
             </th>
-            <th scope="col" className={`${theadThStyle} h-12`}>
+            <th scope="col" className={`${theadThStyle} h-[5rem]`}>
               <CheckBox
                 size="sm"
                 value="checkbox_11"
@@ -275,130 +278,157 @@ const TablePage: React.FC = () => {
           <tr className="block md:table-row">
             <th scope="col" className={tbodyTdStyle}>
               <div className={tbodyTdDivStyle}>
-                <p className="w-full">영역</p>
-                <p className="w-full">선택과목</p>
-                <p className="w-full">표준점수</p>
+                <div className={tbodyTdDivPTopStyle}>영역</div>
+                <div className={tbodyTdDivPTopStyle}>선택과목</div>
+                <div className={tbodyTdDivPBottomStyle}>표준점수</div>
               </div>
             </th>
             <td className={tbodyTdStyle}>
               <div className={tbodyTdDivStyle}>
-                <p className="w-full">한국사</p>
-                <p className="w-full"></p>
-                <p className="w-full">한국사</p>
-              </div>
-            </td>
-            <td className={tbodyTdStyle}>
-              <div className={tbodyTdDivStyle}>
-                <p className="w-full">국어</p>
-                <p className="w-full">
-                  <select title="수학 구분">
-                    <option>--선택--</option>
-                    <option>확률과통계</option>
-                    <option>미적분</option>
-                    <option>기하</option>
-                  </select>
-                </p>
-                <p className="w-full">
-                  <select title="수학 구분">
-                    <option>--선택--</option>
-                    <option>확률과통계</option>
-                    <option>미적분</option>
-                    <option>기하</option>
-                  </select>
-                </p>
-              </div>
-            </td>
-            <td className={tbodyTdStyle}>
-              <div className={tbodyTdDivStyle}>
-                <p className="w-full">수학</p>
-                <p className="w-full">
-                  <select title="수학 구분">
-                    <option>--선택--</option>
-                    <option>확률과통계</option>
-                    <option>미적분</option>
-                    <option>기하</option>
-                  </select>
-                </p>
-                <p className="w-full">
-                  <select title="수학 구분">
-                    <option>--선택--</option>
-                    <option>확률과통계</option>
-                    <option>미적분</option>
-                    <option>기하</option>
-                  </select>
-                </p>
-              </div>
-            </td>
-            <td className={tbodyTdStyle}>
-              <div className={tbodyTdDivStyle}>
-                <p className="w-full">영어</p>
-                <p className="w-full"></p>
-                <p className="w-full">영어
-                </p>
-              </div>
-            </td>
-            <td className={`${tbodyTdStyle} md:p-0 md:py-0 h-12`}>
-              <div className={`${tbodyTdDivStyle} h-full`}>
-                <div className={`${tbodyTdStyle} md:w-1/3 h-full items-center`}>
-                  <p className="w-full md:py-5 md:border-b">
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </p>
-                </div>
-                <div className={`${tbodyTdStyle} md:w-1/3 table-cell h-full`}>
-                  <p className="w-full md:py-5 md:border-b">
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </p>
-                  <p className="w-full md:py-5">
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </p>
-                </div>
-                <div className={`${tbodyTdStyle} md:w-1/3 table-cell h-full`}>
-                  <p className="w-full md:py-5 md:border-b">
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </p>
-                  <p className="w-full md:py-5 ">
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </p>
+                <div className={tbodyTdDivPTopStyle}>한국사</div>
+                <div className={tbodyTdDivPTopStyle}>-</div>
+                <div className={tbodyTdDivPBottomStyle}>
+                  <TextInput
+                    type="text"
+                    addId="inp-1"
+                    label="한국사"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    value={inputValue[0].score1}
+                    onChange={(e) => handleInputChange(e, 0, "score1")}
+                  />
                 </div>
               </div>
             </td>
             <td className={tbodyTdStyle}>
               <div className={tbodyTdDivStyle}>
-                <p className="w-full">제2외국어</p>
-                <p className="w-full">제2외국어</p>
-                <p className="w-full">
+                <div className={tbodyTdDivPTopStyle}>국어</div>
+                <div className={tbodyTdDivPTopStyle}>
                   <select title="수학 구분">
                     <option>--선택--</option>
                     <option>확률과통계</option>
                     <option>미적분</option>
                     <option>기하</option>
                   </select>
-                </p>
+                </div>
+                <div className={tbodyTdDivPBottomStyle}>
+                  <TextInput
+                    type="text"
+                    addId="inp-1"
+                    label="국어"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    value={inputValue[0].score2}
+                    onChange={(e) => handleInputChange(e, 0, "score2")}
+                  />
+                </div>
+              </div>
+            </td>
+            <td className={tbodyTdStyle}>
+              <div className={tbodyTdDivStyle}>
+                <div className={tbodyTdDivPTopStyle}>수학</div>
+                <div className={tbodyTdDivPTopStyle}>
+                  <select title="수학 구분">
+                    <option>--선택--</option>
+                    <option>확률과통계</option>
+                    <option>미적분</option>
+                    <option>기하</option>
+                  </select>
+                </div>
+                <div className={tbodyTdDivPBottomStyle}>
+                  <TextInput
+                    type="text"
+                    addId="inp-1"
+                    label="수학"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    value={inputValue[0].score3}
+                    onChange={(e) => handleInputChange(e, 0, "score3")}
+                  />
+                </div>
+              </div>
+            </td>
+            <td className={tbodyTdStyle}>
+              <div className={tbodyTdDivStyle}>
+                <div className={tbodyTdDivPTopStyle}>영어</div>
+                <div className={tbodyTdDivPTopStyle}>-</div>
+                <div className={tbodyTdDivPBottomStyle}>
+                  <TextInput
+                    type="text"
+                    addId="inp-1"
+                    label="영어"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    value={inputValue[0].score4}
+                    onChange={(e) => handleInputChange(e, 0, "score4")}
+                  />
+                </div>
+              </div>
+            </td>
+            <td className={`${tbodyTdStyle} md:p-0 md:py-0 h-[5rem]`}>
+              <div className={`${tbodyTdDivStyle} md:h-full`}>
+                <div className={`${tbodyTdStyle} h-auto w-1/3 md:w-full md:h-full items-center md:border-b-0`}>
+                  <div className={tbodyTdDivPTopStyle}>
+                    <select title="수학 구분">
+                      <option>--선택1--</option>
+                      <option>확률과통계</option>
+                      <option>미적분</option>
+                      <option>기하</option>
+                    </select>
+                  </div>
+                </div>
+                <div className={`table-cell w-1/3 md:w-full md:flex`}>
+                  <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 md:border-b h-[2.5rem] md:h-auto">
+                    <select title="수학 구분">
+                      <option>--선택2--</option>
+                      <option>확률과통계</option>
+                      <option>미적분</option>
+                      <option>기하</option>
+                    </select>
+                  </div>
+                  <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 md:border-b h-[2.5rem] md:h-auto">
+                    <select title="수학 구분">
+                      <option>--선택3--</option>
+                      <option>확률과통계</option>
+                      <option>미적분</option>
+                      <option>기하</option>
+                    </select>
+                  </div>
+                </div>
+                <div className={`table-cell w-1/3 md:w-full md:flex`}>
+                  <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
+                    <TextInput
+                      type="text"
+                      addId="inp-1"
+                      label="사과탐1"
+                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                      value={inputValue[0].score4}
+                      onChange={(e) => handleInputChange(e, 0, "score4")}
+                    />
+                  </div>
+                  <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
+                    <TextInput
+                      type="text"
+                      addId="inp-1"
+                      label="사과탐2"
+                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                      value={inputValue[0].score5}
+                      onChange={(e) => handleInputChange(e, 0, "score5")}
+                    />
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td className={tbodyTdStyle}>
+              <div className={tbodyTdDivStyle}>
+                <div className={tbodyTdDivPTopStyle}>제2외국어</div>
+                <div className={tbodyTdDivPTopStyle}>제2외국어</div>
+                <div className={tbodyTdDivPBottomStyle}>
+                  <TextInput
+                    type="text"
+                    addId="inp-1"
+                    label="영어"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    value={inputValue[0].score6}
+                    onChange={(e) => handleInputChange(e, 0, "score6")}
+                  />
+                </div>
               </div>
             </td>
           </tr>

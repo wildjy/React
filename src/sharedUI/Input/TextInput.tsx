@@ -6,7 +6,7 @@ import { Success } from "./storybook/InputText.stories";
 
 
 const InputVariants = cva(
-  "w-full md:w-auto peer leading-none border border-gray-500 focus:outline-none rounded-lg",
+  "w-full peer leading-none border border-gray-500 focus:outline-none rounded-lg", // md:w-auto
   {
     variants: {
       size: {
@@ -63,7 +63,7 @@ const TextInput : FC<InputProps> = ({
   const atType = ["ghost"].includes(mode);
 
   return (
-    <div className="relative">
+    <div className="w-full relative">
       <input
         type="text"
         className={cn(className, addClass,
