@@ -287,12 +287,12 @@ const TablePage: React.FC = () => {
               <div className={tbodyTdDivStyle}>
                 <div className={tbodyTdDivPTopStyle}>한국사</div>
                 <div className={tbodyTdDivPTopStyle}>-</div>
-                <div className={tbodyTdDivPBottomStyle}>
+                <div className={`${tbodyTdDivPBottomStyle}`}>
                   <TextInput
                     type="text"
                     addId="inp-1"
                     label="한국사"
-                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-0 border-b border-gray-300 rounded-none"
                     value={inputValue[0].score1}
                     onChange={(e) => handleInputChange(e, 0, "score1")}
                   />
@@ -315,7 +315,7 @@ const TablePage: React.FC = () => {
                     type="text"
                     addId="inp-1"
                     label="국어"
-                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-0 border-b border-gray-300 rounded-none"
                     value={inputValue[0].score2}
                     onChange={(e) => handleInputChange(e, 0, "score2")}
                   />
@@ -338,7 +338,7 @@ const TablePage: React.FC = () => {
                     type="text"
                     addId="inp-1"
                     label="수학"
-                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-0 border-b border-gray-300 rounded-none"
                     value={inputValue[0].score3}
                     onChange={(e) => handleInputChange(e, 0, "score3")}
                   />
@@ -354,7 +354,7 @@ const TablePage: React.FC = () => {
                     type="text"
                     addId="inp-1"
                     label="영어"
-                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-0 border-b border-gray-300 rounded-none"
                     value={inputValue[0].score4}
                     onChange={(e) => handleInputChange(e, 0, "score4")}
                   />
@@ -397,7 +397,7 @@ const TablePage: React.FC = () => {
                       type="text"
                       addId="inp-1"
                       label="사과탐1"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-0 border-b border-gray-300 rounded-none"
                       value={inputValue[0].score4}
                       onChange={(e) => handleInputChange(e, 0, "score4")}
                     />
@@ -407,7 +407,7 @@ const TablePage: React.FC = () => {
                       type="text"
                       addId="inp-1"
                       label="사과탐2"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-0 border-b border-gray-300 rounded-none"
                       value={inputValue[0].score5}
                       onChange={(e) => handleInputChange(e, 0, "score5")}
                     />
@@ -424,7 +424,7 @@ const TablePage: React.FC = () => {
                     type="text"
                     addId="inp-1"
                     label="영어"
-                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300 rounded-md"
+                    addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-0 border-b border-gray-300 rounded-none"
                     value={inputValue[0].score6}
                     onChange={(e) => handleInputChange(e, 0, "score6")}
                   />

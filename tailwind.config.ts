@@ -15,17 +15,16 @@ const config: Config = {
         portrait: { raw: '(orientation: portrait)' }, // 세로 화면
         landscape: { raw: '(orientation: landscape)' }, // 가로 화면
         'max-950': { max: '950px' }, // 360px
-        'sm': '480px', // 360px
-        'md': '768px', // 768px : mobile
-        'lg': '1024px',
-        'xl': '1280px',
-        '2xl': '1920px',
+        'sm': '481px', // 360px
+        'md': '769px', // 768px : mobile
+        'lg': '1025px',
+        'xl': '1281px',
+        '2xl': '1921px',
       },
       fontFamily: {
         sans: ['Pretendard', 'Arial', 'sans-serif'],
       },
       fontSize: {
-        '0': '0',
         '3xs': '0.688rem', // 11px
         '2xs': '0.75rem', // 12px
         xs: '0.813rem', // 13px
