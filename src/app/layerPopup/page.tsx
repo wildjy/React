@@ -1,66 +1,39 @@
-
 "use client";
 
-import React from "react";
-import { createContext, useContext } from 'react';
-const MyContext = createContext();
+import {useState } from "react";
+import LayerPopup from './LayerPopup';
 
-// start : component
-function GrandParent() {
-  // return (
-  //   <>
-  //     <Parent />
-  //   </>
-  // );
-  const value = useContext(MyContext);
-  return (
-    <>
-      <div><span className="text-red-500">Receivied</span> : {value}</div>
-    </>
-  );
-};
+// function ComponentA() {
+//   const value = useContext(MyContext);
+//   return <p className="text-blue-700">{value}</p>
+// }
 
-function Parent() {
-  const value = useContext(MyContext);
-  return (
-    <>
-      <div><span className="text-blue-500">Receivied</span> : {value}</div>
-    </>
-  );
-};
+const LayerPopupPage = () => {
+  const [isLayerOpen, setIsLayerOpen] = useState();
 
-function Child() {
-  const value = useContext(MyContext);
-  return (
-    <>
-      <div><span className="text-green-500">Receivied</span> : {value}</div>
-    </>
-  );
-}
+  const OpenPopup = () => {
+    setIsLayerOpen((prev) => !prev);
+  }
 
-function Message() {
-  const value = useContext(MyContext);
-  return (
-    <>
-      <div><span className="text-yellow-500">Receivied</span> : {value}</div>
-    </>
-  );
-};
-// end : component
-
-const InputPage = () => {
   return (
     <>
       <div>
-        <MyContext.Provider value="Hello. Hershey's Cat World">
-          <GrandParent />
-          <Parent />
-          <Child />
-          <Message />
-        </MyContext.Provider>
+        <p>body contents </p>
+        <LayerPopup openEvent={isLayerOpen} closeEvent={OpenPopup}>
+          <LayerPopup.title />
+          <LayerPopup.contA />
+          <LayerPopup.contB />
+        </LayerPopup>
+        <button onClick={OpenPopup}>열기</button>
+
+        {/* <LayerPopup>
+          <LayerPopup.title />
+          <LayerPopup.contB />
+        </LayerPopup> */}
+        {/* <button onClick={OpenPopup}>열기</button> */}
       </div>
     </>
   )
 }
 
-export default InputPage;
+export default LayerPopupPage;
