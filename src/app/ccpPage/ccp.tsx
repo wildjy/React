@@ -49,7 +49,7 @@ const ComponentA:React.FC<ComponentProps> = ({ children}) => {
 const ComHeader = ({ children } : ComponentProps) => {
   return (
     <>
-      <p className="header">{ children }</p>
+      <p className="item-header">{ children }</p>
     </>
   )
 }
@@ -68,8 +68,9 @@ const ComponentB = ({ children, title, sub_txt } : ComponentProps ) => {
   return (
     <>
       <div className="ComB">
-        <span className="text-red-700">{ title }</span>
-        <span className="text-blue-700">{ sub_txt }</span>
+        {/* <span className="text-red-700">{ title }</span>
+        <span className="text-blue-700">{ sub_txt }</span> */}
+        { children }
       </div>
     </>
   );

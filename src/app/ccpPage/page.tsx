@@ -12,7 +12,7 @@ const CCPPage = () => {
           </CcpPatternPage.partA>
 
           <CcpPatternPage.partB title={'CCP partB....'} sub_txt={'sub_txt'}>
-            <CcpPatternPage.item>1234</CcpPatternPage.item>
+            <CcpPatternPage.item>CCP partB item..</CcpPatternPage.item>
           </CcpPatternPage.partB>
           <CcpPatternPage.partC title={'partC....'} />
         </CcpPatternPage>
