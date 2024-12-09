@@ -1,10 +1,4 @@
-import { createContext } from 'react';
 
-// const CounterContext = createContext();
-
-// function CounterProvider({ children }) {
-//   return <CounterContext.Provider>{children}</CounterContext.Provider>;
-// }
 
 function Value() {
   return <h1>1</h1>;

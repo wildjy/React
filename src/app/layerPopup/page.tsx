@@ -1,42 +1,35 @@
 "use client";
-
-import { useState } from "react";
-import LayerPopup from './LayerPopup';
-
-// function ComponentA() {
-//   const value = useContext(MyContext);
-//   return <p className="text-blue-700">{value}</p>
-// }
+import { useState } from 'react';
+import LayerPopup from './layerPopup';
 
 const LayerPopupPage = () => {
-  const [isLayerOpen, setIsLayerOpen] = useState<{[key: string]: boolean}>({
-    popup1: false,
+  const [isOpen, setIsOpen] = useState<{[key: string]: boolean}>({
+    popup1: true,
     popup2: false,
   });
 
-  const EventPopup = (key: string) => {
-    setIsLayerOpen((prevValue) => ({
+  const EventOpen = (key: string) => {
+    setIsOpen((prevValue) => ({
       ...prevValue,
       [key]: !prevValue[key],
-    }));
+    }))
   }
 
   return (
     <>
       <div>
-        <p>body contents </p>
-        <LayerPopup openEvent={isLayerOpen.popup1} closeEvent={() => EventPopup('popup1')}>
-          <LayerPopup.title />
-          <LayerPopup.contA />
-          <LayerPopup.contB />
+        <LayerPopup openEvent={isOpen.popup1} closeEvent={() => EventOpen('popup1')}>
+          <LayerPopup.Title />
+          <LayerPopup.Contents_1 />
+          <LayerPopup.Bottom />
         </LayerPopup>
-        <button className="py-2 px-5 border border-blue-700 rounded" onClick={() => EventPopup('popup1')}>열기</button>
+        <button onClick={() => EventOpen('popup1')}>열기1</button>
 
-        <LayerPopup openEvent={isLayerOpen.popup2} closeEvent={() => EventPopup('popup2')}>
-          <LayerPopup.title />
-          <LayerPopup.contB />
+        <LayerPopup openEvent={isOpen.popup2} closeEvent={() => EventOpen('popup2')}>
+          <LayerPopup.Title />
+          <LayerPopup.Bottom />
         </LayerPopup>
-        <button className="py-2 px-5 border border-blue-700 rounded" onClick={() => EventPopup('popup2')}>열기</button>
+        <button onClick={() => EventOpen('popup2')}>열기2</button>
       </div>
     </>
   )

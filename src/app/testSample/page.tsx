@@ -662,7 +662,7 @@ const HighSchoolPage: React.FC = () => {
 
         </div>
 
-        <div className="stepbar w-full">
+        <div className="swiper w-full">
           <Title title="Swiper" size="md" bold="semi" />
 
           <div>

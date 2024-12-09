@@ -1,12 +1,10 @@
-import { MyContext } from './context';
-import { useContext } from "react";
 
-const LayerTitle = () => {
+const PopupTitle = () => {
   return (
     <>
-      <p className="text-3xl"><b>Title component</b></p>
+      <p>Title Component..</p>
     </>
   )
-}
+};
 
-export default LayerTitle;
+export default PopupTitle;
