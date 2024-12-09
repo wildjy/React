@@ -7,4 +7,4 @@ interface ContextType {
   info_txt?: string;
 }
 
-export const MyContext = createContext<ContextType[] | null>(null);
+export const MyContext = createContext<ContextType[]>([]);

@@ -9,10 +9,17 @@ import ComponentB from './ComponentB';
 //   const value = useContext(MyContext);
 //   return <p className="text-blue-700">{value}</p>
 // }
+
 interface LayerPopupProps {
   openEvent?: boolean;
   closeEvent?: () => void;
   children: React.ReactNode;
+}
+
+interface ExtendedLayerPopup extends React.FC<LayerPopupProps> {
+  title: React.FC;
+  contA: React.FC;
+  contB: React.FC;
 }
 
 const value = [
@@ -29,12 +36,7 @@ const value = [
   }
 ];
 
-const LayerPopup: React.FC<LayerPopupProps> = ( { children, openEvent, closeEvent }) => {
-  // const [isOpen, setIsOpen] = useState(false);
-
-  // const OpenPopup = () => {
-  //   setIsOpen((prev) => !prev);
-  // }
+const LayerPopup: ExtendedLayerPopup = ( { children, openEvent, closeEvent }) => {
   return (
     <>
       {openEvent && (

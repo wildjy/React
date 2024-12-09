@@ -33,14 +33,14 @@ const UseStatePage: React.FC = () => {
               const [name, setName] = useState<string>('');
               const [age, setAge] = useState<number>(0);
 
-              const [selectRadio, setSelectRadio] = useState({[key: string] : string})({
+              const [selectRadio, setSelectRadio] = useState<{[key: string] : string}>({
                 type: '',
                 sex: '',
                 grade: '',
               })
               // {type: '', sex: '', grade: ''}
 
-              const [checkCheckBox, setCheckCheckBox] = useState({[key: string]: string})({
+              const [checkCheckBox, setCheckCheckBox] = useState<{[key: string] : string}>({
                 type: false,
                 sex: false,
                 grade: false,
@@ -109,6 +109,19 @@ const UseStatePage: React.FC = () => {
 
               const handleCheck = () => {
                 setCheck((prevCheck) => prevCheck = !prevCheck); // true <=> false
+              }
+
+              // 동적 [key]
+              const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
+                popup1: false,
+                popup2: false,
+              })
+
+              const EventPopup = (key: string) => {
+                setIsOpenPopup((prevValue) => ({
+                  ...prevValue,
+                  [key]: !prevValue[key],
+                }))
               }
 
 
