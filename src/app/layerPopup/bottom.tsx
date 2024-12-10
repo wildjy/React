@@ -1,8 +1,13 @@
+interface popupBottomProps {
+  children?: React.ReactNode;
+}
 
-const PopupBottom = () => {
+const PopupBottom: React.FC<popupBottomProps> = ({ children }) => {
   return (
     <>
-      <p>ComponentC</p>
+      <div>
+        { children }
+      </div>
     </>
   )
 };

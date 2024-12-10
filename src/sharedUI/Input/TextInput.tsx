@@ -21,8 +21,8 @@ const InputVariants = cva(
         base: "focus:border-blue-700 focus:ring-blue-700",
         ghost: "focus:border-blue-700 border-0 border-b rounded-none placeholder-transparent ",
         success: "focus:border-success", // border-success
-        warning: "border-warning", // focus:ring-1 focus:ring-warning
-        error: "border-error", // focus:ring-1 focus:ring-error
+        warning: "focus:border-warning", // focus:ring-1 focus:ring-warning
+        error: "focus:border-error", // focus:ring-1 focus:ring-error
       },
     },
     defaultVariants: {

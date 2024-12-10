@@ -1,8 +1,11 @@
+interface popupTitleProps {
+  children?: React.ReactNode;
+}
 
-const PopupTitle = () => {
+const PopupTitle: React.FC<popupTitleProps> = ({ children }) => {
   return (
     <>
-      <p>Title Component..</p>
+      { children }
     </>
   )
 };

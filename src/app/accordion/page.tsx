@@ -8,6 +8,7 @@ const AccordionPage = () => {
   return (
     <>
       <div className=''>
+
         <Accordion>
           <Accordion.Item>
             <Accordion.top>
@@ -28,7 +29,7 @@ const AccordionPage = () => {
           </Accordion.Item>
         </Accordion>
       </div>
-
+      {/*  */}
       <div>
         <AccordionOne>
           <AccordionOne.item>
@@ -36,9 +37,30 @@ const AccordionPage = () => {
               top..1
             </AccordionOne.top>
             <AccordionOne.bottom>
-              bottom..1
+
+              <AccordionOne>
+                <AccordionOne.item>
+                  <AccordionOne.top>
+                    sub top..1
+                  </AccordionOne.top>
+                  <AccordionOne.bottom>
+                  sub bottom..1
+                  </AccordionOne.bottom>
+                </AccordionOne.item>
+
+                <AccordionOne.item>
+                  <AccordionOne.top>
+                    sub top..2
+                  </AccordionOne.top>
+                  <AccordionOne.bottom>
+                  sub bottom..2
+                  </AccordionOne.bottom>
+                </AccordionOne.item>
+
+              </AccordionOne>
             </AccordionOne.bottom>
           </AccordionOne.item>
+
           <AccordionOne.item>
             <AccordionOne.top>
               top..2
@@ -57,6 +79,7 @@ const AccordionPage = () => {
             </AccordionOne.bottom>
           </AccordionOne.item>
         </AccordionOne>
+
       </div>
     </>
   )

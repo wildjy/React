@@ -10,7 +10,7 @@ interface LayerPopupProps {
 }
 interface LayerPopupType extends React.FC<LayerPopupProps> {
   Title: typeof PopupTitle;
-  Contents_1: typeof PopupContents;
+  Contents: typeof PopupContents;
   Bottom: typeof PopupBottom;
 }
 
@@ -34,7 +34,7 @@ const LayerPopup: LayerPopupType = ({ children, openEvent, closeEvent }) => {
 };
 
 LayerPopup.Title = PopupTitle;
-LayerPopup.Contents_1 = PopupContents;
+LayerPopup.Contents = PopupContents;
 LayerPopup.Bottom = PopupBottom;
 
 export default LayerPopup;

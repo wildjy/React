@@ -19,14 +19,19 @@ const LayerPopupPage = () => {
     <>
       <div>
         <LayerPopup openEvent={isOpen.popup1} closeEvent={() => EventOpen('popup1')}>
-          <LayerPopup.Title />
-          <LayerPopup.Contents_1 />
-          <LayerPopup.Bottom />
+          <LayerPopup.Title>팝업 1111</LayerPopup.Title>
+          <LayerPopup.Contents>팝업 컨텐츠츠츠ㅡ111</LayerPopup.Contents>
+          <LayerPopup.Bottom>
+            bottom: 11
+          </LayerPopup.Bottom>
         </LayerPopup>
 
         <LayerPopup openEvent={isOpen.popup2} closeEvent={() => EventOpen('popup2')}>
-          <LayerPopup.Title />
-          <LayerPopup.Bottom />
+          <LayerPopup.Title>팝업 222</LayerPopup.Title>
+          <LayerPopup.Contents> 22222</LayerPopup.Contents>
+          <LayerPopup.Bottom>
+            bottom: 22
+          </LayerPopup.Bottom>
         </LayerPopup>
 
         <div className='center_center flex justify-center items-center'>

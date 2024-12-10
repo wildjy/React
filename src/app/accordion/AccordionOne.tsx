@@ -12,7 +12,13 @@ interface ChildProps {
 const AccdContext = createContext<AccdContextProps | undefined>(undefined);
 
 function useAccdContext() {
-  return useContext(AccdContext);
+  const context = useContext(AccdContext);
+
+  if (!context) {
+    throw new Error("Accordion error");
+  }
+
+  return context;
 }
 
 interface accordionOneProps {
@@ -44,10 +50,7 @@ const AccordionOne: accordionOneType = ({ children }) => {
 
   // console.log(openId)
   const openEvent = (id: string) => {
-    setOpenId((prevId) => {
-      // console.log(prevId)
-      return prevId === id ? null : id;
-    });
+    setOpenId((prevId) => (prevId === id ? null : id));
   }
 
   return (
@@ -81,11 +84,6 @@ const AccordionOneItem: React.FC<accordionOneItemProps> = ({ children }) => {
 
 const AccordionOneTop: React.FC<accordionOneTopProps> = ({ children, id }) => {
   const context = useAccdContext();
-
-  if (!context) {
-    throw new Error("Accordion error");
-  }
-
   const { openId, openEvent } = context;
 
   return (
@@ -99,11 +97,6 @@ const AccordionOneTop: React.FC<accordionOneTopProps> = ({ children, id }) => {
 
 const AccordionOneBottom: React.FC<accordionOneBottomProps> = ({ children, id }) => {
   const context = useAccdContext();
-
-  if (!context) {
-    throw new Error("Accordion error");
-  }
-
   const { openId } = context;
 
   return (
