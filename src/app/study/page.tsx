@@ -10,16 +10,16 @@ export default function Page() {
   // Sample count
   const [count, setCount] = useState(0);
   const countRef = useRef(0);
-  console.log(count);
+  // console.log(count);
 
   const handleCount = () => {
     setCount(count + 1);
     countRef.current += 1;
-    console.log("Ref value:", countRef.current);
+    // console.log("Ref value:", countRef.current);
   }
 
   useEffect(() => {
-    console.log(`count changed to ${count}`)
+    // console.log(`count changed to ${count}`)
     return () => {
       // setCount(0);
     }
@@ -78,7 +78,7 @@ export default function Page() {
 
   const [textValue, setTextValue] = useState<string>('');
 
-  console.log(textValue);
+  // console.log(textValue);
   const handleChange = ( e: ChangeEvent<HTMLInputElement>) => {
     setTextValue(e.target.value);
   };
@@ -135,8 +135,8 @@ export default function Page() {
 
   // useEffect
   useEffect(() => {
-    console.log(inputValue)
-    console.log(inputValue[0].phone);
+    // console.log(inputValue)
+    // console.log(inputValue[0].phone);
     inputValue[0].name = "실행됨"
     return () => {
       inputValue[0].name = "클린업";
@@ -550,6 +550,76 @@ const handleRemoveItem = (index: number) => {
         {/* 조건문 랜더링 */}
         <Conditional />
 
+        {/* cloneElement */}
+        <div className="mt-5 p-6 border border-gray-400">
+          <p className="text-lg"><b>React.cloneElement</b></p>
+          <div className="mt-3">
+            <p className="mb-3"><b>기존 React 엘리먼트를 복제, 새로 props추가/덮어씀, 기존의 자식요소들은 복제된 엘리먼트에 그대로 포함. </b></p>
+          </div>
+
+          <div>
+            <b className="block text-gray-900">1. 기본문법</b>
+            <pre>
+              {`
+              React.cloneElement(
+                element,
+                [props],
+                [...children]
+              )
+
+              예시 )
+              const element = <button className="original">Click me</button>;
+              const clonedElement = React.cloneElement(element, { className: "new-class" });
+
+              console.log(clonedElement);
+              // <button className="new-class">Click me</button>
+
+              [props 추가/덮어쓰기]
+              const element = <button className="original" disabled={true}>Click me</button>;
+              const clonedElement = React.cloneElement(element, { disabled: false });
+
+              console.log(clonedElement);
+              // <button className="original" disabled={false}>Click me</button>
+
+              [children 교체]
+              const element = <div>Hello</div>;
+              const clonedElement = React.cloneElement(element, {}, "World!");
+
+              console.log(clonedElement);
+              // <div>World!</div>
+
+              [props + children 동시 변경]
+              const element = <div className="container">Old Content</div>;
+              const clonedElement = React.cloneElement(
+                element,
+                { className: "new-container" },
+                <span>New Content</span>
+              );
+
+              console.log(clonedElement);
+              // <div className="new-container"><span>New Content</span></div>
+
+              [사용 예시]
+              function Wrapper({ children }) {
+                return React.cloneElement(children, { style: { color: 'red' } });
+              }
+
+              function App() {
+                return (
+                  <Wrapper>
+                    <p>Hello World</p>
+                  </Wrapper>
+                );
+              }
+              `}
+            </pre>
+          </div>
+
+          <div className="mt-4 p-6 border border-gray-400">
+            <p><b>Sample</b></p>
+
+          </div>
+        </div>
       </div>
 
 

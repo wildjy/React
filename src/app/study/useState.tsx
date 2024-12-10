@@ -111,6 +111,14 @@ const UseStatePage: React.FC = () => {
                 setCheck((prevCheck) => prevCheck = !prevCheck); // true <=> false
               }
 
+              // open Index 관리
+              const [openIndex, setOpenIndex] = useState<number | null>(null);
+              const toggleEvent = (index: number) => {
+                setOpenIndex((prevIndex) => {
+                  return prevIndex === index ? null : index;
+                })
+              }
+
               // 동적 [key]
               const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
                 popup1: false,

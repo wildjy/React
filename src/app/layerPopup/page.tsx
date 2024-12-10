@@ -4,7 +4,7 @@ import LayerPopup from './layerPopup';
 
 const LayerPopupPage = () => {
   const [isOpen, setIsOpen] = useState<{[key: string]: boolean}>({
-    popup1: true,
+    popup1: false,
     popup2: false,
   });
 
@@ -23,13 +23,16 @@ const LayerPopupPage = () => {
           <LayerPopup.Contents_1 />
           <LayerPopup.Bottom />
         </LayerPopup>
-        <button onClick={() => EventOpen('popup1')}>열기1</button>
 
         <LayerPopup openEvent={isOpen.popup2} closeEvent={() => EventOpen('popup2')}>
           <LayerPopup.Title />
           <LayerPopup.Bottom />
         </LayerPopup>
-        <button onClick={() => EventOpen('popup2')}>열기2</button>
+
+        <div className='center_center flex justify-center items-center'>
+          <button className="px-4 py-2 border border-blue-700 rounded-lg" onClick={() => EventOpen('popup1')}>열기1</button>
+          <button className="px-4 py-2 border border-blue-700 rounded-lg" onClick={() => EventOpen('popup2')}>열기2</button>
+        </div>
       </div>
     </>
   )

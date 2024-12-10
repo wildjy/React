@@ -6,7 +6,7 @@ import LayerTitle from './title';
 import ComponentA from './ComponentA';
 import ComponentB from './ComponentB';
 
-// function ComponentA() {
+// function useMyContext() {
 //   const value = useContext(MyContext);
 //   return <p className="text-blue-700">{value}</p>
 // }

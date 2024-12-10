@@ -1,0 +1,65 @@
+
+"use client";
+import React from 'react';
+import Accordion from './Accordion';
+import AccordionOne from './AccordionOne';
+
+const AccordionPage = () => {
+  return (
+    <>
+      <div className=''>
+        <Accordion>
+          <Accordion.Item>
+            <Accordion.top>
+              아코디언 top..11
+            </Accordion.top>
+            <Accordion.bottom>
+              fgdgdfgdfgdfggsdgdg
+              <img src="http://board.jinhak.com/BoardV1/Upload/JinhakMain/QuickMenu/high_icon_6(5).svg" alt="" />
+            </Accordion.bottom>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.top>
+              아코디언 top..22
+            </Accordion.top>
+            <Accordion.bottom>
+              아코디언 bottom..22
+            </Accordion.bottom>
+          </Accordion.Item>
+        </Accordion>
+      </div>
+
+      <div>
+        <AccordionOne>
+          <AccordionOne.item>
+            <AccordionOne.top>
+              top..1
+            </AccordionOne.top>
+            <AccordionOne.bottom>
+              bottom..1
+            </AccordionOne.bottom>
+          </AccordionOne.item>
+          <AccordionOne.item>
+            <AccordionOne.top>
+              top..2
+            </AccordionOne.top>
+            <AccordionOne.bottom>
+              bottom..2
+            </AccordionOne.bottom>
+          </AccordionOne.item>
+
+          <AccordionOne.item>
+            <AccordionOne.top>
+              top..3
+            </AccordionOne.top>
+            <AccordionOne.bottom>
+              bottom..3
+            </AccordionOne.bottom>
+          </AccordionOne.item>
+        </AccordionOne>
+      </div>
+    </>
+  )
+}
+
+export default AccordionPage;
