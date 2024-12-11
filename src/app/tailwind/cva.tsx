@@ -18,10 +18,13 @@ const ParentStyle = cva('default css..', {
 
 const ChildrenStyle = 'p-4 border border-blue-700';
 
-interface DivProps { }
+interface DivProps {
+  status?: string;
+  color?: string;
+}
 
-const DivComponent: FC<DivProps> = ({ ...props }) => {
-  const className = ParentStyle();
+const DivComponent: FC<DivProps> = ({ status, color, ...props }) => {
+  const className = ParentStyle({});
   return (
     <>
       <div className={className}>
@@ -30,11 +33,11 @@ const DivComponent: FC<DivProps> = ({ ...props }) => {
       <div className={ParentStyle()}>
         test. cva 개별 Style
       </div>
-      <div className={ParentStyle({status: 'true'})}>
+      <div className={ParentStyle({status: true})}>
         status : true = text-sm, active class
         <p className={ChildrenStyle}>Children Style : const ChildrenStyle = 'p-4 border border-blue-700';</p>
       </div>
-      <div className={ParentStyle({status: 'false'})}>
+      <div className={ParentStyle({status: false})}>
         status : false = text-lg inactive class
       </div>
     </>
