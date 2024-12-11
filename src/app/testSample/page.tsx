@@ -277,6 +277,16 @@ const HighSchoolPage: React.FC = () => {
       imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/국어_최서희.jpg',
     },
     {
+      active: '',
+      url: '#self',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/덕성여대(2).jpg',
+    },
+    {
+      active: '',
+      url: '#self',
+      imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/국어_최서희.jpg',
+    },
+    {
       active: 'active',
       url: '',
       imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/20240902_272M.jpg',
