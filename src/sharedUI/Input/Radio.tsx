@@ -1,4 +1,5 @@
 "use client";
+import { useId } from 'react';
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
@@ -60,6 +61,9 @@ const Radio: FC<InputProps> = ({
   onChange,
   ...props
 }) => {
+
+  const id = useId();
+
   const className = InputVariants({
     size: size as "sm" | "md" | "lg" | undefined,
     mode: mode as | "base" | "check" | undefined,
@@ -67,13 +71,13 @@ const Radio: FC<InputProps> = ({
 
   return (
     <label
-      htmlFor={value}
+      htmlFor={id}
       className={cn('relative inline-flex items-center cursor-pointer', addClass, {"cursor-default" : disabled })}
     >
       <input
         type="radio"
         name={name}
-        id={value}
+        id={id}
         value={value}
         className="sr-only peer"
         onChange={onChange}
@@ -85,7 +89,10 @@ const Radio: FC<InputProps> = ({
       { // disabled setting
         "text-gray-500 bg-gray-300 peer-checked:bg-gray-300 peer-checked:border-gray-300 after:bg-gray-300 after:border-none peer-checked:after:bg-gray-300 cursor-default" : disabled
       })}></div>
-      <span className="ml-3 text-gray-900">{label}</span>
+
+      { label && (
+        <span className="ml-3 text-gray-900">{label}</span>
+      )}
     </label>
   );
 };

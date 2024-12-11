@@ -1,5 +1,6 @@
 import { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { SwiperProps } from 'swiper/react';
 import { Swiper as SwiperClass } from 'swiper';
 import { FreeMode, Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -8,110 +9,174 @@ import 'swiper/css/navigation';
 
 interface swiperProps {
   id?: number,
+  image?: boolean,
+  arrow?: boolean,
+  pager?: boolean,
   slides: {
     active?: string,
     title?: string,
-    sub_tit?: string,
+    sub_txt?: string,
     url?: string,
     imgUrl?: string
   }[],
-
-  onSlideChange: (swiper: any) => void,
+  onSlideChange?: (swiper: SwiperClass) => void,
 }
 
-const SwiperComponent: React.FC<swiperProps> = ({ id, slides, onSlideChange }) => {
-  const [swiperIndex, setSwiperIndex] = useState(0);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const swiperRefs = useRef<SwiperClass[]>([]);
-
-  useLayoutEffect(() => {
-    const activeSlide = () => {
-      const swiperWrap = document.querySelector(`.swipers-${id}`);
-      if(swiperWrap) {
-        console.log(swiperRefs);
-        console.log(swiperWrap);
-        console.log(swiperIndex);
-        const slides = swiperWrap.querySelectorAll('.swiper-slide a');
-        slides.forEach((slide, index) => {
-          setActiveIndex(index);
-          if (slide.classList.contains('active')) {
-            swiperRefs.current[swiperIndex]?.slideTo(index, 100, false)
-          }
-        });
-      }
-    }
-    activeSlide();
-  }, [])
-
+const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow = true, pager, onSlideChange }) => {
+  const [contentWidth, setContentWidth] = useState<number>(0);
+	const swiperRef = useRef<SwiperClass | null>(null);
   const paginationRef = useRef(null);
+
+  // pagination
   const pagination = {
     el: paginationRef.current,
     clickable: true,
-    renderBullet: function (index:number, className?: string) {
-      return '<span class="' + className + '">' + (index + 1) + '</span>';
-    },
+    renderBullet: function (index: number, className?: string) {
+      return (
+        '<span class="' +
+        className +
+        '"><span class="sr-only">' +
+        (index + 1) +
+        '</span></span>'
+      );
+    }
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      swiperRef.current?.update();
+    }, 50);
+
+    const handleResize = () => {
+      if (swiperRef.current) {
+        const contWidth = document.querySelector(`.container`);
+        setContentWidth(contWidth?.clientWidth || 0);
+        swiperRef.current?.update();
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timer);
+    }
+  }, [contentWidth]);
+
+  // active slide
+	useLayoutEffect(() => {
+		const activeSlide = () => {
+			const swiperWrap = document.querySelector(`.swipers-${id}`);
+			if (swiperWrap) {
+				const slides = swiperWrap.querySelectorAll('.swiper-slide a');
+				slides.forEach((slide, index) => {
+					if (slide.classList.contains('active')) {
+						swiperRef.current?.slideTo(index, 100, false)
+					}
+				});
+			}
+		}
+		activeSlide();
+	}, []);
+
   const multiOnSlideChange = (swiper: SwiperClass) => {
-    onSlideChange(swiper);
-    setSwiperIndex(swiper.realIndex);
+    if(onSlideChange){
+      onSlideChange(swiper);
+    }
   }
+
+  const swiperOption: SwiperProps = {
+    freeMode: true,
+    autoplay: false, // { delay: 2500 }
+    loop: false,
+    spaceBetween: 0,
+    slidesPerView: 'auto',
+    className: 'visible !important',
+    watchOverflow: true,
+    navigation : {
+      nextEl: `.swiper-${id}-next`,
+      prevEl: `.swiper-${id}-prev`,
+    },
+    pagination: pagination, // {{type: 'fraction', clickable: true }}
+    onSwiper: (swiper: SwiperClass) => {
+      swiperRef.current = swiper;
+    },
+    onActiveIndexChange: (swiper: SwiperClass) => {
+      console.log(swiper)
+    },
+    onBeforeInit: (swiper: SwiperClass) => {
+      console.log(swiper)
+    },
+    onSlideChange: multiOnSlideChange,
+    onResize: (swiper: SwiperClass) => {
+      swiper.update()
+    },
+  }
+
   return (
     <>
       <div className={`swipers-${id} relative`}>
         <Swiper
           modules={[FreeMode, Navigation, Pagination, Autoplay]}
-          freeMode
-          autoplay={false} // { delay: 2500 }
-          loop={false}
-          spaceBetween={0}
-          slidesPerView={'auto'}
-          className='visible !important'
-          navigation= {{
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-          }}
-          pagination={pagination} // {{type: 'fraction', clickable: true }}
-          onSwiper= {(swiper: SwiperClass) => {
-            // console.log(swiper)
-            swiperRefs.current[swiperIndex] = swiper;
-          }}
-          onActiveIndexChange= {(swiper: SwiperClass) => {
-            // console.log(swiper)
-          }}
-          onBeforeInit= {(swiper: SwiperClass) => {
-            // console.log(swiper)
-          }}
-          onSlideChange= {multiOnSlideChange}
+          {...swiperOption}
         >
-          {
-            slides.map((slide, index) => (
-              <SwiperSlide
-                key={index}
-                style={{ width: 'auto' }}
-                className="pr-5 last:pr-0 flex justify-center items-center w-auto border-slate-400 !important"
+          {slides.map((slide, index) => (
+            <SwiperSlide
+              key={index}
+              style={{width: 'auto'}}
+              className="pr-5 last:pr-0 flex justify-center items-center w-auto border-slate-400 !important"
+            >
+              <a
+                href={slide.url}
+                className={`${slide.active} block py-2 font-bold ${
+                  slide.active
+                    ? 'text-blue-700 border-b-[0.313rem] border-blue-700 '
+                    : ''
+                }`}
               >
-                <a href={slide.url} className={`${slide.active} block py-2 font-bold ${slide.active ? 'text-blue-700 border-b-[0.313rem] border-blue-700 ' : ''}`}>
+                {image ? (
                   <img src={slide.imgUrl} alt="" />
-                  <p>{slide.title}</p>
-                  <p>{slide.sub_tit}</p>
-                </a>
-              </SwiperSlide>
-            ))
-          }
-          {/* <SwiperSlide className="flex justify-center items-center px-5 w-auto h-10 bg-slate-400">Slide 1</SwiperSlide>
-          <SwiperSlide className="flex justify-center items-center px-5 w-[300px] h-10 bg-slate-400">Slide 1</SwiperSlide>
-          <SwiperSlide className="flex justify-center items-center px-[7rem] w-auto h-10 bg-slate-400">Slide 1</SwiperSlide>
-          <SwiperSlide className="flex justify-center items-center px-5 w-auto h-10 bg-slate-400">Slide 1</SwiperSlide> */}
-
-          <div className="swiper-button-next"></div>
-          <div className="swiper-button-prev"></div>
+                ) : (
+                  <>
+                    <p className="text-lg">{slide.title}</p>
+                    {/* <p className='text-md'>{slide.sub_txt}</p> */}
+                  </>
+                )}
+              </a>
+            </SwiperSlide>
+          ))}
         </Swiper>
-        <div ref={paginationRef} className="swiper-pagination"></div>
-        <p>swiper-slide-active index: {swiperIndex}</p>
+
+        <div className={`controller`}>
+          <button
+            className={`swiper-${id}-prev absolute y_center left-4 z-10 bg-white rounded-full  ${arrow ? '' : 'hidden'}`}
+          >
+            <img
+              src="https://image.jinhak.com/jinhakImages/react/icon/arrow_off.svg"
+              className="w-8 md:w-9"
+              alt=""
+            />
+          </button>
+          <div className={` ${pager ? '' : 'hidden'}`}>
+            <div ref={paginationRef} className={`swiper-pagination`}></div>
+          </div>
+          <button
+            className={`swiper-${id}-next absolute y_center right-4 z-10 bg-white rounded-full ${arrow ? '' : 'hidden'}`}
+          >
+            <img
+              src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg"
+              className="w-8 md:w-9"
+              alt=""
+            />
+          </button>
+        </div>
+
+        {/* <p>swiper-slide-active index: {swiperIndex}</p> */}
         {/* <p>a Active index: {activeIndex}</p> */}
       </div>
     </>
   );
 };
 
-export default SwiperComponent;
+export default SwiperSlider;

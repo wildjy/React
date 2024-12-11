@@ -1,10 +1,11 @@
 "use client";
+import { useId } from 'react';
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
 const InputVariants = cva(
-  'relative mr-3 leading-none after:content-[""] transition-all after:transition-all',
+  'relative leading-none after:content-[""] transition-all after:transition-all',
   {
     variants: {
       // default size control
@@ -98,6 +99,7 @@ const CheckBox: FC<InputProps> = ({
   onChange,
   ...props
 }) => {
+  const id = useId();
 
   const className = InputVariants({
     size: size as "sm" | "md" | "lg" | "auto" | undefined,
@@ -112,13 +114,13 @@ const CheckBox: FC<InputProps> = ({
 
   return (
     <label
-      htmlFor={value}
+      htmlFor={id}
       className={cn('relative inline-flex items-center cursor-pointer', addClass, {"cursor-default" : disabled })}
     >
       <input
         type="checkbox"
         name={name}
-        id={value}
+        id={id}
         value={value}
         className="sr-only peer"
         disabled={!!disabled}
@@ -126,17 +128,19 @@ const CheckBox: FC<InputProps> = ({
         placeholder={label}
         {...props}
       />
-
       <div className={cn(className, addClass,
         { // disabled setting
           "text-disabled-text bg-disabled-bg border-disabled-line peer-checked:border-disabled-line after:bg-gray-300 peer-checked:after:bg-gray-300 cursor-default" : disabled ,
           "opacity-75 bg-[10%_center] peer-checked:bg-[10%_center] ": disabled && atIcon,
           "bg-transparent": disabled && atText,
+          "mr-0": label,
         }
       )}>
       {atType && label}
       </div>
-      {!atType && (<span className={cn('text-gray-900 ', addClass, {"text-gray-500" : disabled })}>{label}</span>)} {/* peer-checked:text-blue-700 */}
+      { label && !atType  && (
+        <span className={cn('ml-3 text-gray-900 ', addClass, {"text-gray-500" : disabled })}>{label}</span>
+      )}
     </label>
   );
 };

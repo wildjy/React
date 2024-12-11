@@ -1,4 +1,5 @@
 "use client";
+import { useId } from 'react';
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
@@ -6,12 +7,12 @@ import { Success } from "./storybook/InputText.stories";
 
 
 const InputVariants = cva(
-  "w-full md:w-auto peer leading-none border border-gray-500 focus:outline-none rounded-lg",
+  "w-full peer leading-none border border-gray-500 focus:outline-none rounded-lg", // md:w-auto
   {
     variants: {
       size: {
         base: "px-7 py-5",
-        sm: "input-sm..",
+        sm: "input-sm.. px-4 py-2",
         md: "input-sm..",
         lg: "input-lg..",
         full: "input-full w-full",
@@ -20,8 +21,8 @@ const InputVariants = cva(
         base: "focus:border-blue-700 focus:ring-blue-700",
         ghost: "focus:border-blue-700 border-0 border-b rounded-none placeholder-transparent ",
         success: "focus:border-success", // border-success
-        warning: "border-warning", // focus:ring-1 focus:ring-warning
-        error: "border-error", // focus:ring-1 focus:ring-error
+        warning: "focus:border-warning", // focus:ring-1 focus:ring-warning
+        error: "focus:border-error", // focus:ring-1 focus:ring-error
       },
     },
     defaultVariants: {
@@ -59,11 +60,12 @@ const TextInput : FC<InputProps> = ({
     mode: mode as | "base" | "ghost" | "success" | "warning" | "error" | undefined,
     // icon,
   });
+  const id = useId();
 
   const atType = ["ghost"].includes(mode);
 
   return (
-    <div className="relative">
+    <div className="w-full relative">
       <input
         type="text"
         className={cn(className, addClass,
@@ -72,13 +74,13 @@ const TextInput : FC<InputProps> = ({
           "focus:border-gray-500": readonly,
         })}
         onChange={onChange}
-        id={addId}
+        id={id}
         placeholder={label}
         disabled={!!disabled}
         readOnly={!!readonly}
         {...props}
       />
-      <label htmlFor={addId} className={cn('sr-only', addClass,
+      <label htmlFor={id} className={cn('sr-only', addClass,
         {
           "not-sr-only absolute text-sm text-gray-600 transition-all left-0 -top-4 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-4 peer-focus:text-sm" : atType
         })}>

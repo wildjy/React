@@ -26,8 +26,6 @@ const SelectVariants = cva(
   },
 );
 interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "size">, VariantProps<typeof SelectVariants> {
-  size?: "sm" | "md" | "lg";
-  mode?: "base" | "ghost" | "disabled";
   addClass?: string;
   name?: string;
   value?: string;
