@@ -2,19 +2,20 @@ import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { createContext, useContext, HTMLAttributes } from 'react';
 
-type LayerPopupContextType = "base" | "full" | "scroll" | "bottom";
+type BottomSheetContextType = "base" | "full" | "scroll" | "bottom";
 
-const LayerPopupContext = createContext<LayerPopupContextType | null>(null);
+const BottomSheetContext = createContext<BottomSheetContextType | null>(null);
 
-const LayerPopupVariants = cva(`
-  inner p-8 absolute center_center min-w-[300px] max-w-[90dvw] w-max xl:max-w-[1280px] max-h-[90dvh] flex flex-col
-  scroll overflow-hidden rounded-lg transition-all
+const BottomSheetVariants = cva(`
+  inner p-8 fixed bottom-0 x_center min-w-[300px] max-w-[100dvw] w-max xl:max-w-[1280px] flex flex-col
+  scroll overflow-hidden transition-all duration-500 rounded-t-lg z-10
   `, {
   variants: {
     type: {
-      base: '', // max-h-[90dvh]
-      full: 'p-0 w-[100dvw] h-[100dvh] max-w-[100dvw] max-h-dvh lg:h-fit lg:max-h-[90dvh] lg:min-w-[300px] lg:max-w-[90dvw] lg:w-max rounded-none',
-      scroll: 'p-0 overflow-hidden',
+      base: 'max-h-[90dvh]', // max-h-[90dvh]
+      full: 'max-h-dvh lg:max-h-[90dvh] rounded-t-none lg:rounded-t-lg',
+      scroll: '',
+      bottom: '',
     },
     align: {
       left: 'text-left',
@@ -40,16 +41,16 @@ const LayerPopupVariants = cva(`
   },
 });
 
-interface LayerPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" | "color">,
-  VariantProps<typeof LayerPopupVariants> {
+interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" | "color">,
+  VariantProps<typeof BottomSheetVariants> {
   children: React.ReactNode;
   isOpen: boolean;
   OpenEvent: () => void;
-  type?: "base" | "full" | "scroll";
+  type?: "base" | "full" | "scroll" | "bottom";
   addClass?: string;
 }
 
-interface LayerPopupType extends React.FC<LayerPopupProps> {
+interface BottomSheetType extends React.FC<BottomSheetProps> {
   Header: typeof PopupHeader;
   Body: typeof PopupBody;
   Footer: typeof PopupFooter;
@@ -60,7 +61,7 @@ interface PopupHeaderProps {
 }
 
 interface PopupBodyProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" | "color">,
-VariantProps<typeof LayerPopupVariants>  {
+VariantProps<typeof BottomSheetVariants>  {
   children: React.ReactNode;
 }
 
@@ -68,7 +69,7 @@ interface PopupFooterProps {
   children: React.ReactNode;
 }
 
-const LayerPopup: LayerPopupType = ({
+const BottomSheet: BottomSheetType = ({
   isOpen,
   OpenEvent,
   children,
@@ -80,25 +81,29 @@ const LayerPopup: LayerPopupType = ({
   ...props
 }) => {
 
-  const className = LayerPopupVariants ({
-    type: type as "base" | "full" | "scroll" | undefined,
+  const className = BottomSheetVariants ({
+    type: type as "base" | "full" | "scroll" | "bottom" | undefined,
     align: align as "left" | "center" | "right" | undefined,
     color: color as "base" | "type1" | undefined,
     round: round as "base" | "sm" | "md" | "lg" | undefined,
   });
 
-  const typeMode = type  || "base"  || "full" || "scroll";
+  const typeMode = type  || "base"  || "full" || "scroll" || "bottom";
   const atFull = type === "full";
   const atScroll = type === "scroll";
+  const atBottom = type === "bottom";
 
   return (
     <>
      {/* {isOpen && ( */}
-      <LayerPopupContext.Provider value={ typeMode }>
+      <BottomSheetContext.Provider value={ typeMode }>
         <div
-        className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' } layerPopup fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-10 transition-all duration-300`}>
+        className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' } layerPopup fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-10`}>
           <div
-            className={cn(className, addClass)}
+            className={cn(className, addClass, {
+              'translate-y-0': isOpen,
+              'translate-y-full': !isOpen,
+            })}
             {...props}
           >
             { !atFull && (
@@ -112,15 +117,12 @@ const LayerPopup: LayerPopupType = ({
                 </button>
               </div>
             )}
-            {atScroll ? (
-              <div className={`p-8 flex flex-col w-full h-full scroll overflow-auto`}>
-              { children }
-              </div>
-            ) : children }
+
+            { children }
 
           </div>
         </div>
-      </LayerPopupContext.Provider>
+      </BottomSheetContext.Provider>
      {/* )} */}
     </>
   )
@@ -137,12 +139,10 @@ const PopupHeader: React.FC<PopupHeaderProps> = ({ children }) => {
 }
 
 const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
-  const type = useContext(LayerPopupContext);
+  const type = useContext(BottomSheetContext);
 
   console.log(type)
   console.log(type === "scroll")
-  // const { type } = useContext(LayerPopupContext);
-  // console.log(type) && ["scroll"]
 
   return (
     <>
@@ -163,8 +163,8 @@ const PopupFooter: React.FC<PopupFooterProps> = ({ children }) => {
   )
 }
 
-LayerPopup.Header = PopupHeader;
-LayerPopup.Body = PopupBody;
-LayerPopup.Footer = PopupFooter;
+BottomSheet.Header = PopupHeader;
+BottomSheet.Body = PopupBody;
+BottomSheet.Footer = PopupFooter;
 
-export default LayerPopup;
+export default BottomSheet;
