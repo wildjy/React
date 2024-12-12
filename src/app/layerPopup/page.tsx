@@ -60,11 +60,6 @@ const LayerPopupPage = () => {
 
         <LayerPopup type="full" align="center" isOpen={isOpenPopup.popup2} OpenEvent={() => OpenEventPopup('popup2')}>
           <LayerPopup.Header>
-            <div className="fixed top-0 left-0">
-              <button type="button" className="w-9 h-9 text-white bg-slate-500" onClick={() => OpenEventPopup('popup2')}>
-                <span className="sr-only-none">Back</span>
-              </button>
-            </div>
             <p className="text-4xl"><b>타이틀..</b></p>
             <p className="text-4xl"><b>타이틀..</b></p>
           </LayerPopup.Header>
@@ -150,11 +145,11 @@ const LayerPopupPage = () => {
         </button>
         <BottomSheet type="full" align="center" isOpen={isOpenPopup.popup5} OpenEvent={() => OpenEventPopup('popup5')}>
           <LayerPopup.Header>
-            <div className="fixed top-0 left-0">
+            {/* <div className="flex justify-start">
               <button type="button" className="w-9 h-9 text-white bg-slate-500" onClick={() => OpenEventPopup('popup5')}>
                 <span className="sr-only-none">Back</span>
               </button>
-            </div>
+            </div> */}
             <p className="text-4xl"><b>타이틀..</b></p>
             <p className="text-4xl"><b>타이틀..</b></p>
           </LayerPopup.Header>

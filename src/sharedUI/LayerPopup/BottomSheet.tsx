@@ -106,17 +106,16 @@ const BottomSheet: BottomSheetType = ({
             })}
             {...props}
           >
-            { !atFull && (
-              <div className="flex justify-end">
-                <button type="button" className="w-9 h-9
-                  bg-center
-                  bg-no-repeat
-                  bg-[length:60%_60%]
-                  bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg')]" onClick={OpenEvent}>
-                  <span className="sr-only">팝업 닫기</span>
-                </button>
-              </div>
-            )}
+            <div className={`flex ${atFull ? 'justify-start' : 'justify-end'}`}>
+              <button type="button" className={`w-9 h-9
+                bg-center
+                bg-no-repeat
+                bg-[length:60%_60%]
+                ${atFull ? 'bg-slate-500' : 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
+                `} onClick={OpenEvent}>
+                <span className="sr-only">팝업 닫기</span>
+              </button>
+            </div>
 
             { children }
 

@@ -101,19 +101,19 @@ const LayerPopup: LayerPopupType = ({
             className={cn(className, addClass)}
             {...props}
           >
-            { !atFull && (
-              <div className="flex justify-end">
-                <button type="button" className="w-9 h-9
-                  bg-center
-                  bg-no-repeat
-                  bg-[length:60%_60%]
-                  bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg')]" onClick={OpenEvent}>
-                  <span className="sr-only">팝업 닫기</span>
-                </button>
-              </div>
-            )}
+            <div className={`flex ${atFull ? 'justify-start' : atScroll ? 'pt-8 pr-8 justify-end' : 'justify-end'}`}>
+              <button type="button" className={`w-9 h-9
+                bg-center
+                bg-no-repeat
+                bg-[length:60%_60%]
+                ${atFull ? 'bg-slate-500' : 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
+                `} onClick={OpenEvent}>
+                <span className="sr-only">팝업 닫기</span>
+              </button>
+            </div>
+
             {atScroll ? (
-              <div className={`p-8 flex flex-col w-full h-full scroll overflow-auto`}>
+              <div className={`p-8 pt-0 flex flex-col w-full h-full scroll overflow-auto`}>
               { children }
               </div>
             ) : children }
