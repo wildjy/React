@@ -1,21 +1,20 @@
 "use client";
-import clsx from 'clsx'
-import { cn } from "../common/cn";
-import { cva, VariantProps } from "class-variance-authority";
-import { SelectHTMLAttributes, FC, ChangeEvent } from "react";
+// import { cn } from "../common/cn";
+// import { cva, VariantProps } from "class-variance-authority";
+import React,{ SelectHTMLAttributes, ChangeEvent } from "react";
 
-const CustomSelectVariants = cva('',
-  {
-    variants: {
-      size: {
+// const CustomSelectVariants = cva('',
+//   {
+//     variants: {
+//       size: {
 
-      },
-      mode: {
+//       },
+//       mode: {
 
-      }
-    },
-    defaultVariants: {
+//       }
+//     },
+//     defaultVariants: {
 
-    },
-  }
-)
+//     },
+//   }
+// )

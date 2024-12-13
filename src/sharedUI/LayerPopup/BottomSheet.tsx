@@ -47,9 +47,10 @@ interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" |
   VariantProps<typeof BottomSheetVariants> {
   children: React.ReactNode;
   isOpen: boolean;
-  OpenEvent: () => void;
+  OpenEvent?: () => void;
   type?: "base" | "full";
   addClass?: string;
+  close?: boolean;
 }
 
 interface BottomSheetType extends React.FC<BottomSheetProps> {
@@ -77,6 +78,7 @@ const BottomSheet: BottomSheetType = ({
   children,
   type,
   align,
+  close = true,
   color,
   round,
   addClass,
@@ -106,17 +108,19 @@ const BottomSheet: BottomSheetType = ({
             })}
             {...props}
           >
-            <div className={`flex ${atFull ? 'justify-start' : 'justify-end'}`}>
-              <button type="button" className={`${CloseButtonSize}
-                bg-center
-                bg-no-repeat
-                bg-[length:60%_60%]
-                ${atFull ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
-                  : 'bg-right bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
-                `} onClick={OpenEvent}>
-                <span className="sr-only">팝업 닫기</span>
-              </button>
-            </div>
+            { close && (
+              <div className={`flex ${atFull ? 'justify-start' : 'justify-end'}`}>
+                <button type="button" className={`${CloseButtonSize}
+                  bg-center
+                  bg-no-repeat
+                  bg-[length:60%_60%]
+                  ${atFull ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
+                    : 'bg-right bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
+                  `} onClick={OpenEvent}>
+                  <span className="sr-only">팝업 닫기</span>
+                </button>
+              </div>
+            )}
 
             { children }
 

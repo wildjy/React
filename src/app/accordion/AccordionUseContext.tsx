@@ -1,7 +1,10 @@
 import React, { useState, createContext, useContext } from 'react';
+interface AccdContextType {
+  isOpen: boolean;
+  openEvent: () => void
+}
 
-
-const AccdContext = createContext<{ isOpen: boolean; openEvent: () => void } | undefined>(undefined);
+const AccdContext = createContext<AccdContextType | null>(null);
 
 function useAccdContext() {
   return useContext(AccdContext);
@@ -12,9 +15,9 @@ interface accordionOneProps {
 }
 
 interface accordionOneType extends React.FC<accordionOneProps> {
-  item: typeof AccordionOneItem;
-  top: typeof AccordionOneTop;
-  bottom: typeof AccordionOneBottom;
+  Item: typeof AccordionItem;
+  top: typeof AccordionTop;
+  bottom: typeof AccordionBottom;
 }
 
 interface accordionOneItemProps {
@@ -29,7 +32,7 @@ interface accordionOneBottomProps {
   children: React.ReactNode;
 }
 
-const AccordionOne: accordionOneType = ({ children }) => {
+const Accordion: accordionOneType = ({ children }) => {
   return (
     <>
       <div className='accordionOne'>
@@ -39,7 +42,7 @@ const AccordionOne: accordionOneType = ({ children }) => {
   )
 }
 
-const AccordionOneItem: React.FC<accordionOneItemProps> = ({ children }) => {
+const AccordionItem: React.FC<accordionOneItemProps> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const openEvent = () => {
@@ -60,7 +63,7 @@ const AccordionOneItem: React.FC<accordionOneItemProps> = ({ children }) => {
   )
 }
 
-const AccordionOneTop: React.FC<accordionOneTopProps> = ({ children }) => {
+const AccordionTop: React.FC<accordionOneTopProps> = ({ children }) => {
   const context = useAccdContext();
 
   if (!context) {
@@ -76,7 +79,7 @@ const AccordionOneTop: React.FC<accordionOneTopProps> = ({ children }) => {
   )
 }
 
-const AccordionOneBottom: React.FC<accordionOneBottomProps> = ({ children }) => {
+const AccordionBottom: React.FC<accordionOneBottomProps> = ({ children }) => {
   const context = useAccdContext();
 
   if (!context) {
@@ -94,8 +97,8 @@ const AccordionOneBottom: React.FC<accordionOneBottomProps> = ({ children }) => 
   )
 }
 
-AccordionOne.item = AccordionOneItem;
-AccordionOne.top = AccordionOneTop;
-AccordionOne.bottom = AccordionOneBottom;
+Accordion.Item = AccordionItem;
+Accordion.top = AccordionTop;
+Accordion.bottom = AccordionBottom;
 
-export default AccordionOne;
+export default Accordion;

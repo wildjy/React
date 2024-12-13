@@ -1,5 +1,5 @@
 "use client";
-import { useId } from 'react';
+// import { useId } from 'react';
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
@@ -60,7 +60,7 @@ const TextInput : FC<InputProps> = ({
     mode: mode as | "base" | "ghost" | "success" | "warning" | "error" | undefined,
     // icon,
   });
-  const id = useId();
+  // const id = useId();
 
   const atType = ["ghost"].includes(mode);
 
@@ -74,13 +74,13 @@ const TextInput : FC<InputProps> = ({
           "focus:border-gray-500": readonly,
         })}
         onChange={onChange}
-        id={id}
+        id={addId}
         placeholder={label}
         disabled={!!disabled}
         readOnly={!!readonly}
         {...props}
       />
-      <label htmlFor={id} className={cn('sr-only', addClass,
+      <label htmlFor={addId} className={cn('sr-only', addClass,
         {
           "not-sr-only absolute text-sm text-gray-600 transition-all left-0 -top-4 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-4 peer-focus:text-sm" : atType
         })}>

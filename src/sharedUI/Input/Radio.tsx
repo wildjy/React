@@ -1,5 +1,5 @@
 "use client";
-import { useId } from 'react';
+// import { useId } from 'sreact';
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
@@ -62,7 +62,7 @@ const Radio: FC<InputProps> = ({
   ...props
 }) => {
 
-  const id = useId();
+  // const id = useId();
 
   const className = InputVariants({
     size: size as "sm" | "md" | "lg" | undefined,
@@ -71,13 +71,13 @@ const Radio: FC<InputProps> = ({
 
   return (
     <label
-      htmlFor={id}
+      htmlFor={value}
       className={cn('relative inline-flex items-center cursor-pointer', addClass, {"cursor-default" : disabled })}
     >
       <input
         type="radio"
         name={name}
-        id={id}
+        id={value}
         value={value}
         className="sr-only peer"
         onChange={onChange}

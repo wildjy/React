@@ -50,9 +50,10 @@ interface LayerPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" | 
   VariantProps<typeof LayerPopupVariants> {
   children: React.ReactNode;
   isOpen: boolean;
-  OpenEvent: () => void;
+  OpenEvent?: () => void;
   type?: "base" | "full" | "scroll";
   addClass?: string;
+  close?: boolean;
 }
 
 interface LayerPopupType extends React.FC<LayerPopupProps> {
@@ -80,6 +81,7 @@ const LayerPopup: LayerPopupType = ({
   children,
   type,
   align,
+  close = true,
   color,
   round,
   addClass,
@@ -107,17 +109,16 @@ const LayerPopup: LayerPopupType = ({
             className={cn(className, addClass)}
             {...props}
           >
-            <div className={`flex ${atFull ? 'justify-start' : atScroll ? `${ScrollCloseButtonPadding} justify-end` : 'justify-end'}`}>
-              <button type="button" className={`${CloseButtonSize}
-                bg-center
-                bg-no-repeat
-                bg-[length:60%_60%]
-                ${atFull ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
-                  : 'bg-right bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
-                `} onClick={OpenEvent}>
-                <span className="sr-only">팝업 닫기</span>
-              </button>
-            </div>
+            { close && (
+              <div className={`flex ${atFull ? 'justify-start' : atScroll ? `${ScrollCloseButtonPadding} justify-end` : 'justify-end'}`}>
+                <button type="button" className={`${CloseButtonSize} bg-center bg-no-repeat bg-[length:60%_60%]
+                  ${atFull ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
+                    : 'bg-right bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
+                  `} onClick={OpenEvent}>
+                  <span className="sr-only">팝업 닫기</span>
+                </button>
+              </div>
+            )}
 
             {atScroll ? (
               <div className={`${ScrollBodyPadding} flex flex-col w-full h-full scroll overflow-auto`}>

@@ -1,7 +1,6 @@
-import clsx from 'clsx'
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import { HTMLAttributes, FC } from "react";
+import { HTMLAttributes } from "react";
 
 const TitleStyle = cva('mb-5', {
   variants: {

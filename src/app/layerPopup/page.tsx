@@ -6,8 +6,8 @@ import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 const LayerPopupPage = () => {
 
   const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
-    popup1: true,
-    popup2: true,
+    popup1: false,
+    popup2: false,
     popup3: false,
     popup4: false,
     popup5: false,
@@ -56,8 +56,9 @@ const LayerPopupPage = () => {
         </button>
 
         <LayerPopup type="full" align="center" isOpen={isOpenPopup.popup2} OpenEvent={() => OpenEventPopup('popup2')}>
+
           <LayerPopup.Header>
-            <p className="text-4xl"><b>Header</b></p>
+            <p className="ml-4 text-4xl"><b>Header</b></p>
           </LayerPopup.Header>
 
           <LayerPopup.Body>
@@ -139,7 +140,39 @@ const LayerPopupPage = () => {
 
         <BottomSheet type="full" align="center" isOpen={isOpenPopup.popup5} OpenEvent={() => OpenEventPopup('popup5')}>
           <BottomSheet.Header>
-            <p className="text-4xl"><b>Header</b></p>
+            <p className="ml-4 text-4xl"><b>Header</b></p>
+          </BottomSheet.Header>
+
+          <BottomSheet.Body>
+            <p className="text-xl">
+              인증이 완료되지 않으면 허수데이터로 분류될 수 있으며
+            </p>
+            <div><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" /></div>
+            <div><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" /></div>
+          </BottomSheet.Body>
+
+          <BottomSheet.Footer>
+            <div className='flex justify-center'>
+              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</button>
+            </div>
+          </BottomSheet.Footer>
+        </BottomSheet>
+
+        <button type="button" onClick={() => OpenEventPopup('popup6')}
+          className='inline-block py-3 w-[17rem] text-center border border-blue-700 rounded'>바텀시트(Full + 닫기 별도 사용) 열기
+        </button>
+
+        <BottomSheet type="full" align="center" close={false} isOpen={isOpenPopup.popup6}>
+          <BottomSheet.Header>
+            {/* 닫기 버튼 별도 사용 */}
+            <div className="flex" onClick={() => OpenEventPopup('popup6')}>
+              <button type="button" className="w-8 h-8 md:w-9 md:h-9 bg-center bg-no-repeat bg-[length:60%_60%] bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg')]" >
+                <span className="sr-only">팝업 닫기</span>
+              </button>
+
+              <p className="ml-4 text-4xl"><b>Header</b></p>
+            </div>
+            {/* 닫기 버튼 별도 사용 */}
           </BottomSheet.Header>
 
           <BottomSheet.Body>

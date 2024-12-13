@@ -1,5 +1,5 @@
 "use client";
-import { useId } from 'react';
+// import { useId } from 'react';
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
@@ -99,7 +99,7 @@ const CheckBox: FC<InputProps> = ({
   onChange,
   ...props
 }) => {
-  const id = useId();
+  // const id = useId();
 
   const className = InputVariants({
     size: size as "sm" | "md" | "lg" | "auto" | undefined,
@@ -114,13 +114,13 @@ const CheckBox: FC<InputProps> = ({
 
   return (
     <label
-      htmlFor={id}
+      htmlFor={value}
       className={cn('relative inline-flex items-center cursor-pointer', addClass, {"cursor-default" : disabled })}
     >
       <input
         type="checkbox"
         name={name}
-        id={id}
+        id={value}
         value={value}
         className="sr-only peer"
         disabled={!!disabled}
