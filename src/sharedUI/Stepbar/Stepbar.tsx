@@ -1,5 +1,4 @@
-import { cn } from "../common/cn";
-import { cva, VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 
 const StepItems = cva( //
@@ -7,7 +6,7 @@ const StepItems = cva( //
   {
     variants: {
       status: {
-        completed: "mr-auto completed", //
+        completed: "completed", // mr-auto
         true: "active ", // flex-1  after:h-[1px] after:w-full after:bg-blue-300
         false: "inactive",
       },
@@ -15,7 +14,7 @@ const StepItems = cva( //
   }
 );
 const StepPoints = cva(
-  'StepPoints.. relative z-10 w-9 h-9 flex justify-center items-center rounded-full border',
+  'StepPoints.. relative z-10 w-9 h-9 hover:text-white hover:bg-blue-700 flex justify-center items-center rounded-full border transition',
   {
     variants: {
       status: {
@@ -28,12 +27,12 @@ const StepPoints = cva(
 );
 
 const StepLabels = cva(
-  'StepLabels..  md:block w-full',
+  'StepLabels.. hidden md:block w-full',
   {
     variants: {
       label: {
-        true: "block active text-blue-700",
-        false: "hidden inactive",
+        true: "active text-blue-700",
+        false: "inactive", // hidden
       },
     },
   }
@@ -64,11 +63,9 @@ interface StepBarProps extends HTMLAttributes<HTMLDivElement>{
 };
 
 const StepBar: FC<StepBarProps> = ({
-  addClass,
   step,
   currentStep,
   onStepClick,
-  ...props
 }) => {
   return (
     <>
@@ -78,21 +75,21 @@ const StepBar: FC<StepBarProps> = ({
             return (
             //  step
             <div key={index} className={
-              StepItems({status: index < currentStep ? "true" : index === currentStep ? "completed" : "false",})
+              StepItems({status: index < currentStep ? true : index === currentStep ? "completed" : false,})
               }
             >
               {/* points */}
-              <div className={StepPoints({status: (index <= currentStep ? `true` : `false`)})}
-            onClick={() => onStepClick && onStepClick(index)}>
+              <a href="#/" className={StepPoints({status: (index <= currentStep ? true : false)})}
+                onClick={() => onStepClick && onStepClick(index)}>
                 {index <= currentStep ? `` : index + 1}
-              </div>
+              </a>
 
               {/* label */}
-              <div className={StepLabels({label: (index <= currentStep ? `true` : `false`)})}>{item.label}</div>
+              <div className={StepLabels({label: (index <= currentStep ? true : false)})}>{item.label}</div>
 
               {/* line */}
               {index < step.length - 1 && (
-                <div className={StepLines({line: 'true'})}></div>
+                <div className={StepLines({line: true})}></div>
               )}
 
             </div>
