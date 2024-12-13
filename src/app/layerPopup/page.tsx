@@ -6,11 +6,11 @@ import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 const LayerPopupPage = () => {
 
   const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
-    popup1: false,
-    popup2: false,
+    popup1: true,
+    popup2: true,
     popup3: false,
-    popup4: true,
-    popup5: true,
+    popup4: false,
+    popup5: false,
   });
 
   const OpenEventPopup = (key: string) => {
@@ -30,26 +30,23 @@ const LayerPopupPage = () => {
 
         <LayerPopup align="center" isOpen={isOpenPopup.popup1} OpenEvent={() => OpenEventPopup('popup1')}>
           <LayerPopup.Header>
-            <p className="text-4xl"><b>타이틀..</b></p>
+            <p className="text-4xl"><b>Header</b></p>
           </LayerPopup.Header>
 
           <LayerPopup.Body>
-            <div className="bg-gray-300">
-              <div className='w-full h-[0rem] bg-gray-700'></div>
+            <div className='h-[10rem]'>
               <p className="text-xl">
-                인증이 완료되지 않으면 허수데이터로 분류될 수 있으며,<br />
-                12월 23일부터 리포트 열람이 제한될 수 있습니다.<br />
-                ※ 수능 성적증명서가 준비되었다면 인증을 완료해 주세요.
+                Body..
               </p>
-              <div className='flex justify-center'>
-                <a href="#self" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</a>
-              </div>
+              <p>
+                컨텐츠가 박스 밖으로 넘치지 않는 한에서 박스가 가질 수 있는 가장 작은 크기를 말한다.
+              </p>
             </div>
           </LayerPopup.Body>
 
           <LayerPopup.Footer>
             <div className='flex justify-center'>
-              <a href="#self" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</a>
+              <a href="#self" className='py-3 w-10 text-center border border-blue-700 rounded'>Footer</a>
             </div>
           </LayerPopup.Footer>
         </LayerPopup>
@@ -60,8 +57,7 @@ const LayerPopupPage = () => {
 
         <LayerPopup type="full" align="center" isOpen={isOpenPopup.popup2} OpenEvent={() => OpenEventPopup('popup2')}>
           <LayerPopup.Header>
-            <p className="text-4xl"><b>타이틀..</b></p>
-            <p className="text-4xl"><b>타이틀..</b></p>
+            <p className="text-4xl"><b>Header</b></p>
           </LayerPopup.Header>
 
           <LayerPopup.Body>
@@ -73,19 +69,15 @@ const LayerPopupPage = () => {
             </p>
 
             <div className='flex flex-wrap'>
-              <div className='w-1/3'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
-              <div className='w-1/3'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
-              <div className='w-1/3'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
-              <div className='w-1/3'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
-            </div>
-            <div className="bg-gray-300">
-              {/* <img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img> */}
+              <div className='md:w-1/2'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
+              <div className='md:w-1/2'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
+              <div className='md:w-1/2'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
             </div>
           </LayerPopup.Body>
 
           <LayerPopup.Footer>
             <div className='flex justify-center'>
-              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</button>
+              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>Footer</button>
             </div>
           </LayerPopup.Footer>
         </LayerPopup>
@@ -96,7 +88,7 @@ const LayerPopupPage = () => {
 
         <LayerPopup type="scroll" align="center" isOpen={isOpenPopup.popup3} OpenEvent={() => OpenEventPopup('popup3')}>
           <LayerPopup.Header>
-            <p className="text-4xl"><b>타이틀..</b></p>
+            <p className="text-4xl"><b>Header</b></p>
           </LayerPopup.Header>
 
           <LayerPopup.Body>
@@ -106,7 +98,7 @@ const LayerPopupPage = () => {
               ※ 수능 성적증명서가 준비되었다면 인증을 완료해 주세요.
             </p>
 
-            <div className="bg-gray-300">
+            <div>
               <img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" />
               <img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" />
             </div>
@@ -114,7 +106,7 @@ const LayerPopupPage = () => {
 
           <LayerPopup.Footer>
             <div className='flex justify-center'>
-              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</button>
+              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>Footer</button>
             </div>
           </LayerPopup.Footer>
         </LayerPopup>
@@ -124,49 +116,45 @@ const LayerPopupPage = () => {
         </button>
 
         <BottomSheet align="center" isOpen={isOpenPopup.popup4} OpenEvent={() => OpenEventPopup('popup4')}>
-          <LayerPopup.Header>
-            <p className="text-4xl"><b>Bottom타이틀..</b></p>
-          </LayerPopup.Header>
-          <LayerPopup.Body>
-            <p className="text-xl">
-              인증이 완료되지 않으면 허수데이터로 분류될 수 있으며, 12월 23일부터 리포트 열람이 제한될 수 있습니다
-            </p>
-          </LayerPopup.Body>
+          <BottomSheet.Header>
+            <p className="text-4xl"><b>Header</b></p>
+          </BottomSheet.Header>
 
-          <LayerPopup.Footer>
+          <BottomSheet.Body>
+            <p className="text-xl">
+              인증이 완료되지 않으면 허수데이터로  수 있으며, 12월 23일부터 리포트 열람이 제한될 수 있습니다
+            </p>
+          </BottomSheet.Body>
+
+          <BottomSheet.Footer>
             <div className='flex justify-center'>
               <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</button>
             </div>
-          </LayerPopup.Footer>
+          </BottomSheet.Footer>
         </BottomSheet>
 
         <button type="button" onClick={() => OpenEventPopup('popup5')}
           className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>바텀시트(Full) 열기
         </button>
+
         <BottomSheet type="full" align="center" isOpen={isOpenPopup.popup5} OpenEvent={() => OpenEventPopup('popup5')}>
-          <LayerPopup.Header>
-            {/* <div className="flex justify-start">
-              <button type="button" className="w-9 h-9 text-white bg-slate-500" onClick={() => OpenEventPopup('popup5')}>
-                <span className="sr-only-none">Back</span>
-              </button>
-            </div> */}
-            <p className="text-4xl"><b>타이틀..</b></p>
-            <p className="text-4xl"><b>타이틀..</b></p>
-          </LayerPopup.Header>
-          <LayerPopup.Body>
+          <BottomSheet.Header>
+            <p className="text-4xl"><b>Header</b></p>
+          </BottomSheet.Header>
+
+          <BottomSheet.Body>
             <p className="text-xl">
-              인증이 완료되지 않으면 허수데이터로 분류될 수 있으며, 12월 23일부터 리포트 열람이 제한될 수 있습니다
+              인증이 완료되지 않으면 허수데이터로 분류될 수 있으며
             </p>
             <div><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" /></div>
             <div><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" /></div>
-            <div><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" /></div>
-          </LayerPopup.Body>
+          </BottomSheet.Body>
 
-          <LayerPopup.Footer>
+          <BottomSheet.Footer>
             <div className='flex justify-center'>
               <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</button>
             </div>
-          </LayerPopup.Footer>
+          </BottomSheet.Footer>
         </BottomSheet>
 
       </div>

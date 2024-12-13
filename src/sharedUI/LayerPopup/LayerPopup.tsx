@@ -3,18 +3,24 @@ import { cva, VariantProps } from "class-variance-authority";
 import React, { createContext, useContext, HTMLAttributes } from 'react';
 
 type LayerPopupContextType = "base" | "full" | "scroll" | "bottom";
-
 const LayerPopupContext = createContext<LayerPopupContextType | null>(null);
 
+// size controls
+const BodyMargin = "mt-6";
+const FooterMargin = "mt-6";
+const ScrollBodyPadding = "p-6 pt-0 md:p-9 md:pt-0";
+const ScrollCloseButtonPadding = "pr-6 pt-6 md:pt-9 md:pr-9";
+const CloseButtonSize = "w-8 h-8 md:w-9 md:h-9";
+
 const LayerPopupVariants = cva(`
-  inner p-8 absolute center_center min-w-[300px] max-w-[90dvw] w-max xl:max-w-[1280px] max-h-[90dvh] flex flex-col
+  min-w-[300px] max-w-[90dvw] w-max max-h-[90dvh] xl:max-w-[1280px] absolute center_center flex flex-col
   scroll overflow-hidden rounded-lg transition-all
   `, {
   variants: {
     type: {
-      base: '', // max-h-[90dvh]
-      full: 'p-0 w-[100dvw] h-[100dvh] max-w-[100dvw] max-h-dvh lg:h-fit lg:max-h-[90dvh] lg:min-w-[300px] lg:max-w-[90dvw] lg:w-max rounded-none',
-      scroll: 'p-0 overflow-hidden',
+      base: 'p-6 md:p-9',
+      full: 'w-[100dvw] max-w-[100dvw] h-[100dvh] max-h-dvh lg:min-w-[300px] lg:max-w-[90dvw] lg:w-max lg:h-fit lg:max-h-[90dvh] rounded-none',
+      scroll: 'overflow-hidden',
     },
     align: {
       left: 'text-left',
@@ -29,7 +35,7 @@ const LayerPopupVariants = cva(`
       base: '',
       sm: "rounded-sm",
       md: "rounded-md",
-      lg: "rounded-xl",
+      xl: "rounded-xl",
     },
   },
   defaultVariants: {
@@ -84,7 +90,7 @@ const LayerPopup: LayerPopupType = ({
     type: type as "base" | "full" | "scroll" | undefined,
     align: align as "left" | "center" | "right" | undefined,
     color: color as "base" | "type1" | undefined,
-    round: round as "base" | "sm" | "md" | "lg" | undefined,
+    round: round as "base" | "sm" | "md" | "xl" | undefined,
   });
 
   const typeMode = type  || "base"  || "full" || "scroll";
@@ -101,19 +107,20 @@ const LayerPopup: LayerPopupType = ({
             className={cn(className, addClass)}
             {...props}
           >
-            <div className={`flex ${atFull ? 'justify-start' : atScroll ? 'pt-8 pr-8 justify-end' : 'justify-end'}`}>
-              <button type="button" className={`w-9 h-9
+            <div className={`flex ${atFull ? 'justify-start' : atScroll ? `${ScrollCloseButtonPadding} justify-end` : 'justify-end'}`}>
+              <button type="button" className={`${CloseButtonSize}
                 bg-center
                 bg-no-repeat
                 bg-[length:60%_60%]
-                ${atFull ? 'bg-slate-500' : 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
+                ${atFull ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
+                  : 'bg-right bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
                 `} onClick={OpenEvent}>
                 <span className="sr-only">팝업 닫기</span>
               </button>
             </div>
 
             {atScroll ? (
-              <div className={`p-8 pt-0 flex flex-col w-full h-full scroll overflow-auto`}>
+              <div className={`${ScrollBodyPadding} flex flex-col w-full h-full scroll overflow-auto`}>
               { children }
               </div>
             ) : children }
@@ -139,14 +146,9 @@ const PopupHeader: React.FC<PopupHeaderProps> = ({ children }) => {
 const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
   const type = useContext(LayerPopupContext);
 
-  console.log(type)
-  console.log(type === "scroll")
-  // const { type } = useContext(LayerPopupContext);
-  // console.log(type) && ["scroll"]
-
   return (
     <>
-      <div className={`popup-body flex-1 scroll ${type === "scroll" ? '' : 'overflow-auto'}`}>
+      <div className={`${type === "full" ? '' : BodyMargin} popup-body flex-1 scroll ${type === "scroll" ? '' : 'overflow-auto'} bg-gray-400`}>
         { children }
       </div>
     </>
@@ -154,9 +156,11 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
 }
 
 const PopupFooter: React.FC<PopupFooterProps> = ({ children }) => {
+  const type = useContext(LayerPopupContext);
+
   return (
     <>
-      <div className="popup-footer">
+      <div className={`${type === "full" ? '' : FooterMargin} popup-footer bg-gray-200`}>
         { children }
       </div>
     </>

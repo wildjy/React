@@ -3,19 +3,21 @@ import { cva, VariantProps } from "class-variance-authority";
 import React, { createContext, useContext, HTMLAttributes } from 'react';
 
 type BottomSheetContextType = "base" | "full" | "scroll" | "bottom";
-
 const BottomSheetContext = createContext<BottomSheetContextType | null>(null);
 
+// size controls
+const BodyMargin = "mt-6";
+const FooterMargin = "mt-6";
+const CloseButtonSize = "w-8 h-8 md:w-9 md:h-9";
+
 const BottomSheetVariants = cva(`
-  inner p-8 fixed bottom-0 x_center min-w-[300px] max-w-[100dvw] w-max xl:max-w-[1280px] flex flex-col
+  min-w-[300px] max-w-[100dvw] w-max xl:max-w-[1280px] fixed x_center bottom-0 flex flex-col
   scroll overflow-hidden transition-all duration-500 rounded-t-lg z-10
   `, {
   variants: {
     type: {
-      base: 'max-h-[90dvh]', // max-h-[90dvh]
+      base: 'p-6 md:p-9 max-h-[90dvh]', // max-h-[90dvh]
       full: 'max-h-dvh lg:max-h-[90dvh] rounded-t-none lg:rounded-t-lg',
-      scroll: '',
-      bottom: '',
     },
     align: {
       left: 'text-left',
@@ -30,7 +32,7 @@ const BottomSheetVariants = cva(`
       base: '',
       sm: "rounded-sm",
       md: "rounded-md",
-      lg: "rounded-xl",
+      xl: "rounded-xl",
     },
   },
   defaultVariants: {
@@ -46,7 +48,7 @@ interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" |
   children: React.ReactNode;
   isOpen: boolean;
   OpenEvent: () => void;
-  type?: "base" | "full" | "scroll" | "bottom";
+  type?: "base" | "full";
   addClass?: string;
 }
 
@@ -82,16 +84,14 @@ const BottomSheet: BottomSheetType = ({
 }) => {
 
   const className = BottomSheetVariants ({
-    type: type as "base" | "full" | "scroll" | "bottom" | undefined,
+    type: type as "base" | "full" | undefined,
     align: align as "left" | "center" | "right" | undefined,
     color: color as "base" | "type1" | undefined,
-    round: round as "base" | "sm" | "md" | "lg" | undefined,
+    round: round as "base" | "sm" | "md" | "xl" | undefined,
   });
 
-  const typeMode = type  || "base"  || "full" || "scroll" || "bottom";
+  const typeMode = type  || "base"  || "full";
   const atFull = type === "full";
-  const atScroll = type === "scroll";
-  const atBottom = type === "bottom";
 
   return (
     <>
@@ -107,11 +107,12 @@ const BottomSheet: BottomSheetType = ({
             {...props}
           >
             <div className={`flex ${atFull ? 'justify-start' : 'justify-end'}`}>
-              <button type="button" className={`w-9 h-9
+              <button type="button" className={`${CloseButtonSize}
                 bg-center
                 bg-no-repeat
                 bg-[length:60%_60%]
-                ${atFull ? 'bg-slate-500' : 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
+                ${atFull ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
+                  : 'bg-right bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
                 `} onClick={OpenEvent}>
                 <span className="sr-only">팝업 닫기</span>
               </button>
@@ -140,12 +141,9 @@ const PopupHeader: React.FC<PopupHeaderProps> = ({ children }) => {
 const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
   const type = useContext(BottomSheetContext);
 
-  console.log(type)
-  console.log(type === "scroll")
-
   return (
     <>
-      <div className={`popup-body flex-1 scroll ${type === "scroll" ? '' : 'overflow-auto'}`}>
+      <div className={`${type === "full" ? '' : BodyMargin} popup-body flex-1 scroll overflow-auto bg-gray-400`}>
         { children }
       </div>
     </>
@@ -153,9 +151,11 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
 }
 
 const PopupFooter: React.FC<PopupFooterProps> = ({ children }) => {
+  const type = useContext(BottomSheetContext);
+
   return (
     <>
-      <div className="popup-footer">
+      <div className={`${type === "full" ? '' : FooterMargin} popup-footer bg-gray-200`}>
         { children }
       </div>
     </>
