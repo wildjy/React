@@ -119,6 +119,24 @@ const UseStatePage: React.FC = () => {
                 })
               }
 
+              {
+                React.Children.map(children, (child, index) => {
+                  return React.isValidElement<ChildProps>(child) ? React.cloneElement(child, { index } : child );
+                })
+
+                obj.forEach((target, index) => {
+                  target.setAttritude(index);
+                })
+
+                설명))
+                React.Children.map(children, (child, index)) children 을 순회하면서 자식 요소에 콜백 함수를 실행
+                == Array.map을 안쓴 이유는 단순배열이 아닐수 있으므로.
+                React.isValidElement<ChildProps>(child)
+                == child 요소가 유효한 React요소(JSX요소)인지 확인하는 함수.
+                React.cloneElement(child, { index })
+                == 기존(child) React요소를 복제하고, 추가적인 Props(index) 덮어쓰거나 새로 추가한 새 요소를 반환 하는 함수.
+              }
+
               // 동적 [key]
               const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
                 popup1: false,
