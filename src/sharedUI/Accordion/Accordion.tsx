@@ -1,39 +1,15 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import React, { useState, createContext, useContext} from 'react';
+import React, { useState, useRef, useEffect, createContext, useContext} from 'react';
 
-const AccordionVariants = cva('first:border-t border-b border-gray-300', {
-    variants: {
-      size: {
-        sm: '',
-        md: '',
-        lg: '',
-      },
-      color: {
-        base: '',
-
-      }
-    },
-    defaultVariants: {
-      size: 'md',
-      color: 'base',
-    }
-  }
-)
-
-const AccordionTopVariants = cva(`
-    hover:font-bold
-    cursor-pointer
-    relative
-    after:absolute
-    after:top-center
-    after:right-4
-    after:content-[""]
+const AccordionVariants = cva(` hover:font-bold cursor-pointer relative
     after:w-[1.25rem]
     after:h-[1.25rem]
+    after:bg-[length:1.25rem_1.25rem]
+    after:absolute after:top-center after:right-4
+    after:content-[""]
     after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_toggle.svg")]
     after:bg-center
-    after:bg-[length:1.25rem_1.25rem]
     after:bg-no-repeat
     after:transition-all
     after:duration-300
@@ -45,8 +21,8 @@ const AccordionTopVariants = cva(`
         lg: '',
       },
       icon: {
-        base: 'carot  ',
-        plus: 'plus after:bg-[length:100%_100%] after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_plus.svg")]',
+        base: 'carot',
+        plus: 'plus after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_plus.svg")]',
         arrow: 'arrow after:-rotate-90',
         none: '',
       },
@@ -60,11 +36,18 @@ const AccordionTopVariants = cva(`
 interface AccordionContextProps {
   isOpen: boolean;
   EventOpen: () => void;
+  motion?: boolean | string;
 }
+
+interface ChildProps {
+  motion: boolean | string;
+}
+
 const AccordionContext = createContext<AccordionContextProps | null>(null);
 
 interface AccordionProps {
   children?: React.ReactNode;
+  motion?: boolean;
 }
 
 interface AccordionType extends React.FC<AccordionProps> {
@@ -73,37 +56,38 @@ interface AccordionType extends React.FC<AccordionProps> {
   Bottom: typeof AccdBottom;
 }
 
-interface AccdItemProps extends VariantProps<typeof AccordionVariants> {
+interface AccdItemProps {
   children?: React.ReactNode;
   addClass?: string;
+  motion?: boolean | string;
 }
 
-interface AccdTopProps extends VariantProps<typeof AccordionTopVariants> {
+interface AccdTopProps extends VariantProps<typeof AccordionVariants> {
   children?: React.ReactNode;
   addClass?: string;
 }
 
 interface AccdBottomProps {
   children?: React.ReactNode;
+  addClass?: string;
 }
 
-const Accordion: AccordionType = ({ children }) => {
+const Accordion: AccordionType = ({ children, motion }) => {
 
   return (
     <>
       <div className="accordion">
-        { children }
+        {
+          React.Children.map(children, (child) => {
+            return React.isValidElement<ChildProps>(child) ? React.cloneElement(child, { motion }) : child;
+          })
+        }
       </div>
     </>
   )
 }
 
-const AccdItem: React.FC<AccdItemProps> = ({ children, size, color, addClass, ...props }) => {
-  const className = AccordionVariants({
-    size: size as 'sm' | 'md' | 'lg' | undefined,
-    color: color as 'base' | undefined,
-  })
-
+const AccdItem: React.FC<AccdItemProps> = ({ children, addClass, motion }) => {
   const [isOpen, setIsOpen] = useState(false);
   const EventOpen = () => {
     setIsOpen((prevOpen) => {
@@ -113,8 +97,8 @@ const AccdItem: React.FC<AccdItemProps> = ({ children, size, color, addClass, ..
 
   return (
     <>
-      <AccordionContext.Provider value={{ isOpen, EventOpen }}>
-        <div className={`Item ${cn(className, addClass)}`}>
+      <AccordionContext.Provider value={{ isOpen, EventOpen, motion }}>
+        <div className={`Item first:border-t border-b border-gray-300 ${cn(addClass)}`}>
           { children }
         </div>
       </AccordionContext.Provider>
@@ -128,7 +112,7 @@ const AccdTop: React.FC<AccdTopProps> = ({ children, icon, addClass, ...props })
      throw new Error('error');
   }
 
-  const className = AccordionTopVariants({
+  const className = AccordionVariants({
     icon: icon as 'base' | 'plus' | 'arrow' | 'none' | undefined,
   })
 
@@ -136,23 +120,53 @@ const AccdTop: React.FC<AccdTopProps> = ({ children, icon, addClass, ...props })
 
   return (
     <>
-      <div className={`Top ${cn(className, addClass)} ${context.isOpen ? 'font-bold text-blue-700 after:-rotate-180' : atArrow ? 'bg-red-600 after:-rotate-45' : ''}`} onClick={context.EventOpen}>
+      <div className={`Top ${cn(className, addClass)}
+        ${context.isOpen ? atArrow ? 'after:-rotate-45' : 'font-bold text-blue-700 after:-rotate-180' : ''}
+        `} onClick={context.EventOpen}
+      >
         { children }
       </div>
     </>
   )
 }
 
-const AccdBottom: React.FC<AccdBottomProps> = ({ children }) => {
+const AccdBottom: React.FC<AccdBottomProps> = ({ children, addClass }) => {
   const context = useContext(AccordionContext);
   if(!context) {
     throw new Error('Error');
   }
 
+  const { isOpen, motion } = context;
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number>(0);
+
+  useEffect(() => {
+    const childObj = bottomRef.current;
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (childObj) {
+        setHeight(isOpen ? childObj.scrollHeight + childObj.scrollHeight : 0);
+      }
+    });
+
+    if (childObj) {
+      resizeObserver.observe(childObj);
+    }
+
+    return () => {
+      if (childObj) resizeObserver.unobserve(childObj);
+    };
+  }, [isOpen]);
+
   return (
     <>
-      <div className={`Bottom ${context.isOpen ? 'block' : 'hidden'} border-t border-gray-300 bg-gray-100`}>
-      { children }
+      <div ref={bottomRef}
+        style={{ maxHeight: motion ? `${height}px` : "" }}
+        className={`Bottom overflow-hidden ease-in-out border-gray-300 bg-gray-100
+          ${motion ? `transition-max-h duration-300` : ''}
+          ${isOpen ? `max-h-auto border-t` : 'max-h-0'} ${cn(addClass)}`}
+        >
+        { children }
       </div>
     </>
   )
