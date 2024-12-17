@@ -30,9 +30,9 @@ const BottomSheetVariants = cva(`
     },
     round: {
       base: '',
-      sm: "rounded-sm",
-      md: "rounded-md",
-      xl: "rounded-xl",
+      sm: "rounded-t-sm",
+      md: "rounded-t-md",
+      xl: "rounded-t-xl",
     },
   },
   defaultVariants: {
@@ -49,6 +49,7 @@ interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" |
   isOpen: boolean;
   OpenEvent?: () => void;
   type?: "base" | "full";
+  dimm?: boolean;
   addClass?: string;
   close?: boolean;
 }
@@ -78,6 +79,7 @@ const BottomSheet: BottomSheetType = ({
   children,
   type,
   align,
+  dimm = true,
   close = true,
   color,
   round,
@@ -100,11 +102,13 @@ const BottomSheet: BottomSheetType = ({
      {/* {isOpen && ( */}
       <BottomSheetContext.Provider value={ typeMode }>
         <div
-        className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' } layerPopup fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-10`}>
+        className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' } fixed top-0 left-0 w-dvw h-dvh z-10 transition-all duration-300
+        ${dimm ? 'bg-gray-1000 bg-opacity-65' : ''}`}>
           <div
             className={cn(className, addClass, {
               'translate-y-0': isOpen,
               'translate-y-full': !isOpen,
+              'border border-gray-300': !dimm,
             })}
             {...props}
           >

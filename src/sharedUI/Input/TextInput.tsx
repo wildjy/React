@@ -3,8 +3,6 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
-import { Success } from "./storybook/InputText.stories";
-
 
 const InputVariants = cva(
   "w-full peer leading-none border border-gray-500 focus:outline-none rounded-lg", // md:w-auto

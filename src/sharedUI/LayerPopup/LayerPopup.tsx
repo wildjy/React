@@ -52,6 +52,7 @@ interface LayerPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" | 
   isOpen: boolean;
   OpenEvent?: () => void;
   type?: "base" | "full" | "scroll";
+  dimm?: boolean;
   addClass?: string;
   close?: boolean;
 }
@@ -81,6 +82,7 @@ const LayerPopup: LayerPopupType = ({
   children,
   type,
   align,
+  dimm = true,
   close = true,
   color,
   round,
@@ -101,12 +103,14 @@ const LayerPopup: LayerPopupType = ({
 
   return (
     <>
-     {/* {isOpen && ( */}
       <LayerPopupContext.Provider value={ typeMode }>
         <div
-        className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' } layerPopup fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-10 transition-all duration-300`}>
+        className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' }
+        ${dimm ? 'bg-gray-1000 bg-opacity-65' : ''}
+        fixed top-0 left-0 w-dvw h-dvh z-10 transition-all duration-300
+        `}>
           <div
-            className={cn(className, addClass)}
+            className={`${cn(className, addClass)} ${dimm ? '' : 'border border-gray-300'}`}
             {...props}
           >
             { close && (
@@ -129,7 +133,6 @@ const LayerPopup: LayerPopupType = ({
           </div>
         </div>
       </LayerPopupContext.Provider>
-     {/* )} */}
     </>
   )
 };

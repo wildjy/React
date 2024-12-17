@@ -28,7 +28,7 @@ const LayerPopupPage = () => {
           className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>팝업(default) 열기
         </button>
 
-        <LayerPopup align="center" isOpen={isOpenPopup.popup1} OpenEvent={() => OpenEventPopup('popup1')}>
+        <LayerPopup align="center" dimm={false} isOpen={isOpenPopup.popup1} OpenEvent={() => OpenEventPopup('popup1')}>
           <LayerPopup.Header>
             <p className="text-4xl"><b>Header</b></p>
           </LayerPopup.Header>
@@ -116,7 +116,7 @@ const LayerPopupPage = () => {
           className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>바텀시트 열기
         </button>
 
-        <BottomSheet align="center" isOpen={isOpenPopup.popup4} OpenEvent={() => OpenEventPopup('popup4')}>
+        <BottomSheet align="center" dimm={false} isOpen={isOpenPopup.popup4} OpenEvent={() => OpenEventPopup('popup4')}>
           <BottomSheet.Header>
             <p className="text-4xl"><b>Header</b></p>
           </BottomSheet.Header>
