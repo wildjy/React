@@ -124,7 +124,7 @@ const HighSchoolPage: React.FC = () => {
     ],
     select2: [
       { value: 'optionA', label: 'ㅇㅇ고등학교' },
-      { value: 'optionB', label: 'ㅇㅇ고등학교 1' },
+      { value: 'optionB', label: 'ㅇㅇ고등학교ㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ 1' },
     ],
     select3: [
       { value: 'item1', label: 'Item 1' },
