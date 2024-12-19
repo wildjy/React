@@ -22,7 +22,7 @@ const AccordionPage = () => {
     <>
       <Accordion motion={false}>
         <Accordion.Item>
-          <Accordion.Top addClass='px-6'>
+          <Accordion.Top size="sm">
           아코디언.Top1
           </Accordion.Top>
           <Accordion.Bottom addClass="bg-white">
@@ -72,7 +72,7 @@ const AccordionPage = () => {
         </Accordion.Item>
 
         <Accordion.Item>
-          <Accordion.Top icon="arrow">
+          <Accordion.Top size="lg" icon="arrow">
           아코디언.Top2
           </Accordion.Top>
           <Accordion.Bottom>

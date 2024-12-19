@@ -1,11 +1,12 @@
 
 "use client";
 import React, { useState, ChangeEvent } from "react";
-import CustomSelect from './CustomSelect';
+import DropDown_Score from '../../sharedUI/DropDown/DropDown_Score';
+import DropDown from '../../sharedUI/DropDown/DropDown';
 import CheckBox from "../../sharedUI/Input/CheckBox";
 
 
-const CustomSelectPage = () => {
+const DropDownPage = () => {
 
   // const [isOpen, setIsOpen] = useState<{[key: string]: boolean}>({
   //   dropDown1: false,
@@ -41,22 +42,19 @@ const CustomSelectPage = () => {
 
   const dropOptions = {
     dropOption1: [
-      { value: "1", label: "옵션옵션옵션옵션옵션 1-1" },
+      { value: "1", label: "옵션옵션옵1-1" },
       { value: "2", label: "옵션 1-2" },
       { value: "3", label: "옵션 1-3" },
     ],
     dropOption2: [
       { value: "1", label: "화법과 작문" },
-      { value: "2", label: "확률과 통계통계통계통계통계통통계" },
+      { value: "2", label: "확률과 통계통계" },
       { value: "3", label: "미적분" },
       { value: "4", label: "가하" },
-      { value: "1", label: "화법과 작문" },
-      { value: "2", label: "확률과 통계" },
-      { value: "3", label: "미적분" },
-      { value: "4", label: "가하" },
-      { value: "1", label: "화법과 작문" },
-      { value: "2", label: "확률과 통계" },
-      { value: "3", label: "미적분" },
+      { value: "5", label: "화법과 작문" },
+      { value: "6", label: "확률과 통계통계" },
+      { value: "7", label: "미적분" },
+      { value: "8", label: "가하" },
     ],
   }
 
@@ -64,12 +62,13 @@ const CustomSelectPage = () => {
     <>
       <div>
         <div className="flex gap-3 flex-wrap">
-          <div className="w-[4rem]">
-            <CustomSelect options={dropOptions.dropOption2} size={'w-full'} label={'선택'} layer={true} />
-          </div>
-          <CustomSelect options={dropOptions.dropOption1} size={'min-w-[12rem]'} label={'선택'} />
+          <DropDown options={dropOptions.dropOption2} layer size="sm" width='w-[7rem]' label='선택1' />
+          <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width='w-[13rem]' label='선택1' />
 
-          <CustomSelect custom={true} size={'min-w-[10rem]'} label={'옵션 선택'}>
+          <DropDown options={dropOptions.dropOption1} width='min-w-[12rem]' label='선택2' />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer width='min-w-[10rem]' label='사과탐' />
+
+          <DropDown custom width='min-w-[10rem]' label='옵션 선택'>
             <ul>
               <li>
                 <CheckBox
@@ -99,11 +98,15 @@ const CustomSelectPage = () => {
                 />
               </li>
             </ul>
-          </CustomSelect>
+            <p>dfdsfsd</p>
+            <p>dfdsfsd</p>
+            <p>dfdsfsd</p>
+            <p>dfdsfsd</p>
+          </DropDown>
         </div>
       </div>
     </>
   )
 }
 
-export default CustomSelectPage;
+export default DropDownPage;

@@ -1,46 +1,54 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import React, { useState, useRef, useEffect, createContext, useContext} from 'react';
-
-const AccordionVariants = cva(` hover:font-bold cursor-pointer relative
-  after:w-[1.25rem]
-  after:h-[1.25rem]
-  after:bg-[length:1.25rem_1.25rem]
-  after:absolute after:top-center after:right-4
-  after:content-[""]
-  after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_toggle.svg")]
-  after:bg-center
-  after:bg-no-repeat
-  after:transition-all
-  after:duration-300
-`, {
-  variants: {
-    size: {
-      sm: 'py-3 ',
-      md: 'px-4 py-4 ',
-      lg: '',
-    },
-    icon: {
-      base: 'carot',
-      plus: 'plus after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_plus.svg")]',
-      arrow: 'arrow after:-rotate-90',
-      none: '',
-    },
-  },
-  defaultVariants: {
-    size: 'md',
-    icon: 'base',
-  }
-}
-)
+import React, { useState, useRef, useEffect, createContext, useContext } from 'react';
 
 interface AccordionContextProps {
   openIndex: number | null;
   setOpenIndex: (index: number | null) => void;
   motion?: boolean | string;
 }
+
 const AccordionContext = createContext<AccordionContextProps | null>(null);
 
+const useAccordionContext = () => {
+  const context = useContext(AccordionContext);
+  if(!context) {
+    throw new Error('error');
+  }
+  return context;
+}
+
+const AccordionVariants = cva(` hover:font-bold cursor-pointer relative
+    after:w-[1.25rem]
+    after:h-[1.25rem]
+    after:bg-[length:1.25rem_1.25rem]
+    after:absolute after:top-center after:right-4
+    after:content-[""]
+    after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_toggle.svg")]
+    after:bg-center
+    after:bg-no-repeat
+    after:transition-all
+    after:duration-300
+  `, {
+    variants: {
+      size: {
+        sm: 'py-3 ',
+        md: 'px-4 py-4 ',
+        lg: '',
+      },
+      icon: {
+        base: 'carot',
+        plus: 'plus after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_plus.svg")]',
+        arrow: 'arrow after:-rotate-90',
+        none: '',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+      icon: 'base',
+    }
+  }
+)
 interface AccordionProps {
   children?: React.ReactNode;
   index?: number;
@@ -84,7 +92,6 @@ const AccordionOne: AccordionType = ({ children, motion }) => {
         <div className='Accordion'>
           {
             React.Children.map(children, (child, index) => {
-              console.log(index)
               return React.isValidElement<ChildProps>(child) ? React.cloneElement(child, { index }) : child;
             })
           }
@@ -111,16 +118,11 @@ const AccdOneItem: React.FC<AccdOneItemProps> = ({ children, addClass, index }) 
 }
 
 const AccdOneTop: React.FC<AccdOneTopProps> = ({ children, icon, addClass, index = null }) => {
-  const context = useContext(AccordionContext);
-  if(!context) {
-     throw new Error('error');
-  }
+  const { openIndex, setOpenIndex } = useAccordionContext();
 
   const className = AccordionVariants({
     icon: icon as 'base' | 'plus' | 'arrow' | 'none' | undefined,
   })
-
-  const { openIndex, setOpenIndex } = context;
 
   const EventOpen = () => {
     setOpenIndex(openIndex === index ? null : index);
@@ -140,12 +142,8 @@ const AccdOneTop: React.FC<AccdOneTopProps> = ({ children, icon, addClass, index
 }
 
 const AccdOneBottom: React.FC<AccdOneBottomProps> = ({ children, index }) => {
-  const context = useContext(AccordionContext);
-  if(!context) {
-    throw new Error('Error');
-  }
+  const { openIndex, motion } = useAccordionContext();
 
-  const { openIndex } = context;
   const bottomRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number>(0);
 
@@ -170,9 +168,9 @@ const AccdOneBottom: React.FC<AccdOneBottomProps> = ({ children, index }) => {
   return (
     <>
       <div ref={bottomRef}
-        style={{ maxHeight: context.motion ? `${height}px` : "" }}
+        style={{ maxHeight: motion ? `${height}px` : "" }}
         className={`Bottom overflow-hidden ease-in-out border-gray-300 bg-gray-100
-          ${context.motion ? `transition-max-h duration-300` : ''}
+          ${motion ? `transition-max-h duration-300` : ''}
           ${openIndex === index ? 'max-h-auto border-t' : 'max-h-0'}
       `}>
       { children }
