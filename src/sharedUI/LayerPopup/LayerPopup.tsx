@@ -2,8 +2,15 @@ import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { createContext, useContext, HTMLAttributes } from 'react';
 
-type LayerPopupContextType = "base" | "full" | "scroll" | "bottom";
+type LayerPopupContextType = "base" | "full" | "scroll";
 const LayerPopupContext = createContext<LayerPopupContextType | null>(null);
+const useLayerPopupContext = () => {
+  const context = useContext(LayerPopupContext);
+  if(!context) {
+    throw new Error('Error')
+  }
+  return context;
+}
 
 // size controls
 const BodyMargin = "mt-6";
@@ -51,7 +58,6 @@ interface LayerPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" | 
   children: React.ReactNode;
   isOpen: boolean;
   OpenEvent?: () => void;
-  type?: "base" | "full" | "scroll";
   dimm?: boolean;
   addClass?: string;
   close?: boolean;
@@ -148,7 +154,7 @@ const PopupHeader: React.FC<PopupHeaderProps> = ({ children }) => {
 }
 
 const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
-  const type = useContext(LayerPopupContext);
+  const type = useLayerPopupContext();
 
   return (
     <>
@@ -160,7 +166,7 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
 }
 
 const PopupFooter: React.FC<PopupFooterProps> = ({ children }) => {
-  const type = useContext(LayerPopupContext);
+  const type = useLayerPopupContext();
 
   return (
     <>
