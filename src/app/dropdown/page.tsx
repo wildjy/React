@@ -57,6 +57,39 @@ const CustomSelectPage = () => {
       { value: "1", label: "화법과 작문" },
       { value: "2", label: "확률과 통계" },
       { value: "3", label: "미적분" },
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "확률과 통계통계통계통계통계통통계" },
+      { value: "3", label: "미적분" },
+      { value: "4", label: "가하" },
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "확률과 통계" },
+      { value: "3", label: "미적분" },
+      { value: "4", label: "가하" },
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "확률과 통계" },
+      { value: "3", label: "미적분" },
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "확률과 통계통계통계통계통계통통계" },
+      { value: "3", label: "미적분" },
+      { value: "4", label: "가하" },
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "확률과 통계" },
+      { value: "3", label: "미적분" },
+      { value: "4", label: "가하" },
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "확률과 통계" },
+      { value: "3", label: "미적분" },
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "확률과 통계통계통계통계통계통통계" },
+      { value: "3", label: "미적분" },
+      { value: "4", label: "가하" },
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "확률과 통계" },
+      { value: "3", label: "미적분" },
+      { value: "4", label: "가하" },
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "확률과 통계" },
+      { value: "3", label: "미적분" },
     ],
   }
 
@@ -64,10 +97,10 @@ const CustomSelectPage = () => {
     <>
       <div>
         <div className="flex gap-3 flex-wrap">
-          <div className="w-[4rem]">
+          <div className="w-[7rem]">
             <CustomSelect options={dropOptions.dropOption2} size={'w-full'} label={'선택'} layer={true} />
           </div>
-          <CustomSelect options={dropOptions.dropOption1} size={'min-w-[12rem]'} label={'선택'} />
+          <CustomSelect options={dropOptions.dropOption1} size={'min-w-[10rem]'} label={'선택'} />
 
           <CustomSelect custom={true} size={'min-w-[10rem]'} label={'옵션 선택'}>
             <ul>
