@@ -55,7 +55,7 @@ const DropDownBoxVariants = cva(``, {
     variants: {
       layer: {
         true: `fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-20`, //md:absolute md:-mt-[1px] md:top-auto md:right-0 md:min-w-[6rem] md:w-auto md:h-auto md:bg-none md:bg-opacity-0
-        false: `absolute left-0 min-w-[6rem] w-[100%] z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]`,
+        false: `absolute left-0 min-w-[6rem] w-[100%] z-10`,
       },
     },
   }
@@ -183,7 +183,7 @@ const DropOption: React.FC<DropOptionProps> = ({
   custom,
   layer,
 }) => {
-  const { onClose, onChangeSelect } = useDropDownContext();
+  const { typeMode, onClose, onChangeSelect } = useDropDownContext();
   console.log(useDropDownContext())
 
   const className = DropDownBoxVariants ({
@@ -196,7 +196,7 @@ const DropOption: React.FC<DropOptionProps> = ({
 
   return (
     <>
-      <div className={`${cn(className, addClass)}`}>
+      <div className={`${cn(className, addClass)} ${typeMode === 'shadow' ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : ''}`}>
         <div className={`${cn(innerClassName, addClass)}`}>
           { custom ? (
             <div>
