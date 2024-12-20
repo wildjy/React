@@ -44,13 +44,13 @@ const DropDownPage = () => {
     <>
       <div>
         <div className="flex gap-3 flex-wrap">
-          <DropDown options={dropOptions.dropOption2} layer width='w-[7rem]' label='선택 layer' />
+          <DropDown options={dropOptions.dropOption2} layer />
           <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width='w-[13rem]' label='선택 shadow' />
-          <DropDown options={dropOptions.dropOption2} type="ghost" width='w-[10rem]' label='선택2' />
+          <DropDown options={dropOptions.dropOption2} type="ghost" label='선택2' />
 
           <DropDown options={dropOptions.dropOption1} width='min-w-[12rem]' label='선택2' />
           <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer width='min-w-[10rem]' label='사과탐' />
-          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="shadow" width='min-w-[10rem]' label='사과탐' />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="ghost" width='min-w-[10rem]' label='사과탐' />
 
           <DropDown custom width='min-w-[10rem]' label='옵션 선택'>
             <div className="p-5">
@@ -92,15 +92,13 @@ const DropDownPage = () => {
           </DropDown>
 
           <div className="w-full relative">
-            <div className="absolute right-5">
-              <DropDownMore>
-                <ul className="p-5">
-                  <li><a href="https://www.naver.com/" className="px-4 py-2 text-s hover:bg-gray-200 rounded">NAVERNAVERNAVERGoGoGo !</a></li>
-                  <li><a href="https://www.google.com" className="px-4 py-2 text-s hover:bg-gray-200 rounded">Google Go!</a></li>
-                  <li><a href="https://www.nate.com" className="px-4 py-2 text-s hover:bg-gray-200 rounded">Nate Go!</a></li>
-                </ul>
-              </DropDownMore>
-            </div>
+            <DropDownMore>
+              <ul className="p-5">
+                <li><a href="https://www.naver.com/" className="px-4 py-2 text-s hover:bg-gray-200 rounded">NAVERNAVERNAVERGoGoGo !</a></li>
+                <li><a href="https://www.google.com" className="px-4 py-2 text-s hover:bg-gray-200 rounded">Google Go!</a></li>
+                <li><a href="https://www.nate.com" className="px-4 py-2 text-s hover:bg-gray-200 rounded">Nate Go!</a></li>
+              </ul>
+            </DropDownMore>
           </div>
         </div>
       </div>

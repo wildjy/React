@@ -21,8 +21,8 @@ const useDropDownContext = () => {
   return context;
 }
 
-const DropDownVariants = cva(`pe-[1.8rem]
-  w-full text-left border relative truncate rounded-lg
+const DropDownVariants = cva(`pe-[1.8rem] border
+  min-w-[6rem] w-full text-left relative truncate rounded-lg
   after:right-3 after:w-[1rem] after:h-[1rem] after:bg-[length:1rem_1rem]
   after:absolute after:transform after:-translate-y-1/2 after:top-[50%]
   after:content-[""] after:bg-center after:bg-no-repeat after:transition-all after:duration-200
@@ -56,9 +56,9 @@ const DropDownBoxVariants = cva(``, {
       layer: {
         true: `
           fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-20
-          md:absolute md:top-auto md:min-w-[6rem] md:w-auto md:h-auto md:bg-none md:bg-opacity-0
-        `, //
-        false: `absolute left-0 min-w-[6rem] w-[100%] z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]`,
+          md:absolute md:top-auto md:h-auto md:bg-none md:bg-opacity-0
+        `, // md:min-w-[6rem] md:w-auto
+        false: `absolute left-0 z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]`, // min-w-[6rem] w-[100%]
       },
     },
   }
@@ -124,6 +124,7 @@ const DropDown_Score: React.FC<DropDownProps> = ({
   const dropRef = useRef<HTMLDivElement | null>(null);
 
   const className = DropDownVariants ({
+    type: type as 'base' |'shadow' | 'ghost' | undefined,
     size: size as 'sm' |'md' | 'lg' | undefined,
     icon: icon as 'base' | undefined,
   })
@@ -166,7 +167,7 @@ const DropDown_Score: React.FC<DropDownProps> = ({
           onClick={OpenEvent}
           data-value={selectValue?.value || ''}
         >
-          {selectValue ? selectValue.label : label}
+          {selectValue ? selectValue.label : label ? label : '선택'}
         </div>
         {isOpen && (
           <DropOption
@@ -218,7 +219,7 @@ const DropOption: React.FC<DropOptionProps> = ({
             <div className="p-5 flex gap-5">
               <div>
                 <p className="text-lg"><b>[사탐]</b></p>
-                <ul className={``}>
+                <ul className={`whitespace-pre`}>
                   {
                     options.map((option) => (
                       <li
@@ -234,7 +235,7 @@ const DropOption: React.FC<DropOptionProps> = ({
               </div>
               <div>
                 <p className=""><b>[과탐]</b></p>
-                <ul className={``}>
+                <ul className={`whitespace-pre`}>
                   {
                     options1.map((option) => (
                       <li

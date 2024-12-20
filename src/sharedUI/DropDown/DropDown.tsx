@@ -22,7 +22,7 @@ const useDropDownContext = () => {
 }
 
 const DropDownVariants = cva(`pe-[1.8rem] border
-  w-full text-left relative truncate rounded-lg
+  min-w-[6rem] w-full text-left relative truncate rounded-lg
   after:right-3 after:w-[1rem] after:h-[1rem] after:bg-[length:1rem_1rem]
   after:absolute after:transform after:-translate-y-1/2 after:top-[50%]
   after:content-[""] after:bg-center after:bg-no-repeat after:transition-all after:duration-200
@@ -118,7 +118,7 @@ const DropDown: React.FC<DropDownProps> = ({
   const dropRef = useRef<HTMLDivElement | null>(null);
 
   const className = DropDownVariants ({
-    type: type as 'base' |'shadow' | undefined,
+    type: type as 'base' |'shadow' | 'ghost' | undefined,
     size: size as 'sm' |'md' | 'lg' | undefined,
     icon: icon as 'base' | undefined,
   })
@@ -161,7 +161,7 @@ const DropDown: React.FC<DropDownProps> = ({
             onClick={OpenEvent}
             data-value={selectValue?.value || ''}
           >
-            {selectValue ? selectValue.label : label}
+            {selectValue ? selectValue.label : label ? label : '선택'}
           </div>
           {isOpen && (
             <DropOption
