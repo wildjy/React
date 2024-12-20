@@ -3,29 +3,11 @@
 import React, { useState, ChangeEvent } from "react";
 import DropDown_Score from '../../sharedUI/DropDown/DropDown_Score';
 import DropDown from '../../sharedUI/DropDown/DropDown';
+import DropDownMore from '../../sharedUI/DropDown/DropDownMore';
 import CheckBox from "../../sharedUI/Input/CheckBox";
 
 
 const DropDownPage = () => {
-
-  // const [isOpen, setIsOpen] = useState<{[key: string]: boolean}>({
-  //   dropDown1: false,
-  //   dropDown2: false,
-  // });
-  // const [selectValue, setSelectValue] = useState(null);
-
-  // const OpenEvent = (key: string) => {
-  //   setIsOpen((prevOpen) => {
-  //     console.log(prevOpen);
-  //     console.log("Key:", [key]);
-  //     console.log("Key:", !prevOpen[key]);
-  //     return {
-  //       ...prevOpen,
-  //       [key]: !prevOpen[key],
-  //     }
-  //   });
-  // }
-
   const [isChecked, setIsChecked] = useState<{ [key: string]: boolean }>({
     checkbox_1: true,
     checkbox_2: false,
@@ -62,47 +44,64 @@ const DropDownPage = () => {
     <>
       <div>
         <div className="flex gap-3 flex-wrap">
-          <DropDown options={dropOptions.dropOption2} layer size="sm" width='w-[7rem]' label='선택1' />
-          <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width='w-[13rem]' label='선택1' />
+          <DropDown options={dropOptions.dropOption2} layer width='w-[7rem]' label='선택 layer' />
+          <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width='w-[13rem]' label='선택 shadow' />
+          <DropDown options={dropOptions.dropOption2} type="ghost" width='w-[10rem]' label='선택2' />
 
           <DropDown options={dropOptions.dropOption1} width='min-w-[12rem]' label='선택2' />
           <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer width='min-w-[10rem]' label='사과탐' />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="shadow" width='min-w-[10rem]' label='사과탐' />
 
           <DropDown custom width='min-w-[10rem]' label='옵션 선택'>
-            <ul>
-              <li>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_1"
-                  checked={isChecked["checkbox_1"] || false}
-                  onChange={handleCheckChange}
-                  label="체크박스"
-                />
-              </li>
-              <li>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_2"
-                  checked={isChecked["checkbox_2"] || false}
-                  onChange={handleCheckChange}
-                  label="체크박스"
-                />
-              </li>
-              <li>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_3"
-                  checked={isChecked["checkbox_3"] || false}
-                  onChange={handleCheckChange}
-                  label="체크박스"
-                />
-              </li>
-            </ul>
-            <p>dfdsfsd</p>
-            <p>dfdsfsd</p>
-            <p>dfdsfsd</p>
-            <p>dfdsfsd</p>
+            <div className="p-5">
+              <ul>
+                <li>
+                  <CheckBox
+                    size="sm"
+                    value="checkbox_1"
+                    checked={isChecked["checkbox_1"] || false}
+                    onChange={handleCheckChange}
+                    label="체크박스"
+                  />
+                </li>
+                <li>
+                  <CheckBox
+                    size="sm"
+                    value="checkbox_2"
+                    checked={isChecked["checkbox_2"] || false}
+                    onChange={handleCheckChange}
+                    label="체크박스"
+                  />
+                </li>
+                <li>
+                  <CheckBox
+                    size="sm"
+                    value="checkbox_3"
+                    checked={isChecked["checkbox_3"] || false}
+                    onChange={handleCheckChange}
+                    label="체크박스"
+                  />
+                </li>
+              </ul>
+              <ul>
+                <li><a href="https://www.naver.com/">NAVER Go!</a></li>
+                <li><a href="https://www.google.com">Google Go!</a></li>
+                <li><a href="https://www.nate.com">Nate Go!</a></li>
+              </ul>
+            </div>
           </DropDown>
+
+          <div className="w-full relative">
+            <div className="absolute right-5">
+              <DropDownMore>
+                <ul className="p-5">
+                  <li><a href="https://www.naver.com/" className="px-4 py-2 text-s hover:bg-gray-200 rounded">NAVERNAVERNAVERGoGoGo !</a></li>
+                  <li><a href="https://www.google.com" className="px-4 py-2 text-s hover:bg-gray-200 rounded">Google Go!</a></li>
+                  <li><a href="https://www.nate.com" className="px-4 py-2 text-s hover:bg-gray-200 rounded">Nate Go!</a></li>
+                </ul>
+              </DropDownMore>
+            </div>
+          </div>
         </div>
       </div>
     </>

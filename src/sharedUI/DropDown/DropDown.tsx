@@ -3,7 +3,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import React, { useState, useRef, useEffect, createContext, useContext,  HTMLAttributes } from 'react';
 
 interface DropDownContextProps {
-  typeMode: "base" | "shadow";
+  typeMode: "base" | "shadow" | "ghost";
   isOpen: boolean;
   selectValue: OptionType | null;
   onOpen: () => void;
@@ -18,12 +18,11 @@ const useDropDownContext = () => {
   if(!context) {
     throw new Error('Error');
   }
-
   return context;
 }
 
-const DropDownVariants = cva(`pe-[1.8rem]
-  w-full text-left border relative truncate rounded-lg
+const DropDownVariants = cva(`pe-[1.8rem] border
+  w-full text-left relative truncate rounded-lg
   after:right-3 after:w-[1rem] after:h-[1rem] after:bg-[length:1rem_1rem]
   after:absolute after:transform after:-translate-y-1/2 after:top-[50%]
   after:content-[""] after:bg-center after:bg-no-repeat after:transition-all after:duration-200
@@ -33,6 +32,7 @@ const DropDownVariants = cva(`pe-[1.8rem]
       type: {
         base: '',
         shadow: '',
+        ghost: 'border-transparent',
       },
       size: {
         sm: 'px-3 py-2 text-s',
@@ -88,7 +88,9 @@ interface DropDownProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typ
   layer?: boolean;
 }
 
-interface DropOptionProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof DropDownVariants> {
+interface DropOptionProps extends HTMLAttributes<HTMLDivElement>,
+VariantProps<typeof DropDownBoxVariants>,
+VariantProps<typeof DropDownInnerBoxVariants> {
   children?: React.ReactNode;
   addClass?: string;
   options?: OptionType[];
@@ -141,7 +143,8 @@ const DropDown: React.FC<DropDownProps> = ({
     return () => {document.removeEventListener('mousedown', openMouseEvent);}
   }, [])
 
-  const typeMode = type  || "base"  || "shadow";
+  const typeMode = type  || "base"  || "shadow" || "ghost";
+
   return(
     <>
     {/* ${size === "sm" ? '' : size === "lg" ? "" : null} */}
@@ -153,24 +156,24 @@ const DropDown: React.FC<DropDownProps> = ({
         onClose: () => setIsOpen(false),
         onChangeSelect: ChangeSelectValue
       }}>
-      <div ref={dropRef} className={`inline-block ${width} ${layer ? 'md:relative' : 'relative'}`}>
-        <div className={`${cn(className, addClass)} ${isOpen ? 'border-blue-700 after:-rotate-180':''}`}
-          onClick={OpenEvent}
-          data-value={selectValue?.value || ''}
-        >
-          {selectValue ? selectValue.label : label}
+        <div ref={dropRef} className={`inline-block ${width} ${layer ? 'md:relative' : 'relative'}`}>
+          <div className={`${cn(className, addClass, {'border-blue-700 after:-rotate-180': isOpen})}`}
+            onClick={OpenEvent}
+            data-value={selectValue?.value || ''}
+          >
+            {selectValue ? selectValue.label : label}
+          </div>
+          {isOpen && (
+            <DropOption
+              children={children}
+              options={options}
+              custom={custom}
+              layer={layer}
+              onChangeSelect={ChangeSelectValue}
+              onClose={OpenEvent}
+            />
+          )}
         </div>
-        {isOpen && (
-          <DropOption
-            children={children}
-            options={options}
-            custom={custom}
-            layer={layer}
-            onChangeSelect={ChangeSelectValue}
-            onClose={OpenEvent}
-          />
-        )}
-      </div>
       </DropDownContext.Provider>
     </>
   )
@@ -184,7 +187,6 @@ const DropOption: React.FC<DropOptionProps> = ({
   layer,
 }) => {
   const { typeMode, onClose, onChangeSelect } = useDropDownContext();
-  console.log(useDropDownContext())
 
   const className = DropDownBoxVariants ({
     layer: layer as boolean | undefined,
@@ -194,20 +196,30 @@ const DropOption: React.FC<DropOptionProps> = ({
     layer: layer as boolean | undefined,
   });
 
+  const atText = ["shadow"].includes(typeMode);
+  console.log(atText)
+
   return (
     <>
-      <div className={`${cn(className, addClass)} ${typeMode === 'shadow' ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : ''}`}>
-        <div className={`${cn(innerClassName, addClass)}`}>
+      {/* <div className={`${cn(className, addClass)} ${typeMode === 'shadow' ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : ''}`}> */}
+      <div className={`${cn(className, addClass, {'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atText})}`}>
+        <div className={`${cn(innerClassName, addClass, {'py-3' : atText})}`}>
           { custom ? (
             <div>
               { children }
               <button onClick={onClose}>닫기</button>
             </div>
           ) : (
-            <ul className='p-3'>
+            <ul className={`${cn('p-3', {'p-0' : atText})}`}>
               {
                 options.map((option) => (
-                  <li key={option.value} onClick={() => onChangeSelect(option)} className='hover:bg-gray-200'>{ option.label }</li>
+                  <li
+                    key={option.value}
+                    className={`${cn('px-4 py-2 text-s hover:bg-gray-200 rounded cursor-pointer', '', {'rounded-none' : atText})}`}
+                    onClick={() => onChangeSelect(option)}
+                  >
+                    { option.label }
+                  </li>
                 ))
               }
             </ul>

@@ -1,6 +1,25 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import React, { useState, useRef, useEffect, HTMLAttributes } from 'react';
+import React, { useState, useRef, useEffect, createContext, useContext,  HTMLAttributes } from 'react';
+
+interface DropDownContextProps {
+  typeMode: "base" | "shadow" | "ghost";
+  isOpen: boolean;
+  selectValue: OptionType | null;
+  onOpen: () => void;
+  onClose: () => void;
+  onChangeSelect: (option: OptionType) => void;
+}
+
+const DropDownContext = createContext<DropDownContextProps | null>(null);
+
+const useDropDownContext = () => {
+  const context = useContext(DropDownContext);
+  if(!context) {
+    throw new Error('Error');
+  }
+  return context;
+}
 
 const DropDownVariants = cva(`pe-[1.8rem]
   w-full text-left border relative truncate rounded-lg
@@ -10,6 +29,11 @@ const DropDownVariants = cva(`pe-[1.8rem]
   `,
   {
     variants: {
+      type: {
+        base: '',
+        shadow: '',
+        ghost: 'border-transparent',
+      },
       size: {
         sm: 'px-3 py-2 text-s',
         md: 'px-4 py-3',
@@ -20,6 +44,7 @@ const DropDownVariants = cva(`pe-[1.8rem]
       },
     },
     defaultVariants: {
+      type: 'base',
       size: 'md',
       icon: 'base',
     }
@@ -69,7 +94,9 @@ interface DropDownProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typ
   layer?: boolean;
 }
 
-interface DropOptionProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof DropDownVariants> {
+interface DropOptionProps extends HTMLAttributes<HTMLDivElement>,
+VariantProps<typeof DropDownBoxVariants>,
+VariantProps<typeof DropDownInnerBoxVariants> {
   children?: React.ReactNode;
   addClass?: string;
   options?: OptionType[]; options1?: OptionType[];
@@ -83,6 +110,7 @@ interface DropOptionProps extends HTMLAttributes<HTMLDivElement>, VariantProps<t
 const DropDown_Score: React.FC<DropDownProps> = ({
   children,
   options = [], options1 = [],
+  type,
   size = "md",
   icon,
   addClass,
@@ -120,11 +148,21 @@ const DropDown_Score: React.FC<DropDownProps> = ({
     return () => {document.removeEventListener('mousedown', openMouseEvent);}
   }, [])
 
+  const typeMode = type  || "base"  || "shadow" || "ghost";
+
   return(
     <>
     {/* ${size === "sm" ? '' : size === "lg" ? "" : null} */}
+      <DropDownContext.Provider value={{
+        typeMode,
+        isOpen,
+        selectValue,
+        onOpen: OpenEvent,
+        onClose: () => setIsOpen(false),
+        onChangeSelect: ChangeSelectValue
+      }}>
       <div ref={dropRef} className={`inline-block ${width} ${layer ? 'md:relative' : 'relative'}`}>
-        <div className={`${cn(className, addClass)} ${isOpen ? 'border-blue-700 after:-rotate-180':''}`}
+        <div className={`${cn(className, addClass, {'border-blue-700 after:-rotate-180': isOpen})}`}
           onClick={OpenEvent}
           data-value={selectValue?.value || ''}
         >
@@ -142,6 +180,7 @@ const DropDown_Score: React.FC<DropDownProps> = ({
           />
         )}
       </div>
+      </DropDownContext.Provider>
     </>
   )
 }
@@ -151,10 +190,10 @@ const DropOption: React.FC<DropOptionProps> = ({
   addClass,
   options = [], options1 = [],
   custom,
-  layer,
-  onChangeSelect,
-  onClose
+  layer
 }) => {
+  const { typeMode, onClose, onChangeSelect } = useDropDownContext();
+
   const className = DropDownBoxVariants ({
     layer: layer as boolean | undefined,
   });
@@ -163,9 +202,12 @@ const DropOption: React.FC<DropOptionProps> = ({
     layer: layer as boolean | undefined,
   });
 
+  const atText = ["shadow"].includes(typeMode);
+  console.log(atText)
+
   return (
     <>
-      <div className={`${cn(className, addClass)}`}>
+      <div className={`${cn(className, addClass, {'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atText})}`}>
         <div className={`${cn(innerClassName, addClass)}`}>
           { custom ? (
             <div>
@@ -176,20 +218,32 @@ const DropOption: React.FC<DropOptionProps> = ({
             <div className="p-5 flex gap-5">
               <div>
                 <p className="text-lg"><b>[사탐]</b></p>
-                <ul className='mt-2'>
+                <ul className={``}>
                   {
                     options.map((option) => (
-                      <li key={option.value} onClick={() => onChangeSelect(option)} className='hover:bg-gray-200'>{ option.label }</li>
+                      <li
+                        key={option.value}
+                        className={`${cn('py-1 text-s hover:text-blue-700 cursor-pointer')}`}
+                        onClick={() => onChangeSelect(option)}
+                      >
+                        { option.label }
+                      </li>
                     ))
                   }
                 </ul>
               </div>
               <div>
-                <p className="text-lg"><b>[과탐]</b></p>
-                <ul className='mt-2'>
+                <p className=""><b>[과탐]</b></p>
+                <ul className={``}>
                   {
                     options1.map((option) => (
-                      <li key={option.value} onClick={() => onChangeSelect(option)} className='hover:bg-gray-200'>{ option.label }</li>
+                      <li
+                        key={option.value}
+                        className={`${cn('py-1 text-s hover:text-blue-700 cursor-pointer')}`}
+                        onClick={() => onChangeSelect(option)}
+                      >
+                        { option.label }
+                      </li>
                     ))
                   }
                 </ul>
