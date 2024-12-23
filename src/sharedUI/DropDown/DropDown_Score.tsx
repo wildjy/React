@@ -56,7 +56,7 @@ const DropDownBoxVariants = cva(``, {
       layer: {
         true: `
           fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-20
-          md:absolute md:top-auto md:h-auto md:bg-none md:bg-opacity-0
+          md:absolute md:w-auto md:top-auto md:h-auto md:bg-none md:bg-opacity-0
         `, // md:min-w-[6rem] md:w-auto
         false: `absolute left-0 z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]`, // min-w-[6rem] w-[100%]
       },

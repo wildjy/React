@@ -61,7 +61,7 @@ const Button: FC<ButtonProps> = ({
       <button
         className={cn(className, addClass)}
         value={value}
-      {...props}
+        {...props}
       >
         {name}
       </button>
