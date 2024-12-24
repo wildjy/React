@@ -1,28 +1,29 @@
-
 import { cn } from "../common/cn";
 import { VariantProps } from "class-variance-authority";
-import { ButtonHTMLAttributes } from "react";
+import { AnchorHTMLAttributes, FC } from "react";
 import ButtonVariants from "./ButtonVariants";
 
-interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type">, VariantProps<typeof ButtonVariants>  {
-  type?: "button" | "submit";
+interface LinkButtonProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "type">, VariantProps<typeof ButtonVariants> {
+  blank?: boolean;
   size?: "sm" | "md" | "lg";
   mode?: "primary" | "secondary" | "tertiary";
-  round?: "default" | "full";
+  round?: "default" | "sm" | "full";
   addClass?: string;
   href?: string;
+  value?: string;
   name?: string;
   disabled?: boolean,
 };
 
-const Button: React.FC<ButtonProps> = ({
-  type = "button",
+const Link: React.FC<LinkButtonProps> = ({
+  blank,
   size,
   mode,
   round,
   addClass,
   name,
   href,
+  value,
   disabled,
   ...props
 }) => {
@@ -37,7 +38,11 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <>
-      <button type={type}
+      {/* <a href={href || "#"} {...(blank && {target: "_blank"})} */}
+      <a
+        href={href || "#"}
+        target={blank ? "_blank" : undefined}
+        rel={blank ? "noopener noreferrer" : undefined}
         className={cn(className, addClass, {
           'text-white bg-disabled-bg cursor-default': disabled && primary,
           'text-disabled-text bg-white border-disabled-line cursor-default': disabled && tertiary,
@@ -45,9 +50,9 @@ const Button: React.FC<ButtonProps> = ({
         {...props}
       >
         {name}
-      </button>
+      </a>
     </>
   );
 };
 
-export default Button;
+export default Link;

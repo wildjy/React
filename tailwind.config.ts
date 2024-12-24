@@ -79,8 +79,8 @@ const config: Config = {
       },
       colors: {
         'disabled-text': '#C4C4C4',
-        'disabled-line': '#D9D9D9',
-        'disabled-bg': '#F8F9FA',
+        'disabled-line': '#C4C4C4',
+        'disabled-bg': '#E0E0E0',
         'baseGray': '#EEEEEE',
         'success': '#07bc0c',
         'warning': '#f1c40f',
