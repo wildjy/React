@@ -4,9 +4,11 @@ import { cva, VariantProps } from "class-variance-authority";
 import React, { useState, createContext, useContext } from 'react';
 
 interface ToggleContextProps {
-  // align: 'left' | 'center' | 'right';
   isOpen: boolean;
   EventOpen: () => void;
+  size: string;
+  align: string;
+  icon: string;
 }
 
 const ToggleContext = createContext<ToggleContextProps | null>(null);
@@ -47,19 +49,18 @@ const ToggleBoxTopVariants = cva(`pr-9 relative cursor-pointer
           after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_toggle.svg")]
         `,
         plus: `
-          after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_plus.svg")]`
+          after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_plus.svg")]
+        `,
       }
     },
-    defaultVariants: {
-      size: 'md',
-      align: 'left',
-      icon: 'default',
-    }
   }
 )
 
 interface ToggleBoxProps {
   children?: React.ReactNode;
+  size?: string;
+  align?: string;
+  icon?: string;
 }
 
 
@@ -79,7 +80,7 @@ interface ToggleBoxBottomProps {
   addClass?: string;
 }
 
-const ToggleBox: ToggleBoxTypes = ({ children }) => {
+const ToggleBox: ToggleBoxTypes = ({ size = "md", align = "left", icon = "default", children }) => {
   const [isOpen, setIsIOpen] = useState(false);
   const EventOpen = () => {
     setIsIOpen((prevOpen) => !prevOpen);
@@ -87,7 +88,7 @@ const ToggleBox: ToggleBoxTypes = ({ children }) => {
 
   return (
     <>
-      <ToggleContext.Provider value={{ isOpen, EventOpen }}>
+      <ToggleContext.Provider value={{ size, align, icon, isOpen, EventOpen }}>
         <div className={`${isOpen ? 'active': ''} toggleBox border rounded-lg`}>
           { children }
         </div>
@@ -96,8 +97,8 @@ const ToggleBox: ToggleBoxTypes = ({ children }) => {
   )
 };
 
-const ToggleBoxTop: React.FC<ToggleBoxTopProps> = ({ children, addClass, size, align, icon }) => {
-  const { isOpen, EventOpen } = useToggleContext();
+const ToggleBoxTop: React.FC<ToggleBoxTopProps> = ({ children, addClass }) => {
+  const { size, align, icon, isOpen, EventOpen } = useToggleContext();
 
   const className = ToggleBoxTopVariants({
     size: size as 'sm' | 'md' | 'lg' | undefined,

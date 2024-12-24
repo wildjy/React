@@ -6,8 +6,8 @@ const ToggleBoxPage = () => {
   return (
     <>
       <div>
-        <ToggleBox>
-          <ToggleBox.Top align="center">
+        <ToggleBox size="sm" align="center">
+          <ToggleBox.Top>
             유의사항 확인..
           </ToggleBox.Top>
           <ToggleBox.Bottom>
@@ -19,7 +19,7 @@ const ToggleBoxPage = () => {
 
         <div className="mt-3 px-8">
           <ToggleBox>
-            <ToggleBox.Top size="sm">
+            <ToggleBox.Top >
               유의사항 확인..
             </ToggleBox.Top>
             <ToggleBox.Bottom>
@@ -31,8 +31,8 @@ const ToggleBoxPage = () => {
         </div>
 
         <div className="mt-3 px-3">
-          <ToggleBox>
-            <ToggleBox.Top size="lg" icon="plus">
+          <ToggleBox size="lg" icon="plus">
+            <ToggleBox.Top addClass='bg-red-100'>
               유의사항 확인..
             </ToggleBox.Top>
             <ToggleBox.Bottom addClass='px-[2rem] pb-[1rem]'>
