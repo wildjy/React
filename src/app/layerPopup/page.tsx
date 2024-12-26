@@ -46,7 +46,7 @@ const LayerPopupPage = () => {
 
           <LayerPopup.Footer>
             <div className='flex justify-center'>
-              <a href="#self" className='py-3 w-10 text-center border border-blue-700 rounded'>Footer</a>
+              <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup1')}>Footer</a>
             </div>
           </LayerPopup.Footer>
         </LayerPopup>
@@ -78,7 +78,7 @@ const LayerPopupPage = () => {
 
           <LayerPopup.Footer>
             <div className='flex justify-center'>
-              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>Footer</button>
+              <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup2')}>Footer</a>
             </div>
           </LayerPopup.Footer>
         </LayerPopup>
@@ -107,7 +107,7 @@ const LayerPopupPage = () => {
 
           <LayerPopup.Footer>
             <div className='flex justify-center'>
-              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>Footer</button>
+              <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup3')}>Footer</a>
             </div>
           </LayerPopup.Footer>
         </LayerPopup>
@@ -129,7 +129,7 @@ const LayerPopupPage = () => {
 
           <BottomSheet.Footer>
             <div className='flex justify-center'>
-              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</button>
+              <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup4')}>Footer</a>
             </div>
           </BottomSheet.Footer>
         </BottomSheet>
@@ -153,7 +153,7 @@ const LayerPopupPage = () => {
 
           <BottomSheet.Footer>
             <div className='flex justify-center'>
-              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</button>
+              <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup5')}>Footer</a>
             </div>
           </BottomSheet.Footer>
         </BottomSheet>
@@ -185,7 +185,7 @@ const LayerPopupPage = () => {
 
           <BottomSheet.Footer>
             <div className='flex justify-center'>
-              <button type="button" className='py-3 w-10 text-center border border-blue-700 rounded'>확인</button>
+              <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup6')}>확인</a>
             </div>
           </BottomSheet.Footer>
         </BottomSheet>

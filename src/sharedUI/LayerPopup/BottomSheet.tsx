@@ -2,8 +2,18 @@ import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { createContext, useContext, HTMLAttributes } from 'react';
 
-type BottomSheetContextType = "base" | "full" | "scroll" | "bottom";
+interface BottomSheetContextType {
+  typeMode: "base" | "full";
+}
 const BottomSheetContext = createContext<BottomSheetContextType | null>(null);
+
+const BottomUseContext = () => {
+  const context = useContext(BottomSheetContext);
+  if(!context) {
+    throw new Error('error');
+  }
+  return context;
+}
 
 // size controls
 const BodyMargin = "mt-6";
@@ -48,7 +58,6 @@ interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" |
   children: React.ReactNode;
   isOpen: boolean;
   OpenEvent?: () => void;
-  type?: "base" | "full";
   dimm?: boolean;
   addClass?: string;
   close?: boolean;
@@ -99,8 +108,7 @@ const BottomSheet: BottomSheetType = ({
 
   return (
     <>
-     {/* {isOpen && ( */}
-      <BottomSheetContext.Provider value={ typeMode }>
+      <BottomSheetContext.Provider value={{ typeMode } }>
         <div
         className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' } fixed top-0 left-0 w-dvw h-dvh z-10 transition-all duration-300
         ${dimm ? 'bg-gray-1000 bg-opacity-65' : ''}`}>
@@ -131,7 +139,6 @@ const BottomSheet: BottomSheetType = ({
           </div>
         </div>
       </BottomSheetContext.Provider>
-     {/* )} */}
     </>
   )
 };
@@ -147,11 +154,11 @@ const PopupHeader: React.FC<PopupHeaderProps> = ({ children }) => {
 }
 
 const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
-  const type = useContext(BottomSheetContext);
+  const { typeMode } = BottomUseContext();
 
   return (
     <>
-      <div className={`${type === "full" ? '' : BodyMargin} popup-body flex-1 scroll overflow-auto bg-gray-400`}>
+      <div className={`${typeMode === "full" ? '' : BodyMargin} popup-body flex-1 scroll overflow-auto bg-gray-400`}>
         { children }
       </div>
     </>
@@ -159,11 +166,11 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
 }
 
 const PopupFooter: React.FC<PopupFooterProps> = ({ children }) => {
-  const type = useContext(BottomSheetContext);
+  const { typeMode } = BottomUseContext();
 
   return (
     <>
-      <div className={`${type === "full" ? '' : FooterMargin} popup-footer bg-gray-200`}>
+      <div className={`${typeMode === "full" ? '' : FooterMargin} popup-footer bg-gray-200`}>
         { children }
       </div>
     </>

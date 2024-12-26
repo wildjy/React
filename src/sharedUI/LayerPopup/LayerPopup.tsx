@@ -1,6 +1,6 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import React, { createContext, useContext, HTMLAttributes } from 'react';
+import React, { useState, createContext, useContext, HTMLAttributes } from 'react';
 
 type LayerPopupContextType = "base" | "full" | "scroll";
 const LayerPopupContext = createContext<LayerPopupContextType | null>(null);

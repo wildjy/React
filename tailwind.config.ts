@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-import lineClamp from '@tailwindcss/line-clamp';
 
 const config: Config = {
   content: [
@@ -64,9 +63,10 @@ const config: Config = {
         '5': '1rem', // 16px:base
         '6': '1.25rem', // 20px
         '7': '1.5rem', // 24px
-        '8': '2rem', // 32px
-        '9': '2.5rem', // 40px
-        '10': '5rem', // 80px
+        '8': '1.75rem', // 28px
+        '9': '2rem', // 32px
+        '10': '2.5rem', // 40px
+        '11': '5rem', // 80px
       },
       margin: {
         'center': '0 auto',
@@ -130,7 +130,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [lineClamp],
+  plugins: [],
 };
 
 export default config;

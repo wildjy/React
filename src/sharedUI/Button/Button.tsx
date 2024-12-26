@@ -1,53 +1,53 @@
-import React from "react";
 
-// import "./button.css";
+import { cn } from "../common/cn";
+import { VariantProps } from "class-variance-authority";
+import { ButtonHTMLAttributes } from "react";
+import ButtonVariants from "./ButtonVariants";
 
-export interface ButtonProps {
-  /** Is this the principal call to action on the page? */
-  primary?: boolean;
-  /** What background color to use */
-  backgroundColor?: string;
-  /** How large should the button be? */
-  size?: "small" | "medium" | "large";
-  /** Button contents */
-  label: string;
-  /** Optional click handler */
-  onClick?: () => void;
-}
+type sizeType = "sm" | "md" | "lg";
+type modeType = "primary" | "secondary" | "tertiary";
+type roundType = "rec" | "sm" | "full";
+interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type">, VariantProps<typeof ButtonVariants>  {
+  type?: "button" | "submit";
+  addClass?: string;
+  href?: string;
+  label?: string;
+  disabled?: boolean,
+};
 
-/** Primary UI component for user interaction */
-export const Button = ({
-  primary = false,
-  size = "medium",
-  backgroundColor,
+const Button: React.FC<ButtonProps> = ({
+  type = "button",
+  size,
+  mode,
+  round,
+  addClass,
   label,
+  href,
+  disabled,
   ...props
-}: ButtonProps) => {
-  const mode = primary
-    ? "bg-blue-500 text-white"
-    : "shadow-inner bg-transparent text-gray-800";
+}) => {
+  const className = ButtonVariants ({
+    size: size as sizeType | undefined,
+    mode: mode as modeType | undefined,
+    round: round as roundType | undefined,
+  });
 
-  let classNameSize = "px-5 py-3 text-sm";
-  if (size === "small") {
-    classNameSize = "px-4 py-2 text-xs";
-  } else if (size === "large") {
-    classNameSize = "px-6 py-3 text-base";
-  } else if (size === "medium") {
-    classNameSize = "px-5 py-3 text-sm";
-  }
+  const primary = mode ===  null || "primary";
+  const tertiary = mode ===  "tertiary";
 
   return (
-    <button
-      type="button"
-      className={[
-        "inline-block cursor-pointer border-0 rounded-full font-bold leading-none font-sans",
-        classNameSize,
-        mode,
-      ].join(" ")}
-      style={{ backgroundColor }}
-      {...props}
-    >
-      {label}
-    </button>
+    <>
+      <button type={type}
+        className={cn(className, addClass, {
+          'text-white bg-[#E0E0E0] cursor-default': disabled && primary,
+          'text-[#C4C4C4] bg-white border-[#C4C4C4] cursor-default': disabled && tertiary,
+        })}
+        {...props}
+      >
+        {label}
+      </button>
+    </>
   );
 };
+
+export default Button;

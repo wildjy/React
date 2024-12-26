@@ -208,7 +208,7 @@ const DropOption: React.FC<DropOptionProps> = ({
 
   return (
     <>
-      <div className={`${cn(className, addClass, {'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atText})}`}>
+      <div className={`${cn(className, addClass, {'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atText})}`}>
         <div className={`${cn(innerClassName, addClass)}`}>
           { custom ? (
             <div>

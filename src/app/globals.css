@@ -76,7 +76,7 @@ html, body {
   @apply text-smMobile sm:text-mobile md:text-tablet lg:text-half xl:text-base;
 }
 
-body {
+html, body {
   color: var(--foreground);
   line-height: 1.43;
   background: var(--background);

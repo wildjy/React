@@ -60,6 +60,7 @@ const DropDownBoxVariants = cva(``, {
     },
   }
 )
+
 const DropDownInnerBoxVariants = cva(`
   inner-box scroll overflow-auto bg-white border border-gray-300 rounded-lg
   `, {

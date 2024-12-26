@@ -47,9 +47,10 @@ const DropDownPage = () => {
           <DropDown options={dropOptions.dropOption2} layer />
           <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width='w-[13rem]' label='선택 shadow' />
           <DropDown options={dropOptions.dropOption2} type="ghost" label='선택2' />
-
           <DropDown options={dropOptions.dropOption1} width='min-w-[12rem]' label='선택2' />
+
           <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer width='min-w-[10rem]' label='사과탐' />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="shadow" width='min-w-[10rem]' label='사과탐' />
           <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="ghost" width='min-w-[10rem]' label='사과탐' />
 
           <DropDown custom width='min-w-[10rem]' label='옵션 선택'>

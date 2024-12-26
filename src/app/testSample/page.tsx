@@ -5,7 +5,7 @@ import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 import Radio from "../../sharedUI/Input/Radio";
 import Select from "../../sharedUI/Input/Select";
-import Button from "../../sharedUI/Button/ButtonUi";
+import Button from "../../sharedUI/Button/Button";
 import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
 import Title from "../../sharedUI/Title/Title";
