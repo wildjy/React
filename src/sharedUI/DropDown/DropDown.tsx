@@ -79,7 +79,6 @@ interface OptionType {
 }
 
 interface DropDownProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof DropDownVariants> {
-  children?: React.ReactNode;
   addClass?: string;
   custom?: boolean;
   options?: OptionType[];
@@ -103,7 +102,6 @@ VariantProps<typeof DropDownInnerBoxVariants> {
 }
 
 const DropDown: React.FC<DropDownProps> = ({
-  children,
   options = [],
   type,
   size = "md",
@@ -166,7 +164,6 @@ const DropDown: React.FC<DropDownProps> = ({
           </div>
           {isOpen && (
             <DropOption
-              children={children}
               options={options}
               custom={custom}
               layer={layer}

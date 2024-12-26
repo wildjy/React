@@ -5,6 +5,7 @@ import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 import Radio from "../../sharedUI/Input/Radio";
 import Select from "../../sharedUI/Input/Select";
+import ButtonBox from "../../sharedUI/Button/ButtonBox";
 import Button from "../../sharedUI/Button/Button";
 import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
@@ -328,7 +329,7 @@ const HighSchoolPage: React.FC = () => {
           <div className={`layer-popup ${ isVisible ? "is-visible border border-blue-700" : ""}`}>
             layer-popup
           </div>
-          <Button name="체크" onClick={handleCheckVisible} />
+          <Button label="체크" onClick={handleCheckVisible} />
 
           <select name="" id="">
             <option value="">select..</option>
@@ -617,19 +618,11 @@ const HighSchoolPage: React.FC = () => {
         <div className="button w-full">
           <Title title="Button" size="md" bold="semi" />
 
-          <Button
-            name="확인"
-          />
-          <Button
-            mode="secondary"
-            round="full"
-            name="ㅇㅇㅇ바로가기"
-          />
+          <ButtonBox>
+            <Button mode="secondary" round="full" label="취소" />
+            <Button label="확인" />
+          </ButtonBox>
 
-        </div>
-
-        <div className="stepbar w-full">
-          <Title title="StepBar" size="md" bold="semi" />
         </div>
 
         <div className="stepbar w-full">
@@ -641,7 +634,7 @@ const HighSchoolPage: React.FC = () => {
 
           <div className="mt-5 w-full flex justify-between">
             <Button
-              name="Previous"
+              label="Previous"
               onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))} // 값들중 큰값을 반환, 0을 넘지 않음
               disabled={currentStep === 0}
               style={{
@@ -650,7 +643,7 @@ const HighSchoolPage: React.FC = () => {
               }}
             />
             <Button
-              name="Next"
+              label="Next"
               onClick={() => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))} // 값들중 작은값을 반환, steps.length(최대)을 넘지 않음
               disabled={currentStep === steps.length - 1}
               style={{
