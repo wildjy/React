@@ -10,71 +10,73 @@ const ButtonPage = () => {
         <p className="text-xl"><b>[Button]</b></p>
         <div className="flex flex-wrap gap-3">
           <div className="w-full flex flex-wrap items-center gap-3">
-            <Button label="Primary Small" size="sm" />
-            <Button type="submit" label="Primary submit" />
-            <Button label="Primary Large" size="lg" />
-            <Button label="Primary" round="full" />
-            <Button label="Primary" round="rec" />
-            <Button label="Primary disabled" disabled />
+            <Button size="sm" endIcon={['icon_btn_arrow.svg', 'w-[0.4rem]']}>
+              Primary Small
+            </Button>
+            <Button type="submit" startIcon={['icon_checked.svg', 'w-[0.75rem]']}>Primary submit</Button>
+            <Button size="lg">Primary Large</Button>
+            <Button round="full">Primary</Button>
+            <Button round="rec">Primary</Button>
+            <Button disabled>Primary disabled</Button>
           </div>
           <div className="w-full flex flex-wrap items-center gap-3">
-            <Button mode="secondary" label="secondary" />
-            <Button mode="secondary" round="full" label="secondary" />
-            <Button mode="secondary" round="rec" label="secondary" />
-            <Button mode="secondary" label="secondary disabled" disabled />
+            <Button mode="secondary">secondary</Button>
+            <Button mode="secondary" round="full">취소</Button>
+            <Button mode="secondary" round="rec">secondary</Button>
+            <Button mode="secondary" disabled>secondary disabled</Button>
           </div>
           <div className="w-full flex flex-wrap items-center gap-3">
-            <Button mode="tertiary" label="tertiary" />
-            <Button mode="tertiary" round="full" label="tertiary" />
-            <Button mode="tertiary" round="rec" label="tertiary" />
-            <Button mode="tertiary" label="tertiary disabled" disabled />
+            <Button mode="tertiary">tertiary</Button>
+            <Button mode="tertiary" round="full">tertiary</Button>
+            <Button mode="tertiary" round="rec">tertiary</Button>
+            <Button mode="tertiary" disabled>tertiary disabled</Button>
           </div>
         </div>
 
         <p className="mt-8 text-xl"><b>[A link]</b></p>
         <div className="flex flex-wrap gap-3">
           <div className="w-full flex flex-wrap items-center gap-3">
-            <Link href="https://www.jinhak.com/" blank mode="primary" size="sm" label="Primary Small + blank" />
-            <Link mode="primary" label="Primary" />
-            <Link mode="primary" size="lg" label="Primary Large" />
-            <Link label="Primary disabled" disabled />
+            <Link href="https://www.jinhak.com/" blank mode="primary" size="sm">Primary Small + blank</Link>
+            <Link mode="primary" startIcon={['icon_checked.svg', 'w-[0.75rem]']}>primary</Link>
+            <Link mode="primary" size="lg" endIcon={['icon_btn_arrow.svg', 'w-[0.5rem]']}>Primary Large</Link>
+            <Link disabled>Primary disabled</Link>
           </div>
           <div className="w-full flex flex-wrap items-center gap-3">
-            <Link mode="secondary" label="secondary" />
-            <Link mode="secondary" label="secondary disabled" disabled />
+            <Link mode="secondary">secondary</Link>
+            <Link mode="secondary" disabled>secondary disabled</Link>
           </div>
           <div className="w-full flex flex-wrap items-center gap-3">
-            <Link mode="tertiary" label="tertiary" />
-            <Link size="auto" addClass="px-2 md:px-4 py-2 text-s text-white bg-red-700" label="ok" />
-            <Link mode="tertiary" size="auto" addClass="" label="cancel" />
+            <Link mode="tertiary">tertiary</Link>
+            <Link size="auto" addClass="px-2 md:px-4 py-2 text-s text-white bg-red-700">ok</Link>
+            <Link mode="tertiary" size="auto" addClass="">cancel</Link>
           </div>
         </div>
 
         <p className="mt-8 text-xl"><b>[ButtonBox]</b></p>
 
         <ButtonBox align="left" addClass="border border-red-400">
-          <Button mode="secondary" size="sm" label="취소 Small" />
-          <Link href="https://www.jinhak.com/" blank size="sm" label="모의지원 Small" />
+          <Button mode="secondary" size="sm" >취소 Small</Button>
+          <Link href="https://www.jinhak.com/" blank size="sm">모의지원 Small</Link>
         </ButtonBox>
 
         <ButtonBox>
-          <Button mode="secondary" label="취소" />
-          <Link href="https://www.jinhak.com/" blank label="모의지원" />
+          <Button mode="secondary" >취소</Button>
+          <Link href="https://www.jinhak.com/" blank>모의지원</Link>
         </ButtonBox>
 
         <ButtonBox align="right">
-          <Link href="https://www.jinhak.com/" blank label="리포트" />
+          <Link href="https://www.jinhak.com/" blank>리포트</Link>
         </ButtonBox>
 
         <ButtonBox>
-          <Button mode="secondary" label="취소" />
-          <Link href="https://www.jinhak.com/" blank label="모의지원" />
-          <Link href="https://www.jinhak.com/" blank label="모의지원" />
+          <Button mode="secondary" >취소</Button>
+          <Link href="https://www.jinhak.com/" blank>모의지원</Link>
+          <Link href="https://www.jinhak.com/" blank endIcon={['icon_btn_arrow.svg', 'w-[0.5rem]']}>모의지원</Link>
         </ButtonBox>
 
         <ButtonBox>
-          <Link size="auto" addClass="px-2 md:px-4 py-2" label="ok" />
-          <Link mode="tertiary" size="auto" addClass="py-2 text-white bg-blue-1000" label="cancel" />
+          <Link size="auto" addClass="px-2 md:px-4 py-2">ok</Link>
+          <Link mode="tertiary" size="auto" addClass="py-2 text-white bg-blue-1000">cancel</Link>
         </ButtonBox>
       </div>
     </>

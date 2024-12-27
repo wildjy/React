@@ -8,21 +8,23 @@ type sizeType = "sm" | "md" | "lg";
 type modeType = "primary" | "secondary" | "tertiary";
 type roundType = "rec" | "sm" | "full";
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type">, VariantProps<typeof ButtonVariants>  {
-  type?: "button" | "submit";
+  children?: React.ReactNode;
+  type?: string;
   addClass?: string;
-  href?: string;
-  label?: string;
-  disabled?: boolean,
+  startIcon?: React.ReactNode[];
+  endIcon?: React.ReactNode[];
+  disabled?: boolean;
 };
 
 const Button: React.FC<ButtonProps> = ({
-  type = "button",
+  children,
+  type,
   size,
   mode,
   round,
   addClass,
-  label,
-  href,
+  startIcon,
+  endIcon,
   disabled,
   ...props
 }) => {
@@ -37,14 +39,21 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <>
-      <button type={type}
+      <button type={`${type === 'submit' ? 'submit' : 'button'}`}
         className={cn(className, addClass, {
+          'gap-3': startIcon || endIcon,
           'text-white bg-[#E0E0E0] cursor-default': disabled && primary,
           'text-[#C4C4C4] bg-white border-[#C4C4C4] cursor-default': disabled && tertiary,
         })}
         {...props}
       >
-        {label}
+        {startIcon && (
+          <img src={`https://image.jinhak.com/jinhakImages/react/icon/${startIcon[0]}`} className={`${startIcon[1]}`} alt="icon" />
+        )}
+        { children }
+        {endIcon && (
+          <img src={`https://image.jinhak.com/jinhakImages/react/icon/${endIcon[0]}`} className={`${endIcon[1]}`} alt="icon" />
+        )}
       </button>
     </>
   );
