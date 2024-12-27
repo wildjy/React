@@ -38,7 +38,7 @@ const StepLabels = cva(
   }
 );
 const StepLines = cva(
-  'StepLines.. hidden md:block absolute top-6 left-0 w-full h-[1px] bg-gray-300',
+  'StepLines.. hidden md:block absolute top-5 left-0 w-full h-[1px] bg-gray-300',
   {
     variants: {
       line: {

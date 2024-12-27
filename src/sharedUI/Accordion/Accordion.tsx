@@ -144,6 +144,7 @@ const AccdTop: React.FC<AccdTopProps> = ({ children, size, icon, addClass, ...pr
       <div className={`Top ${cn(className, addClass)}
         ${isOpen ? atArrow ? 'after:-rotate-45' : 'font-bold text-blue-700 after:-rotate-180' : ''}
         `} onClick={EventOpen}
+        {...props}
       >
         { children }
       </div>

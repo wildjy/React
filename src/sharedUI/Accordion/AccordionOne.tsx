@@ -117,7 +117,7 @@ const AccdOneItem: React.FC<AccdOneItemProps> = ({ children, addClass, index }) 
   )
 }
 
-const AccdOneTop: React.FC<AccdOneTopProps> = ({ children, icon, addClass, index = null }) => {
+const AccdOneTop: React.FC<AccdOneTopProps> = ({ children, icon, addClass, index = null, ...props }) => {
   const { openIndex, setOpenIndex } = useAccordionContext();
 
   const className = AccordionVariants({
@@ -134,7 +134,10 @@ const AccdOneTop: React.FC<AccdOneTopProps> = ({ children, icon, addClass, index
     <>
       <div className={`Top ${cn(className, addClass)}
         ${openIndex === index ? atArrow ? 'after:-rotate-45' : 'font-bold text-blue-700 after:-rotate-180' : ''}
-        `} onClick={EventOpen}>
+        `}
+        onClick={EventOpen}
+        {...props}
+        >
         { children }
       </div>
     </>

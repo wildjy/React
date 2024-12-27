@@ -110,7 +110,8 @@ const DropDown: React.FC<DropDownProps> = ({
   width,
   label,
   custom = false,
-  layer = false
+  layer = false,
+  ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectValue, setSelectValue] = useState<OptionType | null>(null);
@@ -159,6 +160,7 @@ const DropDown: React.FC<DropDownProps> = ({
           <div className={`${cn(className, addClass, {'border-blue-700 after:-rotate-180': isOpen})}`}
             onClick={OpenEvent}
             data-value={selectValue?.value || ''}
+            {...props}
           >
             {selectValue ? selectValue.label : label ? label : '선택'}
           </div>
