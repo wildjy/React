@@ -2,8 +2,9 @@ import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { useState, useRef, useEffect, createContext, useContext,  HTMLAttributes } from 'react';
 
+type typeMode = "base" | "shadow" | "ghost" | "check";
 interface DropDownContextProps {
-  typeMode: "base" | "shadow" | "ghost";
+  type: typeMode;
   isOpen: boolean;
   selectValue: OptionType | null;
   onOpen: () => void;
@@ -33,6 +34,7 @@ const DropDownVariants = cva(`pe-[1.8rem] border
         base: '',
         shadow: '',
         ghost: 'border-transparent',
+        check: 'border-transparent',
       },
       size: {
         sm: 'px-3 py-2 text-s',
@@ -79,6 +81,7 @@ interface OptionType {
 }
 
 interface DropDownProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof DropDownVariants> {
+  type?: typeMode;
   addClass?: string;
   custom?: boolean;
   options?: OptionType[];
@@ -103,7 +106,7 @@ VariantProps<typeof DropDownInnerBoxVariants> {
 
 const DropDown: React.FC<DropDownProps> = ({
   options = [],
-  type,
+  type = "base",
   size = "md",
   icon,
   addClass,
@@ -116,9 +119,9 @@ const DropDown: React.FC<DropDownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectValue, setSelectValue] = useState<OptionType | null>(null);
   const dropRef = useRef<HTMLDivElement | null>(null);
-
+  console.log(type)
   const className = DropDownVariants ({
-    type: type as 'base' |'shadow' | 'ghost' | undefined,
+    type: type as typeMode | undefined,
     size: size as 'sm' |'md' | 'lg' | undefined,
     icon: icon as 'base' | undefined,
   })
@@ -141,15 +144,13 @@ const DropDown: React.FC<DropDownProps> = ({
   useEffect(() => {
     document.addEventListener('mousedown', openMouseEvent);
     return () => {document.removeEventListener('mousedown', openMouseEvent);}
-  }, [])
-
-  const typeMode = type  || "base"  || "shadow" || "ghost";
+  }, []);
 
   return(
     <>
     {/* ${size === "sm" ? '' : size === "lg" ? "" : null} */}
       <DropDownContext.Provider value={{
-        typeMode,
+        type,
         isOpen,
         selectValue,
         onOpen: OpenEvent,
@@ -186,8 +187,7 @@ const DropOption: React.FC<DropOptionProps> = ({
   custom,
   layer,
 }) => {
-  const { typeMode, onClose, onChangeSelect } = useDropDownContext();
-
+  const { type, onClose, onChangeSelect, selectValue } = useDropDownContext();
   const className = DropDownBoxVariants ({
     layer: layer as boolean | undefined,
   });
@@ -196,13 +196,16 @@ const DropOption: React.FC<DropOptionProps> = ({
     layer: layer as boolean | undefined,
   });
 
-  const atText = ["shadow"].includes(typeMode);
-  console.log(atText)
+  const atText = ["shadow"].includes(type);
+  const atCheck = ["check"].includes(type);
+  console.log(type)
 
   return (
     <>
       {/* <div className={`${cn(className, addClass)} ${typeMode === 'shadow' ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : ''}`}> */}
-      <div className={`${cn(className, addClass, {'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atText})}`}>
+      <div className={`${cn(className, addClass,
+          {'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atText || atCheck},
+        )}`}>
         <div className={`${cn(innerClassName, addClass, {'py-3' : atText})}`}>
           { custom ? (
             <div>
@@ -215,7 +218,12 @@ const DropOption: React.FC<DropOptionProps> = ({
                 options.map((option) => (
                   <li
                     key={option.value}
-                    className={`${cn('px-4 py-2 text-s hover:bg-gray-200 rounded cursor-pointer', '', {'rounded-none' : atText})}`}
+                    className={`text-s ${cn('px-4 py-2 rounded hover:bg-gray-200 cursor-pointer', addClass,
+                      {'font-bold': selectValue?.value === option.value},
+                      {'rounded-none' : atText},
+                      {'rounded-none' : atCheck},
+                      {'pl-7  text-blue-500 bg-no-repeat bg-[length:17%] bg-[10%_center] bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg")]' : selectValue?.value === option.value && atCheck},
+                    )}`}
                     onClick={() => onChangeSelect(option)}
                   >
                     { option.label }

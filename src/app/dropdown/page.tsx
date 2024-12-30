@@ -38,6 +38,10 @@ const DropDownPage = () => {
       { value: "7", label: "미적분" },
       { value: "8", label: "가하" },
     ],
+    dropOption3: [
+      { value: "1", label: "최신순" },
+      { value: "2", label: "인기순" },
+    ],
   }
 
   return(
@@ -47,6 +51,7 @@ const DropDownPage = () => {
           <DropDown options={dropOptions.dropOption2} layer label='선택 layer'/>
           <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width='w-[13rem]' label='선택 shadow' />
           <DropDown options={dropOptions.dropOption2} type="ghost" />
+          <DropDown options={dropOptions.dropOption3} type="check" size="sm" width='' />
           <DropDown options={dropOptions.dropOption1} width='min-w-[12rem]' label='선택2' />
 
           <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer width='min-w-[10rem]' label='사과탐' />
