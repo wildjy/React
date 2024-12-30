@@ -3,29 +3,17 @@ import Tab from '../../sharedUI/Tab/Tab';
 import AccordionOne from '../../sharedUI/Accordion/AccordionOne'
 
 const TabPage = () => {
-  const tabConfig = {
-    tab1: [
-      { label: 'tab0', value: '0' },
-      { label: 'tab1', value: '1' },
-      { label: 'tab2', value: '2' },
-    ],
-    tab2: [
-      { label: 'tab2_0', value: '0' },
-      { label: 'tab2_1', value: '1' },
-      { label: 'tab2_2', value: '2' },
-    ],
-  };
 
   return (
     <>
-      <Tab initTab={0}> {/*  TabProps={tabConfig.tab1} */}
-        <Tab.List>
-          <Tab.Button>tab0</Tab.Button>
-          <Tab.Button>tab1</Tab.Button>
-          <Tab.Button>tab2</Tab.Button>
+      <Tab initTab={2} modeType="type1" addClass="mt-5 ml-5">
+        <Tab.List addClass="p-3 border">
+          <Tab.Button addClass="text-red-300">국수영한한</Tab.Button>
+          <Tab.Button>사회탐구</Tab.Button>
+          <Tab.Button>과학탐구</Tab.Button>
         </Tab.List>
-        <Tab.ContentView>
-          <Tab.Contents>
+        <Tab.ContentView addClass="mt-5 p-5 bg-gray-300">
+          <Tab.Contents addClass="mt-5 p-5 bg-white">
 
             <AccordionOne>
               <AccordionOne.Item>
@@ -72,6 +60,40 @@ const TabPage = () => {
               </AccordionOne.Item>
             </AccordionOne>
 
+          </Tab.Contents>
+          <Tab.Contents>11</Tab.Contents>
+          <Tab.Contents>
+            <div className='bg-gray-200'>
+              22
+            </div>
+          </Tab.Contents>
+        </Tab.ContentView>
+      </Tab>
+
+      <Tab initTab={1} modeType="type2" addClass="mt-5 ml-5">
+        <Tab.List>
+          <Tab.Button>1학년</Tab.Button>
+          <Tab.Button>2학년</Tab.Button>
+          <Tab.Button>3학년</Tab.Button>
+        </Tab.List>
+        <Tab.ContentView>
+          <Tab.Contents>
+            00
+          </Tab.Contents>
+          <Tab.Contents>11</Tab.Contents>
+          <Tab.Contents>22</Tab.Contents>
+        </Tab.ContentView>
+      </Tab>
+
+      <Tab initTab={0} modeType="type3" addClass="mt-5 ml-5">
+        <Tab.List>
+          <Tab.Button>국수영한한</Tab.Button>
+          <Tab.Button>사회탐구</Tab.Button>
+          <Tab.Button>과학탐구</Tab.Button>
+        </Tab.List>
+        <Tab.ContentView>
+          <Tab.Contents>
+            00
           </Tab.Contents>
           <Tab.Contents>11</Tab.Contents>
           <Tab.Contents>22</Tab.Contents>
