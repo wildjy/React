@@ -329,7 +329,7 @@ const HighSchoolPage: React.FC = () => {
           <div className={`layer-popup ${ isVisible ? "is-visible border border-blue-700" : ""}`}>
             layer-popup
           </div>
-          <Button label="체크" onClick={handleCheckVisible} />
+          <Button onClick={handleCheckVisible}>체크</Button>
 
           <select name="" id="">
             <option value="">select..</option>
@@ -619,8 +619,8 @@ const HighSchoolPage: React.FC = () => {
           <Title title="Button" size="md" bold="semi" />
 
           <ButtonBox>
-            <Button mode="secondary" round="full" label="취소" />
-            <Button label="확인" />
+            <Button mode="secondary" round="full">취소</Button>
+            <Button>확인</Button>
           </ButtonBox>
 
         </div>
@@ -634,23 +634,19 @@ const HighSchoolPage: React.FC = () => {
 
           <div className="mt-5 w-full flex justify-between">
             <Button
-              label="Previous"
               onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))} // 값들중 큰값을 반환, 0을 넘지 않음
               disabled={currentStep === 0}
               style={{
                 cursor: currentStep === 0 ? "not-allowed" : "pointer",
                 opacity: currentStep === 0 ? 0.5 : 1,
-              }}
-            />
+              }}>Previous</Button>
             <Button
-              label="Next"
               onClick={() => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))} // 값들중 작은값을 반환, steps.length(최대)을 넘지 않음
               disabled={currentStep === steps.length - 1}
               style={{
                 cursor: currentStep === steps.length - 1 ? "not-allowed" : "pointer",
                 opacity: currentStep === steps.length - 1 ? 0.5 : 1,
-              }}
-             />
+              }}>Next</Button>
           </div>
 
         </div>
