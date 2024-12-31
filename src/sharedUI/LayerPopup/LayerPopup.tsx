@@ -2,7 +2,13 @@ import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { useState, createContext, useContext, HTMLAttributes } from 'react';
 
-type LayerPopupContextType = "base" | "full" | "scroll";
+// type LayerPopupContextType = "base" | "full" | "scroll";
+
+type typeMode = "base" | "full" | "scroll" | "absolute";
+interface LayerPopupContextType {
+  type: typeMode;
+}
+
 const LayerPopupContext = createContext<LayerPopupContextType | null>(null);
 const useLayerPopupContext = () => {
   const context = useContext(LayerPopupContext);
@@ -20,14 +26,15 @@ const ScrollCloseButtonPadding = "pr-6 pt-6 md:pt-9 md:pr-9";
 const CloseButtonSize = "w-8 h-8 md:w-9 md:h-9";
 
 const LayerPopupVariants = cva(`
-  min-w-[300px] max-w-[90dvw] w-max max-h-[90dvh] xl:max-w-[1280px] absolute center_center flex flex-col
+  min-w-[300px] max-w-[90dvw] w-max max-h-[90dvh] xl:max-w-[1280px] absolute flex flex-col
   scroll overflow-hidden rounded-lg transition-all
   `, {
   variants: {
     type: {
-      base: 'p-6 md:p-9',
-      full: 'w-[100dvw] max-w-[100dvw] h-[100dvh] max-h-dvh lg:min-w-[300px] lg:max-w-[90dvw] lg:w-max lg:h-fit lg:max-h-[90dvh] rounded-none',
-      scroll: 'overflow-hidden',
+      base: 'center_center p-6 md:p-9',
+      full: 'center_center w-[100dvw] max-w-[100dvw] h-[100dvh] max-h-dvh lg:min-w-[300px] lg:max-w-[90dvw] lg:w-max lg:h-fit lg:max-h-[90dvh] rounded-none',
+      scroll: 'center_center overflow-hidden',
+      absolute: 'max-w-[100dvw] w-auto top-0 left-0 right-0 p-6 md:p-9',
     },
     align: {
       left: 'text-left',
@@ -55,10 +62,12 @@ const LayerPopupVariants = cva(`
 
 interface LayerPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" | "color">,
   VariantProps<typeof LayerPopupVariants> {
+  type?: typeMode;
   children: React.ReactNode;
-  isOpen: boolean;
+  isOpen?: boolean;
   OpenEvent?: () => void;
   dimm?: boolean;
+  parentClass?: string;
   addClass?: string;
   close?: boolean;
 }
@@ -86,34 +95,36 @@ const LayerPopup: LayerPopupType = ({
   isOpen,
   OpenEvent,
   children,
-  type,
+  type = "base",
   align,
   dimm = true,
   close = true,
   color,
   round,
+  parentClass,
   addClass,
   ...props
 }) => {
 
   const className = LayerPopupVariants ({
-    type: type as "base" | "full" | "scroll" | undefined,
+    type: type as typeMode | undefined,
     align: align as "left" | "center" | "right" | undefined,
     color: color as "base" | "type1" | undefined,
     round: round as "base" | "sm" | "md" | "xl" | undefined,
   });
 
-  const typeMode = type  || "base"  || "full" || "scroll";
+  const atAbsolute = type === "absolute";
   const atFull = type === "full";
   const atScroll = type === "scroll";
 
   return (
     <>
-      <LayerPopupContext.Provider value={ typeMode }>
+      <LayerPopupContext.Provider value={{ type }}>
         <div
-        className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' }
+        className={`${cn('top-0 left-0 z-10 transition-all duration-300', parentClass)}
+        ${atAbsolute ? '' : 'fixed w-dvw h-dvh'}
+        ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' }
         ${dimm ? 'bg-gray-1000 bg-opacity-65' : ''}
-        fixed top-0 left-0 w-dvw h-dvh z-10 transition-all duration-300
         `}>
           <div
             className={`${cn(className, addClass)} ${dimm ? '' : 'border border-gray-300'}`}
@@ -154,7 +165,7 @@ const PopupHeader: React.FC<PopupHeaderProps> = ({ children }) => {
 }
 
 const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
-  const type = useLayerPopupContext();
+  const { type } = useLayerPopupContext();
 
   return (
     <>
@@ -166,7 +177,7 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
 }
 
 const PopupFooter: React.FC<PopupFooterProps> = ({ children }) => {
-  const type = useLayerPopupContext();
+  const { type } = useLayerPopupContext();
 
   return (
     <>

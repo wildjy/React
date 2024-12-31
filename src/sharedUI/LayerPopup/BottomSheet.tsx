@@ -2,8 +2,9 @@ import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { createContext, useContext, HTMLAttributes } from 'react';
 
+type typeMode = "base" | "full";
 interface BottomSheetContextType {
-  typeMode: "base" | "full";
+  type: typeMode;
 }
 const BottomSheetContext = createContext<BottomSheetContextType | null>(null);
 
@@ -55,6 +56,7 @@ const BottomSheetVariants = cva(`
 
 interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" | "color">,
   VariantProps<typeof BottomSheetVariants> {
+  type?: typeMode;
   children: React.ReactNode;
   isOpen: boolean;
   OpenEvent?: () => void;
@@ -86,7 +88,7 @@ const BottomSheet: BottomSheetType = ({
   isOpen,
   OpenEvent,
   children,
-  type,
+  type = "base",
   align,
   dimm = true,
   close = true,
@@ -108,7 +110,7 @@ const BottomSheet: BottomSheetType = ({
 
   return (
     <>
-      <BottomSheetContext.Provider value={{ typeMode } }>
+      <BottomSheetContext.Provider value={{ type } }>
         <div
         className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' } fixed top-0 left-0 w-dvw h-dvh z-10 transition-all duration-300
         ${dimm ? 'bg-gray-1000 bg-opacity-65' : ''}`}>
@@ -154,11 +156,11 @@ const PopupHeader: React.FC<PopupHeaderProps> = ({ children }) => {
 }
 
 const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
-  const { typeMode } = BottomUseContext();
+  const { type } = BottomUseContext();
 
   return (
     <>
-      <div className={`${typeMode === "full" ? '' : BodyMargin} popup-body flex-1 scroll overflow-auto bg-gray-400`}>
+      <div className={`${type === "full" ? '' : BodyMargin} popup-body flex-1 scroll overflow-auto bg-gray-400`}>
         { children }
       </div>
     </>
@@ -166,11 +168,11 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
 }
 
 const PopupFooter: React.FC<PopupFooterProps> = ({ children }) => {
-  const { typeMode } = BottomUseContext();
+  const { type } = BottomUseContext();
 
   return (
     <>
-      <div className={`${typeMode === "full" ? '' : FooterMargin} popup-footer bg-gray-200`}>
+      <div className={`${type === "full" ? '' : FooterMargin} popup-footer bg-gray-200`}>
         { children }
       </div>
     </>

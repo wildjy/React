@@ -11,6 +11,8 @@ const LayerPopupPage = () => {
     popup3: false,
     popup4: false,
     popup5: false,
+    popup6: false,
+    popup7: true,
   });
 
   const OpenEventPopup = (key: string) => {
@@ -112,6 +114,10 @@ const LayerPopupPage = () => {
           </LayerPopup.Footer>
         </LayerPopup>
 
+        <button type="button" onClick={() => OpenEventPopup('popup7')}
+          className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>팝업(absolute) 열기
+        </button>
+
         <button type="button" onClick={() => OpenEventPopup('popup4')}
           className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>바텀시트 열기
         </button>
@@ -189,6 +195,27 @@ const LayerPopupPage = () => {
             </div>
           </BottomSheet.Footer>
         </BottomSheet>
+
+
+        <div className='mt-10 w-5 h-5 relative bg-gray-600'>
+          <LayerPopup type="absolute" dimm={false} align="center" isOpen={isOpenPopup.popup7} OpenEvent={() => OpenEventPopup('popup7')}>
+            <LayerPopup.Header>
+              <p className="text-4xl"><b>Header</b></p>
+            </LayerPopup.Header>
+
+            <LayerPopup.Body>
+              <p className="text-xl">
+                ※ 수능 성적증명서가  인증을 완료해 주세요.
+              </p>
+            </LayerPopup.Body>
+
+            <LayerPopup.Footer>
+              <div className='flex justify-center'>
+                <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup7')}>Footer</a>
+              </div>
+            </LayerPopup.Footer>
+          </LayerPopup>
+        </div>
 
       </div>
     </>
