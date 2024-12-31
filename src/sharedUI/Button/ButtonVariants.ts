@@ -12,9 +12,9 @@ const ButtonVariants = cva(
         lg: "md:min-w-[10.625rem] h-[3rem] md:px-5 text-base lg:text-lg",
       },
       mode: {
-        primary: "text-white bg-blue-700",
-        secondary: "text-white bg-gray-400",
-        tertiary: "text-blue-700 border-blue-700",
+        primary: "text-white bg-blue-800",
+        secondary: "text-white bg-gray-200",
+        tertiary: "text-blue-800 border-blue-800",
       },
       round: {
         rec: "rounded-none",

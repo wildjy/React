@@ -119,7 +119,7 @@ const DropDown: React.FC<DropDownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectValue, setSelectValue] = useState<OptionType | null>(null);
   const dropRef = useRef<HTMLDivElement | null>(null);
-  console.log(type)
+
   const className = DropDownVariants ({
     type: type as typeMode | undefined,
     size: size as 'sm' |'md' | 'lg' | undefined,
@@ -198,7 +198,6 @@ const DropOption: React.FC<DropOptionProps> = ({
 
   const atText = ["shadow"].includes(type);
   const atCheck = ["check"].includes(type);
-  console.log(type)
 
   return (
     <>

@@ -80,6 +80,7 @@ html, body {
   color: var(--foreground);
   line-height: 1.43;
   background: var(--background);
+  @apply break-words;
 }
 
 table {
