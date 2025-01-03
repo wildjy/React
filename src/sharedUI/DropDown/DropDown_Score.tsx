@@ -97,6 +97,7 @@ interface DropOptionProps extends HTMLAttributes<HTMLDivElement>,
 VariantProps<typeof DropDownBoxVariants>,
 VariantProps<typeof DropDownInnerBoxVariants> {
   children?: React.ReactNode;
+  resetClass?: string;
   addClass?: string;
   options?: OptionType[]; options1?: OptionType[];
   custom?: boolean;
@@ -169,16 +170,15 @@ const DropDown_Score: React.FC<DropDownProps> = ({
         >
           {selectValue ? selectValue.label : label ? label : '선택'}
         </div>
-        {isOpen && (
-          <DropOption
-            options={options}
-            options1={options1}
-            custom={custom}
-            layer={layer}
-            onChangeSelect={ChangeSelectValue}
-            onClose={OpenEvent}
-          />
-        )}
+        <DropOption
+          options={options}
+          options1={options1}
+          resetClass={`${isOpen ? 'opacity-100 visible transition' : 'opacity-0 invisible'}`}
+          custom={custom}
+          layer={layer}
+          onChangeSelect={ChangeSelectValue}
+          onClose={OpenEvent}
+        />
       </div>
       </DropDownContext.Provider>
     </>
@@ -187,6 +187,7 @@ const DropDown_Score: React.FC<DropDownProps> = ({
 
 const DropOption: React.FC<DropOptionProps> = ({
   children,
+  resetClass,
   addClass,
   options = [], options1 = [],
   custom,
@@ -207,7 +208,7 @@ const DropOption: React.FC<DropOptionProps> = ({
 
   return (
     <>
-      <div className={`${cn(className, addClass, {'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atText})}`}>
+      <div className={`${resetClass} ${cn(className, addClass, {'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atText})}`}>
         <div className={`${cn(innerClassName, addClass)}`}>
           { custom ? (
             <div>

@@ -95,6 +95,7 @@ interface DropOptionProps extends HTMLAttributes<HTMLDivElement>,
 VariantProps<typeof DropDownBoxVariants>,
 VariantProps<typeof DropDownInnerBoxVariants> {
   children?: React.ReactNode;
+  resetClass?: string;
   addClass?: string;
   options?: OptionType[];
   custom?: boolean;
@@ -165,15 +166,16 @@ const DropDown: React.FC<DropDownProps> = ({
           >
             {selectValue ? selectValue.label : label ? label : '선택'}
           </div>
-          {isOpen && (
+          {/* {isOpen && ( */}
             <DropOption
               options={options}
               custom={custom}
+              resetClass={`${isOpen ? 'opacity-100 visible transition' : 'opacity-0 invisible'}`}
               layer={layer}
               onChangeSelect={ChangeSelectValue}
               onClose={OpenEvent}
             />
-          )}
+          {/* )} */}
         </div>
       </DropDownContext.Provider>
     </>
@@ -182,6 +184,7 @@ const DropDown: React.FC<DropDownProps> = ({
 
 const DropOption: React.FC<DropOptionProps> = ({
   children,
+  resetClass,
   addClass,
   options = [],
   custom,
@@ -202,7 +205,7 @@ const DropOption: React.FC<DropOptionProps> = ({
   return (
     <>
       {/* <div className={`${cn(className, addClass)} ${typeMode === 'shadow' ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : ''}`}> */}
-      <div className={`${cn(className, addClass,
+      <div className={`${resetClass} ${cn(className, addClass,
           {'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atText || atCheck},
         )}`}>
         <div className={`${cn(innerClassName, addClass, {'py-3' : atText})}`}>
