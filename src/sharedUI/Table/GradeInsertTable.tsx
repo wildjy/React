@@ -33,8 +33,8 @@ const GradeTable = () => {
     md:table-cell
     md:border-b`;
   const tbodyTdDivStyle = 'w-full flex md:flex-wrap text-center';
-  const tbodyTdDivPTopStyle = 'w-full md:py-5 md:border-b ';
-  const tbodyTdDivPBottomStyle = 'w-full md:py-5';
+  const tbodyTdDivPTopStyle = 'w-full md:py-5 md:border-b md:bg-white';
+  const tbodyTdDivPBottomStyle = 'w-full md:py-5 md:bg-white';
 
   // input
   const [inputValue, setInputValue] = useState([
@@ -143,7 +143,7 @@ const GradeTable = () => {
           </thead>
           <tbody className='w-4/5 md:w-full'>
             <tr className="block md:table-row">
-              <th scope="col" className={`${tbodyTdStyle} bg-[#F4F5F6] md:bg-white`}>
+              <th scope="col" className={`${tbodyTdStyle} md:bg-white`}>
                 <div className={tbodyTdDivStyle}>
                   <div className={`${tbodyTdDivPTopStyle}`}>영역</div>
                   <div className={tbodyTdDivPTopStyle}>선택과목</div>
