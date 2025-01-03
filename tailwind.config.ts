@@ -28,7 +28,7 @@ const config: Config = {
         '3xs': '0.688rem', // 11px
         '2xs': '0.75rem', // 12px
         xs: '0.813rem', // 13px
-        s: '0.875rem', // 14px
+        s: '0.875rem', // 14
         md: '0.938rem', // 15px
         smMobile: '4.166vw', // 480 : 20px = 4.166vw
         mobile: '3.125vw', // 768 : 24px = 3.125vw
@@ -66,7 +66,9 @@ const config: Config = {
         '8': '1.75rem', // 28px
         '9': '2rem', // 32px
         '10': '2.5rem', // 40px
-        '11': '5rem', // 80px
+        '11': '3.75rem', // 60px
+        '12': '5rem', // 80px
+        '13': '5rem', // 80px
       },
       margin: {
         'center': '0 auto',

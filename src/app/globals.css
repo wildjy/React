@@ -84,7 +84,15 @@ html, body {
 }
 
 table {
-  @apply w-full border-0 border-collapse border-spacing-0;
+  @apply w-full border-0 border-t border-t-gray-700 border-collapse border-spacing-0;
+}
+
+table col.hide {
+  @apply hidden md:table-column
+}
+
+table .hide {
+  @apply hidden md:table-cell
 }
 
 table th, td {
@@ -92,12 +100,50 @@ table th, td {
 }
 
 table th {
-  @apply px-2 md:px-4 py-4 border;
+  @apply px-2 md:px-4 py-4 border-0 border-b bg-[#F4F5F6];
 }
 
 table td {
-  @apply px-4 py-4 border;
+  @apply px-4 py-4 text-center border-0 border-b;
 }
+
+
+.tableType1 {
+  @apply flex md:table;
+}
+
+.tableType1 th, td {
+  @apply border-b;
+}
+
+.tableType1 thead tr,
+.tableType1 tbody tr {
+  @apply block md:table-row;
+}
+
+.tableType1 thead tr th {
+  @apply w-full flex items-center justify-center
+  border-b-0 last:border-b border-r-0
+  md:w-auto md:table-cell
+  md:border-b;
+}
+
+.tableType1 tbody {
+  @apply flex md:table-row-group;
+}
+
+.tableType1 tbody tr {
+  @apply grow;
+}
+
+.tableType1 tbody tr td {
+  @apply w-full block items-center
+  border-b-0 border-r-0 last:border-b
+  md:w-auto md:table-cell
+  md:border-b;
+}
+
+
 
 caption {
   @apply hidden;
