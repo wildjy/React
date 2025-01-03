@@ -17,7 +17,7 @@ const StepItems = cva( //
 );
 
 const StepPoints = cva(
-  'StepPoints.. hover:text-white hover:bg-blue-700 relative z-10 w-9 h-9 flex justify-center items-center rounded-full transition',
+  'StepPoints.. relative z-10 w-9 h-9 hover:text-white hover:bg-blue-700 flex justify-center items-center rounded-full transition',
   {
     variants: {
       status: {
@@ -34,7 +34,7 @@ const StepLabels = cva(
   {
     variants: {
       base: {
-        label : 'hidden px-4 md:block text-grayBlue-600 text-lg lg:text-base font-light bg-white ',
+        label : 'hidden px-4 md:block text-grayBlue-600 font-light bg-white ',
       },
       label: {
         true: "active text-gray-800 font-semi",
@@ -59,21 +59,20 @@ const StepLines = cva(
 interface Step {
   label?: string;
   name?: string;
-  url?: string;
   isCompleted?: boolean;
 }
 
 interface StepBarProps extends HTMLAttributes<HTMLDivElement>{
   step: Step[];
-  currentStep?: number;
+  currentStep: number;
   onStepClick?: (stepIndex: number) => void;
   addClass?: string;
   value?: string;
 };
 
-const StepBar: FC<StepBarProps> = ({
+const StepBarClick: FC<StepBarProps> = ({
   step,
-  currentStep = 0,
+  currentStep,
   onStepClick,
 }) => {
   return (
@@ -86,29 +85,31 @@ const StepBar: FC<StepBarProps> = ({
                 StepItems({status: index < currentStep ? true : index === currentStep ? "completed" : false,})
                 }
               >
-                <p className={`
-                  md:hidden absolute y_center left-0 ${cn('hidden', index < currentStep ? 'hidden' : index === currentStep ? "block" : false,)}
-                `}>
-                  {item.name}
-                </p>
-
-                <a href={item.url} className="group flex flex-wrap items-center relative z-10">
-                  <div className={StepPoints({status: (index <= currentStep ? true : false)})}
-                    onClick={() => onStepClick && onStepClick(index)}>
-                    {index <= currentStep ? `` : index + 1}
-                  </div>
-
-                  <div className={StepLabels({base: 'label'})} onClick={() => onStepClick && onStepClick(index)}>
-                    <span className="block text-2xs">{item.label}</span>
-                    <span className={StepLabels({label: (index <= currentStep ? true : false)})}>{item.name}</span>
-                  </div>
+              <p className={`
+                md:hidden absolute y_center left-0 ${cn('hidden', index < currentStep ? 'hidden' : index === currentStep ? "block" : false,)}
+              `}>
+                {item.name}
+              </p>
+              <div className="group flex flex-wrap items-center relative z-10">
+                {/* points */}
+                <a href="#/" className={StepPoints({status: (index <= currentStep ? true : false)})}
+                  onClick={() => onStepClick && onStepClick(index)}>
+                  {index <= currentStep ? `` : index + 1}
                 </a>
 
-                {index < step.length - 1 && (
-                  <div className={StepLines({line: true})}></div>
-                )}
-
+                {/* label */}
+                <div className={StepLabels({base: 'label'})} onClick={() => onStepClick && onStepClick(index)}>
+                  <span className="block text-2xs">{item.label}</span>
+                  <span className={StepLabels({label: (index <= currentStep ? true : false)})}>{item.name}</span>
+                </div>
               </div>
+
+              {/* line */}
+              {index < step.length - 1 && (
+                <div className={StepLines({line: true})}></div>
+              )}
+
+            </div>
             )
           })
         }
@@ -117,4 +118,4 @@ const StepBar: FC<StepBarProps> = ({
   );
 };
 
-export default StepBar;
+export default StepBarClick;

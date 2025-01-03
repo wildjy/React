@@ -9,9 +9,8 @@ import ButtonBox from "../../sharedUI/Button/ButtonBox";
 import Button from "../../sharedUI/Button/Button";
 import StepBars from "../../sharedUI/Stepbar/Step";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
+import StepBarClick from "../../sharedUI/Stepbar/StepBarClick";
 import Title from "../../sharedUI/Title/Title";
-// import SwiperSlider from "../../sharedUI/Swiper/Swiper";
-// import SwiperSlider from './swiper';
 import dynamic from 'next/dynamic';
 
 const SwiperSlider = dynamic(() => import('../../sharedUI/Swiper/Swiper'), {
@@ -133,14 +132,19 @@ const HighSchoolPage: React.FC = () => {
     ],
   };
 
-
-  // step
-  const [currentStep, setCurrentStep] = useState(0);
+  // stepBar
   const steps = [
-    { label: "Step 1", isCompleted: currentStep > 0 },
-    { label: "Step 2", isCompleted: currentStep > 1 },
-    { label: "Step 3", isCompleted: currentStep > 2 },
-    { label: "Step 4", isCompleted: currentStep > 3 },
+    { label: "Step 1", name: "출신고교", url: "#1/" },
+    { label: "Step 2", name: "성적입력",  url: "#2/" },
+    { label: "Step 3", name: "모의지원",  url: "#3/" },
+    { label: "Step 4", name: "저장소",  url: "#4/" },
+  ];
+  const [currentStep, setCurrentStep] = useState(0);
+  const stepClicks = [
+    { label: "Step 1", name: "출신고교", isCompleted: currentStep > 0 },
+    { label: "Step 2", name: "성적입력",  isCompleted: currentStep > 1 },
+    { label: "Step 3", name: "모의지원",  isCompleted: currentStep > 2 },
+    { label: "Step 4", name: "저장소",  isCompleted: currentStep > 3 },
   ];
 
   const handleStepClick = (stepIndex: number) => {
@@ -630,7 +634,8 @@ const HighSchoolPage: React.FC = () => {
 
           {/* <StepBars steps={steps} currentStep={currentStep} onStepClick={handleStepClick} /> */}
 
-          <StepBar step={steps} currentStep={currentStep} onStepClick={handleStepClick} />
+          <StepBar step={steps} currentStep={0} />
+          <StepBarClick step={stepClicks} currentStep={currentStep} onStepClick={handleStepClick} />
 
           <div className="mt-5 w-full flex justify-between">
             <Button
@@ -662,10 +667,10 @@ const HighSchoolPage: React.FC = () => {
             */}
 
             <div className="border-b border-gray-300">
-              <SwiperSlider id={1} slides={slides} arrow={true} pager={false} />
+              <SwiperSlider id={1} slides={slides} arrow pager={false} />
             </div>
 
-            <SwiperSlider id={2} slides={slides_img} image={true} arrow={true} pager={true} />
+            <SwiperSlider id={2} slides={slides_img} image arrow pager />
 
 
           </div>
