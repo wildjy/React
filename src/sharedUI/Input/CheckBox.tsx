@@ -5,7 +5,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
 const InputVariants = cva(
-  'relative leading-none after:content-[""] transition-all after:transition-all',
+  'relative leading-none after:content-[""] bg-white transition-all after:transition-all ',
   {
     variants: {
       // default size control

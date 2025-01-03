@@ -8,7 +8,7 @@ const ButtonVariants = cva(
       size: {
         auto: "px-4 w-auto md:min-w-fit grow-0",
         sm: "md:min-w-[6.875rem] h-[2rem] md:px-5 text-2xs lg:text-s rounded",
-        md: "md:min-w-[8.75rem] h-[2.5rem] md:px-5 text-xs lg:text-base",
+        md: "md:min-w-[8.75rem] h-[2.5rem] text-xs md:text-base md:px-5",
         lg: "md:min-w-[10.625rem] h-[3rem] md:px-5 text-base lg:text-lg",
       },
       mode: {

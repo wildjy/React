@@ -116,7 +116,7 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
 
   return (
     <>
-      <div className={`swipers-${id} relative`}>
+      <div className={`swipers-${id} border-b border-gray-300 relative `}>
         <Swiper
           modules={[FreeMode, Navigation, Pagination, Autoplay]}
           {...swiperOption}
@@ -125,24 +125,20 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
             <SwiperSlide
               key={index}
               style={{width: 'auto'}}
-              className="pr-5 last:pr-0 flex justify-center items-center w-auto "
+              className="pr-8 last:pr-0 flex justify-center items-center w-auto "
             >
               <a
                 href={slide.url}
-                className={`${slide.active} block py-2 font-bold ${
+                className={`${slide.active} block py-3 lg:px-7 xl:px-14 lg:py-4 ${
                   slide.active
-                    ? 'text-blue-700 border-b-[0.313rem] border-blue-700 '
+                    ? 'text-blue-700 border-b-[0.313rem] border-blue-700 font-bold'
                     : ''
                 }`}
               >
-                {image ? (
-                  <img src={slide.imgUrl} alt="" />
-                ) : (
-                  <>
-                    <p className="text-lg">{slide.title}</p>
-                    {/* <p className='text-md'>{slide.sub_txt}</p> */}
-                  </>
-                )}
+                <>
+                  <p className="">{slide.title}</p>
+                  {/* <p className='text-md'>{slide.sub_txt}</p> */}
+                </>
               </a>
             </SwiperSlide>
           ))}
@@ -171,9 +167,6 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
             />
           </button>
         </div>
-
-        {/* <p>swiper-slide-active index: {swiperIndex}</p> */}
-        {/* <p>a Active index: {activeIndex}</p> */}
       </div>
     </>
   );
