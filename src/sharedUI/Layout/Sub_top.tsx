@@ -1,20 +1,43 @@
 "use client";
-import React, { useState, ChangeEvent } from 'react';
+import React, { useMemo, useState, ChangeEvent } from 'react';
 import CustomRadio from "../Input/CustomRadio";
 
 interface subTopProps {
   subText?: boolean;
-  flag?: boolean;
+  flag?: {
+    visible: boolean;
+    flag1?: boolean;
+    flag2?: boolean;
+    flag3?: boolean;
+  };
   radioBox?: boolean;
-  infoBox?: boolean;
+  infoBox?: {
+    visible: boolean;
+    infoDate?: string;
+    infoText?: React.ReactNode; 
+  };
 }
 
 const SubTop: React.FC<subTopProps> = ({
-  subText = "false",
-  flag = "false",
-  radioBox = "false",
-  infoBox = "false",
+  subText = false,
+  flag = {
+    visible: false,
+    flag1: false,
+    flag2: false,
+    flag3: false,
+  },
+  radioBox = false,
+  infoBox = {},
 }) => {
+  const mergedInfoBox = useMemo(() => ({
+    visible: false,
+    infoDate: "ㅇㅇㅇㅇㅇ",
+    infoText: (<>ㅇㅇ ㅇㅇㅇㅇ <span className="text-blue-800">올해 기준 점수</span>입니다.</>),
+    ...infoBox, // 전달된 infoBox 속성 덮어쓰기
+  }), [infoBox]);
+
+  console.log(infoBox)
+
   // radio
   const [radioOptions, setRadioOptions] = useState<{[key: string]: string;}>({
     type: 'type_1',
@@ -43,17 +66,23 @@ const SubTop: React.FC<subTopProps> = ({
         </div>
 
         <div className="text-right">
-          {flag && (
+          {flag?.visible && (
           <div>
-            <p className="inline-block px-6 py-2 text-s text-center text-gray-600 bg-grayBlue-100 rounded-full">
+            {flag?.flag1 && (
+              <p className="inline-block px-6 py-2 text-s text-center text-gray-600 bg-grayBlue-100 rounded-full">
               가채점 집계중
-            </p>
-            {/* <p className="inline-block px-6 py-2 text-s text-center text-[#3e4350] bg-[#eff3fc] rounded-full">
-              가채점 확정
-            </p>
-            <p className="inline-block px-6 py-2 text-s text-center text-[#54AAD2] bg-[#EDFBF8] rounded-full">
-              실채점 확정
-            </p> */}
+              </p>
+            )}
+            {flag?.flag2 && (
+              <p className="inline-block px-6 py-2 text-s text-center text-[#3e4350] bg-[#eff3fc] rounded-full">
+                가채점 확정
+              </p>
+            )}
+            {flag?.flag3 && (
+              <p className="inline-block px-6 py-2 text-s text-center text-[#54AAD2] bg-[#EDFBF8] rounded-full">
+                실채점 확정
+              </p>
+            )}
           </div>
           )}
 
@@ -82,10 +111,10 @@ const SubTop: React.FC<subTopProps> = ({
         </div>
       </div>
 
-      {infoBox && (
+      {mergedInfoBox?.visible && (
         <div className="mt-6 py-5 sm:py-7 text-center border border-grayBlue-200 rounded-lg">
-          <p className="text-xs md:text-base text-gray-400">3월 29일 오전 11시, 가채점 성적 확정 예정</p>
-          <p className="text-s md:text-lg">현재 표준점수/백분위/등급은 <span className="text-blue-800">전년도 기준 점수</span>입니다.</p>
+          <p className="text-xs md:text-base text-gray-400">{mergedInfoBox.infoDate}</p>
+          <p className="text-s md:text-lg">{mergedInfoBox.infoText}</p>
         </div>
       )}
     </>

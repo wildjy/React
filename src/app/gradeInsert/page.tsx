@@ -93,7 +93,19 @@ const gradeInsertPage = () => {
           <SwiperSlider id={1} slides={slides} />
         </div>
 
-        <SubTop flag={false} infoBox={false} radioBox />
+        <SubTop 
+          flag={{visible: false, flag3: true}} 
+          radioBox 
+          infoBox={{
+            visible: false,
+            infoDate: "3월 29일 오전 11시, 가채점 성적 확정 예정",
+            infoText: (
+              <>
+              현재 표준점수/백분위/등급은 <span className="text-blue-800">전년도 기준 점수</span>입니다.
+              </>
+            ),
+          }} 
+        />
 
 
         {/* <div className="mt-10 flex justify-between relative">
@@ -142,7 +154,7 @@ const gradeInsertPage = () => {
 
         <div className="mt-4 py-7 text-center border border-grayBlue-200 rounded-lg">
           <p className="text-xs md:text-base text-gray-400">3월 29일 오전 11시, 가채점 성적 확정 예정</p>
-          <p className="text-s md:text-lg">현재 표준점수/백분위/등급은 <span className="text-blue-800">전년도 기준 점수</span>입니다.</p>
+          <p className="text-s md:text-lg">현재 표준점수/백분위/등급은 <span className="text-blue-800"></span>입니다.</p>
         </div> */}
 
         <div className="mt-5 md:mt-6 ">

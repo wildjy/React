@@ -68,7 +68,17 @@ const gradeInsertPage = () => {
           <SwiperSlider id={1} slides={slides} />
         </div>
 
-        <SubTop subText ={false} flag={true} infoBox radioBox={false} />
+        {/* <SubTop subText={false} flag={true} infoBox radioBox={false} /> */}
+
+        <SubTop 
+          subText ={false}
+          flag={{visible: true, flag2: true}} 
+          radioBox={false}
+          infoBox={{
+            visible: true,
+            infoDate: "0월 00일 오전/오후 00시, 가채점 성적 확정 예정",
+          }} 
+        />
 
         <div className="mt-5 md:mt-6">
 
