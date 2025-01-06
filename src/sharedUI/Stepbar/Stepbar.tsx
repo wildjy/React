@@ -17,7 +17,7 @@ const StepItems = cva( //
 );
 
 const StepPoints = cva(
-  'StepPoints.. hover:text-white hover:bg-blue-700 relative z-10 w-9 h-9 flex justify-center items-center rounded-full transition',
+  'StepPoints.. text-xs md:text-base z-10 w-7 h-7 md:w-9 md:h-9 hover:text-white hover:bg-blue-700 relative  flex justify-center items-center rounded-full transition',
   {
     variants: {
       status: {

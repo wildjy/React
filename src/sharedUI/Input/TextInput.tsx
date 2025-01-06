@@ -5,12 +5,12 @@ import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
 const InputVariants = cva(
-  "w-full peer leading-none border border-gray-500 focus:outline-none rounded-lg", // md:w-auto
+  "w-full peer leading-none border border-gray-300 focus:outline-none rounded-lg", // md:w-auto
   {
     variants: {
       size: {
         base: "px-7 py-5",
-        sm: "input-sm.. px-4 py-2",
+        sm: "input-sm.. px-2 py-2 text-2xs md:text-s rounded-lg",
         md: "input-sm..",
         lg: "input-lg..",
         full: "input-full w-full",
@@ -22,16 +22,21 @@ const InputVariants = cva(
         warning: "focus:border-warning", // focus:ring-1 focus:ring-warning
         error: "focus:border-error", // focus:ring-1 focus:ring-error
       },
+      align: {
+        left: "text-left",
+        center: "text-center",
+        right: "text-right",
+      },
     },
     defaultVariants: {
       size: "base",
       mode: "base",
+      align: "left",
     },
   }
 );
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">, VariantProps<typeof InputVariants> {
-  size?: "base" | "sm" | "md" | "lg" | "full";
   mode?: "base" | "ghost" | "success" | "warning" | "error";
   label?: string;
   addClass?: string;
@@ -44,6 +49,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">
 const TextInput : FC<InputProps> = ({
   size,
   mode = "base",
+  align,
   icon,
   label,
   addClass,
@@ -56,6 +62,7 @@ const TextInput : FC<InputProps> = ({
   const className = InputVariants({
     size: size as "base" | "sm" | "md" | "lg" | "full" | undefined,
     mode: mode as | "base" | "ghost" | "success" | "warning" | "error" | undefined,
+    align: align as | "left" | "center" | "right" | undefined,
     // icon,
   });
   // const id = useId();

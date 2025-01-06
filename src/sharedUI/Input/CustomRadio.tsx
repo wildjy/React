@@ -5,31 +5,21 @@ import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
 const InputVariants = cva(
-  'relative peer border rounded-full after_center after:rounded-full after:content-[""] after:border after:transition-all',
+  'inline-flex px-1 md:px-3 min-w-[3.5rem] md:min-w-[4.5rem] h-5 md:h-7 text-xs md:text-s items-center justify-center text-center relative peer ',
   {
     variants: {
       // default size control
       size: {
-        sm: "w-[1.25rem] h-[1.25rem] after:h-[0.85rem] after:w-[0.85rem]",
-        md: "w-[1.75rem] h-[1.75rem] after:h-[1.125rem] after:w-[1.125rem]",
-        lg: "w-[2rem] h-[2rem] after:h-[1.5rem] after:w-[1.5rem]",
+        sm: "",
+        md: "",
+        lg: "",
       },
       mode: {
-        base: `border-gray-200
-          after:bg-white
-          peer-checked:border-blue-700
+        base: `bg-gray-50
+          peer-checked:text-blue-800
           peer-checked:bg-white
-          peer-checked:after:bg-blue-700
         `,
-        check: `after:h-[100%] after:w-[100%]
-          after:content-none
-          after:border-none
-          bg-center
-          bg-[length:55%_55%]
-          bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checked.svg')]
-          bg-no-repeat
-          peer-checked:bg-blue-700
-        `,
+        check: ``,
       },
     },
     defaultVariants: {
@@ -38,6 +28,14 @@ const InputVariants = cva(
     },
   }
 );
+
+interface CustomRadioBoxProps {
+  children?: React.ReactNode;
+}
+
+interface CustomRadioType extends React.FC<CustomRadioBoxProps> {
+  Radio: typeof Radio;
+}
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">, VariantProps<typeof InputVariants> {
   size?: "sm" | "md" | "lg";
@@ -48,6 +46,15 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">
   value?: string;
   disabled?: boolean;
   icon?: React.ReactElement;
+}
+const CustomRadio: CustomRadioType = ({ children }) => {
+  return (
+    <>
+      <div className='p-1 md:p-2 inline-flex items-center justify-center bg-gray-50 border border-gray-200 rounded'>
+        {children}
+      </div>
+    </>
+  )
 }
 
 const Radio: FC<InputProps> = ({
@@ -87,14 +94,12 @@ const Radio: FC<InputProps> = ({
       />
       <div className={cn(className, addClass,
       { // disabled setting
-        "text-gray-500 bg-gray-300 peer-checked:bg-gray-300 peer-checked:border-gray-300 after:bg-gray-300 after:border-none peer-checked:after:bg-gray-300 cursor-default" : disabled
-      })}></div>
-
-      { label && (
-        <span className="ml-3 text-xs md:text-base text-gray-900">{label}</span>
-      )}
+        "text-gray-500 peer-checked:text-gray-500 peer-checked:border-gray-300 cursor-default" : disabled
+      })}>{label}</div>
     </label>
   );
 };
 
-export default Radio;
+CustomRadio.Radio = Radio;
+
+export default CustomRadio;

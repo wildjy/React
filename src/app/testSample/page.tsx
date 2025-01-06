@@ -54,7 +54,7 @@ const HighSchoolPage: React.FC = () => {
 
   // radio
   // const [selectedOption , setSelectedOption] = useState<string>('');
-  const [selectedOptions, setSelectedOptions] = useState<{
+  const [radioOptions, setRadioOptions] = useState<{
     [key: string]: string;
   }>({
     type: 'type_1',
@@ -64,7 +64,7 @@ const HighSchoolPage: React.FC = () => {
 
   const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSelectedOptions((prevOptions) => {
+    setRadioOptions((prevOptions) => {
       // console.log(prevOptions)
       return {
         ...prevOptions,
@@ -550,7 +550,7 @@ const HighSchoolPage: React.FC = () => {
               label="고등학교 졸업(예정)자"
               name="type"
               value="type_1"
-              checked={selectedOptions.type === "type_1"} // checked
+              checked={radioOptions.type === "type_1"} // checked
               onChange={handleRadioChange}
             />
             <Radio
@@ -558,7 +558,7 @@ const HighSchoolPage: React.FC = () => {
               label="검정고시 출신자"
               name="type"
               value="type_2"
-              checked={selectedOptions.type === "type_2"}
+              checked={radioOptions.type === "type_2"}
               onChange={handleRadioChange}
             />
             <Radio
@@ -567,7 +567,7 @@ const HighSchoolPage: React.FC = () => {
               name="type"
               value="type_3"
               disabled={true}
-              checked={selectedOptions.type === "type_3"}
+              checked={radioOptions.type === "type_3"}
               onChange={handleRadioChange}
             />
             <Radio
@@ -576,7 +576,7 @@ const HighSchoolPage: React.FC = () => {
               label="고3"
               name="studentType"
               value="Go3"
-              checked={selectedOptions.studentType === "Go3"} // checked
+              checked={radioOptions.studentType === "Go3"} // checked
               onChange={handleRadioChange}
             />
             <Radio
@@ -585,7 +585,7 @@ const HighSchoolPage: React.FC = () => {
               label="고1,2"
               name="studentType"
               value="Go12"
-              checked={selectedOptions.studentType === "Go12"}
+              checked={radioOptions.studentType === "Go12"}
               onChange={handleRadioChange}
             />
             <Radio
@@ -595,7 +595,7 @@ const HighSchoolPage: React.FC = () => {
               name="studentType"
               value="Go4"
               disabled={true}
-              checked={selectedOptions.studentType === "Go4"}
+              checked={radioOptions.studentType === "Go4"}
               onChange={handleRadioChange}
             />
             <Radio
@@ -604,7 +604,7 @@ const HighSchoolPage: React.FC = () => {
               label="성별"
               name="sex"
               value="male"
-              checked={selectedOptions.sex === "male"} // checked
+              checked={radioOptions.sex === "male"} // checked
               onChange={handleRadioChange}
             />
             <Radio
@@ -613,7 +613,7 @@ const HighSchoolPage: React.FC = () => {
               label="성별"
               name="sex"
               value="female"
-              checked={selectedOptions.sex === "female"}
+              checked={radioOptions.sex === "female"}
               onChange={handleRadioChange}
             />
           </div>

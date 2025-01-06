@@ -1,6 +1,6 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import React, { useState, createContext, useContext, HTMLAttributes } from 'react';
+import React, { createContext, useContext, HTMLAttributes } from 'react';
 
 // type LayerPopupContextType = "base" | "full" | "scroll";
 
@@ -121,7 +121,7 @@ const LayerPopup: LayerPopupType = ({
     <>
       <LayerPopupContext.Provider value={{ type }}>
         <div
-        className={`${cn('top-0 left-0 z-10 transition-all duration-300', parentClass)}
+        className={`${cn('top-0 left-0 z-50 transition-all duration-300', parentClass)}
         ${atAbsolute ? '' : 'fixed w-dvw h-dvh'}
         ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}
         ${dimm ? 'bg-gray-1000 bg-opacity-65' : ''}

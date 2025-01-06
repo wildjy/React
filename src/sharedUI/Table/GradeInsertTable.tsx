@@ -3,13 +3,16 @@ import React, { useState, ChangeEvent } from 'react';
 import { cn } from "../common/cn";
 import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
+import DropDown_Score from '../../sharedUI/DropDown/DropDown_Score';
+import DropDown from '../../sharedUI/DropDown/DropDown';
 
 const GradeTable = () => {
 
   const theadThStyle = `
-    p-0
-    w-full h-9
-    flex items-center justify-center
+    text-xs md:text-base
+    p-0 md:p-0
+    w-full h-[2.7rem]
+    flex items-center justify-center text-center
     first:border-t-gray-1000
     md:border-t-gray-1000
     border-0
@@ -20,20 +23,23 @@ const GradeTable = () => {
     md:bg-[#F4F5F6]
     md:w-auto md:h-auto
     md:table-cell
+    md:align-middle
     md:border-b`;
+  const firstTdAlign = `md:py-[1.2rem]`;
+  const theadThHeight = `h-[5.4rem]`;
+  const tbodyTdHeight = `md:py-[0.78rem]`;
   const tbodyTdStyle = `
+    text-xs md:text-base
     p-0 md:p-0
-    w-full h-9
+    w-full h-[2.7rem]
     flex items-center
     border-0
-    border-t
-    border-b-1 last:border-b
-    md:py-0
+    border-t border-b-1 last:border-b
     md:w-auto md:h-auto
     md:table-cell
     md:border-b`;
-  const tbodyTdDivStyle = 'w-full flex md:flex-wrap text-center';
-  const tbodyTdDivPTopStyle = 'w-full md:py-5 md:border-b md:bg-white';
+  const tbodyTdDivStyle = 'w-full flex h-full md:flex-wrap items-center text-center';
+  const tbodyTdDivPTopStyle = 'w-full md:py-5 md:border-b md:bg-white items-center';
   const tbodyTdDivPBottomStyle = 'w-full md:py-5 md:bg-white';
 
   // input
@@ -80,13 +86,50 @@ const GradeTable = () => {
     }));
   };
 
+  const dropOptions = {
+    dropOption1: [
+      { value: "1", label: "화법과 작문" },
+      { value: "2", label: "언어와 매체" },
+    ],
+    dropOption2: [
+      { value: "1", label: "확률과 통계" },
+      { value: "2", label: "미적분" },
+      { value: "3", label: "가하" },
+    ],
+    dropOption3: [
+      { value: "1", label: "사/과탐" },
+      { value: "2", label: "직탐" },
+    ],
+    dropOption4: [
+      { value: "1", label: "사회문학" },
+      { value: "2", label: "생활과윤리" },
+      { value: "3", label: "정치와법" },
+      { value: "4", label: "윤리와사상" },
+      { value: "5", label: "경제" },
+    ],
+    dropOption5: [
+      { value: "1", label: "물리학 Ⅰ" },
+      { value: "2", label: "화학 Ⅰ" },
+      { value: "3", label: "생물학 Ⅰ" },
+      { value: "4", label: "지구과학 Ⅰ" },
+      { value: "5", label: "물리학 Ⅰ" },
+    ],
+    dropOption6: [
+      { value: "1", label: "농업기초기술" },
+      { value: "2", label: "공업일반" },
+      { value: "3", label: "상업경제" },
+      { value: "4", label: "수산해운산업기초" },
+      { value: "5", label: "인간발달" },
+    ],
+  }
+
   return (
     <>
       <div>
-        <table className="flex md:table">
+        <table className="flex md:table w-full">
           <caption>점수 입력 서식</caption>
           <colgroup>
-            <col width="9%" /><col width="9%" /><col width="17%" /><col width="17%" /><col width="9%" /><col width="30%" /><col width="9%" />
+            <col width="9%" /><col width="10%" /><col width="10%" /><col width="10%" /><col width="10%" /><col width="20%" /><col width="10%" />
           </colgroup>
           <thead className='w-1/5 md:w-full'>
             <tr className="block md:table-row">
@@ -95,6 +138,7 @@ const GradeTable = () => {
                 <CheckBox
                   size="sm"
                   value="checkbox_1"
+                  addClass="m-center"
                   checked={isChecked["checkbox_1"] || false}
                   onChange={handleCheckChange}
                 />
@@ -103,6 +147,7 @@ const GradeTable = () => {
                 <CheckBox
                   size="sm"
                   value="checkbox_2"
+                  addClass="m-center"
                   checked={isChecked["checkbox_2"] || false}
                   onChange={handleCheckChange}
                 />
@@ -111,6 +156,7 @@ const GradeTable = () => {
                 <CheckBox
                   size="sm"
                   value="checkbox_3"
+                  addClass="m-center"
                   checked={isChecked["checkbox_3"] || false}
                   onChange={handleCheckChange}
                 />
@@ -119,14 +165,16 @@ const GradeTable = () => {
                 <CheckBox
                   size="sm"
                   value="checkbox_4"
+                  addClass="m-center"
                   checked={isChecked["checkbox_4"] || false}
                   onChange={handleCheckChange}
                 />
               </th>
-              <th scope="col" className={`${theadThStyle} h-[5rem]`}>
+              <th scope="col" className={`${theadThStyle} ${theadThHeight}`}>
                 <CheckBox
                   size="sm"
                   value="checkbox_5"
+                  addClass="m-center"
                   checked={isChecked["checkbox_5"] || false}
                   onChange={handleCheckChange}
                 />
@@ -135,6 +183,7 @@ const GradeTable = () => {
                 <CheckBox
                   size="sm"
                   value="checkbox_6"
+                  addClass="m-center"
                   checked={isChecked["checkbox_6"] || false}
                   onChange={handleCheckChange}
                 />
@@ -145,9 +194,9 @@ const GradeTable = () => {
             <tr className="block md:table-row">
               <th scope="col" className={`${tbodyTdStyle} md:bg-white`}>
                 <div className={tbodyTdDivStyle}>
-                  <div className={`${tbodyTdDivPTopStyle}`}>영역</div>
+                  <div className={tbodyTdDivPTopStyle}>영역</div>
                   <div className={tbodyTdDivPTopStyle}>선택과목</div>
-                  <div className={tbodyTdDivPBottomStyle}>표준점수</div>
+                  <div className={`${tbodyTdDivPBottomStyle} ${firstTdAlign}`}>표준점수</div>
                 </div>
               </th>
               <td className={tbodyTdStyle}>
@@ -157,9 +206,11 @@ const GradeTable = () => {
                   <div className={`${tbodyTdDivPBottomStyle}`}>
                     <TextInput
                       type="text"
+                      size="sm"
+                      align="center"
                       addId="inp-1"
                       label="한국사"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
+                      addClass='w-4/5'
                       value={inputValue[0].score1}
                       onChange={(e) => handleInputChange(e, 0, "score1")}
                     />
@@ -169,20 +220,19 @@ const GradeTable = () => {
               <td className={tbodyTdStyle}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>국어</div>
-                  <div className={tbodyTdDivPTopStyle}>
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
+                  <div className={`${tbodyTdDivPTopStyle} ${tbodyTdHeight}`}>
+                    <div className='w-4/5 m-center'>
+                      <DropDown options={dropOptions.dropOption1} size="sm" align="left" label='선택' />
+                    </div>
                   </div>
                   <div className={tbodyTdDivPBottomStyle}>
                     <TextInput
                       type="text"
+                      size="sm"
+                      align="center"
                       addId="inp-1"
                       label="국어"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
+                      addClass='w-4/5'
                       value={inputValue[0].score2}
                       onChange={(e) => handleInputChange(e, 0, "score2")}
                     />
@@ -192,20 +242,19 @@ const GradeTable = () => {
               <td className={tbodyTdStyle}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>수학</div>
-                  <div className={tbodyTdDivPTopStyle}>
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
+                  <div className={`${tbodyTdDivPTopStyle} ${tbodyTdHeight}`}>
+                    <div className='w-4/5 m-center'>
+                      <DropDown options={dropOptions.dropOption2} size="sm" align="left" label='선택' />
+                    </div>
                   </div>
                   <div className={tbodyTdDivPBottomStyle}>
                     <TextInput
                       type="text"
+                      size="sm"
+                      align="center"
                       addId="inp-1"
                       label="수학"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
+                      addClass='w-4/5'
                       value={inputValue[0].score3}
                       onChange={(e) => handleInputChange(e, 0, "score3")}
                     />
@@ -219,52 +268,47 @@ const GradeTable = () => {
                   <div className={tbodyTdDivPBottomStyle}>
                     <TextInput
                       type="text"
+                      size="sm"
+                      align="center"
                       addId="inp-1"
                       label="영어"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
+                      addClass='w-4/5'
                       value={inputValue[0].score4}
                       onChange={(e) => handleInputChange(e, 0, "score4")}
                     />
                   </div>
                 </div>
               </td>
-              <td className={`${tbodyTdStyle} md:p-0 md:py-0 h-[5rem]`}>
+              <td className={`${tbodyTdStyle} md:p-0 md:py-0 ${theadThHeight}`}>
                 <div className={`${tbodyTdDivStyle} md:h-full`}>
                   <div className={`${cn(tbodyTdStyle, 'h-auto w-1/3 md:w-full md:h-full items-center border-none')}`}>
-                    <div className={`${tbodyTdDivPTopStyle}`}>
-                      <select title="수학 구분">
-                        <option>--선택1--</option>
-                        <option>확률과통계</option>
-                        <option>미적분</option>
-                        <option>기하</option>
-                      </select>
+                    <div className={`${tbodyTdDivPTopStyle} ${tbodyTdHeight}`}>
+                      <div className='w-[90%] m-center'>
+                        <DropDown options={dropOptions.dropOption3} size="sm" align="left" label='선택' />
+                      </div>
                     </div>
                   </div>
                   <div className={`table-cell w-1/3 md:w-full md:flex`}>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 md:border-b h-[2.5rem] md:h-auto">
-                      <select title="수학 구분">
-                        <option>--선택2--</option>
-                        <option>확률과통계</option>
-                        <option>미적분</option>
-                        <option>기하</option>
-                      </select>
+                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2.5rem] md:h-auto`}>
+                      <div className='w-4/5 m-center'>
+                        <DropDown_Score options={dropOptions.dropOption4} options1={dropOptions.dropOption5} layer size="sm" width="w-full" align="left" label='사과탐 선택' />
+                      </div>
                     </div>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 md:border-b h-[2.5rem] md:h-auto">
-                      <select title="수학 구분">
-                        <option>--선택3--</option>
-                        <option>확률과통계</option>
-                        <option>미적분</option>
-                        <option>기하</option>
-                      </select>
+                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2.5rem] md:h-auto`}>
+                      <div className='w-4/5 m-center'>
+                        <DropDown options={dropOptions.dropOption6} size="sm" align="left" label='직탐 선택' />
+                      </div>
                     </div>
                   </div>
                   <div className={`table-cell w-1/3 md:w-full md:flex`}>
                     <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
                       <TextInput
                         type="text"
+                        size="sm"
+                        align="center"
                         addId="inp-1"
                         label="사과탐1"
-                        addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
+                        addClass="w-4/5"
                         value={inputValue[0].score5}
                         onChange={(e) => handleInputChange(e, 0, "score5")}
                       />
@@ -272,9 +316,11 @@ const GradeTable = () => {
                     <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
                       <TextInput
                         type="text"
+                        size="sm"
+                        align="center"
                         addId="inp-1"
                         label="사과탐2"
-                        addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
+                        addClass="w-4/5"
                         value={inputValue[0].score6}
                         onChange={(e) => handleInputChange(e, 0, "score6")}
                       />
@@ -289,9 +335,11 @@ const GradeTable = () => {
                   <div className={tbodyTdDivPBottomStyle}>
                     <TextInput
                       type="text"
+                      size="sm"
+                      align="center"
                       addId="inp-1"
                       label="영어"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
+                      addClass="w-4/5"
                       value={inputValue[0].score7}
                       onChange={(e) => handleInputChange(e, 0, "score7")}
                     />

@@ -105,14 +105,13 @@ const BottomSheet: BottomSheetType = ({
     round: round as "base" | "sm" | "md" | "xl" | undefined,
   });
 
-  const typeMode = type  || "base"  || "full";
   const atFull = type === "full";
 
   return (
     <>
       <BottomSheetContext.Provider value={{ type } }>
         <div
-        className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' } fixed top-0 left-0 w-dvw h-dvh z-10 transition-all duration-300
+        className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible' } fixed top-0 left-0 w-dvw h-dvh z-50 transition-all duration-300
         ${dimm ? 'bg-gray-1000 bg-opacity-65' : ''}`}>
           <div
             className={cn(className, addClass, {

@@ -4,8 +4,8 @@ import { useRef, useState, ChangeEvent } from 'react';
 import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 
-const theadThStyle = 'p-0 md:py-5 w-full h-9 md:h-auto flex border-b-0 last:border-b md:border-b border-r-0 md:w-auto md:table-cell items-center justify-center';
-const tbodyTdStyle = 'p-0 md:p-0 md:py-0 w-full h-9 md:h-auto flex border-b-0 border-r-0 last:border-b md:border-b md:w-auto md:table-cell items-center';
+const theadThStyle = 'p-0 md:py-5 w-full h-[4.06rem] md:h-auto flex border-b-0 last:border-b md:border-b border-r-0 md:w-auto md:table-cell items-center justify-center';
+const tbodyTdStyle = 'p-0 md:p-0 md:py-0 w-full h-[4.06rem] md:h-auto flex border-b-0 border-r-0 last:border-b md:border-b md:w-auto md:table-cell items-center';
 const tbodyTdDivStyle = 'w-full flex md:flex-wrap text-center';
 const tbodyTdDivPTopStyle = 'w-full md:py-5 md:border-b ';
 const tbodyTdDivPBottomStyle = 'w-full md:py-5';

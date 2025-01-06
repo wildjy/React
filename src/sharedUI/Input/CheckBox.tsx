@@ -10,7 +10,7 @@ const InputVariants = cva(
     variants: {
       // default size control
       size: {
-        sm: "w-[1.5rem] h-[1.5rem] after:h-[1.5rem] after:w-[1.5rem]",
+        sm: "w-[1.25rem] h-[1.25rem] after:h-[1.25rem] after:w-[1.25rem]",
         md: "w-[1.75rem] h-[1.75rem] after:h-[1.75rem] after:w-[1.75rem]",
         lg: "w-[2rem] h-[2rem] after:h-[2rem] after:w-[2rem]",
         auto: "",
@@ -115,7 +115,7 @@ const CheckBox: FC<InputProps> = ({
   return (
     <label
       htmlFor={value}
-      className={cn('relative inline-flex items-center cursor-pointer', addClass, {"cursor-default" : disabled })}
+      className={cn('relative flex items-center cursor-pointer', addClass, {"cursor-default" : disabled })}
     >
       <input
         type="checkbox"

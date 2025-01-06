@@ -20,7 +20,7 @@ import CheckBox from "../../sharedUI/Input/CheckBox";
     md:py-5
     md:bg-[#F4F5F6]
     md:w-auto md:h-auto
-    md:table-cell
+    md:table-cell 
     md:border-b`;
   const tbodyTdStyle = `
     p-0 md:p-0

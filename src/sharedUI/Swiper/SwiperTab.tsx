@@ -22,7 +22,7 @@ interface swiperProps {
   onSlideChange?: (swiper: SwiperClass) => void,
 }
 
-const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow = false, pager, onSlideChange }) => {
+const SwiperSlider: React.FC<swiperProps> = ({ id, slides, arrow = false, pager, onSlideChange }) => {
   const [contentWidth, setContentWidth] = useState<number>(0);
 	const swiperRef = useRef<SwiperClass | null>(null);
   const paginationRef = useRef(null);
@@ -148,11 +148,7 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
           <button
             className={`swiper-${id}-prev absolute y_center left-4 z-10 bg-white rounded-full  ${arrow ? '' : 'hidden'}`}
           >
-            <img
-              src="https://image.jinhak.com/jinhakImages/react/icon/arrow_off.svg"
-              className="w-8 md:w-9"
-              alt=""
-            />
+            <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_off.svg" className="w-8 md:w-9" alt="" />
           </button>
           <div className={` ${pager ? '' : 'hidden'}`}>
             <div ref={paginationRef} className={`swiper-pagination`}></div>
@@ -160,11 +156,7 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
           <button
             className={`swiper-${id}-next absolute y_center right-4 z-10 bg-white rounded-full ${arrow ? '' : 'hidden'}`}
           >
-            <img
-              src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg"
-              className="w-8 md:w-9"
-              alt=""
-            />
+            <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg" className="w-8 md:w-9" alt="" />
           </button>
         </div>
       </div>

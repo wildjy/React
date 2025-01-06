@@ -96,7 +96,7 @@ table .hide {
 }
 
 table th, td {
-  @apply border;
+  @apply text-2xs md:text-base border;
 }
 
 table th {
@@ -122,7 +122,7 @@ table td {
 }
 
 .tableType1 thead tr th {
-  @apply w-full flex items-center justify-center
+  @apply w-full flex flex-wrap items-center justify-center
   border-b-0 last:border-b border-r-0
   md:w-auto md:table-cell
   md:border-b;
@@ -182,12 +182,12 @@ caption {
 }
 
 .container {
-  @apply px-6 max-w-full m-center bg-white
+  @apply px-6 py-6 max-w-full m-center bg-white
   md:px-7
   md:max-w-full
   lg:w-tablet
   xl:w-laptop
-  xl:px-10 xl:py-9;
+  xl:px-12 xl:py-9;
 }
 /* layout : end */
 

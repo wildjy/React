@@ -127,11 +127,7 @@ const TabList: React.FC<TabListType> = ({ children, addClass }) => {
 
   return (
     <>
-      <div className={` ${cn(className, addClass, {
-        // 'gap-3': modeType === "type1",
-        // '': modeType === "type2",
-        // 'rounded': modeType === "type3",
-      })}`}>
+      <div className={` ${cn(className, addClass)}`}>
         {
           React.Children.map(children, (child, index) => {
             return React.isValidElement<ChildProps>(child) ? React.cloneElement(child, { index }) : child;

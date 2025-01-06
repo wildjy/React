@@ -1,9 +1,24 @@
 "use client";
+import React, { useState } from 'react';
 import ButtonBox from "../../sharedUI/Button/ButtonBox";
 import Button from "../../sharedUI/Button/Button";
 import Link from "../../sharedUI/Button/Link";
+import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 
 const ButtonPage = () => {
+
+
+    const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
+      popup1: false,
+    });
+
+    const OpenEventPopup = (key: string) => {
+      setIsOpenPopup((prevOpen) => ({
+        ...prevOpen,
+        [key]: !prevOpen[key],
+      }));
+    }
+
   return (
     <>
       <div className="p-4">
@@ -78,6 +93,35 @@ const ButtonPage = () => {
           <Link size="auto" addClass="px-2 md:px-4 py-2">ok</Link>
           <Link mode="tertiary" size="auto" addClass="py-2 text-white bg-blue-1000">cancel</Link>
         </ButtonBox>
+
+        <button type="button"
+          onClick={() => OpenEventPopup('popup1')}
+          className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>팝업(default) 열기
+        </button>
+
+        <LayerPopup align="center" isOpen={isOpenPopup.popup1} OpenEvent={() => OpenEventPopup('popup1')}>
+          <LayerPopup.Header>
+            <p className="text-4xl"><b>Header</b></p>
+          </LayerPopup.Header>
+
+          <LayerPopup.Body>
+            <div className='w-[703px] h-[10rem]'>
+              <p className="text-xl">
+                Body..
+              </p>
+              <p>
+                컨텐츠가 박스 밖으로 넘치지 않는 한에서 박스가 가질 수 있는 가장 작은 크기를 말한다.
+              </p>
+            </div>
+          </LayerPopup.Body>
+
+          <LayerPopup.Footer>
+            <div className='flex justify-center'>
+              <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup1')}>Footer</a>
+            </div>
+          </LayerPopup.Footer>
+        </LayerPopup>
+
       </div>
     </>
   )
