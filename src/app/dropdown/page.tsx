@@ -48,7 +48,7 @@ const DropDownPage = () => {
     <>
       <div>
         <div className="flex gap-3 flex-wrap">
-          <DropDown options={dropOptions.dropOption2} layer label='선택 layer'/>
+          <DropDown options={dropOptions.dropOption2} layer min="min-w-[9rem]" label='선택 layer'/>
           <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width='w-[13rem]' label='선택 shadow' />
           <DropDown options={dropOptions.dropOption2} type="ghost" />
           <DropDown options={dropOptions.dropOption3} type="check" size="sm" width='' />
