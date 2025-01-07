@@ -25,6 +25,7 @@ const config: Config = {
         sans: ['Pretendard', 'Arial', 'sans-serif'],
       },
       fontSize: {
+        '4xs': '0.583rem', // 10px
         '3xs': '0.688rem', // 11px
         '2xs': '0.75rem', // 12px
         xs: '0.813rem', // 13px
@@ -32,8 +33,8 @@ const config: Config = {
         md: '0.938rem', // 15px
         smMobile: '4.166vw', // 480 : 20px = 4.166vw
         mobile: '3.125vw', // 768 : 24px = 3.125vw
-        tablet: '1.75vw', // 1024 : 16px = 1.56, 18px = 1.75
-        half: '1.4vw', // 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
+        tablet: '1.56vw', // 1024 : 16px = 1.56, 18px = 1.75
+        half: '1.25vw', // 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
         base: '1rem', // base: 16px
         lg: '1.125rem', // 18px
         xl: '1.25rem', // 20px :2.77vw

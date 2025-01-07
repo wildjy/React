@@ -1,6 +1,6 @@
-
+"use client";
+import React, { HTMLAttributes } from 'react';
 import { cn } from "../common/cn";
-import { cva } from "class-variance-authority";
 
 interface TableProps {
   children?: React.ReactNode;
@@ -9,11 +9,11 @@ interface TableProps {
 interface ColgroupProps {
   children?: React.ReactNode;
 }
-interface TheadProps {
+interface TheadProps extends HTMLAttributes<HTMLTableSectionElement> {
   children?: React.ReactNode;
   thW?: string;
 }
-interface TbodyProps {
+interface TbodyProps extends HTMLAttributes<HTMLTableSectionElement> {
   children?: React.ReactNode;
   tdW?: string;
 }
@@ -24,10 +24,10 @@ interface TableType extends React.FC<TableProps> {
   Tbody: typeof Tbody;
 }
 
-const Table: TableType = ({ children, typeClass }) => {
+const Table: TableType = ({ children, typeClass}) => {
   return (
     <>
-      <table className={typeClass}>
+      <table className={cn(typeClass, '')}>
         { children }
       </table>
     </>

@@ -100,7 +100,7 @@ table th, td {
 }
 
 table th {
-  @apply px-2 md:px-4 py-4 border-0 border-b bg-[#F4F5F6];
+  @apply px-2 md:px-4 py-4 font-normal border-0 border-b bg-[#F4F5F6];
 }
 
 table td {
