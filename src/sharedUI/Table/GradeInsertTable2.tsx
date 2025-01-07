@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, ChangeEvent } from 'react';
 import { cn } from "../common/cn";
-import TextInput from "../../sharedUI/Input/TextInput";
-import CheckBox from "../../sharedUI/Input/CheckBox";
-import DropDown_Score from '../../sharedUI/DropDown/DropDown_Score';
-import DropDown from '../../sharedUI/DropDown/DropDown';
+import TextInput from "../Input/TextInput";
+import CheckBox from "../Input/CheckBox";
+import DropDown_Score from '../DropDown/DropDown_Score';
+import DropDown from '../DropDown/DropDown';
 
-const GradeTable = () => {
+const GradeTable2 = () => {
 
   const theadThStyle = `
     text-xs md:text-base
@@ -195,135 +195,60 @@ const GradeTable = () => {
               <th scope="col" className={`${tbodyTdStyle} md:bg-white`}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>영역</div>
-                  <div className={tbodyTdDivPTopStyle}>선택과목</div>
-                  <div className={`${tbodyTdDivPBottomStyle} ${firstTdAlign}`}>표준점수</div>
+                  <div className={tbodyTdDivPBottomStyle }>선택과목</div>
                 </div>
               </th>
               <td className={tbodyTdStyle}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>한국사</div>
-                  <div className={tbodyTdDivPTopStyle}>-</div>
-                  <div className={`${tbodyTdDivPBottomStyle}`}>
-                    <TextInput
-                      type="text"
-                      size="sm"
-                      align="center"
-                      addId="inp-1"
-                      label="한국사"
-                      addClass='w-4/5'
-                      value={inputValue[0].score1}
-                      onChange={(e) => handleInputChange(e, 0, "score1")}
-                    />
-                  </div>
+                  <div className={tbodyTdDivPBottomStyle}>-</div>
                 </div>
               </td>
               <td className={tbodyTdStyle}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>국어</div>
-                  <div className={`${tbodyTdDivPTopStyle} ${tbodyTdHeight}`}>
+                  <div className={`${tbodyTdDivPBottomStyle} ${tbodyTdHeight}`}>
                     <div className='w-4/5 m-center'>
                       <DropDown options={dropOptions.dropOption1} size="sm" align="left" label='선택' />
                     </div>
-                  </div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <TextInput
-                      type="text"
-                      size="sm"
-                      align="center"
-                      addId="inp-1"
-                      label="국어"
-                      addClass='w-4/5'
-                      value={inputValue[0].score2}
-                      onChange={(e) => handleInputChange(e, 0, "score2")}
-                    />
                   </div>
                 </div>
               </td>
               <td className={tbodyTdStyle}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>수학</div>
-                  <div className={`${tbodyTdDivPTopStyle} ${tbodyTdHeight}`}>
+                  <div className={`${tbodyTdDivPBottomStyle} ${tbodyTdHeight}`}>
                     <div className='w-4/5 m-center'>
                       <DropDown options={dropOptions.dropOption2} size="sm" align="left" label='선택' />
                     </div>
-                  </div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <TextInput
-                      type="text"
-                      size="sm"
-                      align="center"
-                      addId="inp-1"
-                      label="수학"
-                      addClass='w-4/5'
-                      value={inputValue[0].score3}
-                      onChange={(e) => handleInputChange(e, 0, "score3")}
-                    />
                   </div>
                 </div>
               </td>
               <td className={tbodyTdStyle}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>영어</div>
-                  <div className={tbodyTdDivPTopStyle}>-</div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <TextInput
-                      type="text"
-                      size="sm"
-                      align="center"
-                      addId="inp-1"
-                      label="영어"
-                      addClass='w-4/5'
-                      value={inputValue[0].score4}
-                      onChange={(e) => handleInputChange(e, 0, "score4")}
-                    />
-                  </div>
+                  <div className={tbodyTdDivPBottomStyle}>-</div>
                 </div>
               </td>
               <td className={`${tbodyTdStyle} md:p-0 md:py-0 ${theadThHeight}`}>
                 <div className={`${tbodyTdDivStyle} md:h-full`}>
-                  <div className={`${cn(tbodyTdStyle, 'h-auto w-1/3 md:w-full md:h-full items-center border-none')}`}>
+                  <div className={`${cn(tbodyTdStyle, 'h-auto w-1/2 md:w-full md:h-full items-center border-none')}`}>
                     <div className={`${tbodyTdDivPTopStyle} ${tbodyTdHeight}`}>
                       <div className='w-[90%] m-center'>
                         <DropDown options={dropOptions.dropOption3} size="sm" align="left" label='선택' />
                       </div>
                     </div>
                   </div>
-                  <div className={`table-cell w-1/3 md:w-full md:flex`}>
-                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2.5rem] md:h-auto`}>
+                  <div className={`table-cell w-1/2 md:w-full md:flex`}>
+                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} h-[2.5rem] md:h-auto`}>
                       <div className='w-4/5 m-center'>
                         <DropDown_Score options={dropOptions.dropOption4} options1={dropOptions.dropOption5} layer size="sm" width="w-full" align="left" label='사과탐 선택' />
                       </div>
                     </div>
-                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2.5rem] md:h-auto`}>
+                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} h-[2.5rem] md:h-auto`}>
                       <div className='w-4/5 m-center'>
                         <DropDown options={dropOptions.dropOption6} layer min="min-w-[9rem]" size="sm" align="left" label='직탐 선택' />
                       </div>
-                    </div>
-                  </div>
-                  <div className={`table-cell w-1/3 md:w-full md:flex`}>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
-                      <TextInput
-                        type="text"
-                        size="sm"
-                        align="center"
-                        addId="inp-1"
-                        label="사과탐1"
-                        addClass="w-4/5"
-                        value={inputValue[0].score5}
-                        onChange={(e) => handleInputChange(e, 0, "score5")}
-                      />
-                    </div>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
-                      <TextInput
-                        type="text"
-                        size="sm"
-                        align="center"
-                        addId="inp-1"
-                        label="사과탐2"
-                        addClass="w-4/5"
-                        value={inputValue[0].score6}
-                        onChange={(e) => handleInputChange(e, 0, "score6")}
-                      />
                     </div>
                   </div>
                 </div>
@@ -331,19 +256,7 @@ const GradeTable = () => {
               <td className={tbodyTdStyle}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>제2외국어</div>
-                  <div className={tbodyTdDivPTopStyle}>제2외국어</div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <TextInput
-                      type="text"
-                      size="sm"
-                      align="center"
-                      addId="inp-1"
-                      label="영어"
-                      addClass="w-4/5"
-                      value={inputValue[0].score7}
-                      onChange={(e) => handleInputChange(e, 0, "score7")}
-                    />
-                  </div>
+                  <div className={tbodyTdDivPBottomStyle}>제2외국어</div>
                 </div>
               </td>
             </tr>
@@ -354,4 +267,4 @@ const GradeTable = () => {
   )
 }
 
-export default GradeTable;
+export default GradeTable2;

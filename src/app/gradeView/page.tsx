@@ -1,5 +1,8 @@
 "use client"
 import React, { useState, ChangeEvent } from "react";
+import { pageData  } from "../../sharedUI/PageData/PageData";
+import Container from "../../sharedUI/Layout/Container";
+import ContFull from "../../sharedUI/Layout/ContFull";
 import StepBar from "../../sharedUI/Stepbar/Stepbar";
 import SubTop from "../../sharedUI/Layout/Sub_top";
 import CustomRadio from "../../sharedUI/Input/CustomRadio";
@@ -15,74 +18,45 @@ const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
 
 const gradeInsertPage = () => {
 
-  // stepBar
-  const steps = [
-    { label: "Step 1", name: "출신고교", url: "#1/" },
-    { label: "Step 2", name: "성적입력",  url: "#2/" },
-    { label: "Step 3", name: "모의지원",  url: "#3/" },
-    { label: "Step 4", name: "저장소",  url: "#4/" },
-  ];
-
-  // swiper tab
-  const slides = [
-    {
-      active: "active",
-      title: "3월 학력평가",
-      url: "#/",
-    },
-    {
-      active: "",
-      title: "5월 학력평가",
-      url: "#/",
-    },
-    {
-      active: "",
-      title: "6월 학력평가",
-      url: "#/",
-    },
-    {
-      active: "",
-      title: "7월 학력평가",
-      url: "#/",
-    },
-    {
-      active: "",
-      title: "9월 학력평가",
-      url: "#/",
-    },
-    {
-      active: "",
-      title: "10월 학력평가",
-      url: "#/",
-    },
-  ];
+  const { steps, slides } = pageData;
 
   return (
     <>
-      <div className="container overflow-hidden">
+      <Container>
         <div className="m-center w-full md:w-[41.875rem]">
           <StepBar step={steps} currentStep={1} />
         </div>
 
-        <div className="mt-9 md:mt-11">
+        <ContFull addClass="mt-9 md:mt-11">
           <SwiperSlider id={1} slides={slides} />
-        </div>
+        </ContFull>
 
-        {/* <SubTop subText={false} flag={true} infoBox radioBox={false} /> */}
-
-        <SubTop 
-          subText ={false}
-          flag={{visible: true, flag2: true}} 
+        <SubTop
+          subTitle={{
+            visible: true,
+            text: "3.28 학력평가",
+          }}
+          subDate="2024년 3월 28일 서울교육청"
+          subText={{
+            visible: false,
+            text: "※ 표준점수를 입력하시면 백분위, 등급은 자동 계산되어 보여집니다."
+          }}
+          flag={{
+            visible: true,
+            flag1: true,
+            flag2: false,
+            flag3: false,
+            flag4: false,
+          }}
           radioBox={false}
           infoBox={{
             visible: true,
             infoDate: "0월 00일 오전/오후 00시, 가채점 성적 확정 예정",
-          }} 
+          }}
         />
 
-        <div className="mt-5 md:mt-6">
-
-          <Table typeClass="tableType1">
+        <div className="">
+          <Table typeClass="tableType1 mt-5" >
             <Table.Colgroup>
               <col style={{ width: "calc(100%/8)" }} />
               <col style={{ width: "calc(100%/8)" }} />
@@ -147,7 +121,7 @@ const gradeInsertPage = () => {
         </ButtonBox>
 
 
-      </div>
+      </Container>
     </>
   )
 }

@@ -103,10 +103,10 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, slides, arrow = false, pager,
       swiperRef.current = swiper;
     },
     onActiveIndexChange: (swiper: SwiperClass) => {
-      console.log(swiper)
+      //console.log(swiper)
     },
     onBeforeInit: (swiper: SwiperClass) => {
-      console.log(swiper)
+      //console.log(swiper)
     },
     onSlideChange: multiOnSlideChange,
     onResize: (swiper: SwiperClass) => {
@@ -116,7 +116,7 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, slides, arrow = false, pager,
 
   return (
     <>
-      <div className={`swipers-${id} border-b border-gray-300 relative `}>
+      <div className={`swipers-${id} px-6 md:px-0 border-b border-gray-300 relative `}>
         <Swiper
           modules={[FreeMode, Navigation, Pagination, Autoplay]}
           {...swiperOption}
@@ -129,7 +129,7 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, slides, arrow = false, pager,
             >
               <a
                 href={slide.url}
-                className={`${slide.active} block py-3 lg:px-7 xl:px-14 lg:py-4 ${
+                className={`${slide.active} block py-3 md:px-5 lg:px-10 xl:px-[2.9rem] lg:py-4 text-md md:text-lg ${
                   slide.active
                     ? 'text-blue-700 border-b-[0.313rem] border-blue-700 font-bold'
                     : ''
@@ -137,7 +137,6 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, slides, arrow = false, pager,
               >
                 <>
                   <p className="">{slide.title}</p>
-                  {/* <p className='text-md'>{slide.sub_txt}</p> */}
                 </>
               </a>
             </SwiperSlide>
