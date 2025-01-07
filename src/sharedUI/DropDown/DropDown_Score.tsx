@@ -24,7 +24,7 @@ const useDropDownContext = () => {
   return context;
 }
 
-const DropDownVariants = cva(`pe-[1.8rem] border
+const DropDownVariants = cva(`pe-[1.8rem] bg-white border border-gray-200
   min-w-[4rem] w-full text-left relative truncate rounded-lg
   after:right-3 after:w-[1rem] after:h-[0.375rem] after:bg-[length:100%_100%]
   after:absolute after:transform after:-translate-y-1/2 after:top-[50%]

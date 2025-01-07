@@ -6,6 +6,7 @@ type typeMode = "base" | "shadow" | "ghost" | "check";
 type alignMode = "left" | "center";
 interface DropDownContextProps {
   type: typeMode;
+  min: string;
   align: alignMode;
   isOpen: boolean;
   selectValue: OptionType | null;
@@ -24,7 +25,7 @@ const useDropDownContext = () => {
   return context;
 }
 
-const DropDownVariants = cva(`pe-[1.8rem] border bg-white
+const DropDownVariants = cva(`pe-[1.8rem] bg-white border border-gray-200
   w-full relative truncate rounded-lg
   after:right-3 after:w-[1rem] after:h-[0.375rem] after:bg-[length:100%_100%]
   after:absolute after:transform after:-translate-y-1/2 after:top-[50%]
@@ -63,8 +64,10 @@ const DropDownVariants = cva(`pe-[1.8rem] border bg-white
 const DropDownBoxVariants = cva(``, {
     variants: {
       layer: {
-        true: `fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-20`, //md:absolute md:-mt-[1px] md:top-auto md:right-0 md:min-w-[6rem] md:w-auto md:h-auto md:bg-none md:bg-opacity-0
-        false: `absolute left-0 min-w-[6rem] w-[100%] z-10`,
+        true: `min-w-[7rem] fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-20
+        md:absolute md:top-auto md:right-0 md:w-auto md:h-auto md:bg-none md:bg-opacity-0
+        `, //
+        false: `min-w-[7rem] absolute left-0 w-[100%] z-10`,
       },
     },
   }
@@ -75,7 +78,9 @@ const DropDownInnerBoxVariants = cva(`
   `, {
     variants: {
       layer: {
-        true: `layer.. center_center max-w-[90dvw] w-max max-h-[50dvh]`, //md:max-h-[10rem] md:relative md:w-full md:max-w-auto md:top-0 md:left-0 md:-translate-x-0 md:-translate-y-0
+        true: `layer.. center_center max-w-[90dvw] w-max max-h-[50dvh]
+        md:max-h-[10rem] md:relative md:w-full md:max-w-auto md:top-0 md:left-0 md:-translate-x-0 md:-translate-y-0
+        `, //
         false: `base.. max-h-[10rem]`,
       },
     },
@@ -91,6 +96,7 @@ interface DropDownProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typ
   type?: typeMode;
   align?: alignMode;
   addClass?: string;
+  min?: string;
   custom?: boolean;
   options?: OptionType[];
   isOpen?: boolean;
@@ -120,6 +126,7 @@ const DropDown: React.FC<DropDownProps> = ({
   align = "left",
   icon,
   addClass,
+  min = "min-w-[7rem]",
   width = "w-auto",
   label,
   custom = false,
@@ -162,6 +169,7 @@ const DropDown: React.FC<DropDownProps> = ({
     {/* ${size === "sm" ? '' : size === "lg" ? "" : null} */}
       <DropDownContext.Provider value={{
         type,
+        min,
         align,
         isOpen,
         selectValue,
@@ -201,7 +209,7 @@ const DropOption: React.FC<DropOptionProps> = ({
   custom,
   layer,
 }) => {
-  const { type, align, onClose, onChangeSelect, selectValue } = useDropDownContext();
+  const { type, align, min, onClose, onChangeSelect, selectValue } = useDropDownContext();
   const className = DropDownBoxVariants ({
     layer: layer as boolean | undefined,
   });
@@ -217,7 +225,10 @@ const DropOption: React.FC<DropOptionProps> = ({
     <>
       {/* <div className={`${cn(className, addClass)} ${typeMode === 'shadow' ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : ''}`}> */}
       <div className={`${resetClass} ${cn(className, addClass,
-          {'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atShadow || atCheck},
+          {
+            'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atShadow || atCheck,
+            [min] : layer,
+          },
         )}`}>
         <div className={`${cn(innerClassName, addClass, {'py-3' : atShadow})}`}>
           { custom ? (
@@ -226,7 +237,10 @@ const DropOption: React.FC<DropOptionProps> = ({
               <button onClick={onClose}>닫기</button>
             </div>
           ) : (
-            <ul className={`${cn('p-3', {'p-0' : atShadow})}`}>
+            <ul className={`${cn('p-3',
+              {'p-5 md:p-3' : layer},
+              {'p-0' : atShadow},
+            )}`}>
               {
                 options.map((option) => (
                   <li

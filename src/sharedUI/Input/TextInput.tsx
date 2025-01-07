@@ -5,7 +5,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
 const InputVariants = cva(
-  "w-full peer leading-none border border-gray-300 focus:outline-none rounded-lg", // md:w-auto
+  "w-full peer leading-none border border-gray-200 focus:outline-none rounded-lg", // md:w-auto
   {
     variants: {
       size: {

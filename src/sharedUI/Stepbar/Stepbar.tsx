@@ -1,4 +1,5 @@
 
+"use client";
 import { cn } from "../common/cn";
 import { cva } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";

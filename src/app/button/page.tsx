@@ -90,8 +90,10 @@ const ButtonPage = () => {
         </ButtonBox>
 
         <ButtonBox>
-          <Link size="auto" addClass="px-2 md:px-4 py-2">ok</Link>
-          <Link mode="tertiary" size="auto" addClass="py-2 text-white bg-blue-1000">cancel</Link>
+          {/* <Link size="auto" addClass="px-2 md:px-4 py-2">ok</Link>
+          <Link mode="tertiary" size="auto" addClass="py-2 text-white bg-blue-1000">cancel</Link> */}
+          <Link href="https://www.jinhak.com/" blank size="auto" addClass="py-3" endIcon={['icon_btn_arrow.svg', 'w-[0.5rem]']}>모의지원</Link>
+          <Link href="https://www.jinhak.com/" blank size="auto" addClass="py-3" endIcon={['icon_btn_arrow.svg', 'w-[0.5rem]']}>모의지원</Link>
         </ButtonBox>
 
         <button type="button"

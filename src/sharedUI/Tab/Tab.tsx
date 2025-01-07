@@ -105,7 +105,7 @@ interface TabContentType {
   addClass?: string;
 }
 
-const Tab: TabTypePros = ({ initTab, children, modeType, addClass }) => {
+const Tab: TabTypePros = ({ initTab, children, modeType = "type1", addClass }) => {
   const [currentTab, setContent] = useState(initTab);
 
   return (
@@ -127,7 +127,11 @@ const TabList: React.FC<TabListType> = ({ children, addClass }) => {
 
   return (
     <>
-      <div className={` ${cn(className, addClass)}`}>
+      <div className={` ${cn(className, addClass, {
+        // 'gap-3': modeType === "type1",
+        // '': modeType === "type2",
+        // 'rounded': modeType === "type3",
+      })}`}>
         {
           React.Children.map(children, (child, index) => {
             return React.isValidElement<ChildProps>(child) ? React.cloneElement(child, { index }) : child;

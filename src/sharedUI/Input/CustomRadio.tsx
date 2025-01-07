@@ -5,7 +5,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
 const InputVariants = cva(
-  'inline-flex px-1 md:px-3 min-w-[3.5rem] md:min-w-[4.5rem] h-5 md:h-7 text-xs md:text-s items-center justify-center text-center relative peer ',
+  'inline-flex px-1 md:px-3 min-w-[3.2rem] md:min-w-[4.5rem] h-6 md:h-7 text-3xs sm:text-2xs md:text-s leading-none items-center justify-center text-center relative peer ',
   {
     variants: {
       // default size control
@@ -15,10 +15,7 @@ const InputVariants = cva(
         lg: "",
       },
       mode: {
-        base: `bg-gray-50
-          peer-checked:text-blue-800
-          peer-checked:bg-white
-        `,
+        base: `bg-gray-50 peer-checked:text-blue-800 peer-checked:bg-white`,
         check: ``,
       },
     },
