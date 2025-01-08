@@ -10,7 +10,7 @@ const InputVariants = cva(
     variants: {
       size: {
         base: "px-7 py-5",
-        sm: "input-sm.. px-2 py-2 text-2xs md:text-s rounded-lg",
+        sm: "input-sm.. px-2 py-2 md:py-3 text-2xs md:text-s rounded md:rounded-lg",
         md: "input-sm..",
         lg: "input-lg..",
         full: "input-full w-full",
@@ -19,7 +19,7 @@ const InputVariants = cva(
         base: "focus:border-blue-700 focus:ring-blue-700",
         ghost: "focus:border-blue-700 border-0 border-b rounded-none placeholder-transparent ",
         success: "focus:border-success", // border-success
-        warning: "focus:border-warning", // focus:ring-1 focus:ring-warning
+        warning: "focus:border-warning", // focus:ring-1 focus:ring-warning px-3 xl:px-5 py-2 md:py-3
         error: "focus:border-error", // focus:ring-1 focus:ring-error
       },
       align: {

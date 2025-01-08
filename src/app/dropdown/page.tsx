@@ -1,9 +1,9 @@
 
 "use client";
 import React, { useState, ChangeEvent } from "react";
-import DropDown_Score from '../../sharedUI/DropDown/DropDown_Score';
-import DropDown from '../../sharedUI/DropDown/DropDown';
-import DropDownMore from '../../sharedUI/DropDown/DropDownMore';
+import DropDown_Score from "../../sharedUI/DropDown/DropDown_Score";
+import DropDown from "../../sharedUI/DropDown/DropDown";
+import DropDownMore from "../../sharedUI/DropDown/DropDownMore";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 
 
@@ -29,14 +29,14 @@ const DropDownPage = () => {
       { value: "3", label: "옵션 1-3" },
     ],
     dropOption2: [
-      { value: "1", label: "화법과 작문" },
-      { value: "2", label: "확률과 통계통계" },
-      { value: "3", label: "미적분" },
-      { value: "4", label: "가하" },
-      { value: "5", label: "화법과 작문" },
-      { value: "6", label: "확률과 통계통계" },
-      { value: "7", label: "미적분" },
-      { value: "8", label: "가하" },
+      { value: "a", label: "화법과 작문" },
+      { value: "b", label: "확률과 통계통계" },
+      { value: "c", label: "미적분" },
+      { value: "d", label: "가하" },
+      { value: "e", label: "화법과 작문" },
+      { value: "f", label: "확률과 통계통계" },
+      { value: "g", label: "미적분" },
+      { value: "h", label: "가하" },
     ],
     dropOption3: [
       { value: "1", label: "최신순" },
@@ -48,17 +48,17 @@ const DropDownPage = () => {
     <>
       <div>
         <div className="flex gap-3 flex-wrap">
-          <DropDown options={dropOptions.dropOption2} layer min="min-w-[9rem]" label='선택 layer'/>
-          <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width='w-[13rem]' label='선택 shadow' />
+          <DropDown options={dropOptions.dropOption2} layer min="min-w-[9rem]" label="선택 layer"/>
+          <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width="w-[13rem]" align="center" label="선택 shadow" />
           <DropDown options={dropOptions.dropOption2} type="ghost" />
-          <DropDown options={dropOptions.dropOption3} type="check" size="sm" width='' />
-          <DropDown options={dropOptions.dropOption1} width='min-w-[12rem]' label='선택2' />
+          <DropDown options={dropOptions.dropOption3} type="check" size="sm" width="" />
+          <DropDown options={dropOptions.dropOption1} width="min-w-[12rem]" label="선택2" />
 
-          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer width='min-w-[10rem]' label='사과탐' />
-          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="shadow" width='min-w-[10rem]' label='사과탐' />
-          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="ghost" width='min-w-[10rem]' label='사과탐' />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer width="min-w-[10rem]" align="center" label="사과탐" />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="shadow" width="min-w-[10rem]" label="사과탐" />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="ghost" width="min-w-[10rem]" label="사과탐" />
 
-          <DropDown custom width='min-w-[10rem]' label='옵션 선택'>
+          <DropDown custom width="min-w-[10rem]" label="옵션 선택">
             <div className="p-5">
               <ul>
                 <li>

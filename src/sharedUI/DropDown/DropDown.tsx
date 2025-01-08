@@ -40,7 +40,7 @@ const DropDownVariants = cva(`pe-[1.8rem] bg-white border border-gray-200
         check: 'border-transparent',
       },
       size: {
-        sm: 'px-3 py-2 text-2xs md:text-s',
+        sm: 'px-4 xl:px-5 py-2 md:py-3 text-2xs md:text-s rounded md:rounded-lg',
         md: 'px-4 py-3',
         lg: 'px-5 py-4 text-xl',
       },
@@ -64,7 +64,7 @@ const DropDownVariants = cva(`pe-[1.8rem] bg-white border border-gray-200
 const DropDownBoxVariants = cva(``, {
     variants: {
       layer: {
-        true: `min-w-[7rem] fixed top-0 left-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-20
+        true: `min-w-[7rem] fixed top-0 left-0 w-full h-dvh bg-gray-1000 bg-opacity-65 z-20
         md:absolute md:top-auto md:right-0 md:w-auto md:h-auto md:bg-none md:bg-opacity-0
         `, //
         false: `min-w-[7rem] absolute left-0 w-[100%] z-10`,
@@ -74,11 +74,13 @@ const DropDownBoxVariants = cva(``, {
 )
 
 const DropDownInnerBoxVariants = cva(`
-  inner-box scroll overflow-auto bg-white border border-gray-300 rounded-lg
+  inner-box scroll overflow-auto bg-white border border-gray-300 rounded-lg transition-all duration-300
   `, {
     variants: {
       layer: {
-        true: `layer.. center_center max-w-[90dvw] w-max max-h-[50dvh]
+        // true: `layer.. center_center max-w-[90dvw] w-max max-h-[50dvh]
+        // md:max-h-[10rem] md:relative md:w-full md:max-w-auto md:top-0 md:left-0 md:-translate-x-0 md:-translate-y-0
+        true: `layer.. absolute left-0 right-0 bottom-0 flex flex-col w-full max-w-[100dvw] rounded-none rounded-t-xl md:rounded-lg
         md:max-h-[10rem] md:relative md:w-full md:max-w-auto md:top-0 md:left-0 md:-translate-x-0 md:-translate-y-0
         `, //
         false: `base.. max-h-[10rem]`,
@@ -114,6 +116,7 @@ VariantProps<typeof DropDownInnerBoxVariants> {
   options?: OptionType[];
   custom?: boolean;
   layer?: boolean;
+  isOpen?: boolean;
   inner?: boolean;
   onChangeSelect: (option: OptionType) => void;
   onClose: () => void;
@@ -187,6 +190,7 @@ const DropDown: React.FC<DropDownProps> = ({
           </div>
           {/* {isOpen && ( */}
             <DropOption
+              isOpen={isOpen}
               options={options}
               custom={custom}
               resetClass={`${isOpen ? 'opacity-100 visible transition' : 'opacity-0 invisible'}`}
@@ -202,6 +206,7 @@ const DropDown: React.FC<DropDownProps> = ({
 }
 
 const DropOption: React.FC<DropOptionProps> = ({
+  isOpen,
   children,
   resetClass,
   addClass,
@@ -230,7 +235,11 @@ const DropOption: React.FC<DropOptionProps> = ({
             [min] : layer,
           },
         )}`}>
-        <div className={`${cn(innerClassName, addClass, {'py-3' : atShadow})}`}>
+        <div className={`${cn(innerClassName, addClass, {
+          'py-3' : atShadow,
+          'translate-y-0': layer && isOpen,
+          'translate-y-full': layer && !isOpen,
+          })}`}>
           { custom ? (
             <div>
               { children }
@@ -238,6 +247,8 @@ const DropOption: React.FC<DropOptionProps> = ({
             </div>
           ) : (
             <ul className={`${cn('p-3',
+              {'text-left': align === 'left'},
+              {'text-center': align === 'center'},
               {'p-5 md:p-3' : layer},
               {'p-0' : atShadow},
             )}`}>
@@ -245,13 +256,11 @@ const DropOption: React.FC<DropOptionProps> = ({
                 options.map((option) => (
                   <li
                     key={option.value}
-                    className={`text-2xs md:text-s ${cn('md:px-4 py-2 rounded hover:bg-gray-200 cursor-pointer', addClass,
-                      {'text-left': align === 'left'},
-                      {'text-center': align === 'center'},
-                      {'font-bold': selectValue?.value === option.value},
+                    className={`text-xs md:text-s ${cn('px-4 py-2 rounded md:hover:bg-gray-200 cursor-pointer', addClass,
+                      {'text-blue-800 font-bold': selectValue?.value === option.value},
+                      {'text-center md:text-left' : layer},
                       {'rounded-none' : atShadow},
-                      {'rounded-none' : atCheck},
-                      {'pl-7 md:pl-7 text-blue-500 bg-no-repeat bg-[length:17%] bg-[10%_center] bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg")]' : selectValue?.value === option.value && atCheck},
+                      {'pl-7 md:pl-7 text-blue-500 bg-no-repeat bg-[length:0.8rem] bg-[0.5rem_center] bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg")]' : selectValue?.value === option.value && atCheck},
                     )}`}
                     onClick={() => onChangeSelect(option)}
                   >

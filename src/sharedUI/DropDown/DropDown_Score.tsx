@@ -1,6 +1,7 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { useState, useRef, useEffect, createContext, useContext,  HTMLAttributes } from 'react';
+import ScoreOption from './ScoreOption';
 
 type typeMode = "base" | "shadow" | "ghost";
 type alignMode = "left" | "center";
@@ -38,7 +39,7 @@ const DropDownVariants = cva(`pe-[1.8rem] bg-white border border-gray-200
         ghost: 'border-transparent',
       },
       size: {
-        sm: 'px-3 py-2 text-2xs md:text-s',
+        sm: 'px-4 xl:px-5 py-2 md:py-3 text-2xs md:text-s rounded md:rounded-lg',
         md: 'px-4 py-3',
         lg: 'px-5 py-4 text-xl',
       },
@@ -63,7 +64,7 @@ const DropDownBoxVariants = cva(``, {
     variants: {
       layer: {
         true: `
-          fixed top-0 left-0 right-0 w-dvw h-dvh bg-gray-1000 bg-opacity-65 z-20
+          fixed top-0 left-0 right-0 md:right-auto w-full h-dvh bg-gray-1000 bg-opacity-65 z-20
           md:absolute md:w-auto md:top-auto md:h-auto md:bg-none md:bg-opacity-0
         `, // md:min-w-[6rem] md:w-auto
         false: `absolute left-0 z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]`, // min-w-[6rem] w-[100%]
@@ -72,13 +73,14 @@ const DropDownBoxVariants = cva(``, {
   }
 )
 const DropDownInnerBoxVariants = cva(`
-  inner-box scroll overflow-auto bg-white border border-gray-300 rounded-lg
+  inner-box scroll overflow-auto bg-white border border-gray-300 rounded-lg transition-all duration-300
   `, {
     variants: {
       layer: {
-        true: `
-          layer.. center_center max-w-[90dvw] w-max max-h-[50dvh]
-          md:max-h-[10rem] md:relative md:max-w-[100dvw] md:top-0 md:left-0 md:-translate-x-0 md:-translate-y-0
+        // true: `layer.. center_center max-w-[90dvw] w-max max-h-[50dvh]
+        // md:max-h-[10rem] md:relative md:max-w-[100dvw] md:top-0 md:left-0 md:-translate-x-0 md:-translate-y-0
+        true: `layer.. absolute left-0 right-0 bottom-0 flex flex-col w-full max-w-[100dvw] max-h-[50dvh] rounded-none rounded-t-xl md:rounded-lg
+        md:max-h-[10rem] md:relative md:w-full md:max-w-auto md:top-0 md:left-0 md:-translate-x-0 md:-translate-y-0
         `, // md:w-full
         false: `base.. max-h-[10rem]`,
       },
@@ -88,7 +90,7 @@ const DropDownInnerBoxVariants = cva(`
 
 interface OptionType {
   value: string;
-  label: string
+  label: string;
 }
 
 interface DropDownProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof DropDownVariants> {
@@ -111,6 +113,7 @@ VariantProps<typeof DropDownInnerBoxVariants> {
   addClass?: string;
   options?: OptionType[]; options1?: OptionType[];
   custom?: boolean;
+  isOpen?: boolean;
   layer?: boolean;
   inner?: boolean;
   onChangeSelect: (option: OptionType) => void;
@@ -176,12 +179,13 @@ const DropDown_Score: React.FC<DropDownProps> = ({
       <div ref={dropRef} className={`${width} ${layer ? 'md:relative' : 'relative'}`}>
         <div className={`${cn(className, addClass, {'border-blue-700 after:-rotate-180': isOpen})}`}
           onClick={OpenEvent}
-          data-value={selectValue?.value || ''}
+          data-value={selectValue?.value || null}
           {...props}
         >
           {selectValue ? selectValue.label : label ? label : '선택'}
         </div>
         <DropOption
+          isOpen={isOpen}
           options={options}
           options1={options1}
           resetClass={`${isOpen ? 'opacity-100 visible transition' : 'opacity-0 invisible'}`}
@@ -197,6 +201,7 @@ const DropDown_Score: React.FC<DropDownProps> = ({
 }
 
 const DropOption: React.FC<DropOptionProps> = ({
+  isOpen,
   children,
   resetClass,
   addClass,
@@ -218,8 +223,13 @@ const DropOption: React.FC<DropOptionProps> = ({
 
   return (
     <>
-      <div className={`${resetClass} ${cn(className, addClass, {'mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atShadow})}`}>
-        <div className={`${cn(innerClassName, addClass)}`}>
+      <div className={`${resetClass} ${cn(className, addClass, {
+        'md:mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atShadow
+        })}`}>
+        <div className={`${cn(innerClassName, addClass, {
+          'translate-y-0': layer && isOpen,
+          'translate-y-full': layer && !isOpen,
+        })}`}>
           { custom ? (
             <div>
               { children }
@@ -227,48 +237,24 @@ const DropOption: React.FC<DropOptionProps> = ({
             </div>
           ) : (
             <div className="p-5 flex gap-5">
-              <div className="px-5 md:px-0">
-                <p className=""><b>[사탐]</b></p>
-                <ul className={`whitespace-pre`}>
-                  {
-                    options.map((option) => (
-                      <li
-                        key={option.value}
-                        className={`text-2xs md:text-s ${cn('md:px-4 py-2 rounded hover:bg-gray-200 cursor-pointer', addClass,
-                          {'text-left': align === 'left'},
-                          {'text-center': align === 'center'},
-                          {'font-bold': selectValue?.value === option.value},
-                          {'rounded-none' : atShadow},
-                        )}`}
-                        onClick={() => onChangeSelect(option)}
-                      >
-                        { option.label }
-                      </li>
-                    ))
-                  }
-                </ul>
-              </div>
-              <div className="px-5 md:px-0">
-                <p className=""><b>[과탐]</b></p>
-                <ul className={`whitespace-pre`}>
-                  {
-                    options1.map((option) => (
-                      <li
-                        key={option.value}
-                        className={`text-2xs md:text-s ${cn('md:px-4 py-2 rounded hover:bg-gray-200 cursor-pointer', addClass,
-                          {'text-left': align === 'left'},
-                          {'text-center': align === 'center'},
-                          {'font-bold': selectValue?.value === option.value},
-                          {'rounded-none' : atShadow},
-                        )}`}
-                        onClick={() => onChangeSelect(option)}
-                      >
-                        { option.label }
-                      </li>
-                    ))
-                  }
-                </ul>
-              </div>
+              <ScoreOption
+                title="[사탐]"
+                options={options}
+                align={align}
+                selectValue={selectValue}
+                atShadow={atShadow}
+                addClass={addClass}
+                onChangeSelect={onChangeSelect}
+              />
+              <ScoreOption
+                title="[과탐]"
+                options={options1}
+                align={align}
+                selectValue={selectValue}
+                atShadow={atShadow}
+                addClass={addClass}
+                onChangeSelect={onChangeSelect}
+              />
             </div>
           )}
         </div>
