@@ -1,16 +1,13 @@
 "use client"
-import React, { useState, ChangeEvent } from "react";
+import React, { } from "react";
 import { pageData  } from "../../sharedUI/PageData/PageData";
 import Container from "../../sharedUI/Layout/Container";
 import ContFull from "../../sharedUI/Layout/ContFull";
-import StepBar from "../../sharedUI/Stepbar/Stepbar";
+import StepBar from "../../sharedUI/StepBar/StepBar";
 import SubTop from "../../sharedUI/Layout/Sub_top";
-import CustomRadio from "../../sharedUI/Input/CustomRadio";
-import GradeTable from "../../sharedUI/Table/GradeInsertTable";
 import Table from "../../sharedUI/Table/Table";
 import ButtonBox from "../../sharedUI/Button/ButtonBox";
 import Link from "../../sharedUI/Button/Link";
-import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 import dynamic from "next/dynamic";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
@@ -36,7 +33,10 @@ const gradeInsertPage = () => {
             visible: true,
             text: "3.28 학력평가",
           }}
-          subDate="2024년 3월 28일 서울교육청"
+          subDate={{
+            visible: false,
+            text: "2024년 3월 28일 서울교육청"
+          }}
           subText={{
             visible: false,
             text: "※ 표준점수를 입력하시면 백분위, 등급은 자동 계산되어 보여집니다."
@@ -44,9 +44,10 @@ const gradeInsertPage = () => {
           flag={{
             visible: true,
             flag1: true,
-            flag2: false,
-            flag3: false,
-            flag4: false,
+            // flag2: true, 추정
+            // flag3: true, 가채점 확정
+            // flag4: true, 실채점 확정
+            text: "가채점 집계중",
           }}
           radioBox={false}
           infoBox={{

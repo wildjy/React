@@ -25,9 +25,9 @@ const GradeTable = () => {
     md:table-cell
     md:align-middle
     md:border-b`;
-  const firstTdAlign = `md:py-[1.2rem]`;
+  const firstTdAlign = `md:py-[1.45rem]`;
   const theadThHeight = `h-[5.4rem]`;
-  const tbodyTdHeight = `md:py-[0.78rem]`;
+  const tbodyTdHeight = `md:py-[0.54rem]`;
   const tbodyTdStyle = `
     text-xs md:text-base
     p-0 md:p-0
@@ -101,18 +101,18 @@ const GradeTable = () => {
       { value: "2", label: "직탐" },
     ],
     dropOption4: [
-      { value: "1", label: "사회문학" },
-      { value: "2", label: "생활과윤리" },
-      { value: "3", label: "정치와법" },
-      { value: "4", label: "윤리와사상" },
-      { value: "5", label: "경제" },
+      { value: "1_1", label: "사회문학" },
+      { value: "1_2", label: "생활과윤리" },
+      { value: "1_3", label: "정치와법" },
+      { value: "1_4", label: "윤리와사상" },
+      { value: "1_5", label: "경제" },
     ],
     dropOption5: [
-      { value: "1", label: "물리학 Ⅰ" },
-      { value: "2", label: "화학 Ⅰ" },
-      { value: "3", label: "생물학 Ⅰ" },
-      { value: "4", label: "지구과학 Ⅰ" },
-      { value: "5", label: "물리학 Ⅰ" },
+      { value: "2_1", label: "물리학 Ⅰ" },
+      { value: "2_2", label: "화학 Ⅰ" },
+      { value: "2_3", label: "생물학 Ⅰ" },
+      { value: "2_4", label: "지구과학 Ⅰ" },
+      { value: "2_5", label: "물리학 Ⅰ" },
     ],
     dropOption6: [
       { value: "1", label: "농업기초기술" },
@@ -289,19 +289,19 @@ const GradeTable = () => {
                     </div>
                   </div>
                   <div className={`table-cell w-1/3 md:w-full md:flex`}>
-                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2.5rem] md:h-auto`}>
-                      <div className='w-4/5 m-center'>
-                        <DropDown_Score options={dropOptions.dropOption4} options1={dropOptions.dropOption5} layer size="sm" width="w-full" align="left" label='사과탐 선택' />
+                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2rem] md:h-auto`}>
+                      <div className='w-4/5 m-center text-left'>
+                        <DropDown_Score options={dropOptions.dropOption4} options1={dropOptions.dropOption5} layer size="sm" align="left" label='사/과탐 선택' />
                       </div>
                     </div>
-                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2.5rem] md:h-auto`}>
+                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2rem] md:h-auto`}>
                       <div className='w-4/5 m-center'>
                         <DropDown options={dropOptions.dropOption6} layer min="min-w-[9rem]" size="sm" align="left" label='직탐 선택' />
                       </div>
                     </div>
                   </div>
                   <div className={`table-cell w-1/3 md:w-full md:flex`}>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
+                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2rem] md:h-auto">
                       <TextInput
                         type="text"
                         size="sm"
@@ -313,7 +313,7 @@ const GradeTable = () => {
                         onChange={(e) => handleInputChange(e, 0, "score5")}
                       />
                     </div>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
+                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2rem] md:h-auto">
                       <TextInput
                         type="text"
                         size="sm"

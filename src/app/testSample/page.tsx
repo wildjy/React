@@ -8,7 +8,7 @@ import Select from "../../sharedUI/Input/Select";
 import ButtonBox from "../../sharedUI/Button/ButtonBox";
 import Button from "../../sharedUI/Button/Button";
 import StepBars from "../../sharedUI/Stepbar/Step";
-import StepBar from "../../sharedUI/Stepbar/Stepbar";
+import StepBar from "../../sharedUI/Stepbar/StepBar";
 import StepBarClick from "../../sharedUI/Stepbar/StepBarClick";
 import Title from "../../sharedUI/Title/Title";
 import dynamic from 'next/dynamic';

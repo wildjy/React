@@ -1,13 +1,11 @@
 "use client"
-import React, { useState, ChangeEvent } from "react";
+import React, { useState } from "react";
 import { pageData  } from "../../sharedUI/PageData/PageData";
 import Container from "../../sharedUI/Layout/Container";
 import ContFull from "../../sharedUI/Layout/ContFull";
-import StepBar from "../../sharedUI/Stepbar/Stepbar";
+import StepBar from "../../sharedUI/StepBar/StepBar";
 import SubTop from "../../sharedUI/Layout/Sub_top";
-import CustomRadio from "../../sharedUI/Input/CustomRadio";
 import GradeTable from "../../sharedUI/Table/GradeInsertTable";
-import GradeTable2 from "../../sharedUI/Table/GradeInsertTable2";
 import ButtonBox from "../../sharedUI/Button/ButtonBox";
 import Link from "../../sharedUI/Button/Link";
 import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
@@ -47,13 +45,17 @@ const gradeInsertPage = () => {
             visible: true,
             text: "3.28 학력평가",
           }}
-          subDate="2024년 3월 28일 서울교육청"
+          subDate={{
+            visible: true,
+            text: "2024년 3월 28일 서울교육청"
+          }}
           flag={{
             visible: false,
             flag1: true,
-            flag2: false,
-            flag3: false,
-            flag4: false,
+            // flag2: true, 추정
+            // flag3: true, 가채점 확정
+            // flag4: true, 실채점 확정
+            text: "가채점 집계중",
           }}
           subText={{
             visible: true,
@@ -73,7 +75,6 @@ const gradeInsertPage = () => {
 
         <div>
           <GradeTable />
-          <GradeTable2 />
         </div>
 
         <ButtonBox>
