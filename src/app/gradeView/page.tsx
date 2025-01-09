@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { pageData  } from "../../sharedUI/PageData/PageData";
 import Container from "../../sharedUI/Layout/Container";
 import ContFull from "../../sharedUI/Layout/ContFull";
-import SubTop from "../../sharedUI/Layout/Sub_top";
+import { SubTop } from "../../sharedUI/Layout/SubTop";
 
 import StepBar from "../../sharedUI/StepBar/StepBar";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
@@ -28,9 +28,7 @@ const gradeInsertPage = () => {
   return (
     <>
       <Container>
-        <div className="m-center w-full md:w-[41.875rem]">
-          <StepBar step={steps} currentStep={1} />
-        </div>
+        <StepBar step={steps} currentStep={1} />
 
         <ContFull addClass="mt-9 md:mt-11">
           <SwiperSlider id={1} slides={slides} />

@@ -7,15 +7,10 @@ interface subTopProps {
   addClass?: string;
 }
 
-const SubTop: React.FC<subTopProps> = ({ children, addClass }) => {
-
+export const SubTop: React.FC<subTopProps> = ({ children, addClass }) => {
   return (
     <div className={`${cn(`mt-8 md:mt-10 relative`, addClass)}`}>
-      <div className="flex flex-wrap justify-between ">
-        { children }
-      </div>
+      <div className="flex flex-wrap justify-between ">{children}</div>
     </div>
   );
 };
-
-export default SubTop;

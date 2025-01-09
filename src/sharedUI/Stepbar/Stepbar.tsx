@@ -78,7 +78,7 @@ const StepBar: FC<StepBarProps> = ({
   onStepClick,
 }) => {
   return (
-    <>
+    <div className="m-center w-full md:w-[41.875rem]">
       <div className="flex justify-end md:justify-between items-top gap-3 md:gap-0 relative">
         {
           step.map((item, index) => {
@@ -114,7 +114,7 @@ const StepBar: FC<StepBarProps> = ({
           })
         }
       </div>
-    </>
+    </div>
   );
 };
 
