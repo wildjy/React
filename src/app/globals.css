@@ -114,7 +114,8 @@ table td {
   @apply flex md:table;
 }
 
-.tableType1 th, td {
+.tableType1 th,
+td {
   @apply border-b;
 }
 
@@ -125,7 +126,8 @@ table td {
 
 .tableType1 thead tr th {
   @apply w-full flex flex-wrap items-center justify-center
-  border-b-0 last:border-b border-r-0
+  border-t-0 border-b
+  last:border-b border-r-0
   md:w-auto md:table-cell
   md:border-b;
 }
@@ -139,13 +141,11 @@ table td {
 }
 
 .tableType1 tbody tr td {
-  @apply w-full block items-center
-  border-b-0 border-r-0 last:border-b
+  @apply w-full block items-center border-t-0 border-b
+  border-r-0 last:border-b
   md:w-auto md:table-cell
   md:border-b;
 }
-
-
 
 caption {
   @apply hidden;
