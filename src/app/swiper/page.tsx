@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useEffect, useRef, useState, ChangeEvent } from 'react';
-import Title from "../../sharedUI/Title/Title";
+import Title from "../../sharedUI/Title/TitleDemo";
 import SwiperComponent from "../../sharedUI/Swiper/Swiper";
 
 const SwiperPage: React.FC = () => {

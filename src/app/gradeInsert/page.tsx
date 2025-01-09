@@ -1,23 +1,48 @@
 "use client"
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
+import dynamic from "next/dynamic";
 import { pageData  } from "../../sharedUI/PageData/PageData";
 import Container from "../../sharedUI/Layout/Container";
 import ContFull from "../../sharedUI/Layout/ContFull";
-import StepBar from "../../sharedUI/StepBar/StepBar";
 import SubTop from "../../sharedUI/Layout/Sub_top";
+
+import StepBar from "../../sharedUI/StepBar/StepBar";
+const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
+  ssr: false
+});
+
+import Title from "../../sharedUI/Title/Title";
+import SubTitle from "../../sharedUI/Title/SubTitle";
+// import GradeFlag from "../../sharedUI/Flag/GradeFlag";
+import CustomRadio from "../../sharedUI/Input/CustomRadio";
+// import InfoBox from "../../sharedUI/Info/InfoBox";
+
 import GradeTable from "../../sharedUI/Table/GradeInsertTable";
 import ButtonBox from "../../sharedUI/Button/ButtonBox";
 import Link from "../../sharedUI/Button/Link";
 import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
-import dynamic from "next/dynamic";
-const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
-  ssr: false
-});
 
 const gradeInsertPage = () => {
 
   const { steps, slides } = pageData;
 
+  // radio
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [radioOptions, setRadioOptions] = useState<{ [key: string]: string }>({
+    type: "type_1",
+  });
+
+  const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setRadioOptions((prevOptions) => {
+      return {
+        ...prevOptions,
+        [name]: value,
+      };
+    });
+  };
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
     popup1: false,
   });
@@ -33,45 +58,54 @@ const gradeInsertPage = () => {
     <>
       <Container>
         <div className="m-center w-full md:w-[41.875rem]">
-          <StepBar step={steps} currentStep={1} />
+          <StepBar step={steps} currentStep={0} />
         </div>
 
         <ContFull addClass="mt-9 md:mt-11">
           <SwiperSlider id={1} slides={slides} />
         </ContFull>
 
-        <SubTop
-          subTitle={{
-            visible: true,
-            text: "3.28 학력평가",
-          }}
-          subDate={{
-            visible: true,
-            text: "2024년 3월 28일 서울교육청"
-          }}
-          flag={{
-            visible: false,
-            flag1: true,
-            // flag2: true, 추정
-            // flag3: true, 가채점 확정
-            // flag4: true, 실채점 확정
-            text: "가채점 집계중",
-          }}
-          subText={{
-            visible: true,
-            text: "※ 표준점수를 입력하시면 백분위, 등급은 자동 계산되어 보여집니다."
-          }}
-          radioBox
-          infoBox={{
-            visible: false,
-            infoDate: "3월 29일 오전 11시, 가채점 성적 확정 예정",
-            infoText: (
-              <>
-              현재 표준점수/백분위/등급은 <span className="text-blue-800">전년도 기준 점수</span>입니다.
-              </>
-            ),
-          }}
-        />
+        <SubTop>
+          <div>
+            <Title tag="h3" title="3.28 학력평가" sub="2024년 3월 28일 서울교육청" />
+          </div>
+
+          <div className="text-right">
+            {/* <GradeFlag type="flag1" label="실채점 집계중" /> */}
+
+            <CustomRadio>
+              <CustomRadio.Radio
+                type="radio"
+                label="원점수"
+                name="type"
+                size="sm"
+                value="type_1"
+                checked={radioOptions.type === "type_1"}
+                onChange={handleRadioChange}
+              />
+              <CustomRadio.Radio
+                type="radio"
+                label="표준점수"
+                name="type"
+                size="sm"
+                value="type_2"
+                checked={radioOptions.type === "type_2"}
+                onChange={handleRadioChange}
+              />
+            </CustomRadio>
+          </div>
+        </SubTop>
+
+        <SubTitle tag="h4">
+          ※ 표준점수를 입력하시면 백분위, 등급은 자동 계산되어 보여집니다.
+        </SubTitle>
+
+        {/* <InfoBox>
+          <p className="text-xs md:text-base text-gray-400">
+            patchInfoBox.infoDate
+          </p>
+          <p className="text-s md:text-lg">patchInfoBox.infoText</p>
+        </InfoBox> */}
 
         <div>
           <GradeTable />

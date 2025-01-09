@@ -1,17 +1,25 @@
 "use client"
 import React, { } from "react";
+import dynamic from "next/dynamic";
 import { pageData  } from "../../sharedUI/PageData/PageData";
 import Container from "../../sharedUI/Layout/Container";
 import ContFull from "../../sharedUI/Layout/ContFull";
-import StepBar from "../../sharedUI/StepBar/StepBar";
 import SubTop from "../../sharedUI/Layout/Sub_top";
-import Table from "../../sharedUI/Table/Table";
-import ButtonBox from "../../sharedUI/Button/ButtonBox";
-import Link from "../../sharedUI/Button/Link";
-import dynamic from "next/dynamic";
+
+import StepBar from "../../sharedUI/StepBar/StepBar";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });
+
+import Title from "../../sharedUI/Title/Title";
+// import SubTitle from "../../sharedUI/Title/SubTitle";
+import GradeFlag from "../../sharedUI/Flag/GradeFlag";
+// import CustomRadio from "../../sharedUI/Input/CustomRadio";
+import InfoBox from "../../sharedUI/Info/InfoBox";
+
+import Table from "../../sharedUI/Table/Table";
+import ButtonBox from "../../sharedUI/Button/ButtonBox";
+import Link from "../../sharedUI/Button/Link";
 
 const gradeInsertPage = () => {
 
@@ -28,33 +36,28 @@ const gradeInsertPage = () => {
           <SwiperSlider id={1} slides={slides} />
         </ContFull>
 
-        <SubTop
-          subTitle={{
-            visible: true,
-            text: "3.28 학력평가",
-          }}
-          subDate={{
-            visible: false,
-            text: "2024년 3월 28일 서울교육청"
-          }}
-          subText={{
-            visible: false,
-            text: "※ 표준점수를 입력하시면 백분위, 등급은 자동 계산되어 보여집니다."
-          }}
-          flag={{
-            visible: true,
-            flag1: true,
-            // flag2: true, 추정
-            // flag3: true, 가채점 확정
-            // flag4: true, 실채점 확정
-            text: "가채점 집계중",
-          }}
-          radioBox={false}
-          infoBox={{
-            visible: true,
-            infoDate: "0월 00일 오전/오후 00시, 가채점 성적 확정 예정",
-          }}
-        />
+        <SubTop>
+          <div>
+            <Title tag="h3" title="3.28 학력평가" sub="2024년 3월 28일 서울교육청" />
+          </div>
+
+          <div className="text-right">
+            <GradeFlag type="flag1" label="실채점 집계중" />
+          </div>
+        </SubTop>
+
+        {/* <SubTitle tag="h4">
+          ※ 표준점수를 입력하시면 백분위, 등급은 자동 계산되어 보여집니다.
+        </SubTitle> */}
+
+        <InfoBox>
+          <p className="text-2xs sm:text-xs md:text-base text-gray-400">
+            3월 29일 오전 11시, 가채점 성적 확정 예정
+          </p>
+          <p className="text-xs sm:text-s md:text-lg">
+            현재 표준점수/백분위/등급은 <span className="text-blue-800">전년도 기준 점수</span>입니다.
+          </p>
+        </InfoBox>
 
         <div className="">
           <Table typeClass="tableType1 mt-5" >

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useState, ChangeEvent } from "react";
-import Title from "../../sharedUI/Title/Title";
+import Title from "../../sharedUI/Title/TitleDemo";
 import TextInput from "../../sharedUI/Input/TextInput";
 import CheckBox from "../../sharedUI/Input/CheckBox";
 import Radio from "../../sharedUI/Input/Radio";

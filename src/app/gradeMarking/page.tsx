@@ -1,19 +1,23 @@
 "use client"
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { pageData  } from "../../sharedUI/PageData/PageData";
 import Container from "../../sharedUI/Layout/Container";
 import ContFull from "../../sharedUI/Layout/ContFull";
-import ContHalf from "../../sharedUI/Layout/ContHalf";
-import StepBar from "../../sharedUI/StepBar/StepBar";
+import ContSlot from "../../sharedUI/Layout/ContSlot";
 import SubTop from "../../sharedUI/Layout/Sub_top";
+
+import StepBar from "../../sharedUI/StepBar/StepBar";
+const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
+  ssr: false
+});
+
+import Title from "../../sharedUI/Title/Title";
+
 import GradeTable2 from "../../sharedUI/Table/GradeInsertTable2";
 import ButtonBox from "../../sharedUI/Button/ButtonBox";
 import Link from "../../sharedUI/Button/Link";
 import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
-import dynamic from "next/dynamic";
-const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
-  ssr: false
-});
 
 const gradeMarkingPage = () => {
 
@@ -41,16 +45,10 @@ const gradeMarkingPage = () => {
           <SwiperSlider id={1} slides={slides} />
         </ContFull>
 
-        <SubTop
-          subTitle={{
-            visible: true,
-            text: "채점하기",
-          }}
-          subText={{
-            visible: true,
-            text: "채점할 응시영역을 선택해주세요."
-          }}
-        />
+
+        <SubTop>
+          <Title tag="h3" title="3.28 학력평가" sub="2024년 3월 28일 서울교육청" />
+        </SubTop>
 
         <div>
           <GradeTable2 />
@@ -61,36 +59,14 @@ const gradeMarkingPage = () => {
           <Link href="#/" endIcon={["icon_btn_arrow.svg", "w-[0.45rem]"]}>성적입력</Link>
         </ButtonBox>
 
-        <ContHalf addClass="bg-red-600" gap="gap-10 md:gap-7">
-          <div>
-            <SubTop
-              subTitle={{
-                visible: true,
-                text: "문제정답 다운로드 ",
-              }}
-            />
+        <ContSlot addClass="grid-cols-1 md:grid-cols-2 gap-10 md:gap-7">
+          <div className="bg-white">
+            <Title tag="h3" title="채점하기" sub="채점할 응시영역을 선택하세요." />
           </div>
           <div>
-            333
+            22
           </div>
-        </ContHalf>
-
-        <div className="flex flex-wrap md:flex-nowrap gap-10 md:gap-7">
-          <div className="grow w-full bg-gray-100">
-            left
-          </div>
-          <div className="grow w-full bg-gray-100">
-            right
-          </div>
-        </div>
-
-        <SubTop
-          subTitle={{
-            visible: true,
-            text: "문제정답 다운로드 ",
-          }}
-        />
-
+        </ContSlot>
 
         <button type="button"
           onClick={() => OpenEventPopup("popup1")}
