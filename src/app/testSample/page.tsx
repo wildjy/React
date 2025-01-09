@@ -7,10 +7,10 @@ import Radio from "../../sharedUI/Input/Radio";
 import Select from "../../sharedUI/Input/Select";
 import ButtonBox from "../../sharedUI/Button/ButtonBox";
 import Button from "../../sharedUI/Button/Button";
-import StepBars from "../../sharedUI/Stepbar/Step";
-import StepBar from "../../sharedUI/Stepbar/StepBar";
-import StepBarClick from "../../sharedUI/Stepbar/StepBarClick";
-import Title from "../../sharedUI/Title/Title";
+import StepBars from "../../sharedUI/StepBar/Step";
+import StepBar from "../../sharedUI/StepBar/StepBar";
+import StepBarClick from "../../sharedUI/StepBar/StepBarClick";
+import Title from "../../sharedUI/Title/TitleDemo";
 import dynamic from 'next/dynamic';
 
 const SwiperSlider = dynamic(() => import('../../sharedUI/Swiper/Swiper'), {

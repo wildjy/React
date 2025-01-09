@@ -547,6 +547,87 @@ const handleRemoveItem = (index: number) => {
           )}
         </div>
 
+
+        {/* cloneElement */}
+        <div className="mt-5 p-6 border border-gray-400">
+          <p className="text-lg"><b>동적 태그 변경</b></p>
+          <div className="mt-3">
+            <p className="mb-3"><b>tag?: keyof JSX.IntrinsicElements;</b></p>
+          </div>
+
+          <div>
+            <b className="block text-gray-900">1. 기본문법</b>
+            <pre>
+              {`
+              interface TitleProps {
+                tag?: keyof JSX.IntrinsicElements;
+                children?: React.ReactNode;
+                addClass?: string;
+              }
+
+              const SubTitle: React.FC<TitleProps> = ({ tag: Tag = "p", children, addClass }) => {
+                return (
+                  <Tag className={"{cn('mt-4 text-3xs md:text-s text-gray-400', addClass)}}>
+                    children
+                  </Tag>
+                )
+              }
+
+              Use
+              <SubTitle tag="h3">
+                2024년 3월 28일 서울교육청
+              </SubTitle>
+              `}
+            </pre>
+          </div>
+
+          <div>
+            <b className="block text-gray-900">2. slots 기반 layout : React.Children.toArray(children)</b>
+            <pre>
+              {`
+
+              const ContSlot: React.FC<ContHalfProps> = ({ children, addClass }) => {
+                const slots = React.Children.toArray(children);
+
+                return (
+                  <>
+                    <div className={{cn('grid grid-cols-1 md:grid-cols-2', addClass)}}>
+                      {
+                        slots.length > 0 ? (
+                          slots.map((slot, index) => (slot && (
+                            <div key={index} className={'bg-gray-400'}>
+                              {slot}
+                            </div>
+                            )
+                          ))
+                        ) : (
+                          <div>no data</div>
+                        )
+                      }
+                    </div>
+                  </>
+                )
+              }
+
+              Use
+
+              <ContSlot addClass="grid-cols-1 md:grid-cols-2 gap-10 md:gap-7">
+                <div>
+                  11
+                </div>
+                <div>
+                  22
+                </div>
+              </ContSlot>
+              `}
+            </pre>
+          </div>
+
+          <div className="mt-4 p-6 border border-gray-400">
+            <p><b>Sample</b></p>
+          </div>
+        </div>
+
         {/* 조건문 랜더링 */}
         <Conditional />
 
