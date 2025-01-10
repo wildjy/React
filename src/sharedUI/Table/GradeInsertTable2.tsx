@@ -13,10 +13,7 @@ export const GradeTable2 = () => {
     p-0 md:p-0
     w-full h-[2.7rem]
     flex items-center justify-center text-center
-    first:border-t-gray-1000
-    md:border-t-gray-1000
-    border-0
-    border-t first:border-t-0 last:border-b
+    border-b-0 border-t-[#d9d9d9] last:border-b
     first:bg-[#F4F5F6]
     bg-white
     md:py-5
@@ -25,9 +22,9 @@ export const GradeTable2 = () => {
     md:table-cell
     md:align-middle
     md:border-b`;
-  const firstTdAlign = `md:py-[1.45rem]`;
+  const firstTdAlign = `md:py-[1.47rem]`;
   const theadThHeight = `h-[5.4rem]`;
-  const tbodyTdHeight = `md:py-[0.54rem]`;
+  const tbodyTdHeight = `md:py-[0.52rem]`;
   const tbodyTdStyle = `
     text-xs md:text-base
     p-0 md:p-0

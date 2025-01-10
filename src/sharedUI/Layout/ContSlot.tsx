@@ -17,7 +17,7 @@ export const ContSlot: React.FC<ContHalfProps> = ({ children, addClass }) => {
         {
           slots.length > 0 ? (
             slots.map((slot, index) => (slot && (
-              <div key={index} className={`bg-gray-400`}>
+              <div key={index}>
                 {slot}
               </div>
               )

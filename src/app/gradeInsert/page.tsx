@@ -18,6 +18,7 @@ import CustomRadio from "../../sharedUI/Input/CustomRadio";
 // import { InfoBox } from "../../sharedUI/Info/InfoBox";
 
 import { GradeTable } from "../../sharedUI/Table/GradeInsertTable";
+import { GradeTable1 } from "../../sharedUI/Table/GradeInsertTable1";
 import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
 import { ButtonLink } from "../../sharedUI/Button/Link";
 import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
@@ -107,6 +108,7 @@ const gradeInsertPage = () => {
 
         <div>
           <GradeTable />
+          <GradeTable1 />
         </div>
 
         <ButtonBox>
