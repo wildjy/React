@@ -2,7 +2,7 @@
 import { cn } from "../common/cn";
 import { VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes } from "react";
-import ButtonVariants from "./ButtonVariants";
+import { ButtonVariants } from "./ButtonVariants";
 
 type sizeType = "sm" | "md" | "lg";
 type modeType = "primary" | "secondary" | "tertiary";
@@ -16,7 +16,7 @@ interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "typ
   disabled?: boolean;
 };
 
-const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<ButtonProps> = ({
   children,
   type,
   size,
@@ -58,5 +58,3 @@ const Button: React.FC<ButtonProps> = ({
     </>
   );
 };
-
-export default Button;

@@ -2,9 +2,9 @@
 import React from "react";
 import { useState, ChangeEvent } from "react";
 import Title from "../../sharedUI/Title/TitleDemo";
-import TextInput from "../../sharedUI/Input/TextInput";
-import CheckBox from "../../sharedUI/Input/CheckBox";
-import Radio from "../../sharedUI/Input/Radio";
+import { TextInput } from "../../sharedUI/Input/TextInput";
+import { CheckBox } from "../../sharedUI/Input/CheckBox";
+import { Radio } from "../../sharedUI/Input/Radio";
 import Select from "../../sharedUI/Input/Select";
 
 const HighSchoolPage: React.FC = () => {

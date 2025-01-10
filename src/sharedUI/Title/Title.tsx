@@ -9,7 +9,7 @@ interface TitleProps {
   sub?: string;
 }
 
-const Title: React.FC<TitleProps> = ({ tag: Tag = "p", title, sub, addClass }) => {
+export const Title: React.FC<TitleProps> = ({ tag: Tag = "p", title, sub, addClass }) => {
   return (
     <Tag className={`${cn(``, addClass)}`}>
       <b className="md:text-2xl">{ title }</b>
@@ -20,5 +20,3 @@ const Title: React.FC<TitleProps> = ({ tag: Tag = "p", title, sub, addClass }) =
     </Tag>
   )
 }
-
-export default Title

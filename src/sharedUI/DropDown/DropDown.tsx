@@ -122,7 +122,7 @@ VariantProps<typeof DropDownInnerBoxVariants> {
   onClose: () => void;
 }
 
-const DropDown: React.FC<DropDownProps> = ({
+export const DropDown: React.FC<DropDownProps> = ({
   options = [],
   type = "base",
   size = "md",
@@ -275,5 +275,3 @@ const DropOption: React.FC<DropOptionProps> = ({
     </>
   )
 }
-
-export default DropDown;

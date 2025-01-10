@@ -24,7 +24,7 @@ interface DropDownMoreType extends HTMLAttributes<HTMLElement>, VariantProps<typ
   addClass?: string;
 }
 
-const DropDownMore: React.FC<DropDownMoreType> = ({ children, icon, addClass, ...props }) => {
+export const DropDownMore: React.FC<DropDownMoreType> = ({ children, icon, addClass, ...props }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement | null>(null);
 
@@ -80,5 +80,3 @@ const DropDownMore: React.FC<DropDownMoreType> = ({ children, icon, addClass, ..
     </>
   )
 }
-
-export default DropDownMore;

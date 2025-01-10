@@ -72,7 +72,7 @@ interface StepBarProps extends HTMLAttributes<HTMLDivElement>{
   value?: string;
 };
 
-const StepBar: FC<StepBarProps> = ({
+export const StepBar: FC<StepBarProps> = ({
   step,
   currentStep = 0,
   onStepClick,
@@ -117,5 +117,3 @@ const StepBar: FC<StepBarProps> = ({
     </div>
   );
 };
-
-export default StepBar;

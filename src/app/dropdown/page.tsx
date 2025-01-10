@@ -1,10 +1,10 @@
 
 "use client";
 import React, { useState, ChangeEvent } from "react";
-import DropDown_Score from "../../sharedUI/DropDown/DropDown_Score";
-import DropDown from "../../sharedUI/DropDown/DropDown";
-import DropDownMore from "../../sharedUI/DropDown/DropDownMore";
-import CheckBox from "../../sharedUI/Input/CheckBox";
+import { DropDown_Score } from "../../sharedUI/DropDown/DropDown_Score";
+import { DropDown } from "../../sharedUI/DropDown/DropDown";
+import { DropDownMore } from "../../sharedUI/DropDown/DropDownMore";
+import { CheckBox } from "../../sharedUI/Input/CheckBox";
 
 
 const DropDownPage = () => {

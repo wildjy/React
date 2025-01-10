@@ -1,13 +1,13 @@
 "use client";
 import React, {} from 'react';
 import { cn } from "../common/cn";
- 
+
 interface ContHalfProps {
   children?: React.ReactNode;
   addClass?: string;
 }
 
-const ContSlot: React.FC<ContHalfProps> = ({ children, addClass }) => {
+export const ContSlot: React.FC<ContHalfProps> = ({ children, addClass }) => {
   const slots = React.Children.toArray(children);
   console.log(slots)
 
@@ -30,5 +30,3 @@ const ContSlot: React.FC<ContHalfProps> = ({ children, addClass }) => {
     </>
   )
 }
-
-export default ContSlot;

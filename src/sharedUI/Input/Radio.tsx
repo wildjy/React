@@ -50,7 +50,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">
   icon?: React.ReactElement;
 }
 
-const Radio: FC<InputProps> = ({
+export const Radio: FC<InputProps> = ({
   size,
   mode = "base",
   name,
@@ -96,5 +96,3 @@ const Radio: FC<InputProps> = ({
     </label>
   );
 };
-
-export default Radio;

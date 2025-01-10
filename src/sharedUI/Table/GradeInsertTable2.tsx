@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, ChangeEvent } from 'react';
 import { cn } from "../common/cn";
-import TextInput from "../Input/TextInput";
-import CheckBox from "../Input/CheckBox";
-import DropDown_Score from '../DropDown/DropDown_Score';
-import DropDown from '../DropDown/DropDown';
+import { TextInput } from "../Input/TextInput";
+import { CheckBox } from "../Input/CheckBox";
+import { DropDown_Score } from '../DropDown/DropDown_Score';
+import { DropDown } from '../DropDown/DropDown';
 
-const GradeTable2 = () => {
+export const GradeTable2 = () => {
 
   const theadThStyle = `
     text-xs md:text-base
@@ -266,5 +266,3 @@ const GradeTable2 = () => {
     </>
   )
 }
-
-export default GradeTable2;

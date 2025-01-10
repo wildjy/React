@@ -1,7 +1,7 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { useState, useRef, useEffect, createContext, useContext,  HTMLAttributes } from 'react';
-import ScoreOption from './ScoreOption';
+import { ScoreOption } from './ScoreOption';
 
 type typeMode = "base" | "shadow" | "ghost";
 type alignMode = "left" | "center";
@@ -120,7 +120,7 @@ VariantProps<typeof DropDownInnerBoxVariants> {
   onClose: () => void;
 }
 
-const DropDown_Score: React.FC<DropDownProps> = ({
+export const DropDown_Score: React.FC<DropDownProps> = ({
   options = [], options1 = [],
   type = "base",
   size = "md",
@@ -262,5 +262,3 @@ const DropOption: React.FC<DropOptionProps> = ({
     </>
   )
 }
-
-export default DropDown_Score;

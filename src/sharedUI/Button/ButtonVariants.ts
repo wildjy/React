@@ -1,7 +1,7 @@
 
 import { cva } from "class-variance-authority";
 
-const ButtonVariants = cva(
+export const ButtonVariants = cva(
   'w-[calc(100%/2-0.5rem/2)] md:w-auto text-xs md:text-base grow md:grow-0 inline-flex items-center justify-center leading-none border border-transparent rounded-lg',
   {
     variants: {
@@ -28,5 +28,3 @@ const ButtonVariants = cva(
     },
   }
 );
-
-export default ButtonVariants;

@@ -6,7 +6,7 @@ interface ContainerProps {
   addClass?: string;
 }
 
-const Container: React.FC<ContainerProps> = ({ children, addClass }) => {
+export const Container: React.FC<ContainerProps> = ({ children, addClass }) => {
   const className = 'px-6 py-6 max-w-full m-center md:px-7 md:max-w-full lg:w-tablet xl:w-laptop xl:px-12 xl:py-9 bg-white overflow-hidden'
   return (
     <>
@@ -16,5 +16,3 @@ const Container: React.FC<ContainerProps> = ({ children, addClass }) => {
     </>
   )
 }
-
-export default Container;

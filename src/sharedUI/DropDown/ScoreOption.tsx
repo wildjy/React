@@ -11,7 +11,7 @@ interface ScoreOptionProps {
   onChangeSelect: (option: { value: string; label: string }) => void;
 }
 
-const ScoreOption: React.FC<ScoreOptionProps> = ({
+export const ScoreOption: React.FC<ScoreOptionProps> = ({
   title,
   options,
   align,
@@ -42,5 +42,3 @@ const ScoreOption: React.FC<ScoreOptionProps> = ({
     </ul>
   </div>
 );
-
-export default ScoreOption;

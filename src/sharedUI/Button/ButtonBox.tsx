@@ -21,7 +21,7 @@ interface ButtonBoxProps extends HTMLAttributes<HTMLDivElement>, VariantProps<ty
   addClass?: string;
 }
 
-const ButtonBox: React.FC<ButtonBoxProps> = ({ children, align, addClass }) => {
+export const ButtonBox: React.FC<ButtonBoxProps> = ({ children, align, addClass }) => {
   const className = ButtonBoxVariants({
     align: align as "left" |  "center" |"right" | undefined,
   })
@@ -34,5 +34,3 @@ const ButtonBox: React.FC<ButtonBoxProps> = ({ children, align, addClass }) => {
     </>
   )
 }
-
-export default ButtonBox;

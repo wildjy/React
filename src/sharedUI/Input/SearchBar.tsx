@@ -1,7 +1,7 @@
+/* eslint-disable react/display-name */
 "use client";
-import React, { useState, useRef, useEffect, forwardRef, ChangeEvent } from 'react';
+import React, { useState, forwardRef, ChangeEvent } from 'react';
 import { cn } from "../common/cn";
-import { cva, VariantProps } from "class-variance-authority";
 
 interface SearchBarProps {
   addClass?: string;
@@ -17,7 +17,7 @@ interface SearchBarProps {
   onSearch: (searchValue: string) => void;
 }
 
-const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({
+export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({
     focus,
     addClass,
     addId = "",
@@ -85,5 +85,3 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({
     )
   }
 )
-
-export default SearchBar;

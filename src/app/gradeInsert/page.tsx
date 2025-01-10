@@ -2,24 +2,24 @@
 import React, { useState, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import { pageData  } from "../../sharedUI/PageData/PageData";
-import Container from "../../sharedUI/Layout/Container";
-import ContFull from "../../sharedUI/Layout/ContFull";
+import { Container } from "../../sharedUI/Layout/Container";
+import { ContFull  } from "../../sharedUI/Layout/ContFull";
 import { SubTop } from "../../sharedUI/Layout/SubTop";
 
-import StepBar from "../../sharedUI/StepBar/StepBar";
+import { StepBar } from "../../sharedUI/StepBar/StepBar";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });
 
-import Title from "../../sharedUI/Title/Title";
-import SubTitle from "../../sharedUI/Title/SubTitle";
-// import GradeFlag from "../../sharedUI/Flag/GradeFlag";
+import { Title } from "../../sharedUI/Title/Title";
+import { SubTitle } from "../../sharedUI/Title/SubTitle";
+// import { GradeFlag } from "../../sharedUI/Flag/GradeFlag";
 import CustomRadio from "../../sharedUI/Input/CustomRadio";
-// import InfoBox from "../../sharedUI/Info/InfoBox";
+// import { InfoBox } from "../../sharedUI/Info/InfoBox";
 
-import GradeTable from "../../sharedUI/Table/GradeInsertTable";
-import ButtonBox from "../../sharedUI/Button/ButtonBox";
-import Link from "../../sharedUI/Button/Link";
+import { GradeTable } from "../../sharedUI/Table/GradeInsertTable";
+import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
+import { ButtonLink } from "../../sharedUI/Button/Link";
 import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 
 const gradeInsertPage = () => {
@@ -111,10 +111,10 @@ const gradeInsertPage = () => {
 
         <ButtonBox>
           {/*
-          <Link href="#/" mode="tertiary" >수정</Link>
-          <Link href="#/" endIcon={["icon_btn_arrow.svg", "w-[0.45rem]"]}>모의지원</Link>
+          <ButtonLink href="#/" mode="tertiary" >수정</ButtonLink>
+          <ButtonLink href="#/" endIcon={["icon_btn_arrow.svg", "w-[0.45rem]"]}>모의지원</ButtonLink>
           */}
-          <Link href="#/">저장</Link>
+          <ButtonLink href="#/">저장</ButtonLink>
         </ButtonBox>
 
 

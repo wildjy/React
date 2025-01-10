@@ -4,8 +4,8 @@ import { cva } from "class-variance-authority";
 import React from "react";
 import { useRef, useState, ChangeEvent } from 'react';
 import Table from "../../sharedUI/Table/Table";
-import TextInput from "../../sharedUI/Input/TextInput";
-import CheckBox from "../../sharedUI/Input/CheckBox";
+import { TextInput } from "../../sharedUI/Input/TextInput";
+import { CheckBox } from "../../sharedUI/Input/CheckBox";
 
   const theadThStyle = `
     p-0
@@ -20,7 +20,7 @@ import CheckBox from "../../sharedUI/Input/CheckBox";
     md:py-5
     md:bg-[#F4F5F6]
     md:w-auto md:h-auto
-    md:table-cell 
+    md:table-cell
     md:border-b`;
   const tbodyTdStyle = `
     p-0 md:p-0

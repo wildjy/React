@@ -10,12 +10,10 @@ interface TitleProps {
   sub?: string;
 }
 
-const SubTitle: React.FC<TitleProps> = ({ tag: Tag = "p", children, addClass }) => {
+export const SubTitle: React.FC<TitleProps> = ({ tag: Tag = "p", children, addClass }) => {
   return (
     <Tag className={`${cn(`mt-4 text-3xs md:text-s text-gray-400`, addClass)}`}>
       {children}
     </Tag>
   )
 }
-
-export default SubTitle

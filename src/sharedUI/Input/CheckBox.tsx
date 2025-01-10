@@ -86,7 +86,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">
   icon?: React.ReactElement;
 }
 
-const CheckBox: FC<InputProps> = ({
+export const CheckBox: FC<InputProps> = ({
   size,
   mode = "base",
   color,
@@ -144,5 +144,3 @@ const CheckBox: FC<InputProps> = ({
     </label>
   );
 };
-
-export default CheckBox;

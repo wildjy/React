@@ -10,7 +10,7 @@ interface GradeFlagProps {
   type?: string;
 }
 
-const GradeFlag: React.FC<GradeFlagProps>= ({ tag: Flag = "span", type, label, addClass }) => {
+export const GradeFlag: React.FC<GradeFlagProps>= ({ tag: Flag = "span", type, label, addClass }) => {
   const flagItems = [
     {
       flagType: type === "flag1",
@@ -49,5 +49,3 @@ const GradeFlag: React.FC<GradeFlagProps>= ({ tag: Flag = "span", type, label, a
     </>
   )
 }
-
-export default GradeFlag;

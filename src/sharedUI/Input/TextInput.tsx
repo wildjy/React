@@ -46,7 +46,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">
   icon?: React.ReactElement;
 }
 
-const TextInput : FC<InputProps> = ({
+export const TextInput : FC<InputProps> = ({
   size,
   mode = "base",
   align,
@@ -108,5 +108,3 @@ const TextInput : FC<InputProps> = ({
     </div>
   );
 };
-
-export default TextInput;

@@ -1,24 +1,25 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import { pageData  } from "../../sharedUI/PageData/PageData";
-import Container from "../../sharedUI/Layout/Container";
-import ContFull from "../../sharedUI/Layout/ContFull";
-import ContSlot from "../../sharedUI/Layout/ContSlot";
+import { Container } from "../../sharedUI/Layout/Container";
+import { ContFull  } from "../../sharedUI/Layout/ContFull";
+import { ContSlot } from "../../sharedUI/Layout/ContSlot";
 import { SubTop } from "../../sharedUI/Layout/SubTop";
 
 import Accordion from "../../sharedUI/Accordion/Accordion";
 
-import StepBar from "../../sharedUI/StepBar/StepBar";
+import { StepBar } from "../../sharedUI/StepBar/StepBar";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });
 
-import Title from "../../sharedUI/Title/Title";
+import { Title } from "../../sharedUI/Title/Title";
 
-import GradeTable2 from "../../sharedUI/Table/GradeInsertTable2";
-import ButtonBox from "../../sharedUI/Button/ButtonBox";
-import Link from "../../sharedUI/Button/Link";
+import { GradeTable2 } from "../../sharedUI/Table/GradeInsertTable2";
+import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
+import { ButtonLink } from "../../sharedUI/Button/Link";
 import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 
 const gradeMarkingPage = () => {
@@ -174,8 +175,8 @@ const gradeMarkingPage = () => {
         </div>
 
         <ButtonBox>
-          <Link href="#/" mode="tertiary" >영역수정</Link>
-          <Link href="#/" endIcon={["icon_btn_arrow.svg", "w-[0.45rem]"]}>성적입력</Link>
+          <ButtonLink href="#/" mode="tertiary" >영역수정</ButtonLink>
+          <ButtonLink href="#/" endIcon={["icon_btn_arrow.svg", "w-[0.45rem]"]}>성적입력</ButtonLink>
         </ButtonBox>
 
         <ContSlot addClass="grid-cols-1 md:grid-cols-2 gap-10 md:gap-7">

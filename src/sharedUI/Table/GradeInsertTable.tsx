@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, ChangeEvent } from 'react';
 import { cn } from "../common/cn";
-import TextInput from "../../sharedUI/Input/TextInput";
-import CheckBox from "../../sharedUI/Input/CheckBox";
-import DropDown_Score from '../../sharedUI/DropDown/DropDown_Score';
-import DropDown from '../../sharedUI/DropDown/DropDown';
+import { TextInput } from "../../sharedUI/Input/TextInput";
+import { CheckBox } from "../../sharedUI/Input/CheckBox";
+import { DropDown_Score } from '../../sharedUI/DropDown/DropDown_Score';
+import { DropDown } from '../../sharedUI/DropDown/DropDown';
 
-const GradeTable = () => {
+export const GradeTable = () => {
 
   // const theadThStyle = `
   //   text-xs md:text-base
@@ -368,5 +368,3 @@ const GradeTable = () => {
     </>
   )
 }
-
-export default GradeTable;
