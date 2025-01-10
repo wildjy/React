@@ -62,10 +62,11 @@ export const ButtonLink: React.FC<LinkButtonProps> = ({
   if (Tag === 'a') {
     return (
       <Tag
-        href={href || '#'}
+        href={(!disabled && href) || '#/'}
         target={blank ? '_blank' : undefined}
         rel={blank ? 'noopener noreferrer' : undefined}
         className={buttonStyle}
+        onClick={(e) => disabled && e.preventDefault()}
         {...props}
       >
         {buttonIcon()}

@@ -1,8 +1,7 @@
-
-import { cva } from "class-variance-authority";
+import { cva } from 'class-variance-authority';
 
 export const ButtonVariants = cva(
-  'w-[calc(100%/2-0.5rem/2)] md:w-auto grow md:grow-0 inline-flex items-center justify-center leading-none border border-transparent rounded-lg',
+  'w-[calc(100%/2-0.5rem/2)] md:w-auto grow md:grow-0 inline-flex items-center justify-center leading-none border border-transparent rounded-lg sm:rounded-lg md:rounded-lg',
   {
     variants: {
       size: {
@@ -12,19 +11,19 @@ export const ButtonVariants = cva(
         lg: 'md:min-w-[10.625rem] h-[3rem] md:px-5 text-base l g:text-lg',
       },
       mode: {
-        primary: "text-white bg-blue-800",
-        secondary: "text-white bg-gray-200",
-        tertiary: "text-blue-800 border-blue-800",
+        primary: 'text-white bg-blue-800',
+        secondary: 'text-white bg-gray-200',
+        tertiary: 'text-blue-800 border-blue-800',
       },
       round: {
-        rec: "rounded-none",
-        sm: "rounded",
-        full: "rounded-full"
+        rec: 'rounded-none',
+        sm: 'rounded',
+        full: 'rounded-full',
       },
     },
     defaultVariants: {
-      size: "md",
-      mode: "primary",
+      size: 'md',
+      mode: 'primary',
     },
   }
 );
