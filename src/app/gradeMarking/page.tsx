@@ -6,6 +6,7 @@ import { pageData  } from "../../sharedUI/PageData/PageData";
 import { Container } from "../../sharedUI/Layout/Container";
 import { ContFull  } from "../../sharedUI/Layout/ContFull";
 import { ContSlot } from "../../sharedUI/Layout/ContSlot";
+
 import { SubTop } from "../../sharedUI/Layout/SubTop";
 
 import { StepBar } from "../../sharedUI/StepBar/StepBar";
@@ -16,10 +17,11 @@ const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
 import { Title } from "../../sharedUI/Title/Title";
 
 import Table from "../../sharedUI/Table/Table";
-
 import { GradeTable2 } from "../../sharedUI/Table/GradeInsertTable2";
+
 import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
 import { ButtonLink } from "../../sharedUI/Button/Link";
+
 import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 
 const gradeMarkingPage = () => {
@@ -40,6 +42,8 @@ const gradeMarkingPage = () => {
   return (
     <>
       <Container>
+        <StepBar step={steps} currentStep={0} />
+
         <ContFull addClass="mt-9 md:mt-11">
           <SwiperSlider id={1} slides={slides} />
         </ContFull>
