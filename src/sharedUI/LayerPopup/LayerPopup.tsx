@@ -19,11 +19,11 @@ const useLayerPopupContext = () => {
 }
 
 // size controls
-const BodyMargin = "mt-6";
-const FooterMargin = "mt-6";
-const ScrollBodyPadding = "p-6 pt-0 md:p-9 md:pt-0";
-const ScrollCloseButtonPadding = "pr-6 pt-6 md:pt-9 md:pr-9";
-const CloseButtonSize = "w-8 h-8 md:w-9 md:h-9";
+const BodyMargin = 'mt-6';
+const FooterMargin = 'mt-6';
+const ScrollBodyPadding = 'p-6 pt-0 md:p-9 md:pt-0';
+const ScrollCloseButtonPadding = 'pr-6 pt-6 md:pt-9 md:pr-9';
+const CloseButtonSize = 'w-9 h-9 sm:w-9 sm:h-9 md:w-11 md:h-11';
 
 const LayerPopupVariants = cva(`
   min-w-[300px] max-w-[90dvw] w-max max-h-[90dvh] xl:max-w-[1280px] absolute flex flex-col
@@ -69,6 +69,7 @@ interface LayerPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, "type" | 
   dimm?: boolean;
   parentClass?: string;
   addClass?: string;
+  closeType?: string;
   close?: boolean;
 }
 
@@ -98,6 +99,7 @@ const LayerPopup: LayerPopupType = ({
   type = "base",
   align,
   dimm = true,
+  closeType = "default",
   close = true,
   color,
   round,
@@ -114,8 +116,9 @@ const LayerPopup: LayerPopupType = ({
   });
 
   const atAbsolute = type === "absolute";
-  const atFull = type === "full";
+  //const atFull = "full";
   const atScroll = type === "scroll";
+  console.log(closeType);
 
   return (
     <>
@@ -131,9 +134,9 @@ const LayerPopup: LayerPopupType = ({
             {...props}
           >
             { close && (
-              <div className={`flex ${atFull ? 'justify-start' : atScroll ? `${ScrollCloseButtonPadding} justify-end` : 'justify-end'}`}>
+              <div className={`flex ${closeType === "back" ? 'justify-start' : atScroll ? `${ScrollCloseButtonPadding} justify-end` : 'justify-end'}`}>
                 <button type="button" className={`${CloseButtonSize} bg-center bg-no-repeat bg-[length:60%_60%]
-                  ${atFull ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
+                  ${closeType === "back" ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
                     : 'bg-right bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'}
                   `} onClick={OpenEvent}>
                   <span className="sr-only">팝업 닫기</span>
@@ -157,7 +160,7 @@ const LayerPopup: LayerPopupType = ({
 const PopupHeader: React.FC<PopupHeaderProps> = ({ children }) => {
   return (
     <>
-      <div className="popup-header bg-gray-200">
+      <div className="popup-header">
         { children }
       </div>
     </>
@@ -169,7 +172,7 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children }) => {
 
   return (
     <>
-      <div className={`${type === "full" ? '' : BodyMargin} popup-body flex-1 scroll ${type === "scroll" ? '' : 'overflow-auto'} bg-gray-400`}>
+      <div className={`${type === "full" ? '' : BodyMargin} popup-body flex-1 scroll ${type === "scroll" ? '' : 'overflow-hidden overflow-y-auto'}`}>
         { children }
       </div>
     </>
@@ -181,7 +184,7 @@ const PopupFooter: React.FC<PopupFooterProps> = ({ children }) => {
 
   return (
     <>
-      <div className={`${type === "full" ? '' : FooterMargin} popup-footer bg-gray-200`}>
+      <div className={`${type === "full" ? '' : FooterMargin} popup-footer`}>
         { children }
       </div>
     </>

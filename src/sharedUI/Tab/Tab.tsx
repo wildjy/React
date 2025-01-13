@@ -59,6 +59,11 @@ const TabButtonVariants = cva(`px-3 min-w-[4.5rem] h-10 cursor-pointer`, {
         `,
         type3: 'type3 min-w-[6rem] md:min-w-[8rem] lg:min-w-[12.5rem] text-gray-400 bg-gray-50',
       },
+      size: {
+        sm: '',
+        md: '',
+        lg: '',
+      }
     },
     defaultVariants: {
       mode: 'type1',

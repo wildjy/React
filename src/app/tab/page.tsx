@@ -6,11 +6,28 @@ const TabPage = () => {
 
   return (
     <>
-      <Tab initTab={2} modeType="type1"  addClass="mt-5 ml-5">
-        <Tab.List>
+      <Tab initTab={0} modeType="type1" addClass="mt-5 ml-5">
+        <Tab.List addClass="">
           <Tab.Button addClass="">국수영한한</Tab.Button>
-          <Tab.Button>사회탐구</Tab.Button>
-          <Tab.Button>과학탐구</Tab.Button>
+          <Tab.Button addClass="">사회탐구</Tab.Button>
+          <Tab.Button addClass="">과학탐구</Tab.Button>
+        </Tab.List>
+        <Tab.ContentView addClass="mt-5 p-5 bg-gray-300">
+          <Tab.Contents addClass="mt-5 p-5 bg-white">00</Tab.Contents>
+          <Tab.Contents>11</Tab.Contents>
+          <Tab.Contents>
+            <div className='bg-gray-200'>
+              22
+            </div>
+          </Tab.Contents>
+        </Tab.ContentView>
+      </Tab>
+
+      <Tab initTab={2} modeType="type1" addClass="mt-5 ml-5">
+        <Tab.List addClass="w-full">
+          <Tab.Button addClass="grow">국수영한한</Tab.Button>
+          <Tab.Button addClass="grow">사회탐구</Tab.Button>
+          <Tab.Button addClass="grow">과학탐구</Tab.Button>
         </Tab.List>
         <Tab.ContentView addClass="mt-5 p-5 bg-gray-300">
           <Tab.Contents addClass="mt-5 p-5 bg-white">00</Tab.Contents>

@@ -6,13 +6,13 @@ import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 const LayerPopupPage = () => {
 
   const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
-    popup1: false,
+    popup1: true,
     popup2: false,
     popup3: false,
     popup4: false,
     popup5: false,
     popup6: false,
-    popup7: true,
+    popup7: false,
   });
 
   const OpenEventPopup = (key: string) => {
@@ -57,8 +57,7 @@ const LayerPopupPage = () => {
           className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>팝업(Full) 열기
         </button>
 
-        <LayerPopup type="full" align="center" isOpen={isOpenPopup.popup2} OpenEvent={() => OpenEventPopup('popup2')}>
-
+        <LayerPopup type="full" align="center" isOpen={isOpenPopup.popup2} closeType="back" OpenEvent={() => OpenEventPopup('popup2')}>
           <LayerPopup.Header>
             <p className="ml-4 text-4xl"><b>Header</b></p>
           </LayerPopup.Header>

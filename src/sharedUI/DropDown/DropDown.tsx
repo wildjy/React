@@ -94,7 +94,7 @@ interface OptionType {
   label: string
 }
 
-interface DropDownProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof DropDownVariants> {
+interface DropDownProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>, VariantProps<typeof DropDownVariants> {
   type?: typeMode;
   align?: alignMode;
   addClass?: string;
@@ -105,6 +105,8 @@ interface DropDownProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typ
   width?: string;
   label?: string;
   layer?: boolean;
+  onChange?: (option: OptionType) => void;
+  value?: OptionType | null; // 외부에서 전달받는 선택된 값
 }
 
 interface DropOptionProps extends HTMLAttributes<HTMLDivElement>,
@@ -134,6 +136,8 @@ export const DropDown: React.FC<DropDownProps> = ({
   label,
   custom = false,
   layer = false,
+  onChange,
+  value, // 외부에서 전달받는 선택의 값
   ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -160,7 +164,19 @@ export const DropDown: React.FC<DropDownProps> = ({
   const ChangeSelectValue = (option: OptionType) => {
     setSelectValue(option);
     setIsOpen(false);
-  }
+
+    // 외부 콜백 실행
+    if (onChange) {
+      onChange(option); // onChange 함수 실행
+    }
+  };
+
+  useEffect(() => {
+    // 외부 value가 변경되면 내부 상태 업데이트
+    if (value) {
+      setSelectValue(value);
+    }
+  }, [value]);
 
   useEffect(() => {
     document.addEventListener('mousedown', openMouseEvent);

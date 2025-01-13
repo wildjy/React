@@ -30,7 +30,7 @@ const DropDownPage = () => {
     ],
     dropOption2: [
       { value: "a", label: "화법과 작문" },
-      { value: "b", label: "확률과 통계통계" },
+      { value: "b", label: "확률과 통계" },
       { value: "c", label: "미적분" },
       { value: "d", label: "가하" },
       { value: "e", label: "화법과 작문" },
@@ -43,14 +43,36 @@ const DropDownPage = () => {
       { value: "2", label: "인기순" },
     ],
   }
+  const [selectedOption, setSelectedOption] = useState<{[key: string]:OptionType | null}>({
+    drop1: {
+      value: "a",
+      label: "화법과 작문"
+    },
+    drop2: {
+      value: "b",
+      label: "확률과 통계"
+    },
+    drop3: {
+      value: "c",
+      label: "미적분"
+    },
+  });
+
+  const handleChange = (key: string, option: OptionType) => {
+    console.log('Selected Option:', option);
+    setSelectedOption((prevState) => ({
+      ...prevState,
+      [key] : option,
+    }));
+  };
 
   return(
     <>
       <div>
         <div className="flex gap-3 flex-wrap">
-          <DropDown options={dropOptions.dropOption2} layer min="min-w-[9rem]" label="선택 layer"/>
-          <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" width="w-[13rem]" align="center" label="선택 shadow" />
-          <DropDown options={dropOptions.dropOption2} type="ghost" />
+          <DropDown options={dropOptions.dropOption2} layer min="min-w-[9rem]" value={selectedOption.drop1} onChange={(option) => handleChange('drop1', option)} label="선택 layer"/>
+          <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" value={selectedOption.drop2} onChange={(option) => handleChange('drop2', option)} width="w-[13rem]" align="center" label="선택 shadow" />
+          <DropDown options={dropOptions.dropOption2} type="ghost" value={selectedOption.drop3} onChange={(option) => handleChange('drop3', option)} />
           <DropDown options={dropOptions.dropOption3} type="check" size="sm" width="" />
           <DropDown options={dropOptions.dropOption1} width="min-w-[12rem]" label="선택2" />
 

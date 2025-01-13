@@ -15,10 +15,10 @@ const config: Config = {
         portrait: { raw: '(orientation: portrait)' }, // 세로 화면
         landscape: { raw: '(orientation: landscape)' }, // 가로 화면
         'max-950': { max: '950px' }, // 360px
-        'sm': '481px', // 360px
-        'md': '769px', // 768px : mobile
-        'lg': '1025px',
-        'xl': '1281px',
+        sm: '481px', // 360px
+        md: '769px', // 768px : mobile
+        lg: '1025px',
+        xl: '1281px',
         '2xl': '1921px',
       },
       fontFamily: {
@@ -47,89 +47,96 @@ const config: Config = {
         '8xl': '2.875rem', // 46px
       },
       fontWeight: {
-        'thin': '100',
-        'exlight': '200',
-        'light': '300',
-        'normal': '400',
-        'md': '500',
-        'semi': '600',
-        'bold': '700',
-        'exbold': '800',
+        thin: '100',
+        exlight: '200',
+        light: '300',
+        normal: '400',
+        md: '500',
+        semi: '600',
+        bold: '700',
+        exbold: '800',
       },
       spacing: {
-        '1': '0.125rem', // 2px
-        '2': '0.25rem', // 4px
-        '3': '0.5rem', // 8px
-        '4': '0.75rem', // 12px
-        '5': '1rem', // 16px:base
-        '6': '1.25rem', // 20px
-        '7': '1.5rem', // 24px
-        '8': '1.75rem', // 28px
-        '9': '2rem', // 32px
-        '10': '2.5rem', // 40px
-        '11': '3.75rem', // 60px
-        '12': '5rem', // 80px
-        '13': '5rem', // 80px
+        1: '0.125rem', // 2px
+        2: '0.25rem', // 4px
+        3: '0.5rem', // 8px
+        4: '0.75rem', // 12px
+        5: '1rem', // 16px:base
+        6: '1.25rem', // 20px
+        7: '1.5rem', // 24px
+        8: '1.75rem', // 28px
+        9: '2rem', // 32px
+        10: '2.5rem', // 40px
+        11: '2.75rem', // 44px
+        12: '3rem', // 48px
+        13: '3.25rem', // 52px
+        14: '3.5rem', // 56px
+        15: '3.75rem', // 60px
+        16: '4rem', // 64px
+        17: '4.25rem', // 68px
+        18: '4.5rem', // 72px
+        19: '4.75rem', // 76px
+        22: '5rem', // 80px
       },
       margin: {
-        'center': '0 auto',
+        center: '0 auto',
       },
       width: {
-        'mobile': '720px',
-        'tablet': '1080px',
-        'laptop': '1440px',
-        'desktop': '1920px',
+        mobile: '720px',
+        tablet: '1080px',
+        laptop: '1440px',
+        desktop: '1920px',
       },
       colors: {
         'disabled-text': '#C4C4C4',
         'disabled-line': '#C4C4C4',
         'disabled-bg': '#E0E0E0',
-        'baseGray': '#EEEEEE',
-        'success': '#07bc0c',
-        'warning': '#f1c40f',
-        'error': '#FF2361',
-        'blue': {
-          '50': '#eef6ff',
-          '100': '#bbe1ff',
-          '200': '#8dcfff',
-          '300': '#58bcff',
-          '400': '#25acff',
-          '500': '#009dff',
-          '600': '#008eff',
-          '700': '#007bf4',
-          '800': '#0069e2',
-          '900': '#0e49c3',
-          '1000': '#0C3176',
+        baseGray: '#EEEEEE',
+        success: '#07bc0c',
+        warning: '#f1c40f',
+        error: '#FF2361',
+        blue: {
+          50: '#eef6ff',
+          100: '#bbe1ff',
+          200: '#8dcfff',
+          300: '#58bcff',
+          400: '#25acff',
+          500: '#009dff',
+          600: '#008eff',
+          700: '#007bf4',
+          800: '#0069e2',
+          900: '#0e49c3',
+          1000: '#0C3176',
         },
-        'gray': {
-          '50': '#f2f2f2',
-          '100': '#e9e9e9',
-          '200': '#d9d9d9',
-          '300': '#c4c4c4',
-          '400': '#999999',
-          '500': '#666666',
-          '600': '#555555',
-          '700': '#434343',
-          '800': '#272727',
-          '900': '#272727',
-          '1000': '#000000',
+        gray: {
+          50: '#f2f2f2',
+          100: '#e9e9e9',
+          200: '#d9d9d9',
+          300: '#c4c4c4',
+          400: '#999999',
+          500: '#666666',
+          600: '#555555',
+          700: '#434343',
+          800: '#272727',
+          900: '#272727',
+          1000: '#000000',
         },
-        'grayBlue': {
-          '50': '#F8F9FA',
-          '100': '#F1F3F5',
-          '200': '#E9ECEF',
-          '300': '#DEE2E6',
-          '400': '#CED4DA',
-          '500': '#abb7c2',
-          '600': '#868E96',
-          '700': '#495057',
-          '800': '#343A40',
-          '900': '#212529',
-          '1000': '#070809',
+        grayBlue: {
+          50: '#F8F9FA',
+          100: '#F1F3F5',
+          200: '#E9ECEF',
+          300: '#DEE2E6',
+          400: '#CED4DA',
+          500: '#abb7c2',
+          600: '#868E96',
+          700: '#495057',
+          800: '#343A40',
+          900: '#212529',
+          1000: '#070809',
         },
       },
       borderRadius: {
-        'full': '5rem'
+        full: '5rem',
       },
     },
   },
