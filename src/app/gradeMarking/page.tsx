@@ -1,28 +1,21 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import React, { useState } from "react";
-import dynamic from "next/dynamic";
 import { pageData  } from "../../sharedUI/PageData/PageData";
 import { Container } from "../../sharedUI/Layout/Container";
 import { ContFull  } from "../../sharedUI/Layout/ContFull";
-import { ContSlot } from "../../sharedUI/Layout/ContSlot";
-
 import { SubTop } from "../../sharedUI/Layout/SubTop";
-
-import { StepBar } from "../../sharedUI/StepBar/StepBar";
+import { StepBar } from "../../sharedUI/Stepbar/Stepbar";
+import { GradeTable2 } from "../../sharedUI/Table/GradeInsertTable2";
+import Table from "../../sharedUI/Table/Table";
+import { GradeTable } from "../../sharedUI/Table/GradeInsertTable";
+import { GradeTable1 } from "../../sharedUI/Table/GradeInsertTable1";
+import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
+import { ButtonLink } from "../../sharedUI/Button/Link";
+import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
+import dynamic from "next/dynamic";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });
-
-import { Title } from "../../sharedUI/Title/Title";
-
-import Table from "../../sharedUI/Table/Table";
-import { GradeTable2 } from "../../sharedUI/Table/GradeInsertTable2";
-
-import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
-import { ButtonLink } from "../../sharedUI/Button/Link";
-
-import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 
 const gradeMarkingPage = () => {
 
@@ -42,66 +35,65 @@ const gradeMarkingPage = () => {
   return (
     <>
       <Container>
-        <StepBar step={steps} currentStep={0} />
+        <div className="m-center w-full md:w-[41.875rem]">
+          <StepBar step={steps} currentStep={1} />
+        </div>
 
         <ContFull addClass="mt-9 md:mt-11">
           <SwiperSlider id={1} slides={slides} />
         </ContFull>
 
-        <SubTop>
-          <Title tag="h3" title="채점하기" sub="채점할 응시영역을 선택해주세요." />
-        </SubTop>
+        <SubTop
+          subTitle={{
+            visible: true,
+            text: "채점하기",
+          }}
+          subText={{
+            visible: true,
+            text: "채점할 응시영역을 선택해주세요."
+          }}
+        />
 
         <div>
           <GradeTable2 />
         </div>
 
         <ButtonBox>
-          <ButtonLink tag="a" href="#/" mode="tertiary" >영역수정</ButtonLink>
+          <Link href="#/" mode="tertiary" >영역수정</Link>
+          <Link href="#/" endIcon={["icon_btn_arrow.svg", "w-[0.45rem]"]}>성적입력</Link>
         </ButtonBox>
 
-        <Title tag="h3" title="문제정답 다운로드" addClass="mt-10" />
-        <ContSlot addClass="mt-4 md:mt-6 grid-cols-1 md:grid-cols-2 gap-10 md:gap-7">
+        <ContHalf addClass="bg-red-600" gap="gap-10 md:gap-7">
           <div>
-            <Table typeClass="">
-              <Table.Colgroup>
-                <col width="50%" /><col width="50%" />
-              </Table.Colgroup>
-              <Table.Thead>
-                <th>구분</th>
-                <th>문제</th>
-              </Table.Thead>
-              <Table.Tbody>
-                <tr>
-                  <td>해설 및 정답</td>
-                  <td>
-                    <ButtonLink mode="tertiary" size="sm" blank>다운로드</ButtonLink>
-                  </td>
-                </tr>
-              </Table.Tbody>
-            </Table>
+            <SubTop
+              subTitle={{
+                visible: true,
+                text: "문제정답 다운로드 ",
+              }}
+            />
           </div>
+          
+          <div>
+            333
+          </div>
+        </ContHalf>
 
-          <div>
-            <Table typeClass="">
-              <Table.Colgroup>
-                <col width="50%" /><col width="50%" />
-              </Table.Colgroup>
-              <Table.Thead>
-                <th>구분</th>
-                <th>문제</th>
-              </Table.Thead>
-              <Table.Tbody>
-                <tr>
-                  <td>영어</td>
-                  <td>
-                    <ButtonLink tag="a" mode="tertiary" size="sm" blank>다운로드</ButtonLink>
-                  </td>
-                </tr>
-              </Table.Tbody>
-            </Table>
+        <div className="flex flex-wrap md:flex-nowrap gap-10 md:gap-7">
+          <div className="grow w-full bg-gray-100">
+            left
           </div>
-        </ContSlot>
+          <div className="grow w-full bg-gray-100">
+            right
+          </div>
+        </div>
+
+        <SubTop
+          subTitle={{
+            visible: true,
+            text: "문제정답 다운로드 ",
+          }}
+        />
+
 
         <button type="button"
           onClick={() => OpenEventPopup("popup1")}

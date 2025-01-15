@@ -29,12 +29,12 @@ const config: Config = {
         '3xs': '0.688rem', // 11px
         '2xs': '0.75rem', // 12px
         xs: '0.813rem', // 13px
-        s: '0.875rem', // 14
+        s: '0.875rem', // 14px
         md: '0.938rem', // 15px
-        smMobile: '4.166vw', // 480 : 20px = 4.166vw
-        mobile: '3.125vw', // 768 : 24px = 3.125vw
-        tablet: '1.56vw', // 1024 : 16px = 1.56, 18px = 1.75
-        half: '1.25vw', // 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
+        mobile: '4.444vw', // 480 : 16px = 4.166vw
+        mobilelg: '3.333vw', // 768 : 16px = 3.125vw
+        tablet: '2.083vw', // 1024 : 16px = 1.56, 18px = 1.75
+        laptop: '1.563vw', // 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
         base: '1rem', // base: 16px
         lg: '1.125rem', // 18px
         xl: '1.25rem', // 20px :2.77vw
@@ -82,9 +82,9 @@ const config: Config = {
         center: '0 auto',
       },
       width: {
-        mobile: '720px',
-        tablet: '1080px',
-        laptop: '1440px',
+        mobile: '768px',
+        tablet: '1024px',
+        laptop: '1280px',
         desktop: '1920px',
       },
       colors: {
