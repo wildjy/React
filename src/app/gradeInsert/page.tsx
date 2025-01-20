@@ -6,7 +6,7 @@ import { Container } from "../../sharedUI/Layout/Container";
 import { ContFull  } from "../../sharedUI/Layout/ContFull";
 import { SubTop } from "../../sharedUI/Layout/SubTop";
 
-import { StepBar } from "../../sharedUI/StepBar/StepBar";
+import { StepBar } from "../../sharedUI/Stepbar/Stepbar";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });
@@ -17,6 +17,7 @@ import { SubTitle } from "../../sharedUI/Title/SubTitle";
 import CustomRadio from "../../sharedUI/Input/CustomRadio";
 // import { InfoBox } from "../../sharedUI/Info/InfoBox";
 
+import Table from "../../sharedUI/Table/Table";
 import { GradeTable } from "../../sharedUI/Table/GradeInsertTable";
 import { GradeTable1 } from "../../sharedUI/Table/GradeInsertTable1";
 import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
@@ -64,6 +65,7 @@ const gradeInsertPage = () => {
           <SwiperSlider id={1} slides={slides} />
         </ContFull>
 
+        <p>안녕하세요</p>
         <SubTop>
           <div>
             <Title tag="h3" title="3.28 학력평가" sub="2024년 3월 28일 서울교육청" />
@@ -109,6 +111,61 @@ const gradeInsertPage = () => {
         <div>
           <GradeTable />
           <GradeTable1 />
+          
+          <Table typeClass="tableType1 mt-5" >
+            <Table.Colgroup>
+              <col style={{ width: "calc(100%/8)" }} />
+              <col style={{ width: "calc(100%/8)" }} />
+              <col style={{ width: "calc(100%/8)" }} />
+              <col style={{ width: "calc(100%/8)" }} />
+              <col style={{ width: "calc(100%/8)" }} />
+              <col style={{ width: "calc(100%/8)" }} />
+              <col style={{ width: "calc(100%/8)" }} />
+              <col style={{ width: "calc(100%/8)" }} />
+            </Table.Colgroup>
+            <Table.Thead thW="w-1/3">
+              <th>구분</th>
+              <th>한국사</th>
+              <th>국어 <span className="inline md:block">(화법과 작문)</span></th>
+              <th>수학 <span className="inline md:block">(화법과 작문)</span></th>
+              <th>영어</th>
+              <th>한국지리</th>
+              <th>물리학I</th>
+              <th><span className="hidden md:block" >(제2외국어)</span>영어</th>
+            </Table.Thead>
+            <Table.Tbody tdW="w-2/3">
+              <tr>
+                <td>표준점수</td>
+                <td>95</td>
+                <td>95</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>100</td>
+                <td>95</td>
+              </tr>
+              <tr>
+                <td>백분위</td>
+                <td>100</td>
+                <td>95</td>
+                <td>100</td>
+                <td>95</td>
+                <td>100</td>
+                <td>95</td>
+                <td>100</td>
+              </tr>
+              <tr>
+                <td>등급</td>
+                <td>td 2</td>
+                <td>td 3</td>
+                <td>td 4</td>
+                <td>td 5</td>
+                <td>td 2</td>
+                <td>td 3</td>
+                <td>td 4</td>
+              </tr>
+            </Table.Tbody>
+          </Table>
         </div>
 
         <ButtonBox>

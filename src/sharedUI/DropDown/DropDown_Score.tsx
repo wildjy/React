@@ -39,7 +39,7 @@ const DropDownVariants = cva(`pe-[1.8rem] bg-white border border-gray-200
         ghost: 'border-transparent',
       },
       size: {
-        sm: 'px-4 xl:px-5 py-2 md:py-3 text-2xs md:text-s rounded md:rounded-lg',
+        sm: 'px-4 xl:px-5 py-2 md:py-3 lg:py-[0.4rem] text-2xs sm:text-base lg:text-laptop xl:text-base rounded md:rounded-lg',
         md: 'px-4 py-3',
         lg: 'px-5 py-4 text-xl',
       },

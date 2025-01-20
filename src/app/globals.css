@@ -73,7 +73,7 @@
 }
 
 html, body {
-  @apply text-mobile md:text-tablet lg:text-laptop xl:text-base;
+  @apply text-smMobile sm:text-mobile md:text-tablet lg:text-half xl:text-base;
 }
 
 html, body {
@@ -97,7 +97,7 @@ table .hide {
 
 table th,
 td {
-  @apply text-2xs lg:text-base border border-t-0;
+  @apply text-2xs md:text-base border border-t-0;
 }
 table th {
   @apply px-2 lg:px-4 py-4 font-normal border border-l-0 border-r-0 border-b bg-[#F4F5F6];

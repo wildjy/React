@@ -8,54 +8,34 @@ import { DropDown } from '../../sharedUI/DropDown/DropDown';
 
 export const GradeTable = () => {
 
-  // const theadThStyle = `
-  //   text-xs md:text-base
-  //   p-0 md:p-0
-  //   w-full h-[2.7rem]
-  //   flex items-center justify-center text-center
-  //   first:border-t-gray-1000
-  //   md:border-t-gray-1000
-  //   border-0
-  //   border-t first:border-t-0 last:border-b
-  //   first:bg-[#F4F5F6]
-  //   bg-white
-  //   md:py-5
-  //   md:bg-[#F4F5F6]
-  //   md:w-auto md:h-auto
-  //   md:table-cell
-  //   md:align-middle
-  //   md:border-b`;
-
   const theadThStyle = `
-    text-xs md:text-base
-    p-0 md:p-0
-    w-full h-[2.7rem]
+    p-0 lg:p-0
+    w-full h-[2.7rem] sm:h-[3.3rem] md:h-[4rem]
     flex items-center justify-center text-center
     border-b-0 border-t-[#d9d9d9] last:border-b
     first:bg-[#F4F5F6]
     bg-white
-    md:py-5
-    md:bg-[#F4F5F6]
-    md:w-auto md:h-auto
-    md:table-cell
-    md:align-middle
-    md:border-b`;
-  const firstTdAlign = `md:py-[1.47rem]`;
-  const theadThHeight = `h-[5.4rem]`;
-  const tbodyTdHeight = `md:py-[0.52rem]`;
+    lg:py-5
+    lg:bg-[#F4F5F6]
+    lg:w-auto lg:h-auto
+    lg:table-cell
+    lg:align-middle
+    lg:border-b`;
+  const firstTdAlign = `lg:py-[0.98rem]`;
+  const theadThHeight = `h-[5.4rem] sm:h-[5.7rem] md:h-[8rem]`;
+  const tbodyTdHeight = `md:py-2 lg:py-[0.54rem]`;
   const tbodyTdStyle = `
-    text-xs md:text-base
-    p-0 md:p-0
-    w-full h-[2.7rem]
+    p-0 lg:p-0
+    w-full h-[2.7rem] sm:h-[3.3rem] md:h-[4rem]
     flex items-center
     border-0
     border-t border-b-1 last:border-b
-    md:w-auto md:h-auto
-    md:table-cell
-    md:border-b`;
-  const tbodyTdDivStyle = 'w-full flex h-full md:flex-wrap items-center text-center';
-  const tbodyTdDivPTopStyle = 'w-full md:py-5 md:border-b md:bg-white items-center';
-  const tbodyTdDivPBottomStyle = 'w-full md:py-5 md:bg-white';
+    lg:w-auto lg:h-auto
+    lg:table-cell
+    lg:border-b`;
+  const tbodyTdDivStyle = 'w-full flex h-full lg:flex-wrap items-center text-center';
+  const tbodyTdDivPTopStyle = 'w-full lg:py-5 lg:border-b lg:bg-white items-center';
+  const tbodyTdDivPBottomStyle = 'w-full lg:py-5 lg:bg-white';
 
   // input
   const [inputValue, setInputValue] = useState([
@@ -141,13 +121,13 @@ export const GradeTable = () => {
   return (
     <>
       <div>
-        <table className="mt-5 flex md:table w-full">
+        <table className="mt-5 flex lg:table w-full">
           <caption>점수 입력 서식</caption>
           <colgroup>
             <col width="9%" /><col width="10%" /><col width="10%" /><col width="10%" /><col width="10%" /><col width="20%" /><col width="10%" />
           </colgroup>
-          <thead className='w-1/5 md:w-full'>
-            <tr className="block md:table-row">
+          <thead className='w-1/5 lg:w-full'>
+            <tr className="block lg:table-row">
               <th scope="col" className={theadThStyle}>선택</th>
               <th scope="col" className={theadThStyle}>
                 <CheckBox
@@ -205,9 +185,9 @@ export const GradeTable = () => {
               </th>
             </tr>
           </thead>
-          <tbody className='w-4/5 md:w-full'>
-            <tr className="block md:table-row">
-              <th scope="col" className={`${tbodyTdStyle} md:bg-white`}>
+          <tbody className='w-4/5 lg:w-full'>
+            <tr className="block lg:table-row">
+              <th scope="col" className={`${tbodyTdStyle} lg:bg-white`}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>영역</div>
                   <div className={tbodyTdDivPTopStyle}>선택과목</div>
@@ -218,7 +198,7 @@ export const GradeTable = () => {
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>한국사</div>
                   <div className={tbodyTdDivPTopStyle}>-</div>
-                  <div className={`${tbodyTdDivPBottomStyle}`}>
+                  <div className={`${tbodyTdDivPBottomStyle} ${tbodyTdHeight}`}>
                     <TextInput
                       type="text"
                       size="sm"
@@ -240,7 +220,7 @@ export const GradeTable = () => {
                       <DropDown options={dropOptions.dropOption1} size="sm" align="left" label='선택' />
                     </div>
                   </div>
-                  <div className={tbodyTdDivPBottomStyle}>
+                  <div className={`${tbodyTdDivPBottomStyle} ${tbodyTdHeight}`}>
                     <TextInput
                       type="text"
                       size="sm"
@@ -262,7 +242,7 @@ export const GradeTable = () => {
                       <DropDown options={dropOptions.dropOption2} size="sm" align="left" label='선택' />
                     </div>
                   </div>
-                  <div className={tbodyTdDivPBottomStyle}>
+                  <div className={`${tbodyTdDivPBottomStyle} ${tbodyTdHeight}`}>
                     <TextInput
                       type="text"
                       size="sm"
@@ -280,7 +260,7 @@ export const GradeTable = () => {
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>영어</div>
                   <div className={tbodyTdDivPTopStyle}>-</div>
-                  <div className={tbodyTdDivPBottomStyle}>
+                  <div className={`${tbodyTdDivPBottomStyle} ${tbodyTdHeight}`}>
                     <TextInput
                       type="text"
                       size="sm"
@@ -294,29 +274,29 @@ export const GradeTable = () => {
                   </div>
                 </div>
               </td>
-              <td className={`${tbodyTdStyle} md:p-0 md:py-0 ${theadThHeight}`}>
-                <div className={`${tbodyTdDivStyle} md:h-full`}>
-                  <div className={`${cn(tbodyTdStyle, 'h-auto w-1/3 md:w-full md:h-full items-center border-none')}`}>
+              <td className={`${tbodyTdStyle} lg:p-0 lg:py-0 ${theadThHeight}`}>
+                <div className={`${tbodyTdDivStyle} lg:h-full`}>
+                  <div className={`${cn(tbodyTdStyle, 'h-auto w-1/3 lg:w-full lg:h-full items-center border-none')}`}>
                     <div className={`${tbodyTdDivPTopStyle} ${tbodyTdHeight}`}>
                       <div className='w-[90%] m-center'>
                         <DropDown options={dropOptions.dropOption3} size="sm" align="left" label='선택' />
                       </div>
                     </div>
                   </div>
-                  <div className={`table-cell w-1/3 md:w-full md:flex`}>
-                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2rem] md:h-auto`}>
+                  <div className={`table-cell w-1/3 lg:w-full lg:flex`}>
+                    <div className={`w-full flex items-center justify-center lg:table-cell lg:w-1/2 ${tbodyTdHeight} lg:border-b h-[2rem] md:h-auto`}>
                       <div className='w-4/5 m-center text-left'>
                         <DropDown_Score options={dropOptions.dropOption4} options1={dropOptions.dropOption5} layer size="sm" align="left" label='사/과탐 선택' />
                       </div>
                     </div>
-                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} md:border-b h-[2rem] md:h-auto`}>
+                    <div className={`w-full flex items-center justify-center lg:table-cell lg:w-1/2 ${tbodyTdHeight} lg:border-b h-[2rem] md:h-auto`}>
                       <div className='w-4/5 m-center'>
                         <DropDown options={dropOptions.dropOption6} layer min="min-w-[9rem]" size="sm" align="left" label='직탐 선택' />
                       </div>
                     </div>
                   </div>
-                  <div className={`table-cell w-1/3 md:w-full md:flex`}>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2rem] md:h-auto">
+                  <div className={`table-cell w-1/3 lg:w-full lg:flex`}>
+                    <div className={`w-full flex items-center justify-center lg:table-cell lg:w-1/2 md:py-2 lg:py-5 h-[2rem] md:h-auto ${tbodyTdHeight}`}>
                       <TextInput
                         type="text"
                         size="sm"
@@ -328,7 +308,7 @@ export const GradeTable = () => {
                         onChange={(e) => handleInputChange(e, 0, "score5")}
                       />
                     </div>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2rem] md:h-auto">
+                    <div className={`w-full flex items-center justify-center lg:table-cell lg:w-1/2 md:py-2 lg:py-5 h-[2rem] md:h-auto ${tbodyTdHeight}`}>
                       <TextInput
                         type="text"
                         size="sm"
@@ -347,7 +327,7 @@ export const GradeTable = () => {
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>제2외국어</div>
                   <div className={tbodyTdDivPTopStyle}>제2외국어</div>
-                  <div className={tbodyTdDivPBottomStyle}>
+                  <div className={`${tbodyTdDivPBottomStyle} ${tbodyTdHeight}`}>
                     <TextInput
                       type="text"
                       size="sm"
