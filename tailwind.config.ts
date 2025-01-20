@@ -15,26 +15,33 @@ const config: Config = {
         portrait: { raw: '(orientation: portrait)' }, // 세로 화면
         landscape: { raw: '(orientation: landscape)' }, // 가로 화면
         'max-950': { max: '950px' }, // 360px
-        sm: '481px', // 360px
-        md: '769px', // 768px : mobile
-        lg: '1025px',
-        xl: '1281px',
-        '2xl': '1921px',
+        // min-width 기준임
+        sm: '481px', // mobile
+        md: '769px', // tablet
+        lg: '1025px', // laptop
+        xl: '1281px', //  desktop
+        '2xl': '1441px', // full
       },
       fontFamily: {
         sans: ['Pretendard', 'Arial', 'sans-serif'],
+      },
+      width: {
+        content: '1280px',
       },
       fontSize: {
         '4xs': '0.583rem', // 10px
         '3xs': '0.688rem', // 11px
         '2xs': '0.75rem', // 12px
         xs: '0.813rem', // 13px
-        s: '0.875rem', // 14
+        s: '0.875rem', // 14px
         md: '0.938rem', // 15px
-        smMobile: '4.166vw', // 480 : 20px = 4.166vw
-        mobile: '3.125vw', // 768 : 24px = 3.125vw
-        tablet: '1.56vw', // 1024 : 16px = 1.56, 18px = 1.75
-        half: '1.25vw', // 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
+        // smMobile: '4.166vw', // ~  480 : 20px = 4.166vw
+        // mobile: '3.125vw', // ~  768 : 24px = 3.125vw
+        // laptop: '1.75vw', // ~  1024 : 16px = 1.56, 18px = 1.75
+        // desktop: '1.25vw', // ~ 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
+        mobile: '4.444vw', // ~ 768 : 24px = 4.444vw
+        tablet: '1.5625vw', // ~ 1024 : 16px = 1.5625vw
+        laptop: '1.25vw', // ~ 1280 : 16px = 1.25vw
         base: '1rem', // base: 16px
         lg: '1.125rem', // 18px
         xl: '1.25rem', // 20px :2.77vw

@@ -5,7 +5,7 @@ import { cva } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 
 const StepItems = cva( //
-  'StepItems.. md:mr-4 md:last:mr-0 md:flex-1 last:flex-none md:relative after:content-[""] after:block after:bg-gray-300', //
+  'StepItems.. lg:mr-4 lg:last:mr-0 lg:flex-1 last:flex-none lg:relative after:content-[""] after:block after:bg-gray-300', //
   {
     variants: {
       status: {
@@ -18,7 +18,7 @@ const StepItems = cva( //
 );
 
 const StepPoints = cva(
-  'StepPoints.. text-xs md:text-base z-10 w-7 h-7 md:w-9 md:h-9 hover:text-white hover:bg-blue-700 relative  flex justify-center items-center rounded-full transition',
+  'StepPoints.. text-xs lg:text-base z-10 w-7 h-7 lg:w-9 lg:h-9 hover:text-white hover:bg-blue-700 relative  flex justify-center items-center rounded-full transition',
   {
     variants: {
       status: {
@@ -35,7 +35,7 @@ const StepLabels = cva(
   {
     variants: {
       base: {
-        label : 'hidden px-4 md:block text-grayBlue-600 text-lg lg:text-base font-light bg-white ',
+        label : 'hidden px-4 lg:block text-grayBlue-600 text-lg lg:text-base font-light bg-white ',
       },
       label: {
         true: "active text-gray-800 font-semi",
@@ -46,7 +46,7 @@ const StepLabels = cva(
 );
 
 const StepLines = cva(
-  'StepLines.. hidden md:block absolute top-6 left-0 w-full h-[1px] bg-gray-300',
+  'StepLines.. hidden lg:block absolute top-6 left-0 w-full h-[1px] bg-gray-300',
   {
     variants: {
       line: {
@@ -78,8 +78,8 @@ export const StepBar: FC<StepBarProps> = ({
   onStepClick,
 }) => {
   return (
-    <div className="m-center w-full md:w-[41.875rem]">
-      <div className="flex justify-end md:justify-between items-top gap-3 md:gap-0 relative">
+    <div className="m-center w-full lg:w-[41.875rem]">
+      <div className="flex justify-end lg:justify-between items-top gap-3 lg:gap-0 relative">
         {
           step.map((item, index) => {
             return (
@@ -88,7 +88,7 @@ export const StepBar: FC<StepBarProps> = ({
                 }
               >
                 <p className={`
-                  md:hidden absolute y_center left-0 ${cn('hidden', index < currentStep ? 'hidden' : index === currentStep ? "block" : false,)}
+                  lg:hidden absolute y_center left-0 ${cn('hidden', index < currentStep ? 'hidden' : index === currentStep ? "block" : false,)}
                 `}>
                   {item.name}
                 </p>

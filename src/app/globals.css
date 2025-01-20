@@ -73,7 +73,7 @@
 }
 
 html, body {
-  @apply text-smMobile sm:text-mobile md:text-tablet lg:text-half xl:text-base;
+  @apply text-mobile md:text-tablet lg:text-laptop xl:text-base;
 }
 
 html, body {
@@ -88,30 +88,30 @@ table {
 }
 
 table col.hide {
-  @apply hidden md:table-column !important;
+  @apply hidden lg:table-column !important;
 }
 
 table .hide {
-  @apply hidden md:table-cell !important;
+  @apply hidden lg:table-cell !important;
 }
 
 table th,
 td {
-  @apply text-2xs md:text-base border border-t-0;
+  @apply text-2xs lg:text-base border border-t-0;
 }
 table th {
-  @apply px-2 md:px-4 py-4 font-normal border border-l-0 border-r-0 border-b bg-[#F4F5F6];
+  @apply px-2 lg:px-4 py-4 font-normal border border-l-0 border-r-0 border-b bg-[#F4F5F6];
 }
 table thead th {
-  @apply border-t-gray-700 md:border-t-0;
+  @apply border-t-gray-700 lg:border-t-0;
 }
 
 table td {
-  @apply px-4 py-4 text-center border border-l-0 border-r-0 first:border-t-gray-700 md:border-t-0 border-b;
+  @apply px-4 py-4 text-center border border-l-0 border-r-0 first:border-t-gray-700 lg:border-t-0 border-b;
 }
 
 .tableType1 {
-  @apply flex md:table;
+  @apply flex lg:table;
 }
 
 .tableType1 th,
@@ -121,19 +121,19 @@ td {
 
 .tableType1 thead tr,
 .tableType1 tbody tr {
-  @apply block md:table-row;
+  @apply block lg:table-row;
 }
 
 .tableType1 thead tr th {
   @apply w-full flex flex-wrap items-center justify-center
   border-t-0 border-b
   last:border-b border-r-0
-  md:w-auto md:table-cell
-  md:border-b;
+  lg:w-auto lg:table-cell
+  lg:border-b;
 }
 
 .tableType1 tbody {
-  @apply flex md:table-row-group;
+  @apply flex lg:table-row-group;
 }
 
 .tableType1 tbody tr {
@@ -143,8 +143,8 @@ td {
 .tableType1 tbody tr td {
   @apply w-full block items-center border-t-0 border-b
   border-r-0 last:border-b
-  md:w-auto md:table-cell
-  md:border-b;
+  lg:w-auto lg:table-cell
+  lg:border-b;
 }
 
 caption {
