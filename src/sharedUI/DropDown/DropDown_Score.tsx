@@ -25,9 +25,15 @@ const useDropDownContext = () => {
   return context;
 }
 
-const DropDownVariants = cva(`pe-[1.8rem] bg-white border border-gray-200
-  min-w-[4rem] w-full text-left relative truncate rounded-lg
-  after:right-3 after:w-[1rem] after:h-[0.375rem] after:bg-[length:100%_100%]
+const dropTopMargin = 'mt-2';
+const DropDownVariants = cva(
+  `pe-[1.2rem] sm:pe-[1.8rem] bg-white border border-gray-200
+  min-w-[4rem] md:w-full md:max-w-full text-left relative truncate rounded-lg
+  after:right-[0.6rem] after:w-[0.5rem] after:h-[0.25rem]
+  sm:after:right-[0.75rem] sm:after:w-[0.75rem] sm:after:h-[0.375rem]
+  md:after:right-[0.75rem]
+  lg:after:right-[1rem] lg:after:w-[0.625rem] lg:after:h-[0.375rem]
+  after:bg-[length:100%_100%]
   after:absolute after:transform after:-translate-y-1/2 after:top-[50%]
   after:content-[""] after:bg-center after:bg-no-repeat after:transition-all after:duration-200
   `,
@@ -39,7 +45,13 @@ const DropDownVariants = cva(`pe-[1.8rem] bg-white border border-gray-200
         ghost: 'border-transparent',
       },
       size: {
-        sm: 'px-4 xl:px-5 py-2 md:py-3 lg:py-[0.4rem] text-2xs sm:text-base lg:text-laptop xl:text-base rounded md:rounded-lg',
+        // pr-[1.2rem] sm:pr-[1.2rem]
+        sm: `
+          pl-[0.4rem] sm:pl-[0.625rem] lg:pl-4 lg:pr-8
+          py-[0.1rem] sm:py-[0.3rem] md:py-[0.5rem]
+          h-[1.375rem] sm:h-[1.875rem] md:h-[2.5rem] lg:h-[2.375rem]
+          text-2xs sm:text-s md:text-base lg:text-s
+          rounded md:rounded-lg`,
         md: 'px-4 py-3',
         lg: 'px-5 py-4 text-xl',
       },
@@ -56,25 +68,26 @@ const DropDownVariants = cva(`pe-[1.8rem] bg-white border border-gray-200
       size: 'md',
       icon: 'base',
       align: 'left',
-    }
+    },
   }
 );
 
 const DropDownBoxVariants = cva(``, {
-    variants: {
-      layer: {
-        true: `
+  variants: {
+    layer: {
+      true: `
           fixed top-0 left-0 right-0 md:right-auto w-full h-dvh bg-gray-1000 bg-opacity-65 z-20
           md:absolute md:w-auto md:top-auto md:h-auto md:bg-none md:bg-opacity-0
         `, // md:min-w-[6rem] md:w-auto
-        false: `absolute left-0 z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]`, // min-w-[6rem] w-[100%]
-      },
+      false: `absolute left-0 z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]`, // min-w-[6rem] w-[100%]
     },
-  }
-)
-const DropDownInnerBoxVariants = cva(`
+  },
+});
+const DropDownInnerBoxVariants = cva(
+  `
   inner-box scroll overflow-auto bg-white border border-gray-300 rounded-lg transition-all duration-300
-  `, {
+  `,
+  {
     variants: {
       layer: {
         // true: `layer.. center_center max-w-[90dvw] w-max max-h-[50dvh]
@@ -86,7 +99,7 @@ const DropDownInnerBoxVariants = cva(`
       },
     },
   }
-)
+);
 
 interface OptionType {
   value: string;
@@ -238,8 +251,8 @@ const DropOption: React.FC<DropOptionProps> = ({
 
   return (
     <>
-      <div className={`${resetClass} ${cn(className, addClass, {
-        'md:mt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atShadow
+      <div className={`${dropTopMargin} ${resetClass} ${cn(className, addClass, {
+        'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atShadow
         })}`}>
         <div className={`${cn(innerClassName, addClass, {
           'translate-y-0': layer && isOpen,

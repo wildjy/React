@@ -14,7 +14,7 @@ interface SearchBarProps {
   onChange?: () => void;
 }
 
-const UnivSearchBar: React.FC<SearchBarProps> = ({
+export const UnivSearchBar: React.FC<SearchBarProps> = ({
   addClass,
   addId = "",
   label,
@@ -57,6 +57,7 @@ const UnivSearchBar: React.FC<SearchBarProps> = ({
         className="pe-[2.8rem] px-4 py-3 w-full border border-gray-200 placeholder:text-s rounded-lg"
         id={addId}
         onChange={onChange}
+        onClick={onClick}
         placeholder={placeholder}
         disabled={!!disabled}
         readOnly={!!readonly}
@@ -82,5 +83,3 @@ const UnivSearchBar: React.FC<SearchBarProps> = ({
     </>
   )
 }
-
-export default UnivSearchBar;

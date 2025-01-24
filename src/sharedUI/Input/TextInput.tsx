@@ -5,33 +5,35 @@ import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
 const InputVariants = cva(
-  "w-full peer leading-none border border-gray-200 focus:outline-none rounded-lg", // md:w-auto
+  'w-full peer leading-none border border-gray-200 focus:outline-none rounded-lg', // md:w-auto
   {
     variants: {
       size: {
-        base: "px-7 py-5",
-        sm: "input-sm.. px-2 py-2 md:py-3 lg:py-[0.4rem] text-2xs sm:text-base lg:text-laptop xl:text-base rounded md:rounded-lg",
-        md: "input-sm..",
-        lg: "input-lg..",
-        full: "input-full w-full",
+        base: 'px-7 py-5',
+        sm: `input-sm..
+        px-2 h-[1.375rem] sm:h-[1.875rem] md:h-[2.5rem] lg:h-[2.375rem]
+        text-2xs sm:text-s md:text-base lg:text-s rounded md:rounded-lg`,
+        md: 'input-sm..',
+        lg: 'input-lg..',
+        full: 'input-full w-full',
       },
       mode: {
-        base: "focus:border-blue-700 focus:ring-blue-700",
-        ghost: "focus:border-blue-700 border-0 border-b rounded-none placeholder-transparent ",
-        success: "focus:border-success", // border-success
-        warning: "focus:border-warning", // focus:ring-1 focus:ring-warning px-3 xl:px-5 py-2 md:py-3
-        error: "focus:border-error", // focus:ring-1 focus:ring-error
+        base: 'focus:border-blue-700 focus:ring-blue-700',
+        ghost: 'focus:border-blue-700 border-0 border-b rounded-none placeholder-transparent ',
+        success: 'focus:border-success', // border-success
+        warning: 'focus:border-warning', // focus:ring-1 focus:ring-warning px-3 xl:px-5 py-2 md:py-3
+        error: 'focus:border-error', // focus:ring-1 focus:ring-error
       },
       align: {
-        left: "text-left",
-        center: "text-center",
-        right: "text-right",
+        left: 'text-left',
+        center: 'text-center',
+        right: 'text-right',
       },
     },
     defaultVariants: {
-      size: "base",
-      mode: "base",
-      align: "left",
+      size: 'base',
+      mode: 'base',
+      align: 'left',
     },
   }
 );

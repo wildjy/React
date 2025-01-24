@@ -4,31 +4,32 @@ import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
-const InputVariants = cva(
-  'relative leading-none after:content-[""] bg-white transition-all after:transition-all ',
-  {
-    variants: {
-      // default size control
-      size: {
-        sm: "w-[1.25rem] h-[1.25rem] after:h-[1.25rem] after:w-[1.25rem]",
-        md: "w-[1.75rem] h-[1.75rem] after:h-[1.75rem] after:w-[1.75rem]",
-        lg: "w-[2rem] h-[2rem] after:h-[2rem] after:w-[2rem]",
-        auto: "",
-      },
-      mode: {
-        base: `border after_center
+const InputVariants = cva('relative leading-none after:content-[""] bg-white transition-all after:transition-all ', {
+  variants: {
+    // default size control
+    size: {
+      sm: `w-5 h-5 after:h-5 after:w-5
+      sm:w-6 sm:h-6 sm:after:h-6 sm:after:w-6
+      md:w-[1.625rem] md:h-[1.625rem] md:after:h-[1.625rem] md:after:w-[1.625rem]
+      lg:w-[1.375rem] lg:h-[1.375rem] lg:after:h-[1.375rem] lg:after:w-[1.375rem]`,
+      md: 'w-[1.75rem] h-[1.75rem] after:h-[1.75rem] after:w-[1.75rem]',
+      lg: 'w-[2rem] h-[2rem] after:h-[2rem] after:w-[2rem]',
+      auto: '',
+    },
+    mode: {
+      base: `border after_center
           after:bg-center
           after:bg-no-repeat
           after:bg-[length:60%_60%]
           peer-checked:after:bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checked.svg')]
         `,
-        text: `px-5 py-3
+      text: `px-5 py-3
           after:content-none
           mr-0 w-auto h-auto
           after:w-auto
           after:h-auto
         `,
-        rectangle: `px-5 py-3
+      rectangle: `px-5 py-3
           border
           border-gray-200
           mr-0 w-auto h-auto
@@ -36,7 +37,7 @@ const InputVariants = cva(
           after:h-auto
           after:content-none
         `,
-        icon: `pl-9 pr-5 py-3
+      icon: `pl-9 pr-5 py-3
           border
           bg-[length:17%]
           bg-[10%_center]
@@ -49,30 +50,28 @@ const InputVariants = cva(
           peer-checked:bg-[10%_center]
           peer-checked:bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_input_error.svg')] bg-no-repeat
         `,
-      },
-      color: {
-        base: "border-gray-200 peer-checked:text-blue-700 peer-checked:after:bg-blue-700 peer-checked:border-blue-700",
-        fill: "text-gray-500 border-transparent bg-gray-50 peer-checked:text-gray-700 peer-checked:border-gray-700 peer-checked:bg-white",
-        blue: "",
-        lineCheck: "border-gray-700 peer-checked:after:bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg')]",
-      },
-      round: {
-        base: "rounded after:rounded ",
-        none: "rounded-none after:rounded-none",
-        md: "rounded-md after:rounded-md",
-        lg: "rounded-lg after:rounded-lg",
-        full: "rounded-full after:rounded-full",
-      },
     },
-    defaultVariants: {
-      size: "md",
-      mode: "base",
-      color: "base",
-      round: "base"
+    color: {
+      base: 'border-gray-200 peer-checked:text-blue-700 peer-checked:after:bg-blue-700 peer-checked:border-blue-700',
+      fill: 'text-gray-500 border-transparent bg-gray-50 peer-checked:text-gray-700 peer-checked:border-gray-700 peer-checked:bg-white',
+      blue: '',
+      lineCheck: "border-gray-700 peer-checked:after:bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg')]",
     },
-  }
-);
-
+    round: {
+      base: 'rounded after:rounded ',
+      none: 'rounded-none after:rounded-none',
+      md: 'rounded-md after:rounded-md',
+      lg: 'rounded-lg after:rounded-lg',
+      full: 'rounded-full after:rounded-full',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+    mode: 'base',
+    color: 'base',
+    round: 'base',
+  },
+});
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">, VariantProps<typeof InputVariants> {
   size?: "sm" | "md" | "lg" | "auto";
   mode?: "base" | "text" | "rectangle" | "icon";

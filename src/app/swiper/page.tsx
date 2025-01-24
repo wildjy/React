@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import { useEffect, useRef, useState, ChangeEvent } from 'react';
+import { useEffect, useRef, useState, ChangeEvent } from 'react'
+import { SwiperSlide } from 'swiper/react';;
 import Title from "../../sharedUI/Title/TitleDemo";
 import SwiperComponent from "../../sharedUI/Swiper/Swiper";
 
@@ -17,31 +18,37 @@ const SwiperPage: React.FC = () => {
   const slides = [
     {
       active: '',
+      url: '',
       title: '3월 학력평가',
       sub_txt: "텍스트111~",
     },
     {
       active: '',
+      url: '',
       title: '5월 학력평가',
       sub_txt: "텍스트111~",
     },
     {
       active: '',
+      url: '',
       title: '6월 학력평가',
       sub_txt: "텍스트222~",
     },
     {
       active: '',
+      url: '',
       title: '7월 학력평가',
       sub_txt: "텍스트 333~",
     },
     {
       active: 'active',
+      url: '',
       title: '9월 학력평가',
       sub_txt: "텍스트 444~",
     },
     {
       active: '',
+      url: '',
       title: '10월 학력평가',
       sub_txt: "텍스트 444~",
     },
@@ -144,10 +151,63 @@ const SwiperPage: React.FC = () => {
           <div>
 
             <div className="border-b border-gray-300">
-              <SwiperComponent id={1} slides={slides} arrow={false} pager={false} onSlideChange={(swiper) => handleSlideChange(1, swiper)} />
+              <SwiperComponent
+                id={1}
+                slides={slides}
+                arrow={false}
+                pager={false}
+                onSlideChange={(swiper) => handleSlideChange(1, swiper)}
+              >
+                {slides.map((slide, index) => (
+                  <SwiperSlide
+                    key={index}
+                    style={{width: 'auto'}}
+                    className="pr-5 last:pr-0 flex justify-center items-center w-auto "
+                  >
+                    <a
+                      href={slide.url}
+                      className={`${slide.active} block py-2 font-bold ${
+                        slide.active
+                          ? 'text-blue-700 border-b-[0.313rem] border-blue-700 '
+                          : ''
+                      }`}
+                    >
+                        {/* <img src={slide.imgUrl} alt="" /> */}
+                        <p className="text-lg">{slide.title}</p>
+                        <p className='text-md'>{slide.sub_txt}</p>
+                    </a>
+                  </SwiperSlide>
+                ))}
+              </SwiperComponent>
             </div>
 
-            <SwiperComponent id={2} slides={slides_img} image={true} arrow={true} pager={false} onSlideChange={(swiper) => handleSlideChange(2, swiper)} />
+            <SwiperComponent
+              id={2}
+              slides={slides_img}
+              image={true}
+              arrow={true}
+              pager={false}
+              onSlideChange={(swiper) => handleSlideChange(2, swiper)}
+            >
+              {slides_img.map((slide, index) => (
+                <SwiperSlide
+                  key={index}
+                  style={{width: 'auto'}}
+                  className="pr-5 last:pr-0 flex justify-center items-center w-auto "
+                >
+                  <a
+                    href={slide.url}
+                    className={`${slide.active} block py-2 font-bold ${
+                      slide.active
+                        ? 'text-blue-700 border-b-[0.313rem] border-blue-700 '
+                        : ''
+                    }`}
+                  >
+                      <img src={slide.imgUrl} alt="" />
+                  </a>
+                </SwiperSlide>
+              ))}
+            </SwiperComponent>
 
             <p>Active index for Swiper 1: {activeIndexes[1]}</p>
             <p>Active index for Swiper 2: {activeIndexes[2]}</p>

@@ -19,8 +19,8 @@ const useLayerPopupContext = () => {
 }
 
 // size controls
-const BodyMargin = 'mt-6';
-const FooterMargin = 'mt-6';
+const BodyMargin = 'mt-0';
+const FooterMargin = 'mt-0';
 const ScrollBodyPadding = 'p-6 pt-0 md:p-9 md:pt-0';
 const ScrollCloseButtonPadding = 'pr-6 pt-6 md:pt-9 md:pr-9';
 const CloseButtonSize = 'w-9 h-9 sm:w-9 sm:h-9 md:w-11 md:h-11';

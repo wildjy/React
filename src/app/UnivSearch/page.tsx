@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { SearchBar } from "../../sharedUI/Input/SearchBar"
-import UnivSearchBar from "../../sharedUI/Input/UnivSearchBar"
-import DropDown from "../../sharedUI/DropDown/DropDown"
+import { UnivSearchBar } from "../../sharedUI/Input/UnivSearchBar"
+import { DropDown } from "../../sharedUI/DropDown/DropDown"
 import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 
 const SearchBarPage = () => {

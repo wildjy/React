@@ -17,8 +17,8 @@ const BottomUseContext = () => {
 }
 
 // size controls
-const BodyMargin = "mt-6";
-const FooterMargin = "mt-6";
+const BodyMargin = "mt-0";
+const FooterMargin = "mt-0";
 const CloseButtonSize = "w-8 h-8 md:w-9 md:h-9";
 
 const BottomSheetVariants = cva(`

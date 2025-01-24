@@ -21,24 +21,27 @@ const useTabContext = () => {
 }
 
 const TabVariants = cva(`TabList inline-flex items-center justify-center overflow-hidden`, {
-    variants: {
-      mode: {
-        type1: 'type1 gap-3 rounded-none',
-        type2: 'type2 p-2 bg-gray-50 border border-gray-200 rounded',
-        type3: 'type3 rounded-lg',
-      },
+  variants: {
+    mode: {
+      type1: 'type1 gap-3 sm:gap-3 md:gap-4 rounded-none',
+      type2: 'type2 p-2 bg-gray-50 border border-gray-200 rounded',
+      type3: 'type3 rounded-lg',
     },
-    defaultVariants: {
-      mode: "type1",
-    }
-  }
-)
+  },
+  defaultVariants: {
+    mode: 'type1',
+  },
+});
 
-const TabButtonVariants = cva(`px-3 min-w-[4.5rem] h-10 cursor-pointer`, {
-    variants: {
-      mode: {
-        type1: 'type1 px-6 text-gray-300 border border-gray-200 rounded',
-        type2: `type2 h-9 relative
+const TabButtonVariants = cva(`px-3 min-w-[4.5rem] h-10 text-xs sm:text-base md:text-lg cursor-pointer`, {
+  variants: {
+    mode: {
+      type1: `
+        h-[2.125rem] md:h-13
+        px-6
+        text-gray-300 border border-gray-200 rounded
+      `,
+      type2: `type2 h-9 relative
           first:before:hidden
           before:absolute
           before:top-3
@@ -57,19 +60,13 @@ const TabButtonVariants = cva(`px-3 min-w-[4.5rem] h-10 cursor-pointer`, {
           after:w-[2px]
           after:bg-gray-50
         `,
-        type3: 'type3 min-w-[6rem] md:min-w-[8rem] lg:min-w-[12.5rem] text-gray-400 bg-gray-50',
-      },
-      size: {
-        sm: '',
-        md: '',
-        lg: '',
-      }
+      type3: 'type3 min-w-[6rem] md:min-w-[8rem] lg:min-w-[12.5rem] text-gray-400 bg-gray-50',
     },
-    defaultVariants: {
-      mode: 'type1',
-    }
-  }
-)
+  },
+  defaultVariants: {
+    mode: 'type1',
+  },
+});
 interface ChildProps {
   index: number | null;
 }

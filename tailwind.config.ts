@@ -15,14 +15,18 @@ const config: Config = {
         portrait: { raw: '(orientation: portrait)' }, // 세로 화면
         landscape: { raw: '(orientation: landscape)' }, // 가로 화면
         'max-950': { max: '950px' }, // 360px
-        sm: '481px', // 360px
-        md: '769px', // 768px : mobile
-        lg: '1025px',
-        xl: '1281px',
-        '2xl': '1921px',
+        // min-width 기준임
+        sm: '480px', // mobile
+        md: '768px', // tablet
+        lg: '1024px', // laptop
+        xl: '1280px', //  desktop
+        '2xl': '1440px', // full
       },
       fontFamily: {
         sans: ['Pretendard', 'Arial', 'sans-serif'],
+      },
+      width: {
+        content: '1280px',
       },
       fontSize: {
         '4xs': '0.583rem', // 10px
@@ -31,10 +35,14 @@ const config: Config = {
         xs: '0.813rem', // 13px
         s: '0.875rem', // 14px
         md: '0.938rem', // 15px
-        mobile: '4.444vw', // 480 : 16px = 4.166vw
-        mobilelg: '3.333vw', // 768 : 16px = 3.125vw
-        tablet: '2.083vw', // 1024 : 16px = 1.56, 18px = 1.75
-        laptop: '1.563vw', // 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
+        // smMobile: '4.166vw', // ~  480 : 20px = 4.166vw
+        // mobile: '3.125vw', // ~  768 : 24px = 3.125vw
+        // laptop: '1.75vw', // ~  1024 : 16px = 1.56, 18px = 1.75
+        // desktop: '1.25vw', // ~ 1280 : 16px = 1.25, 18px = 1.4, 22px = 1.719vw, 24px = 1.875vw
+        xsBase: '4.444vw', // ~ 360 : 16px
+        smBase: '3.333vw', // 480 : 16px
+        mdBase: '1rem', // 768 : 16px
+        lgBase: '1rem', // 1024 : 16px
         base: '1rem', // base: 16px
         lg: '1.125rem', // 18px
         xl: '1.25rem', // 20px :2.77vw
@@ -66,26 +74,28 @@ const config: Config = {
         7: '1.5rem', // 24px
         8: '1.75rem', // 28px
         9: '2rem', // 32px
-        10: '2.5rem', // 40px
-        11: '2.75rem', // 44px
-        12: '3rem', // 48px
-        13: '3.25rem', // 52px
-        14: '3.5rem', // 56px
-        15: '3.75rem', // 60px
-        16: '4rem', // 64px
-        17: '4.25rem', // 68px
-        18: '4.5rem', // 72px
-        19: '4.75rem', // 76px
-        22: '5rem', // 80px
+        10: '2.25rem', // 36px
+        11: '2.5rem', // 40px
+        12: '2.75rem', // 44px
+        13: '3rem', // 48px
+        14: '3.25rem', // 52px
+        15: '3.5rem', // 56px
+        16: '3.75rem', // 60px
+        17: '4rem', // 64px
+        18: '4.25rem', // 68px
+        19: '4.5rem', // 72px
+        20: '4.75rem', // 76px
+        21: '5rem', // 80px
       },
       margin: {
         center: '0 auto',
       },
+      // eslint-disable-next-line no-dupe-keys
       width: {
-        mobile: '768px',
-        tablet: '1024px',
+        mobile: '720px',
+        tablet: '1080px',
         laptop: '1280px',
-        desktop: '1920px',
+        desktop: '1440px',
       },
       colors: {
         'disabled-text': '#C4C4C4',

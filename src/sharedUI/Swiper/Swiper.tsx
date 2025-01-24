@@ -8,6 +8,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 interface swiperProps {
+  children?: React.ReactNode,
   id?: number,
   image?: boolean,
   arrow?: boolean,
@@ -22,7 +23,7 @@ interface swiperProps {
   onSlideChange?: (swiper: SwiperClass) => void,
 }
 
-const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow = false, pager, onSlideChange }) => {
+const SwiperSlider: React.FC<swiperProps> = ({ children, id, image = false, slides, arrow = false, pager, onSlideChange }) => {
   const [contentWidth, setContentWidth] = useState<number>(0);
 	const swiperRef = useRef<SwiperClass | null>(null);
   const paginationRef = useRef(null);
@@ -121,31 +122,7 @@ const SwiperSlider: React.FC<swiperProps> = ({ id, image = false, slides, arrow 
           modules={[FreeMode, Navigation, Pagination, Autoplay]}
           {...swiperOption}
         >
-          {slides.map((slide, index) => (
-            <SwiperSlide
-              key={index}
-              style={{width: 'auto'}}
-              className="pr-5 last:pr-0 flex justify-center items-center w-auto "
-            >
-              <a
-                href={slide.url}
-                className={`${slide.active} block py-2 font-bold ${
-                  slide.active
-                    ? 'text-blue-700 border-b-[0.313rem] border-blue-700 '
-                    : ''
-                }`}
-              >
-                {image ? (
-                  <img src={slide.imgUrl} alt="" />
-                ) : (
-                  <>
-                    <p className="text-lg">{slide.title}</p>
-                    {/* <p className='text-md'>{slide.sub_txt}</p> */}
-                  </>
-                )}
-              </a>
-            </SwiperSlide>
-          ))}
+          {children}
         </Swiper>
 
         <div className={`controller`}>

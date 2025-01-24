@@ -4,11 +4,9 @@ import { pageData  } from "../../sharedUI/PageData/PageData";
 import { Container } from "../../sharedUI/Layout/Container";
 import { ContFull  } from "../../sharedUI/Layout/ContFull";
 import { SubTop } from "../../sharedUI/Layout/SubTop";
+import { ContSlot } from "../../sharedUI/Layout/ContSlot";
 import { StepBar } from "../../sharedUI/Stepbar/Stepbar";
 import { GradeTable2 } from "../../sharedUI/Table/GradeInsertTable2";
-import Table from "../../sharedUI/Table/Table";
-import { GradeTable } from "../../sharedUI/Table/GradeInsertTable";
-import { GradeTable1 } from "../../sharedUI/Table/GradeInsertTable1";
 import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
 import { ButtonLink } from "../../sharedUI/Button/Link";
 import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
@@ -21,6 +19,7 @@ const gradeMarkingPage = () => {
 
   const { steps, slides } = pageData;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
     popup1: false,
   });
@@ -43,40 +42,27 @@ const gradeMarkingPage = () => {
           <SwiperSlider id={1} slides={slides} />
         </ContFull>
 
-        <SubTop
-          subTitle={{
-            visible: true,
-            text: "채점하기",
-          }}
-          subText={{
-            visible: true,
-            text: "채점할 응시영역을 선택해주세요."
-          }}
-        />
+        <SubTop>
+
+        </SubTop>
 
         <div>
           <GradeTable2 />
         </div>
 
         <ButtonBox>
-          <Link href="#/" mode="tertiary" >영역수정</Link>
-          <Link href="#/" endIcon={["icon_btn_arrow.svg", "w-[0.45rem]"]}>성적입력</Link>
+          <ButtonLink href="#/" mode="tertiary" >영역수정</ButtonLink>
+          <ButtonLink href="#/" endIcon={["icon_btn_arrow.svg", "w-[0.45rem]"]}>성적입력</ButtonLink>
         </ButtonBox>
 
-        <ContHalf addClass="bg-red-600" gap="gap-10 md:gap-7">
+        <ContSlot addClass="bg-red-600 gap-10 md:gap-7">
           <div>
-            <SubTop
-              subTitle={{
-                visible: true,
-                text: "문제정답 다운로드 ",
-              }}
-            />
           </div>
-          
+
           <div>
             333
           </div>
-        </ContHalf>
+        </ContSlot>
 
         <div className="flex flex-wrap md:flex-nowrap gap-10 md:gap-7">
           <div className="grow w-full bg-gray-100">
@@ -86,13 +72,6 @@ const gradeMarkingPage = () => {
             right
           </div>
         </div>
-
-        <SubTop
-          subTitle={{
-            visible: true,
-            text: "문제정답 다운로드 ",
-          }}
-        />
 
 
         <button type="button"

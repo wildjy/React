@@ -7,37 +7,33 @@ import { DropDown_Score } from '../DropDown/DropDown_Score';
 import { DropDown } from '../DropDown/DropDown';
 
 export const GradeTable2 = () => {
-
   const theadThStyle = `
-    text-xs md:text-base
-    p-0 md:p-0
-    w-full h-[2.7rem]
+    p-0 lg:p-0
+    w-full h-[2.5rem] sm:h-[3.375rem] md:h-[4.75rem] lg:h-[5.375rem]
     flex items-center justify-center text-center
-    border-b-0 border-t-[#d9d9d9] last:border-b
-    first:bg-[#F4F5F6]
-    bg-white
-    md:py-5
-    md:bg-[#F4F5F6]
-    md:w-auto md:h-auto
-    md:table-cell
-    md:align-middle
-    md:border-b`;
-  const firstTdAlign = `md:py-[1.47rem]`;
-  const theadThHeight = `h-[5.4rem]`;
-  const tbodyTdHeight = `md:py-[0.52rem]`;
+    border-b-0 border-t-[#d9d9d9] first:border-t-0 last:border-b
+    bg-[#F4F5F6]
+    lg:py-5
+    lg:bg-[#F4F5F6]
+    lg:w-auto lg:h-auto
+    lg:table-cell
+    lg:align-middle
+    lg:border-b`;
+  const firstTdAlign = `lg:py-[1.1rem]`;
+  const theadThHeight = `h-[3.875rem] sm:h-[5.3rem] md:h-[6.8125rem]`;
+  const tbodyTdHeight = `h-[1.6rem] sm:h-[2.2rem] md:h-auto md:py-2 lg:py-[0.663rem]`;
   const tbodyTdStyle = `
-    text-xs md:text-base
-    p-0 md:p-0
-    w-full h-[2.7rem]
-    flex items-center
-    border-0
-    border-t border-b-1 last:border-b
-    md:w-auto md:h-auto
-    md:table-cell
-    md:border-b`;
-  const tbodyTdDivStyle = 'w-full flex h-full md:flex-wrap items-center text-center';
-  const tbodyTdDivPTopStyle = 'w-full md:py-5 md:border-b md:bg-white items-center';
-  const tbodyTdDivPBottomStyle = 'w-full md:py-5 md:bg-white';
+      p-0 lg:p-0
+      w-full h-[2.5rem] sm:h-[3.375rem] md:h-[4.75rem]
+      flex items-center
+      border-0
+      border-t border-b-1 first:border-t-0 last:border-b
+      lg:w-auto lg:h-auto
+      lg:table-cell
+      lg:border-b`;
+  const tbodyTdDivStyle = 'w-full flex h-full lg:flex-wrap items-center text-center';
+  const tbodyTdDivPTopStyle = 'w-full lg:py-[1.1rem] lg:border-b lg:bg-white items-center';
+  const tbodyTdDivPBottomStyle = 'w-full lg:py-[1.1rem] lg:bg-white';
 
   // input
   const [inputValue, setInputValue] = useState([
@@ -204,7 +200,7 @@ export const GradeTable2 = () => {
               <td className={tbodyTdStyle}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>국어</div>
-                  <div className={`${tbodyTdDivPBottomStyle} ${tbodyTdHeight}`}>
+                  <div className={`${cn('w-full flex items-center justify-center lg:table-cell md:h-auto ', tbodyTdHeight)}`}>
                     <div className='w-4/5 m-center'>
                       <DropDown options={dropOptions.dropOption1} size="sm" align="left" label='선택' />
                     </div>
@@ -214,7 +210,7 @@ export const GradeTable2 = () => {
               <td className={tbodyTdStyle}>
                 <div className={tbodyTdDivStyle}>
                   <div className={tbodyTdDivPTopStyle}>수학</div>
-                  <div className={`${tbodyTdDivPBottomStyle} ${tbodyTdHeight}`}>
+                  <div className={`${cn('w-full flex items-center justify-center lg:table-cell md:h-auto ', tbodyTdHeight)}`}>
                     <div className='w-4/5 m-center'>
                       <DropDown options={dropOptions.dropOption2} size="sm" align="left" label='선택' />
                     </div>
@@ -229,20 +225,20 @@ export const GradeTable2 = () => {
               </td>
               <td className={`${tbodyTdStyle} md:p-0 md:py-0 ${theadThHeight}`}>
                 <div className={`${tbodyTdDivStyle} md:h-full`}>
-                  <div className={`${cn(tbodyTdStyle, 'h-auto w-1/2 md:w-full md:h-full items-center border-none')}`}>
-                    <div className={`${tbodyTdDivPTopStyle} ${tbodyTdHeight}`}>
+                  <div className={`${cn(tbodyTdStyle, 'h-auto w-1/3 lg:w-full lg:h-full items-center border-none')}`}>
+                    <div className={`${cn(tbodyTdDivPTopStyle, tbodyTdHeight)}`}>
                       <div className='w-[90%] m-center'>
                         <DropDown options={dropOptions.dropOption3} size="sm" align="left" label='선택' />
                       </div>
                     </div>
                   </div>
                   <div className={`table-cell w-1/2 md:w-full md:flex`}>
-                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} h-[2rem] md:h-auto`}>
+                    <div className={`${cn('w-full flex items-center justify-center lg:table-cell lg:w-1/2 md:h-auto ', tbodyTdHeight)}`}>
                       <div className='w-4/5 m-center '>
                         <DropDown_Score options={dropOptions.dropOption4} options1={dropOptions.dropOption5} layer size="sm" width="w-full" align="left" label='사과탐 선택' />
                       </div>
                     </div>
-                    <div className={`w-full flex items-center justify-center md:table-cell md:w-1/2 ${tbodyTdHeight} h-[2rem] md:h-auto`}>
+                    <div className={`${cn('w-full flex items-center justify-center lg:table-cell lg:w-1/2 md:h-auto ', tbodyTdHeight)}`}>
                       <div className='w-4/5 m-center'>
                         <DropDown options={dropOptions.dropOption6} layer min="min-w-[9rem]" size="sm" align="left" label='직탐 선택' />
                       </div>

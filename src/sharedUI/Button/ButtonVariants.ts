@@ -5,10 +5,12 @@ export const ButtonVariants = cva(
   {
     variants: {
       size: {
-        auto: 'px-4 w-auto h-[1.66rem] md:h-[2.37rem] text-3xs md:text-s lg:text-s grow-0 rounded sm:rounded md:rounded',
-        sm: 'w-auto min-w-[3.5rem] md:min-w-[5.41rem] h-[1.66rem] md:min-w-[7.1429rem] md:h-[2.37rem] text-3xs md:text-s lg:text-s rounded sm:rounded md:rounded',
-        md: 'min-w-[8.75rem] h-[2.33rem] md:min-w-[8.75rem] md:h-[3rem] text-2xs md:text-base lg:text-base',
-        lg: 'md:min-w-[10.625rem] h-[3rem] md:px-5 text-base l g:text-lg',
+        auto: `px-4 w-auto h-[1.66rem] md:h-[2.37rem] text-2xs md:text-s lg:text-s grow-0 rounded sm:rounded md:rounded`,
+        sm: `w-auto min-w-[3.5rem] h-[1.75rem] sm:h-9 md:min-w-[6.25rem] md:h-[2.5rem] lg:h-[2.375rem]
+        text-2xs sm:text-xs md:text-base lg:text-s rounded sm:rounded md:rounded`,
+        md: `min-w-[8.75rem] h-11 sm:h-12 md:min-w-[8.75rem] md:h-13
+        text-[0.875rem] sm:text-base md:text-lg lg:text-base`,
+        lg: 'md:min-w-[10.625rem] h-[3rem] md:px-5 text-base lg:text-lg',
       },
       mode: {
         primary: 'text-white bg-blue-800',
