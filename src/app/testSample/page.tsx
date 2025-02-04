@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useRef, useState, ChangeEvent } from 'react';
+import { useRef, useState, useEffect, ChangeEvent } from 'react';
 import { TextInput } from "../../sharedUI/Input/TextInput";
 import { CheckBox } from "../../sharedUI/Input/CheckBox";
 import { Radio } from "../../sharedUI/Input/Radio";
@@ -13,6 +13,8 @@ import StepBarClick from "../../sharedUI/StepBar/StepBarClick";
 import Title from "../../sharedUI/Title/TitleDemo";
 import dynamic from 'next/dynamic';
 
+import { SwiperSlide } from 'swiper/react';
+import { lastIndexOf } from "lodash";
 const SwiperSlider = dynamic(() => import('../../sharedUI/Swiper/Swiper'), {
   ssr: false
 });
@@ -158,6 +160,7 @@ const HighSchoolPage: React.FC = () => {
     setIsVisible((checkStatus) => !checkStatus);
   }
 
+
   const slidesCustom = [
     {
       width: 'auto',
@@ -188,38 +191,25 @@ const HighSchoolPage: React.FC = () => {
     },
   ];
 
-  const slides = [
-    {
-      active: '',
-      title: '3월 학력평가',
-      sub_txt: "텍스트111~",
-    },
-    {
-      active: '',
-      title: '5월 학력평가',
-      sub_txt: "텍스트111~",
-    },
-    {
-      active: '',
-      title: '6월 학력평가',
-      sub_txt: "텍스트222~",
-    },
-    {
-      active: '',
-      title: '7월 학력평가',
-      sub_txt: "텍스트 333~",
-    },
-    {
-      active: 'active',
-      title: '9월 학력평가',
-      sub_txt: "텍스트 444~",
-    },
-    {
-      active: '',
-      title: '10월 학력평가',
-      sub_txt: "텍스트 444~",
-    },
-  ];
+  type Slide = {
+    active?: string;
+    title?: string;
+    url?: string;
+  };
+
+  const [slides, setSlides] = useState<Slide[]>([]);
+
+  useEffect(() => {
+    const fetchSlides = [
+      { active: '', title: '3.28 학력평가', url: '#/' },
+      { active: 'active', title: '5.8 학력평가', url: '#/' },
+      { active: '', title: '6.4 모의평가', url: '#/' },
+      { active: '', title: '7.11 학력평가', url: '#/' },
+      { active: '', title: '9.4 모의평가', url: '#/' },
+      { active: '', title: '10.15 학력평가', url: '#/' },
+    ];
+    setSlides(fetchSlides);
+  }, []);
 
   const slides_1 = [
     {
@@ -667,10 +657,50 @@ const HighSchoolPage: React.FC = () => {
             */}
 
             <div className="border-b border-gray-300">
-              <SwiperSlider id={1} slides={slides} arrow pager={false} />
+              <SwiperSlider id={1} arrow pager={false} slides={[]}>
+                {slides.map((slide, index) => (
+                  <SwiperSlide
+                    key={index}
+                    style={{width: "auto" }}
+                    className={`flex items-center justify-center w-auto `}
+                  >
+                    <div className={`pr-7 sm:pr-8 md:pr-14 lg:pr-0 last:pr-0 text-center ${ slide.active ? '' : ''}`}>
+                      <a href="#self" className={`
+                        ${slide.active}  block py-3 lg:px-10 xl:px-[3.167rem] lg:py-4 text-s sm:text-base md:text-lg lg:text-lg
+                        ${slide.active ? 'text-blue-700 border-b-[0.313rem] border-blue-700 ' : ''}
+                      `}>
+                        <>
+                          <p className='text-xl'>{slide.title}</p>
+                          {/* <p className='text-0'>{slide.sub_txt}</p> */}
+                        </>
+                      </a>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </SwiperSlider>
             </div>
 
-            <SwiperSlider id={2} slides={slides_img} image arrow pager />
+            <SwiperSlider id={2} arrow pager slides={[]}>
+              {slides_img.map((slide, index) => (
+                <SwiperSlide
+                  key={index}
+                  style={{width: "auto" }}
+                  className={`flex items-center justify-center w-auto pr-7 sm:pr-8 md:pr-14 lg:pr-0 last:pr-0`}
+                >
+                  <div className={`text-center ${ slide.active ? '' : ''}`}>
+                    <a href="#self" className={`
+                      ${slide.active}  block py-3 lg:py-4 text-s sm:text-base md:text-lg lg:text-lg
+                      ${slide.active ? 'text-blue-700 border-b-[0.313rem] border-blue-700 ' : ''}
+                    `}>
+                      <>
+                        <img src={slide.imgUrl} alt="" />
+                        <p className=''>{slide.url}</p>
+                      </>
+                    </a>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </SwiperSlider>
 
 
           </div>

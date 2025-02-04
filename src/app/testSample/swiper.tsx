@@ -6,33 +6,23 @@ import { FreeMode, Navigation, Pagination, Autoplay} from 'swiper/modules'; // S
 import SlideTabs from './SlideTab';
 import 'swiper/swiper-bundle.css';
 interface SwiperSliderProps {
-  slides: {
-    active?: string,
-    title?: string,
-    sub_tit?: string,
-    url?: string,
-    imgUrl?: string
-  }[],
+  children?: React.ReactNode;
   id?: string;
   freeMode?: boolean;
-  images?: boolean;
   pager?: boolean;
   auto?: boolean;
-  space?: string;
   delay?: number;
   speed?: number;
   loop?: boolean;
 }
 
 const SwiperSlider: React.FC<SwiperSliderProps> = ({
+  children,
   id,
   freeMode = true,
-  images = false,
   pager = false,
-  slides,
   loop,
   auto,
-  space,
   delay = 400,
   speed,
 }) => {
@@ -170,15 +160,14 @@ const SwiperSlider: React.FC<SwiperSliderProps> = ({
 
           className={`swiper_lnb w-full`}
         >
-          {slides.map((slide, index) => (
-            <SwiperSlide key={index} style={{width: "auto" }}> {/* className={`mr-[3.75rem]`} */}
+          {children}
+          {/* {slides.map((slide, index) => (
+            <SwiperSlide key={index} style={{width: "auto" }}>
               <div style={{marginRight: `${space}` }} >
-                {/* slide.. */}
                 <SlideTabs slide={ slide } image={ images } isActive={ activeIndex === index } />
-                {/* slide.. */}
               </div>
             </SwiperSlide>
-          ))}
+          ))} */}
         </Swiper>
 
         {/* !isNavigationEnabled &&  */}
