@@ -3,7 +3,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import React, { useState, useRef, useEffect, createContext, useContext,  HTMLAttributes } from 'react';
 import { ScoreOption } from './ScoreOption';
 
-type typeMode = "base" | "shadow" | "ghost";
+type typeMode = 'base' | 'shadow' | 'ghostShadow' | 'ghost';
 type alignMode = "left" | "center";
 interface DropDownContextProps {
   type: typeMode;
@@ -247,7 +247,7 @@ const DropOption: React.FC<DropOptionProps> = ({
     layer: layer as boolean | undefined,
   });
 
-  const atShadow = ["shadow"].includes(type);
+  const atShadow = ['ghostShadow', 'shadow'].includes(type);
 
   return (
     <>

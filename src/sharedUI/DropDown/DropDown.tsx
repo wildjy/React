@@ -2,7 +2,7 @@ import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { useState, useRef, useEffect, createContext, useContext,  HTMLAttributes } from 'react';
 
-type typeMode = "base" | "shadow" | "ghost" | "check";
+type typeMode = 'base' | 'shadow' | 'ghost' | 'ghostShadow' | 'check';
 type alignMode = "left" | "center";
 interface DropDownContextProps {
   type: typeMode;
@@ -43,6 +43,7 @@ const DropDownVariants = cva(
         base: '',
         shadow: '',
         ghost: 'border-transparent',
+        ghostShadow: 'border-transparent',
         check: 'border-transparent',
       },
       size: {
@@ -252,8 +253,8 @@ const DropOption: React.FC<DropOptionProps> = ({
     layer: layer as boolean | undefined,
   });
 
-  const atShadow = ["shadow"].includes(type);
-  const atCheck = ["check"].includes(type);
+  const atShadow = ['ghostShadow', 'shadow', 'check'].includes(type);
+  const atCheck = ['check'].includes(type);
 
   return (
     <>
