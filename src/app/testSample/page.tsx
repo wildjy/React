@@ -9,6 +9,7 @@ import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
 import { Button } from "../../sharedUI/Button/Button";
 import StepBars from "../../sharedUI/StepBar/Step";
 import { StepBar } from "../../sharedUI/StepBar/StepBar";
+import { ToastPopup } from "../../sharedUI/ToastPopup/ToastPopup";
 import StepBarClick from "../../sharedUI/StepBar/StepBarClick";
 import Title from "../../sharedUI/Title/TitleDemo";
 import dynamic from 'next/dynamic';
@@ -313,6 +314,12 @@ const HighSchoolPage: React.FC = () => {
       imgUrl: 'https://board.jinhak.com/BoardV1/JinhakContent/BannerImage/20240902_272M.jpg',
     },
   ];
+
+  const [toast, setToast] = useState(false);
+  const OpenToast = () => {
+    setToast(true);
+    return;
+  };
 
   return (
     <div id="contents" className="bg-gray-50">
@@ -703,6 +710,12 @@ const HighSchoolPage: React.FC = () => {
             </SwiperSlider>
 
 
+
+            <Button onClick={OpenToast}>toast팝업 열기</Button>
+
+            <ToastPopup isActive={toast} setToast={setToast}>
+              <b className="text-[#FFFC00]">[가군] 가야대 KMU International Business School</b>가 저장되었습니다.
+            </ToastPopup>
           </div>
 
         </div>
@@ -719,7 +732,6 @@ const HighSchoolPage: React.FC = () => {
         <TestInput type="password" size="sm" color="success" onChange={handleChange} />
         <TestInput type="password" size="sm" color="warning" onChange={handleChange} />
         <TestInput type="password" size="sm" color="error" onChange={handleChange} disabled={true} /> */}
-
 
       </div>
     </div>

@@ -6,7 +6,7 @@ import { cn } from '../common/cn';
 import { ButtonVariants } from './ButtonVariants';
 
 type sizeType = 'sm' | 'md' | 'lg';
-type modeType = 'primary' | 'secondary' | 'tertiary';
+type modeType = 'primary' | 'secondary' | 'tertiary' | 'text';
 type roundType = 'rec' | 'sm' | 'full';
 
 interface LinkButtonProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'type'>, VariantProps<typeof ButtonVariants> {

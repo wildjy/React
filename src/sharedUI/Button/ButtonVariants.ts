@@ -16,6 +16,7 @@ export const ButtonVariants = cva(
         primary: 'text-white bg-blue-800',
         secondary: 'text-white bg-gray-200',
         tertiary: 'text-blue-800 border-blue-800',
+        text: 'border-transparent bg-transparent',
       },
       round: {
         rec: 'rounded-none',
