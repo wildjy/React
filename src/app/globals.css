@@ -210,6 +210,23 @@ pre {
   @apply bg-blue-800;
 }
 
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
 /* 내부에서 정의한, 커스텀 유틸리티 클래스 tailwind 클래스 처럼 요소에서 바로 쓰기 가능*/
 @layer utilities {
   img {
@@ -234,4 +251,5 @@ pre {
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 0.25rem;
   }
+
 }
