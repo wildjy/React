@@ -713,9 +713,15 @@ const HighSchoolPage: React.FC = () => {
 
             <Button onClick={OpenToast}>toast팝업 열기</Button>
 
-            <ToastPopup isActive={toast} setToast={setToast}>
+            <ToastPopup child={true} isActive={toast} setToast={setToast} addClass="bottom-20">
               <b className="text-[#FFFC00]">[가군] 가야대 KMU International Business School</b>가 저장되었습니다.
             </ToastPopup>
+            <ToastPopup
+              isActive={toast}
+              setToast={setToast}
+              message={['[가군] Business School', '취소소']}
+              setColor="text-[#FFFC00]"
+            />
           </div>
 
         </div>

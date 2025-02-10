@@ -2,8 +2,8 @@
 import { cn } from "../common/cn";
 
 interface InfoTextProps {
-  texts?: {
-    text?: string;
+  texts: {
+    text?: string | React.ReactNode;
   }[];
   addClass?: string;
 }

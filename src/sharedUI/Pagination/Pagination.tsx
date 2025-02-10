@@ -1,6 +1,6 @@
 'use client';
+
 import { FC } from 'react';
-import { cn } from "../common/cn";
 
 interface PaginationProps {
   currentPage: number;
@@ -23,14 +23,32 @@ export const Pagination: FC<PaginationProps> = ({ currentPage, totalPages, onPag
   };
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-4">
+    <div className="flex items-center justify-center gap-1 mt-6 md:mt-8">
+      <button
+        onClick={() => onPageChange(1)}
+        disabled={currentPage === 1}
+        className={`w-7 h-7 text-sm rounded-lg bg-center bg-no-repeat bg-[length:100%_100%]
+        ${
+          currentPage === 1
+            ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_paging_first_off.svg")]'
+            : 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_paging_first.svg")]'
+        }`}
+      >
+        <span className="sr-only">처음 페이지 버튼</span>
+      </button>
+
       {/* 이전 버튼 */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className={`px-3 py-2 text-sm rounded-lg ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-200'}`}
+        className={`w-7 h-7 text-sm rounded-lg bg-center bg-no-repeat bg-[length:100%_100%]
+        ${
+          currentPage === 1
+            ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_paging_prev_off.svg")]'
+            : 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_paging_prev.svg")]'
+        }`}
       >
-        ◀
+        <span className="sr-only">이전 페이지 버튼</span>
       </button>
 
       {/* 페이지 번호 */}
@@ -38,7 +56,9 @@ export const Pagination: FC<PaginationProps> = ({ currentPage, totalPages, onPag
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`px-3 py-2 text-sm rounded-lg ${currentPage === page ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'}`}
+          className={`w-7 h-7 text-sm sm:text-base ${
+            currentPage === page ? 'text-gray-800 font-bold' : 'text-gray-300 hover:text-gray-800'
+          }`}
         >
           {page}
         </button>
@@ -48,9 +68,27 @@ export const Pagination: FC<PaginationProps> = ({ currentPage, totalPages, onPag
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className={`px-3 py-2 text-sm rounded-lg ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-200'}`}
+        className={`w-7 h-7 text-sm rounded-lg bg-center bg-no-repeat bg-[length:100%_100%]
+        ${
+          currentPage === totalPages
+            ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_paging_next_off.svg")]'
+            : 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_paging_next.svg")]'
+        }`}
       >
-        ▶
+        <span className="sr-only">다음페이지 버튼</span>
+      </button>
+
+      <button
+        onClick={() => onPageChange(totalPages)}
+        disabled={currentPage === totalPages}
+        className={`w-7 h-7 text-sm rounded-lg bg-center bg-no-repeat bg-[length:100%_100%]
+        ${
+          currentPage === totalPages
+            ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_paging_last_off.svg")]'
+            : 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_paging_last.svg")]'
+        }`}
+      >
+        <span className="sr-only">마지막페이지 버튼</span>
       </button>
     </div>
   );
