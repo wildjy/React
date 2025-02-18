@@ -9,6 +9,8 @@ import { Autoplay, FreeMode, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperProps } from 'swiper/react';
 
 interface swiperProps {
+  freeMode?: boolean;
+  slidesPerView?: string | number;
   children?: React.ReactNode;
   addClass?: string;
   id?: number;
@@ -18,7 +20,16 @@ interface swiperProps {
   onSlideChange?: (swiper: SwiperClass) => void;
 }
 
-export const SwiperSlider: React.FC<swiperProps> = ({ children, addClass, id, arrow = true, pager, onSlideChange }) => {
+export const SwiperSlider: React.FC<swiperProps> = ({
+  freeMode = true,
+  slidesPerView = 'auto',
+  children,
+  addClass,
+  id,
+  arrow = true,
+  pager,
+  onSlideChange,
+}) => {
   const [contentWidth, setContentWidth] = useState<number>(0);
   const swiperRef = useRef<SwiperClass | null>(null);
   const paginationRef = useRef(null);
@@ -76,12 +87,12 @@ export const SwiperSlider: React.FC<swiperProps> = ({ children, addClass, id, ar
   };
 
   const swiperOption: SwiperProps = {
-    freeMode: true,
+    freeMode: freeMode,
     autoplay: false, // { delay: 2500 }
     centeredSlides: false,
     loop: false,
     spaceBetween: 0,
-    slidesPerView: 'auto',
+    slidesPerView: slidesPerView,
     className: 'visible !important',
     watchOverflow: true,
     navigation: {
@@ -95,10 +106,10 @@ export const SwiperSlider: React.FC<swiperProps> = ({ children, addClass, id, ar
       // handleSwiperInit(swiper);
     },
     onActiveIndexChange: (swiper: SwiperClass) => {
-      // console.log(swiper);
+      console.log(swiper);
     },
     onBeforeInit: (swiper: SwiperClass) => {
-      // console.log(swiper);
+      console.log(swiper);
     },
     onSlideChange: multiOnSlideChange,
     onResize: (swiper: SwiperClass) => {

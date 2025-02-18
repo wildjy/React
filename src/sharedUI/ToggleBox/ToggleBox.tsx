@@ -1,7 +1,7 @@
 
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 
 interface ToggleContextProps {
   isOpen: boolean;
@@ -15,17 +15,18 @@ const ToggleContext = createContext<ToggleContextProps | null>(null);
 
 const useToggleContext = () => {
   const context = useContext(ToggleContext);
-  if(!context) {
+  if (!context) {
     throw new Error('error');
   }
   return context;
-}
+};
 
-const ToggleBoxTopVariants = cva(`pr-9 relative cursor-pointer
+const ToggleBoxTopVariants = cva(
+  `pr-9 relative cursor-pointer
   after:w-[1.25rem]
   after:h-[1.25rem]
   after:bg-[length:1.25rem_1.25rem]
-  after:absolute after:top-center after:right-4
+  after:absolute after:top-[50%] after:transform after:-translate-y-1/2 after:right-4
   after:content-[""]
   after:bg-center
   after:bg-no-repeat
@@ -35,7 +36,7 @@ const ToggleBoxTopVariants = cva(`pr-9 relative cursor-pointer
   {
     variants: {
       size: {
-        sm: `pl-3 py-2 text-s`,
+        sm: `pl-3 py-2 text-sm`,
         md: `pl-4 py-3`,
         lg: `pl-5 py-4 text-lg`,
       },
@@ -51,18 +52,19 @@ const ToggleBoxTopVariants = cva(`pr-9 relative cursor-pointer
         plus: `
           after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_plus.svg")]
         `,
-      }
+      },
     },
   }
-)
+);
 
 interface ToggleBoxProps {
+  isOpen?: boolean;
+  EventOpen?: () => void;
   children?: React.ReactNode;
   size?: string;
   align?: string;
   icon?: string;
 }
-
 
 interface ToggleBoxTypes extends React.FC<ToggleBoxProps> {
   Top: typeof ToggleBoxTop;
@@ -73,68 +75,73 @@ interface ToggleBoxTopProps extends VariantProps<typeof ToggleBoxTopVariants> {
   children?: React.ReactNode;
   EventOpen?: () => void;
   addClass?: string;
+  activeClass?: string;
 }
 
 interface ToggleBoxBottomProps {
   children?: React.ReactNode;
   addClass?: string;
+  activeClass?: string;
 }
 
-const ToggleBox: ToggleBoxTypes = ({ size = "md", align = "left", icon = "default", children }) => {
-  const [isOpen, setIsIOpen] = useState(false);
-  const EventOpen = () => {
-    setIsIOpen((prevOpen) => !prevOpen);
-  }
+const ToggleBox: ToggleBoxTypes = ({ isOpen: outIsOpen, EventOpen: outEventOpen, size = 'md', align = 'left', icon = 'default', children }) => {
+  const [inIsOpen, setInIsOpen] = useState(outIsOpen || false);
 
+  useEffect(() => {
+    if (outIsOpen !== undefined) {
+      setInIsOpen(outIsOpen);
+    }
+  }, [outIsOpen]);
+
+  const eventToggle = () => {
+    if (outEventOpen) {
+      outEventOpen();
+    } else {
+      setInIsOpen((prev) => !prev);
+    }
+  };
   return (
-    <>
-      <ToggleContext.Provider value={{ size, align, icon, isOpen, EventOpen }}>
-        <div className={`${isOpen ? 'active': ''} toggleBox border rounded-lg`}>
-          { children }
-        </div>
-      </ToggleContext.Provider>
-    </>
-  )
+    <ToggleContext.Provider value={{ size, align, icon, isOpen: inIsOpen, EventOpen: eventToggle }}>
+      <div className={`${inIsOpen ? 'active' : ''} toggleBox `}>{children}</div>
+    </ToggleContext.Provider>
+  );
 };
 
-const ToggleBoxTop: React.FC<ToggleBoxTopProps> = ({ children, addClass }) => {
+const ToggleBoxTop: React.FC<ToggleBoxTopProps> = ({ children, addClass, activeClass }) => {
   const { size, align, icon, isOpen, EventOpen } = useToggleContext();
 
   const className = ToggleBoxTopVariants({
     size: size as 'sm' | 'md' | 'lg' | undefined,
     align: align as 'left' | 'center' | 'right' | undefined,
     icon: icon as 'default' | 'plus' | undefined,
-  })
+  });
 
-  const atArrow = icon === "plus";
+  const atArrow = icon === 'plus';
 
   return (
-    <>
-      <div className={`${cn(className, addClass, {
-        'font-bold text-blue-700 after:-rotate-180': isOpen,
-        'font-bold text-blue-700 after:-rotate-45': isOpen && atArrow,
-      })} `} onClick={EventOpen}>
-        { children }
-      </div>
-    </>
-  )
-}
+    <div
+      className={cn(
+        className,
+        addClass,
+        isOpen && `${activeClass} after:-rotate-180`,
+        isOpen && atArrow && `${activeClass} after:-rotate-45`
+      )}
+      onClick={EventOpen}
+    >
+      {children}
+    </div>
+  );
+};
 
-const ToggleBoxBottom: React.FC<ToggleBoxBottomProps> = ({ children, addClass }) => {
+const ToggleBoxBottom: React.FC<ToggleBoxBottomProps> = ({ children, addClass, activeClass }) => {
   const { isOpen } = useToggleContext();
 
   return (
-    <>
-      <div className={`${cn('h-0 overflow-hidden', '', {
-        'h-auto': isOpen,
-      })}`}>
-        <div className={cn(`px-4 pb-3`, addClass)}>
-          { children }
-        </div>
-      </div>
-    </>
-  )
-}
+    <div className={`${cn('h-0 overflow-hidden', '', isOpen && `h-auto ${activeClass}`)}`}>
+      <div className={cn(`p-4`, addClass)}>{children}</div>
+    </div>
+  );
+};
 
 ToggleBox.Top = ToggleBoxTop;
 ToggleBox.Bottom = ToggleBoxBottom;

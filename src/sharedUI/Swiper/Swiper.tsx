@@ -1,5 +1,5 @@
 import { useLayoutEffect, useEffect, useRef, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper } from 'swiper/react';
 import { SwiperProps } from 'swiper/react';
 import { Swiper as SwiperClass } from 'swiper';
 import { FreeMode, Navigation, Pagination, Autoplay } from 'swiper/modules';

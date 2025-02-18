@@ -1,9 +1,46 @@
 'use client';
 import { cn } from "../common/cn";
-import { useEffect } from 'react';
+import { cva, VariantProps } from "class-variance-authority";
+import { useEffect, HTMLAttributes } from 'react';
 import { Button } from '../Button/Button';
 
-interface ToastPopupProps {
+const ToastPopupVariants = cva(
+  `
+  fixed bottom-6
+  min-w-[300px] w-[90dvw] md:w-[40rem] xl:w-[43.75rem]
+  rounded-lg
+  transition-all duration-500
+  z-[110]
+  `,
+  {
+    variants: {
+      size: {
+        base: `
+      px-5 py-4 md:px-6 md:py-5 xl:px-9
+      text-white text-2xs grow sm:text-md md:text-lg
+      `,
+        sm: `
+      px-4 py-3 md:px-5 md:py-4 xl:px-8
+      text-white text-3xs grow sm:text-s md:text-base
+      `,
+      },
+      align: {
+        left: `left-6`,
+        center: `left-[50%] -translate-x-1/2`,
+        right: `right-6`,
+      },
+      color: {
+        base: `bg-black bg-opacity-60`,
+      },
+    },
+    defaultVariants: {
+      size: 'base',
+      align: 'center',
+      color: 'base',
+    },
+  }
+);
+interface ToastPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'size' | 'color'>, VariantProps<typeof ToastPopupVariants> {
   child?: boolean;
   children?: React.ReactNode;
   isActive?: boolean;
@@ -13,12 +50,29 @@ interface ToastPopupProps {
   message?: string[];
 }
 
-export const ToastPopup: React.FC<ToastPopupProps> = ({ child = false, children, isActive, setToast, setColor, message, addClass }) => {
+export const ToastPopup: React.FC<ToastPopupProps> = ({
+  align,
+  size,
+  color,
+  child = false,
+  children,
+  isActive,
+  setToast,
+  setColor,
+  message,
+  addClass,
+}) => {
+  const className = ToastPopupVariants({
+    align: align as 'left' | 'center' | 'right' | undefined,
+    size: size as 'base' | undefined,
+    color: color as 'base' | undefined,
+  });
+
   useEffect(() => {
     if (isActive) {
       const timer = setTimeout(() => {
         setToast(false);
-      }, 5000);
+      }, 4500);
       return () => {
         clearTimeout(timer);
       };
@@ -28,21 +82,16 @@ export const ToastPopup: React.FC<ToastPopupProps> = ({ child = false, children,
   return (
     <div
       className={`
-      ${isActive ? 'translate-y-0 opacity-100 visible' : 'translate-y-full opacity-0 invisible'}
       ${cn(
-        `fixed bottom-6 x_center
-        px-5 py-4 md:px-6 md:py-5 xl:px-9
-        min-w-[300px] w-[90dvw] md:w-[40rem] xl:w-[43.75rem]
-        bg-black rounded-lg bg-opacity-60
-        transition-all duration-300
-        z-[110]`,
-        addClass
+        className,
+        addClass,
+        'transform transition-all duration-500 ease-in-out',
+        isActive ? 'translate-y-0 opacity-100 visible' : 'translate-y-full opacity-0 invisible'
       )}
-
     `}
     >
       <div className="flex items-center justify-between">
-        <p className="text-white text-2xs grow sm:text-md md:text-lg">
+        <p>
           {child ? (
             children
           ) : (

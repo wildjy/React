@@ -2,20 +2,24 @@
 import { cn } from "../common/cn";
 
 interface InfoTextProps {
-  texts: {
+  child?: boolean;
+  children?: React.ReactNode;
+  texts?: {
     text?: string | React.ReactNode;
   }[];
   addClass?: string;
 }
 
-export const InfoText: React.FC<InfoTextProps> = ({ texts, addClass }) => {
+export const InfoText: React.FC<InfoTextProps> = ({ child = false, children, texts, addClass }) => {
   return (
-    <ul className={`${cn('text-2xs sm:text-3xs md:text-md ', addClass)}`}>
-      {texts?.map((item, index) => (
-        <li key={index} className='pl-4 before:absolute before:left-0 before:content-["-"] relative'>
-          {item.text}
-        </li>
-      ))}
+    <ul className={`${cn('text-xs sm:text-sm md:text-base lg:text-md', addClass)}`}>
+      {child
+        ? children
+        : texts?.map((item, index) => (
+            <li key={index} className='pl-4 before:absolute before:left-0 before:content-["-"] relative'>
+              {item.text}
+            </li>
+          ))}
     </ul>
   );
 };
