@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Title from "../../sharedUI/Title/TitleDemo";
 import SwiperComponent from "../../sharedUI/Swiper/Swiper";
 import { SwiperGroup } from "../../sharedUI/Swiper/SwiperGroup";
+import { RecomGroupSwiper } from "./RecomGroupSwiper";
 import { SwiperSlide } from 'swiper/react';
 
 const SwiperPage: React.FC = () => {
@@ -141,71 +142,20 @@ const SwiperPage: React.FC = () => {
         url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
         label: 'ㅇㅇㅇdd \n 대학명',
       },
+      {
+        id: 9,
+        url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
+        label: 'ㅇㅇㅇdd \n 대학명',
+      },
     ];
     setSlides(fetchSlides);
   }, []);
 
-  const selectIds = [2, 3];
   const [slides, setSlides] = useState<Slide[]>([]);
-  const [groupSwiper, setGroupSwiper] = useState<Slide[][]>([]);
-  const [isSelect, setIsSelect] = useState<number[]>(selectIds);
-  const isAllSelected = isSelect.length === slides.length;
 
-  const selectEvent = (id: number) => {
-    if (id === 1) {
-      if (isAllSelected) {
-        setIsSelect([]);
-      } else {
-        setIsSelect(slides.slice(1).map((i) => i.id));
-      }
-    }
-    setIsSelect((prev) => (prev.includes(id) ? prev.filter((id) => id !== id) : [...prev, id]));
-  };
+  const [isSelect, setIsSelect] = useState<number[]>([2, 3]);
+  const [isSelectInfo, setIsSelectInfo] = useState<Slide[]>(slides.filter((item) => isSelect.includes(item.id)));
 
-  console.log(groupSwiper);
-  const [disableNav, setDisableNav] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  const groupImages = (arr: Slide[], size: number, isMobile: boolean): Slide[][] => {
-    return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) => {
-      const group = arr.slice(i * size, i * size + size);
-
-      if (isMobile && arr.length <= 3) {
-        return arr.slice(i * size, size);
-      }
-      if (!isMobile && arr.length <= 4) {
-        return arr.slice(i * size, size);
-      }
-      while (group.length < size) {
-        group.push({
-          id: 0,
-          url: '',
-          label: '',
-        }); // empty
-      }
-      return group;
-    });
-  };
-
-  useEffect(() => {
-    const resizeEvent = () => {
-      const win = window.innerWidth;
-      setWindowWidth(win);
-    };
-    resizeEvent();
-    window.addEventListener('resize', resizeEvent);
-    return () => {
-      window.removeEventListener('resize', resizeEvent);
-    };
-  }, []);
-
-  useEffect(() => {
-    const isMobile = windowWidth < 768;
-    const groupSize = isMobile ? 6 : 8;
-
-    setGroupSwiper(groupImages(slides, groupSize, isMobile));
-    setDisableNav(slides.length > groupSize);
-  }, [slides, windowWidth]);
   return (
     <div id="contents" className="bg-gray-50">
       <div className="container">
@@ -280,54 +230,23 @@ const SwiperPage: React.FC = () => {
           </div>
 
           <div>
-            <SwiperGroup arrow={disableNav} pager freeMode={false} slidesPerView={1}>
-              {groupSwiper.map((groupSlide, index) => (
-                <SwiperSlide key={index} style={{ width: '100%' }}>
-                  <div className={`flex flex-wrap gap-3 md:gap-5`}>
-                    {groupSlide.map((src, idx) => (
-                      <div
-                        key={idx}
-                        onClick={src.url === '' ? undefined : () => selectEvent(src.id)}
-                        className={`${windowWidth < 768 ? 'w-[calc(100%/3-0.35rem)]' : 'w-[calc(100%/4-0.4rem)] md:w-[calc(100%/4-0.75rem)]'}
-                        ${idx === 0 ? 'py-5 sm:py-7 lg:py-12' : ''}
-                        ${
-                          src.id === 1
-                            ? isAllSelected
-                              ? 'text-blue-800 border-blue-800'
-                              : 'border-gray-100'
-                            : isSelect.includes(src.id)
-                            ? 'text-blue-800 border-blue-800'
-                            : 'border-gray-100'
-                        }
-                        py-5 sm:py-6 md:py-8 lg:py-10
-                        h-[6.25rem] sm:h-[8.75rem] md:h-[10.25rem] lg:h-[13.75rem]
-                        flex flex-wrap content-start items-center justify-center text-center border
-                        rounded-lg cursor-pointer
-                        ${
-                          src.url === ''
-                            ? `
-                          bg-[length:4.375rem_3.125rem] lg:bg-[length:7.5rem_5.375rem] content-[""] bg-center bg-no-repeat
-                          bg-[url(https://image.jinhak.com/jinhakImages/react/icon/icon_empty_univ.svg)]
-                          `
-                            : ''
-                        }`}
-                      >
-                        <img src={src.url} alt={src.label} className={`w-[2.375rem] sm:w-[3.125rem] md:w-[3.5rem] lg:w-[5rem]`} />
-                        <p
-                          className={`${idx === 0 && 'pt-3 sm:pt-5 md:pt-6'}
-                          pt-3 sm:pt-4 md:pt-5 lg:pt-6 w-full
-                          text-2xs sm:text-base xl:text-lg
-                          leading-[1.2] xl:leading-[1.43]
-                          whitespace-pre-line`}
-                        >
-                          {src.label}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </SwiperSlide>
-              ))}
-            </SwiperGroup>
+
+          <RecomGroupSwiper
+            items={slides}
+            isSelect={isSelect}
+            setIsSelect={setIsSelect}
+            isSelectInfo={isSelectInfo}
+            setIsSelectInfo={setIsSelectInfo}
+          />
+
+          {isSelect}
+          {isSelectInfo.map((info, i) => (
+            <div key={i}>
+              <p>{info.id}</p>
+              <p>{info.url}</p>
+              <p>{info.label}</p>
+            </div>
+          ))}
           </div>
         </div>
 
