@@ -1,8 +1,8 @@
 
 "use client";
 import React, { useState, ChangeEvent } from "react";
-import { DropDown_Score } from "../../sharedUI/DropDown/DropDown_Score";
-import { DropDown } from "../../sharedUI/DropDown/DropDown";
+import { DropDown_Score, OptionType } from "../../sharedUI/DropDown/DropDown_Score";
+import { DropDown, DropDownOptionType } from "../../sharedUI/DropDown/DropDown";
 import { DropDownMore } from "../../sharedUI/DropDown/DropDownMore";
 import { CheckBox } from "../../sharedUI/Input/CheckBox";
 
@@ -24,12 +24,12 @@ const DropDownPage = () => {
 
   const dropOptions = {
     dropOption1: [
-      { value: "1", label: "옵션옵션옵1-1" },
+      { value: "1", label: "옵션옵션옵1-1"},
       { value: "2", label: "옵션 1-2" },
-      { value: "3", label: "옵션 1-3" },
+      { value: "3", label: "옵션 1-3", disabled: true},
     ],
     dropOption2: [
-      { value: "a", label: "화법과 작문" },
+      { value: "a", label: "화법과 작문", disabled: true},
       { value: "b", label: "확률과 통계" },
       { value: "c", label: "미적분" },
       { value: "d", label: "가하" },
@@ -43,9 +43,9 @@ const DropDownPage = () => {
       { value: "2", label: "인기순" },
     ],
   }
-  const [selectedOption, setSelectedOption] = useState<{[key: string]:OptionType | null}>({
+  const [selectedOption, setSelectedOption] = useState<{[key: string]:DropDownOptionType | null}>({
     drop1: {
-      value: "a",
+      value: "1",
       label: "화법과 작문"
     },
     drop2: {
@@ -58,7 +58,7 @@ const DropDownPage = () => {
     },
   });
 
-  const handleChange = (key: string, option: OptionType) => {
+  const handleChange = (key: string, option: DropDownOptionType) => {
     console.log('Selected Option:', option);
     setSelectedOption((prevState) => ({
       ...prevState,
@@ -70,13 +70,13 @@ const DropDownPage = () => {
     <>
       <div>
         <div className="flex gap-3 flex-wrap">
-          <DropDown options={dropOptions.dropOption2} layer min="min-w-[9rem]" value={selectedOption.drop1} onChange={(option) => handleChange('drop1', option)} label="선택 layer"/>
-          <DropDown options={dropOptions.dropOption2} type="shadow" size="sm" value={selectedOption.drop2} onChange={(option) => handleChange('drop2', option)} width="w-[13rem]" align="center" label="선택 shadow" />
-          <DropDown options={dropOptions.dropOption2} type="ghost" value={selectedOption.drop3} onChange={(option) => handleChange('drop3', option)} />
+          <DropDown options={dropOptions.dropOption1} layer min="min-w-[9rem]" value={selectedOption.drop1?.value} onChange={(option) => handleChange('drop1', option)} label="선택 layer"/>
+          <DropDown options={dropOptions.dropOption2} disabled={true} type="shadow" size="sm" value={selectedOption.drop2?.value} onChange={(option) => handleChange('drop2', option)} width="w-[13rem]" align="center" label="선택 shadow" />
+          <DropDown options={dropOptions.dropOption2} type="ghost" value={selectedOption.drop3?.value} onChange={(option) => handleChange('drop3', option)} />
           <DropDown options={dropOptions.dropOption3} type="check" size="sm" width="" />
           <DropDown options={dropOptions.dropOption1} width="min-w-[12rem]" label="선택2" />
 
-          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer width="min-w-[10rem]" align="center" label="사과탐" />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} value={{label: '세계사', value: 'c' }} layer width="min-w-[10rem]" align="center" label="사과탐" />
           <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="shadow" width="min-w-[10rem]" label="사과탐" />
           <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="ghost" width="min-w-[10rem]" label="사과탐" />
 

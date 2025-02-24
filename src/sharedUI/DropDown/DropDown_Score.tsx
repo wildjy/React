@@ -9,6 +9,7 @@ interface DropDownContextProps {
   type: typeMode;
   align: alignMode;
   isOpen: boolean;
+  disabled: boolean;
   selectValue: OptionType | null;
   onOpen: () => void;
   onClose: () => void;
@@ -43,6 +44,7 @@ const DropDownVariants = cva(
         base: '',
         shadow: '',
         ghost: 'border-transparent',
+        ghostShadow: 'border-transparent',
       },
       size: {
         // pr-[1.2rem] sm:pr-[1.2rem]
@@ -101,9 +103,10 @@ const DropDownInnerBoxVariants = cva(
   }
 );
 
-interface OptionType {
+export interface OptionType {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 interface DropDownProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>, VariantProps<typeof DropDownVariants> {
@@ -116,6 +119,7 @@ interface DropDownProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>
   width?: string;
   label?: string;
   layer?: boolean;
+  disabled?: boolean;
   onChange?: (option: OptionType) => void;
   value?: OptionType | null; // 외부에서 전달받는 선택된 값
 }
@@ -147,6 +151,7 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
   custom = false,
   layer = false,
   onChange,
+  disabled,
   value, // 외부에서 전달받는 선택의 값
   ...props
 }) => {
@@ -201,12 +206,17 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
         isOpen,
         selectValue,
         onOpen: OpenEvent,
+        disabled: false,
         onClose: () => setIsOpen(false),
         onChangeSelect: ChangeSelectValue
       }}>
       <div ref={dropRef} className={`${width} ${layer ? 'md:relative' : 'relative'}`}>
         <div className={`${cn(className, addClass, {'border-blue-700 after:-rotate-180': isOpen})}`}
-          onClick={OpenEvent}
+          onClick={() => {
+            if(!disabled){
+              OpenEvent();
+            }
+          }}
           data-value={selectValue?.value || null}
           {...props}
         >

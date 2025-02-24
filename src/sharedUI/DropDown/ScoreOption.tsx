@@ -3,12 +3,12 @@ import { cn } from "../common/cn";
 
 interface ScoreOptionProps {
   title: string;
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; disabled?: boolean }[];
   align?: "left" | "center";
   selectValue: { value: string | null } | null;
   atShadow?: boolean;
   addClass?: string;
-  onChangeSelect: (option: { value: string; label: string }) => void;
+  onChangeSelect: (option: { value: string; label: string; disabled?: boolean }) => void;
 }
 
 export const ScoreOption: React.FC<ScoreOptionProps> = ({
@@ -31,10 +31,15 @@ export const ScoreOption: React.FC<ScoreOptionProps> = ({
         <li
           key={option.value}
           className={`text-2xs md:text-s ${cn('md:px-4 py-2 rounded md:hover:bg-gray-200 cursor-pointer', addClass,
-            { 'text-blue-800 font-bold': selectValue?.value === option.value },
+            option.disabled ? 'text-disabled-text' : 'md:hover:bg-gray-200 cursor-pointer',
+            { 'text-blue-800 font-bold': !option.disabled && (selectValue?.value === option.value) },
             { 'rounded-none': atShadow }
           )}`}
-          onClick={() => onChangeSelect(option)}
+          onClick={() => {
+            if(!option.disabled){
+              onChangeSelect(option)
+            }
+          }}
         >
           {option.label}
         </li>
