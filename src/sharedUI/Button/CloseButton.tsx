@@ -11,9 +11,12 @@ const CloseButtonVariants = cva(
     variants: {
       type: {
         base: `bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg')]`,
+        back: `bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg')]`,
       },
       size: {
-        base: `w-3 h-3 sm:w-4 sm:h-4`,
+        base: `w-[0.625rem] h-[0.625rem] sm:w-4 sm:h-4 md:w-[0.875rem] md:h-[0.875rem]`,
+        sm: `w-[0.625rem] h-[0.625rem] sm:w-3 sm:h-3 md:w-[0.625rem] md:h-[0.625rem]`,
+        md: `w-[1rem] h-[1rem] sm:w-6 sm:h-6 md:w-8 md:h-8`,
       },
     },
     defaultVariants: {
@@ -30,8 +33,8 @@ interface CloseButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>,
 
 export const CloseButton: React.FC<CloseButtonProps> = ({ type, size, addClass, onClick, ...props }) => {
   const className = CloseButtonVariants({
-    type: type as 'base' | undefined,
-    size: size as 'base' | undefined,
+    type: type as 'base' | 'back' | undefined,
+    size: size as 'base' | 'sm' | 'md' | undefined,
   });
 
   return (
@@ -48,3 +51,4 @@ export const CloseButton: React.FC<CloseButtonProps> = ({ type, size, addClass, 
     </button>
   );
 };
+
