@@ -180,7 +180,7 @@ const DropDownInnerBoxVariants = cva(
       },
       fixed: {
         true: `layer.. absolute right-0 bottom-0 flex flex-col w-full max-w-[100dvw] max-h-[50dvh] rounded-none rounded-t-xl md:rounded-lg
-        md:max-h-[20rem] md:fixed md:w-auto md:max-w-auto md:top-1/2 left-1/2 -translate-x-1/2 md:-translate-y-1/2
+        md:max-h-[20rem] md:fixed md:bottom-auto md:w-auto md:max-w-auto md:top-1/2 left-1/2 -translate-x-1/2 md:-translate-y-1/2
           `, //
         false: `base.. max-h-[10rem]`,
       },

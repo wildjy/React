@@ -10,7 +10,7 @@ interface DropDownContextProps {
   align: alignMode;
   isOpen: boolean;
   disabled: boolean;
-  selectValue: OptionType | null;
+  selectValue: string | null;
   onOpen: () => void;
   onClose: () => void;
   onChangeSelect: (option: OptionType) => void;
@@ -121,7 +121,7 @@ interface DropDownProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>
   layer?: boolean;
   disabled?: boolean;
   onChange?: (option: OptionType) => void;
-  value?: OptionType | null; // 외부에서 전달받는 선택된 값
+  value?: string | null; // 외부에서 전달받는 선택된 값
 }
 
 interface DropOptionProps extends HTMLAttributes<HTMLDivElement>,
@@ -156,7 +156,7 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
   ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectValue, setSelectValue] = useState<OptionType | null>(null);
+  const [selectValue, setSelectValue] = useState<string | null>(null);
   const dropRef = useRef<HTMLDivElement | null>(null);
 
   const className = DropDownVariants ({
@@ -177,7 +177,7 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
   }
 
   const ChangeSelectValue = (option: OptionType) => {
-    setSelectValue(option);
+    setSelectValue(option.value);
     setIsOpen(false);
     // 외부 콜백 실행
     if (onChange) {
@@ -197,6 +197,8 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
     return () => {document.removeEventListener('mousedown', openMouseEvent);}
   }, [])
 
+  const selectedOption = [...options, ...options1].find((option) => option.value === selectValue);
+
   return(
     <>
     {/* ${size === "sm" ? '' : size === "lg" ? "" : null} */}
@@ -211,16 +213,21 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
         onChangeSelect: ChangeSelectValue
       }}>
       <div ref={dropRef} className={`${width} ${layer ? 'md:relative' : 'relative'}`}>
-        <div className={`${cn(className, addClass, {'border-blue-700 after:-rotate-180': isOpen})}`}
+        <div className={`${cn(className, addClass,
+            {'border-blue-700 after:-rotate-180': isOpen},
+            {
+              'bg-disabled-bg': disabled,
+            },
+          )}`}
           onClick={() => {
             if(!disabled){
               OpenEvent();
             }
           }}
-          data-value={selectValue?.value || null}
+          data-value={selectValue || null}
           {...props}
         >
-          {selectValue ? selectValue.label : label ? label : '선택'}
+            {selectedOption?.label || label || '선택'}
         </div>
         <DropOption
           isOpen={isOpen}

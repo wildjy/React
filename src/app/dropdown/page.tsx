@@ -1,7 +1,7 @@
 
 "use client";
 import React, { useState, ChangeEvent } from "react";
-import { DropDown_Score, OptionType } from "../../sharedUI/DropDown/DropDown_Score";
+import { DropDown_Score } from "../../sharedUI/DropDown/DropDown_Score";
 import { DropDown, DropDownOptionType } from "../../sharedUI/DropDown/DropDown";
 import { DropDownMore } from "../../sharedUI/DropDown/DropDownMore";
 import { CheckBox } from "../../sharedUI/Input/CheckBox";
@@ -76,9 +76,10 @@ const DropDownPage = () => {
           <DropDown options={dropOptions.dropOption3} type="check" size="sm" width="" />
           <DropDown options={dropOptions.dropOption1} width="min-w-[12rem]" label="선택2" />
 
-          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} value={{label: '세계사', value: 'c' }} layer width="min-w-[10rem]" align="center" label="사과탐" />
-          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="shadow" width="min-w-[10rem]" label="사과탐" />
-          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="ghost" width="min-w-[10rem]" label="사과탐" />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} value={"c"} layer width="min-w-[10rem]" align="center" label="선택" />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} disabled={true} value={"a"} layer width="min-w-[10rem]" align="center" label="선택" />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="shadow" width="min-w-[10rem]" label="선택" />
+          <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} layer type="ghost" width="min-w-[10rem]" label="선택" />
 
           <DropDown custom width="min-w-[10rem]" label="옵션 선택">
             <div className="p-5">
