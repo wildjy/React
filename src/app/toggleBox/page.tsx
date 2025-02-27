@@ -19,11 +19,11 @@ const ToggleBoxPage = () => {
         </ToggleBox>
 
         <div className="mt-3 px-8">
-          <ToggleBox isOpen>
+          <ToggleBox isOpen addClass="border">
             <ToggleBox.Top activeClass="font-bold text-green-700">
               유의사항 확인..
             </ToggleBox.Top>
-            <ToggleBox.Bottom>
+            <ToggleBox.Bottom addClass="pt-0">
               Bottom..
               Bottom..
               Bottom..

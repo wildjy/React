@@ -64,6 +64,7 @@ interface ToggleBoxProps {
   size?: string;
   align?: string;
   icon?: string;
+  addClass?: string;
 }
 
 interface ToggleBoxTypes extends React.FC<ToggleBoxProps> {
@@ -85,9 +86,9 @@ interface ToggleBoxBottomProps {
   activeClass?: string;
 }
 
-const ToggleBox: ToggleBoxTypes = ({ isOpen: outIsOpen, size = 'md', align = 'left', icon = 'default', children }) => {
+const ToggleBox: ToggleBoxTypes = ({ isOpen: outIsOpen, size = 'md', align = 'left', icon = 'default', children, addClass }) => {
   const [isOpen, setIsOpen] = useState(outIsOpen || false);
-  console.log(isOpen);
+
   useEffect(() => {
     setIsOpen(outIsOpen || false);
   }, [outIsOpen]);
@@ -98,7 +99,7 @@ const ToggleBox: ToggleBoxTypes = ({ isOpen: outIsOpen, size = 'md', align = 'le
 
   return (
     <ToggleContext.Provider value={{ size, align, icon, isOpen: isOpen, EventOpen: eventToggle }}>
-      <div className={`${isOpen ? 'active' : ''} toggleBox `}>{children}</div>
+      <div className={`${cn(`toggleBox`, addClass, isOpen && 'active')}`}>{children}</div>
     </ToggleContext.Provider>
   );
 };
