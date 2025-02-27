@@ -3,12 +3,15 @@ import React, { HTMLAttributes } from 'react';
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from "../common/cn";
 
-const BetweenVariants = cva(`flex md:justify-between items-center`, {
+type modeType = 'default' | 'left' | 'right' | 'mLeft' | 'mRight';
+const BetweenVariants = cva(`flex items-center`, {
   variants: {
     type: {
       default: 'justify-between',
-      left: 'justify-start',
-      right: 'justify-end',
+      left: 'justify-between md:justify-start',
+      mLeft: 'justify-start md:justify-between',
+      right: 'justify-between md:justify-end',
+      mRight: 'justify-end md:justify-between',
     },
   },
   defaultVariants: {
@@ -24,7 +27,7 @@ interface BetweenProps extends Omit<HTMLAttributes<HTMLDivElement>, 'type'>, Var
 export const Between: React.FC<BetweenProps> = ({ type, children, addClass }) => {
   const slots = React.Children.toArray(children);
   const className = BetweenVariants({
-    type: type as 'default' | 'left' | 'right' | undefined,
+    type: type as modeType | undefined,
   });
 
   return (

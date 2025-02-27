@@ -73,6 +73,7 @@ interface ToggleBoxTypes extends React.FC<ToggleBoxProps> {
 
 interface ToggleBoxTopProps extends VariantProps<typeof ToggleBoxTopVariants> {
   children?: React.ReactNode;
+  onClick?: () => void;
   EventOpen?: () => void;
   addClass?: string;
   activeClass?: string;
@@ -84,30 +85,25 @@ interface ToggleBoxBottomProps {
   activeClass?: string;
 }
 
-const ToggleBox: ToggleBoxTypes = ({ isOpen: outIsOpen, EventOpen: outEventOpen, size = 'md', align = 'left', icon = 'default', children }) => {
-  const [inIsOpen, setInIsOpen] = useState(outIsOpen || false);
-
+const ToggleBox: ToggleBoxTypes = ({ isOpen: outIsOpen, size = 'md', align = 'left', icon = 'default', children }) => {
+  const [isOpen, setIsOpen] = useState(outIsOpen || false);
+  console.log(isOpen);
   useEffect(() => {
-    if (outIsOpen !== undefined) {
-      setInIsOpen(outIsOpen);
-    }
+    setIsOpen(outIsOpen || false);
   }, [outIsOpen]);
 
   const eventToggle = () => {
-    if (outEventOpen) {
-      outEventOpen();
-    } else {
-      setInIsOpen((prev) => !prev);
-    }
+    setIsOpen(() => !isOpen);
   };
+
   return (
-    <ToggleContext.Provider value={{ size, align, icon, isOpen: inIsOpen, EventOpen: eventToggle }}>
-      <div className={`${inIsOpen ? 'active' : ''} toggleBox `}>{children}</div>
+    <ToggleContext.Provider value={{ size, align, icon, isOpen: isOpen, EventOpen: eventToggle }}>
+      <div className={`${isOpen ? 'active' : ''} toggleBox `}>{children}</div>
     </ToggleContext.Provider>
   );
 };
 
-const ToggleBoxTop: React.FC<ToggleBoxTopProps> = ({ children, addClass, activeClass }) => {
+const ToggleBoxTop: React.FC<ToggleBoxTopProps> = ({ children, addClass, activeClass, onClick }) => {
   const { size, align, icon, isOpen, EventOpen } = useToggleContext();
 
   const className = ToggleBoxTopVariants({
@@ -126,7 +122,7 @@ const ToggleBoxTop: React.FC<ToggleBoxTopProps> = ({ children, addClass, activeC
         isOpen && `${activeClass} after:-rotate-180`,
         isOpen && atArrow && `${activeClass} after:-rotate-45`
       )}
-      onClick={EventOpen}
+      onClick={onClick || EventOpen}
     >
       {children}
     </div>
