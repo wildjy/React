@@ -15,8 +15,8 @@ export const ScrollFixed: React.FC<ScrollFixedProps> = ({ fixHeight, top, childr
   const { isFixed } = useScroll();
 
   return (
-    <div className={`${fixHeight} ${cn('bg-gray-300 scrollfixed..  ', addClass)}`} style={addStyle}>
-      <div className={`${isFixed ? 'fixed' : ''} ${top} left-0 right-0 bg-white border-b`}>{children}</div>
+    <div className={`${fixHeight} ${cn('scrollfixed..  ', addClass)}`} style={addStyle}>
+      <div className={`${isFixed ? 'fixed' : ''} ${top} left-0 right-0`}>{children}</div>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import React, { ButtonHTMLAttributes } from 'react';
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from "../common/cn";
 
+type TypeProps = 'base' | 'back' | 'backWhite';
 const CloseButtonVariants = cva(
   `block
   bg-center bg-no-repeat bg-[length:100%_100%]
@@ -12,6 +13,7 @@ const CloseButtonVariants = cva(
       type: {
         base: `bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg')]`,
         back: `bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg')]`,
+        backWhite: `bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_back_white.svg')]`,
       },
       size: {
         base: `w-[0.625rem] h-[0.625rem] sm:w-4 sm:h-4 md:w-[0.875rem] md:h-[0.875rem]`,
@@ -33,7 +35,7 @@ interface CloseButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>,
 
 export const CloseButton: React.FC<CloseButtonProps> = ({ type, size, addClass, onClick, ...props }) => {
   const className = CloseButtonVariants({
-    type: type as 'base' | 'back' | undefined,
+    type: type as TypeProps | undefined,
     size: size as 'base' | 'sm' | 'md' | undefined,
   });
 
@@ -51,4 +53,3 @@ export const CloseButton: React.FC<CloseButtonProps> = ({ type, size, addClass, 
     </button>
   );
 };
-

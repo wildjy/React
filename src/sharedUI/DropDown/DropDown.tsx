@@ -9,6 +9,7 @@ interface DropDownContextProps {
   min: string;
   align: alignMode;
   isOpen: boolean;
+  isFixedScroll: boolean;
   disabled: boolean;
   selectValue: string | null;
   onOpen: () => void;
@@ -18,28 +19,58 @@ interface DropDownContextProps {
 
 export interface DropDownOptionType {
   value: string;
-  label: { univ: string; name: string } | string | React.ReactNode;
+  label: { gun?: string; univ?: string; name?: string } | string | React.ReactNode;
   disabled?: boolean;
 }
 
-const isLabelObject = (label: DropDownOptionType['label']): label is { univ: string; name: string } => {
+const isLabelObject = (label: DropDownOptionType['label']): label is { gun?: string; univ?: string; name?: string } => {
   return typeof label === 'object' && label !== null && 'univ' in label && 'name' in label;
 };
 
-const renderLabel = (label: DropDownOptionType['label'], isInline: boolean) => {
+// Report Common DropDown
+const ReportRenderLabel = (label: DropDownOptionType['label'], isInline: boolean, isFixedScroll?: boolean) => {
+  const gunClass = `
+  ${cn(
+    `mr-2
+    w-6 h-6 sm:w-7 sm:h-7 md:w-[1.625rem] md:h-[1.625rem] xl:w-9 xl:h-9
+    text-sm sm:text-base md:text-[1.125rem] xl:text-[1.375rem]
+    leading-[1.25rem] sm:leading-[1.5rem] md:leading-[1.625rem] xl:leading-[2rem]
+    font-normal
+    bg-white border border-white rounded md:rounded-lg`,
+    isInline || isFixedScroll
+      ? `
+    inline-block
+    w-[0.75rem] h-[0.75rem] sm:w-5 sm:h-5 md:w-[1.25rem] md:h-[1.25rem] xl:w-6 xl:h-6
+    text-4xs sm:text-xs md:text-sm xl:text-sm
+    leading-[0.75rem] sm:leading-[1rem] md:leading-[1.15rem] xl:leading-[1.25rem]
+    text-gray-500
+    border-gray-400
+    rounded-sm md:rounded-sm
+     `
+      : `text-blue-800`,
+    isInline && 'absolute left-0 top-1/2 -translate-y-1/2 md:mt-1 border-gray-400',
+    isFixedScroll && ''
+  )}
+  `;
   if (typeof label === 'string') {
     return <span className="">{label}</span>; //  개행 적용
   }
   if (isLabelObject(label)) {
     return (
-      <span className={isInline ? 'flex justify-center md:block' : 'block'}>
-        <span className={isInline ? '' : 'block md:inline'}>{label.univ}</span>
-        <span>{label.name}</span>
+      <span className={isInline ? 'pl-5 sm:pl-7 md:pl-8 flex items-center md:block relative' : 'block'}>
+        <span className="items-center justify-start text-center md:flex">
+          <span className={`${isInline ? '' : 'flex items-center justify-center '}`}>
+            {label.gun && <span className={gunClass}>{label.gun}</span>}
+            <span>{label.univ}</span>
+          </span>
+          <span>{label.name}</span>
+        </span>
       </span>
     );
   }
   return label; // ReactNode 처리
 };
+// Report Common DropDown
 interface DropDownProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>, VariantProps<typeof DropDownVariants> {
   type?: typeMode;
   align?: alignMode;
@@ -52,6 +83,7 @@ interface DropDownProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>
   label?: string;
   layer?: boolean;
   fixed?: boolean;
+  isFixedScroll?: boolean;
   disabled?: boolean;
   onChange?: (option: DropDownOptionType) => void;
   value?: string | null; // 외부에서 전달받는 선택된 값
@@ -103,7 +135,7 @@ const DropDownVariants = cva(
       type: {
         base: '',
         shadow: '',
-        ghost: 'border-transparent',
+        ghost: '!py-0 border-transparent',
         ghostShadow: 'border-transparent',
         check: 'border-transparent',
       },
@@ -178,9 +210,10 @@ const DropDownInnerBoxVariants = cva(
         `, //
         false: `base.. max-h-[10rem]`,
       },
+      // Report top Fixed
       fixed: {
         true: `layer.. absolute right-0 bottom-0 flex flex-col w-full max-w-[100dvw] max-h-[50dvh] rounded-none rounded-t-xl md:rounded-lg
-        md:max-h-[20rem] md:fixed md:bottom-auto md:w-auto md:max-w-auto md:top-1/2 left-1/2 -translate-x-1/2 md:-translate-y-1/2
+        md:max-h-[20rem] md:fixed md:bottom-auto md:max-w-auto md:w-max md:top-1/2 left-1/2 -translate-x-1/2 md:-translate-y-1/2
           `, //
         false: `base.. max-h-[10rem]`,
       },
@@ -201,9 +234,10 @@ export const DropDown: React.FC<DropDownProps> = ({
   custom = false,
   layer = false,
   fixed = false,
+  isFixedScroll = false,
   onChange,
   disabled,
-  value, // 외부에서 전달받는 선택의 값
+  value,
   ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -259,6 +293,7 @@ export const DropDown: React.FC<DropDownProps> = ({
           min,
           align,
           isOpen,
+          isFixedScroll,
           selectValue,
           onOpen: OpenEvent,
           disabled: false,
@@ -268,11 +303,16 @@ export const DropDown: React.FC<DropDownProps> = ({
       >
         <div ref={dropRef} className={`${width} ${layer || fixed ? 'md:relative' : 'relative'}`}>
           <div
-            className={`${cn(className, addClass, { 'border-blue-700 after:-rotate-180': isOpen }, {
-              'bg-disabled-bg' : disabled
-            })}`}
+            className={`${cn(
+              className,
+              addClass,
+              { 'border-blue-700 after:-rotate-180': isOpen },
+              {
+                'bg-disabled-bg': disabled,
+              }
+            )}`}
             onClick={() => {
-              if(!disabled){
+              if (!disabled) {
                 OpenEvent();
               }
             }}
@@ -280,7 +320,7 @@ export const DropDown: React.FC<DropDownProps> = ({
             {...props}
           >
             {/* options에서 value를 찾아서 label 보여주기 */}
-            {renderLabel(options.find((option) => option.value === selectValue)?.label || label || '선택', false)}
+            {ReportRenderLabel(options.find((option) => option.value === selectValue)?.label || label || '선택', false, isFixedScroll)}
           </div>
           {/* {isOpen && ( */}
           <DropOption
@@ -314,7 +354,6 @@ const DropOption: React.FC<DropOptionProps> = ({ isOpen, children, resetClass, a
 
   const atShadow = ['ghostShadow', 'shadow', 'check'].includes(type);
   const atCheck = ['check'].includes(type);
-
   return (
     <>
       {/* <div className={`${cn(className, addClass)} ${typeMode === 'shadow' ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : ''}`}> */}
@@ -345,7 +384,7 @@ const DropOption: React.FC<DropOptionProps> = ({ isOpen, children, resetClass, a
                   { 'text-left': align === 'left' },
                   { 'text-center': align === 'center' },
                   { 'p-5 md:p-3': layer },
-                  { 'p-7 md:p-8': fixed },
+                  { 'px-4 py-7 md:p-8': fixed },
                   { 'p-0': atShadow }
                 )}`}
               >
@@ -354,25 +393,28 @@ const DropOption: React.FC<DropOptionProps> = ({ isOpen, children, resetClass, a
                   return (
                     <li
                       key={option.value}
-                      className={`text-xs md:text-sm ${cn(
-                        'px-4 py-2 rounded ',
-                        addClass,
-                        option.disabled ? 'text-disabled-text' : 'md:hover:bg-gray-200 cursor-pointer',
-                        { 'text-blue-800 font-bold': !option.disabled && (selectValue === option.value) },
-                        {
-                          'pl-7 md:pl-7 text-blue-500 bg-no-repeat bg-[length:0.8rem] bg-[0.5rem_center] bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg")]':
-                          selectValue === option.value && atCheck,
-                        },
-                        { 'text-center md:text-left': layer || fixed },
-                        { 'rounded-none': atShadow },
-                      )}`}
+                      className={`
+                        ${cn(
+                          'px-4 py-2 text-xs md:text-sm rounded ',
+                          addClass,
+                          !option.disabled && selectValue === option.value && 'text-blue-800 font-bold',
+                          selectValue === (option.value && atCheck) &&
+                            `pl-7 md:pl-7 text-blue-500
+                            bg-no-repeat bg-[length:0.8rem] bg-[0.5rem_center]
+                            bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg")]`,
+                          layer && 'text-center md:text-left',
+                          fixed && 'text-sm md:text-lg md:font-normal text-center md:text-left',
+                          atShadow && 'rounded-none',
+                          //disabled
+                          option.disabled ? 'text-disabled-text' : 'md:hover:bg-gray-200 cursor-pointer'
+                        )}`}
                       onClick={() => {
-                        if(!option.disabled){
-                          onChangeSelect(option)
+                        if (!option.disabled) {
+                          onChangeSelect(option);
                         }
                       }}
                     >
-                      {renderLabel(option.label, true)}
+                      {ReportRenderLabel(option.label, true)}
                     </li>
                   );
                 })}

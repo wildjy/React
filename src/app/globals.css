@@ -71,12 +71,13 @@ body {
   color: var(--foreground);
   line-height: 1.43;
   background: var(--background);
-  @apply break-words;
+  overflow-x: hidden;
+  @apply scroll-smooth break-words;
 }
 
 html,
 body {
-  @apply text-xsBase sm:text-smBase md:text-mdBase lg:text-lgBase xl:text-base;
+  @apply text-xsBase sm:text-smBase md:text-mdBase lg:text-lgBase xl:text-base text-gray-800;
 }
 
 table {
@@ -93,7 +94,7 @@ table .hide {
 
 table th,
 td {
-  @apply text-2xs sm:text-s md:text-base border border-t-0;
+  @apply text-2xs sm:text-sm md:text-base border border-t-0;
 }
 table th {
   @apply px-2 py-5 md:py-5 lg:py-8 lg:px-4 font-normal border border-l-0 border-r-0 border-b bg-[#F4F5F6];
@@ -210,23 +211,6 @@ pre {
   @apply bg-blue-800;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  background: #3b82f6;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  background: #3b82f6;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
 /* 내부에서 정의한, 커스텀 유틸리티 클래스 tailwind 클래스 처럼 요소에서 바로 쓰기 가능*/
 @layer utilities {
   img {
@@ -251,5 +235,4 @@ input[type="range"]::-moz-range-thumb {
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 0.25rem;
   }
-
 }

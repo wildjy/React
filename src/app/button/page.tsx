@@ -49,8 +49,8 @@ const ButtonPage = () => {
         <p className="mt-8 text-xl"><b>[A link]</b></p>
         <div className="flex flex-wrap gap-3">
           <div className="w-full flex flex-wrap items-center gap-3">
-            <ButtonLink href="https://www.jinhak.com/" blank mode="primary" size="sm">Primary Small + blank</ButtonLink>
-            <ButtonLink mode="primary" startIcon={['icon_checked.svg', 'w-[0.75rem]']}>primary</ButtonLink>
+            <ButtonLink tag="a" href="https://www.jinhak.com/" blank mode="primary" size="sm">Primary Small + blank</ButtonLink>
+            <ButtonLink tag="button" mode="primary" startIcon={['icon_checked.svg', 'w-[0.75rem]']}>primary</ButtonLink>
             <ButtonLink mode="primary" size="lg" endIcon={['icon_btn_arrow.svg', 'w-[0.5rem]']}>Primary Large</ButtonLink>
             <ButtonLink disabled>Primary disabled</ButtonLink>
           </div>
