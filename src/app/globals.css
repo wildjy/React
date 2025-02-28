@@ -97,14 +97,14 @@ td {
   @apply text-2xs sm:text-sm md:text-base border border-t-0;
 }
 table th {
-  @apply px-2 py-5 md:py-5 lg:py-8 lg:px-4 font-normal border border-l-0 border-r-0 border-b bg-[#F4F5F6];
+  @apply px-2 py-[0.8125rem] sm:py-5 lg:py-8 lg:px-4 font-normal border border-l-0 border-r-0 border-b bg-[#F4F5F6];
 }
 table thead th {
   @apply border-t-gray-700 lg:border-t-0;
 }
 
 table td {
-  @apply px-3 py-5 md:py-5 text-center border border-l-0 border-r-0 first:border-t-gray-700 lg:border-t-0 border-b;
+  @apply px-3 py-[0.8125rem] sm:py-5 text-center border border-l-0 border-r-0 first:border-t-gray-700 lg:border-t-0 border-b;
 }
 
 .tableType1 {
@@ -144,8 +144,77 @@ table td {
   lg:border-b;
 }
 
+.tableType1 tbody tr td {
+  @apply w-full block items-center border-t-0 border-b
+  border-r-0 last:border-b
+  lg:w-auto lg:table-cell
+  lg:border-b;
+}
+
+.tableTypeMd {
+  @apply flex md:table !border-t-0 md:!border-t;
+}
+
+.tableTypeMd th,
+.tableTypeMd td {
+  @apply py-2 md:py-5 border-b m-2;
+}
+
+.tableTypeMd thead th {
+  @apply lg:py-8 border-b-grayBlue-50 bg-grayBlue-50 rounded-[0.375rem];
+}
+
+.tableTypeMd thead tr,
+.tableTypeMd tbody tr {
+  @apply block md:table-row;
+}
+
+.tableTypeMd thead tr th {
+  @apply w-full flex flex-wrap items-center justify-center ml-0
+  border-t-0
+  border-r-0
+  md:w-auto md:table-cell
+  md:border-b;
+}
+
+.tableTypeMd tbody {
+  @apply flex md:table-row-group;
+}
+
+.tableTypeMd tbody tr {
+  @apply grow;
+}
+
+.tableTypeMd tbody tr td {
+  @apply w-full block items-center text-right md:text-center border-t-0 border-b
+  border-r-0 last:border-b
+  md:w-auto md:table-cell
+  md:border-b;
+}
+
 .tableType2 tbody tr:first-child th {
   @apply border-t-gray-700;
+}
+
+.tableTypeRow {
+  @apply border-t border-gray-700;
+}
+
+.tableTypeRow tbody {
+  @apply flex md:table-row-group;
+}
+
+.tableTypeRow tbody tr {
+  @apply flex flex-wrap w-full md:table-row;
+}
+.tableTypeRow tbody tr th,
+.tableTypeRow tbody tr td {
+  @apply py-5 border-t-0;
+}
+
+.tableTypeRow tbody tr th,
+.tableTypeRow tbody tr td {
+  @apply block w-full md:table-cell md:w-auto;
 }
 
 caption {

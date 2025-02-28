@@ -4,7 +4,7 @@ import { cn } from "../common/cn";
 
 interface TableProps {
   children?: React.ReactNode;
-  typeClass?: string;
+  addClass?: string;
 }
 interface ColgroupProps {
   children?: React.ReactNode;
@@ -24,10 +24,10 @@ interface TableType extends React.FC<TableProps> {
   Tbody: typeof Tbody;
 }
 
-const Table: TableType = ({ children, typeClass}) => {
+const Table: TableType = ({ children, addClass}) => {
   return (
     <>
-      <table className={cn(typeClass, '')}>
+      <table className={cn(addClass, '')}>
         { children }
       </table>
     </>

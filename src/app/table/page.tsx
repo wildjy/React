@@ -219,6 +219,105 @@ const TablePage: React.FC = () => {
             </Table.Tbody>
           </Table>
 
+
+          <Table addClass="tableTypeRow">
+            <Table.Colgroup>
+              <col className="w-full md:w-1/6" />
+            </Table.Colgroup>
+            <Table.Tbody tdW="w-full">
+              <tr>
+                <th>합격가능성 구분</th>
+                <td>인정지원</td>
+                <td>적정지원</td>
+                <td>소신지원</td>
+                <td>모험지원</td>
+                <td>모험지원</td>
+              </tr>
+              <tr>
+                <th>점수범위</th>
+                <td>770~800</td>
+                <td>740~769</td>
+                <td>700~739</td>
+                <td>600~699</td>
+                <td>0~599</td>
+              </tr>
+              <tr>
+                <th>점수범위</th>
+                <td>770~800</td>
+                <td>740~769</td>
+                <td>700~739</td>
+                <td>600~699</td>
+                <td>0~599</td>
+              </tr>
+            </Table.Tbody>
+          </Table>
+
+          <Table addClass="tableType1">
+            <Table.Colgroup>
+              <col width="20%" />
+              <col width="20%" />
+              <col width="20%" />
+              <col width="20%" />
+              <col width="20%" />
+            </Table.Colgroup>
+            <Table.Thead>
+              <th>1</th>
+              <th>2</th>
+              <th>3</th>
+              <th>4</th>
+              <th>5</th>
+            </Table.Thead>
+            <Table.Tbody>
+              <tr>
+                <td>원점수</td>
+                <td>td 2</td>
+                <td>td 3</td>
+                <td>td 4</td>
+                <td className="bg-blue-50">td 5</td>
+              </tr>
+              <tr>
+                <td>표준점수</td>
+                <td>td 7</td>
+                <td>td 8</td>
+                <td>td 9</td>
+                <td className="bg-blue-50">td 10</td>
+              </tr>
+              <tr>
+                <td>백분위</td>
+                <td>td 12</td>
+                <td>td 13</td>
+                <td>td 14</td>
+                <td className="bg-blue-50">td 15</td>
+              </tr>
+            </Table.Tbody>
+          </Table>
+
+          <Table addClass="tableTypeMd mt-5">
+            <Table.Colgroup>
+              <col width="20%" />
+              <col width="20%" />
+              <col width="20%" />
+              <col width="20%" />
+              <col width="20%" />
+            </Table.Colgroup>
+            <Table.Thead thW="w-1/3">
+              <th>군</th>
+              <th>대학</th>
+              <th>모집단위</th>
+              <th>모집인원</th>
+              <th>전년도 경쟁률</th>
+            </Table.Thead>
+            <Table.Tbody tdW="w-2/3">
+              <tr>
+                <td>가군</td>
+                <td>한국외국어대</td>
+                <td>경영경제</td>
+                <td>-</td>
+                <td>5.35</td>
+              </tr>
+            </Table.Tbody>
+          </Table>
+
         </div>
 
         <table className="mt-[10rem] flex md:table">
