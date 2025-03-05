@@ -71,7 +71,7 @@ body {
   color: var(--foreground);
   line-height: 1.43;
   background: var(--background);
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   @apply scroll-smooth break-words;
 }
 
@@ -161,7 +161,7 @@ table td {
 }
 
 .tableTypeMd thead th {
-  @apply lg:py-8 border-b-grayBlue-50 bg-grayBlue-50 rounded-[0.375rem];
+  @apply md:py-5 border-b-grayBlue-50 bg-grayBlue-50 rounded-[0.375rem];
 }
 
 .tableTypeMd thead tr,
@@ -209,12 +209,11 @@ table td {
 }
 .tableTypeRow tbody tr th,
 .tableTypeRow tbody tr td {
-  @apply py-5 border-t-0;
+  @apply border-t-0 block w-full md:table-cell md:w-auto;
 }
 
-.tableTypeRow tbody tr th,
 .tableTypeRow tbody tr td {
-  @apply block w-full md:table-cell md:w-auto;
+  @apply py-3 md:py-5;
 }
 
 caption {

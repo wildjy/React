@@ -21,11 +21,15 @@ const useToggleContext = () => {
   return context;
 };
 
+// after:w-[1.25rem]
+// after:h-[1.25rem]
+// after:bg-[length:1.25rem_1.25rem]
 const ToggleBoxTopVariants = cva(
   `pr-9 relative cursor-pointer
-  after:w-[1.25rem]
-  after:h-[1.25rem]
-  after:bg-[length:1.25rem_1.25rem]
+  after:right-[0.6rem] after:w-[0.75rem] after:h-[0.75rem]
+  md:after:right-[0.75rem]
+  lg:after:right-[1rem] lg:after:w-[1rem] lg:after:h-[1rem]
+  after:bg-[length:100%_100%]
   after:absolute after:top-[50%] after:transform after:-translate-y-1/2 after:right-4
   after:content-[""]
   after:bg-center
@@ -36,8 +40,8 @@ const ToggleBoxTopVariants = cva(
   {
     variants: {
       size: {
-        sm: `pl-3 py-2 text-sm`,
-        md: `pl-4 py-3`,
+        sm: `pl-3 py-2 text-2xs sm:text-sm`,
+        md: `pl-4 py-3 text-xs sm:text-md`,
         lg: `pl-5 py-4 text-lg`,
       },
       align: {
@@ -46,6 +50,7 @@ const ToggleBoxTopVariants = cva(
         right: `text-right`,
       },
       icon: {
+        none: '',
         default: `
           after:bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_toggle.svg")]
         `,
@@ -65,6 +70,8 @@ interface ToggleBoxProps {
   align?: string;
   icon?: string;
   addClass?: string;
+  topAddClass?: string;
+  bottomAddClass?: string;
 }
 
 interface ToggleBoxTypes extends React.FC<ToggleBoxProps> {
@@ -99,7 +106,7 @@ const ToggleBox: ToggleBoxTypes = ({ isOpen: outIsOpen, size = 'md', align = 'le
 
   return (
     <ToggleContext.Provider value={{ size, align, icon, isOpen: isOpen, EventOpen: eventToggle }}>
-      <div className={`${cn(`toggleBox`, addClass, isOpen && 'active')}`}>{children}</div>
+      <div className={`${cn(`toggleBox bg-white`, addClass, { active: isOpen })}`}>{children}</div>
     </ToggleContext.Provider>
   );
 };
