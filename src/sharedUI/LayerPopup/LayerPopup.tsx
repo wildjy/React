@@ -118,7 +118,6 @@ const LayerPopup: LayerPopupType = ({
   const atAbsolute = type === "absolute";
   //const atFull = "full";
   const atScroll = type === "scroll";
-  console.log(closeType);
 
   return (
     <>

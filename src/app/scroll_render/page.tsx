@@ -2,11 +2,19 @@
 import React, { useRef, useEffect, useState } from 'react';
 import throttle from 'lodash/throttle';
 import { ScrollProvider, useScroll } from "../../sharedUI/Layout/Provider/ScrollProvider"
+import { AnalysisResult } from "../../sharedUI/Report/AnalysisResult";
+import { Button } from "../../sharedUI/Button/Button";
+import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
 import { ReportLayout } from "../../sharedUI/Report/ReportLayout";
 import { ReportTop } from "../../sharedUI/Report/ReportTop";
 import { ReportTab } from "../../sharedUI/Report/ReportTab";
+import { ReportTableTypeRow } from "../../sharedUI/Report/ReportTableTypeRow";
+import { ReportTableTypeMd } from "../../sharedUI/Report/ReportTableTypeMd";
+import { ExamResultSwiper } from "../../sharedUI/Report/ExamResultSwiper";
+import { ScoreAnalysis } from "../../sharedUI/Report/ScoreAnalysis";
 import { ReportContents } from "../../sharedUI/Report/ReportContents";
-import { Between } from "../../sharedUI/Layout/Between";;
+import { Between } from "../../sharedUI/Layout/Between";
+import { ContTable } from "../../sharedUI/Layout/ContTable";
 import { DropDown } from "../../sharedUI/DropDown/DropDown";
 import { InfoText } from "../../sharedUI/Info/InfoText";
 import { InfoTextBox } from "../../sharedUI/Info/InfoTextBox";
@@ -15,6 +23,7 @@ import { Arrow } from "../../sharedUI/Flag/Arrow";
 import Table from "../../sharedUI/Table/Table";
 import ToggleBox from "../../sharedUI/ToggleBox/ToggleBox";
 import { ScrollBottom } from "../../sharedUI/Layout/ScrollBottom";
+import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 
 export default function MarkingPage() {
   return (
@@ -31,6 +40,18 @@ function ScrollPageContents() {
   const targetRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+
+  const [isOpenPopup, setIsOpenPopup] = useState<{ [key: string]: boolean }>({
+    popup1: false,
+    popup2: false,
+  });
+
+  const OpenEventPopup = (key: string) => {
+    setIsOpenPopup((prevOpen) => ({
+      ...prevOpen,
+      [key]: !prevOpen[key],
+    }));
+  };
 
   const [targetHeight, setTargetheight] = useState<number | null>(null);
 
@@ -60,6 +81,79 @@ function ScrollPageContents() {
     };
   }, [setThreshold]);
 
+
+  const slides = [
+    { label: '3.28 학력평가', value: '1' },
+    { label: '5.8 학력평가', value: '2' },
+    { label: '6.4 모의평가', value: '3' },
+    { label: '7.11 학력평가', value: '4' },
+    { label: '9.4 모의평가', value: '5' },
+    { label: '10.15 학력평가', value: '6' },
+  ];
+
+
+  const Analysis = [
+    { label: '내 모평 점수', score: '999.99' },
+    { label: '수능예측 점수', score: '999.99' },
+    { label: '지원가능 점수', score: '999.99' },
+    { label: '점수 차이', score: ['999.99', true] },
+  ];
+
+  const ScoreAnalysisData = [
+    { label: '💯 원점수', score: ['5', true] },
+    { label: '✏️ 문항수', score: ['2.5', true] },
+  ];
+
+  const gradeTable = [
+    { grade: '1', score: '100' },
+    { grade: '2', score: '97' },
+    { grade: '3', score: '92' },
+    { grade: '4', score: '87' },
+    { grade: '5', score: '82' },
+    { grade: '6', score: '77' },
+    { grade: '7', score: '72' },
+    { grade: '8', score: '67' },
+    { grade: '9', score: '62' },
+  ];
+
+  const ExamResult = [
+    {
+      year: '2025',
+      children: [
+        { label: '군', result: '나군' },
+        { label: '모집인원', result: '87' },
+        { label: '경쟁률', result: '3.60', point: true },
+        { label: '합격자평균백분위', result: '-' },
+        { label: '추가합격 인원', result: '2번(3차)', point: true },
+        { label: '추가합격 비율', result: '-' },
+        { label: '합격자수(지원자수)', result: '25명', point: true },
+      ],
+    },
+    {
+      year: '2024',
+      children: [
+        { label: '군', result: '나군' },
+        { label: '모집인원', result: '87' },
+        { label: '경쟁률', result: '3.60', point: true },
+        { label: '합격자평균백분위', result: '-' },
+        { label: '추가합격 인원', result: '2번(3차)', point: true },
+        { label: '추가합격 비율', result: '-' },
+        { label: '합격자수(지원자수)', result: '25명' },
+      ],
+    },
+    {
+      year: '2023',
+      children: [
+        { label: '군', result: '나군' },
+        { label: '모집인원', result: '87' },
+        { label: '경쟁률', result: '3.60', point: true },
+        { label: '합격자평균백분위', result: '-' },
+        { label: '추가합격 인원', result: '2번(3차)', point: true },
+        { label: '추가합격 비율', result: '-' },
+        { label: '합격자수(지원자수)', result: '25명' },
+      ],
+    },
+  ];
 
   const infoText = [
     {
@@ -170,23 +264,10 @@ function ScrollPageContents() {
               <DropDown
                 label="Select an option"
                 onChange={() => {}}
-                options={[
-                  {
-                    label: 'Option 1',
-                    value: '1',
-                  },
-                  {
-                    label: 'Option 2',
-                    value: '2',
-                  },
-                  {
-                    label: 'Option 3',
-                    value: '3',
-                  },
-                ]}
+                options={slides}
                 size="md"
                 type="ghost"
-                value={null}
+                value="1"
               />
             </div>
           </Between>
@@ -214,53 +295,42 @@ function ScrollPageContents() {
             </ToggleBox>
           </InfoTextBox>
 
+
           <ReportContents>
             <div>
-              <p className="title">내 합격예측 분석 결과</p>
+              <p className="reportTitle">내 합격예측 분석 결과</p>
 
-              {/* <AnalysisResult name="진학사" myScore="876.72" type="type1" Analysis={Analysis} /> */}
+              <AnalysisResult name="진학사" myScore="876.72" type="type2" Analysis={Analysis} />
 
-              <Table addClass="tableTypeRow">
-                <Table.Colgroup>
-                  <col className="w-full md:w-1/6" />
-                </Table.Colgroup>
-                <Table.Tbody tdW="w-full">
-                  <tr>
-                    <th>합격가능성 구분</th>
-                    <td>인정지원</td>
-                    <td>적정지원</td>
-                    <td>소신지원</td>
-                    <td>모험지원</td>
-                    <td>모험지원</td>
-                  </tr>
-                  <tr>
-                    <th>점수범위</th>
-                    <td>770~800</td>
-                    <td>740~769</td>
-                    <td>700~739</td>
-                    <td>600~699</td>
-                    <td>0~599</td>
-                  </tr>
-                </Table.Tbody>
-              </Table>
+              <ReportTableTypeRow
+                datas={[
+                  {
+                    children: [
+                      { label: '합격가능성 구분', th: true },
+                      { label: '인정지원' },
+                      { label: '적정지원' },
+                      { label: '소신지원' },
+                      { label: '위험지원' },
+                      { label: '매우위험' },
+                    ],
+                  },
+                  {
+                    children: [
+                      { label: '점수범위', th: true },
+                      { label: '770~800' },
+                      { label: '740~769' },
+                      { label: '700~739' },
+                      { label: '600~699' },
+                      { label: '0~599' },
+                    ],
+                  },
+                ]}
+              />
 
               <div>
                 <Title title="3.28 학력평가로 본 성적분석" type="report" />
                 <InfoTextBox type="bg" display="block" addClass="mt-0 md:mt-0 border border-gray-100">
-                  <p className="text-center text-gray-800 border-b border-gray-100 text-2xs sm:text-sm md:text-md lg:text-base">
-                    지원가능점수와 나의 점수차이 77.77점은 , 수능 원점수로 약 5점 정도입니다.
-                  </p>
-
-                  <ul className="flex justify-between">
-                    <li className="flex items-center gap-2">💯 원점수</li>
-                    <li className="flex items-center gap-2">
-                      약 <Arrow type={true} />5 점
-                    </li>
-                    <li className="flex items-center gap-2">✏️ 문항 수</li>
-                    <li className="flex items-center gap-2">
-                      약 <Arrow type={false} /> 2.5 개
-                    </li>
-                  </ul>
+                  <ScoreAnalysis gapScore="77.77" gapValue="5" arrowType={true} data={ScoreAnalysisData} />
 
                   <ToggleBox
                     align="left"
@@ -278,63 +348,31 @@ function ScrollPageContents() {
                 </InfoTextBox>
               </div>
             </div>
+
             <div>
-              <p className="title">모집요강</p>
+              <p className="reportTitle">모집요강</p>
               <Title title="모집인원 및 경쟁률" type="report" />
 
-              {/* <Table addClass="tableTypeMd">
-                <Table.Colgroup>
-                  <col width="20%" />
-                  <col width="20%" />
-                  <col width="20%" />
-                  <col width="20%" />
-                  <col width="20%" />
-                </Table.Colgroup>
-                <Table.Thead thW="w-1/3">
-                    <th>군</th>
-                    <th>대학</th>
-                    <th>모집단위</th>
-                    <th>모집인원</th>
-                    <th>전년도 경쟁률</th>
-                </Table.Thead>
-                <Table.Tbody tdW="w-2/3">
-                  <tr>
-                    <td>가군</td>
-                    <td>한국외국어대</td>
-                    <td>경영경제</td>
-                    <td>-</td>
-                    <td>5.35</td>
-                  </tr>
-                </Table.Tbody>
-              </Table> */}
+              <ReportTableTypeMd
+                datas={[
+                  { title: '군', data: '가군' },
+                  { title: '대학', data: '한국외국어대' },
+                  { title: '모집단위', data: '경영경제' },
+                  { title: '모집인원', data: '-' },
+                  { title: '전년도 경쟁률', data: '5.35' },
+                ]}
+              />
 
               <Title title="전형 요소별 반영방법" type="report" />
-
-              {/* <Table addClass="tableTypeMd">
-                <Table.Colgroup>
-                  <col width="20%" />
-                  <col width="20%" />
-                  <col width="20%" />
-                  <col width="20%" />
-                  <col width="20%" />
-                </Table.Colgroup>
-                <Table.Thead thW="w-1/3">
-                    <th>사정단계(비율%)</th>
-                    <th>수능</th>
-                    <th>학생부</th>
-                    <th>모집인원</th>
-                    <th>전년도 경쟁률</th>
-                </Table.Thead>
-                <Table.Tbody tdW="w-2/3">
-                  <tr>
-                    <td>가군</td>
-                    <td>한국외국어대</td>
-                    <td>경영경제</td>
-                    <td>-</td>
-                    <td>5.35</td>
-                  </tr>
-                </Table.Tbody>
-              </Table> */}
+              <ReportTableTypeMd
+                datas={[
+                  { title: '사정단계(비율%)', data: '가군' },
+                  { title: '수능', data: '한국외국어대' },
+                  { title: '학생부', data: '경영경제' },
+                  { title: '모집인원', data: '-' },
+                  { title: '전년도 경쟁률', data: '5.35' },
+                ]}
+              />
 
               <Title title="수능 반영방법" type="report" />
 
@@ -360,31 +398,27 @@ function ScrollPageContents() {
                 addClass="text-gray-800"
               />
 
-              {/* <Table addClass="mt-4 sm:mt-5 tableTypeMd">
-                <Table.Colgroup>
-                  <col width="20%" />
-                  <col width="20%" />
-                  <col width="20%" />
-                  <col width="20%" />
-                  <col width="20%" />
-                </Table.Colgroup>
-                <Table.Thead thW="w-1/3">
-                    <th>국어</th>
-                    <th>수학</th>
-                    <th>학생부</th>
-                    <th>모집인원</th>
-                    <th>전년도 경쟁률</th>
-                </Table.Thead>
-                <Table.Tbody tdW="w-2/3">
-                  <tr>
-                    <td>가군</td>
-                    <td>한국외국어대</td>
-                    <td>경영경제</td>
-                    <td>-</td>
-                    <td>5.35</td>
-                  </tr>
-                </Table.Tbody>
-              </Table> */}
+              <ReportTableTypeMd
+                addClass="mt-3 sm:mt-4 sm:mt-5"
+                datas={[
+                  { title: '국어', data: '60' },
+                  { title: '수학', data: '60' },
+                  {
+                    title: (
+                      <>
+                        영어
+                        <button className="underline" onClick={() => OpenEventPopup('popup1')}>
+                          (등급표)
+                        </button>
+                      </>
+                    ),
+                    data: '40',
+                  },
+                  { title: '탐구', data: '40' },
+                  { title: '제2외/한문', data: '50' },
+                  { title: '한국사', data: '50' },
+                ]}
+              />
 
               <InfoText
                 texts={[
@@ -406,10 +440,67 @@ function ScrollPageContents() {
             </div>
 
             <div>
-              <p className="title">모집단위별 입시결과</p>
+              <p className="reportTitle">모집단위별 입시결과</p>
+              <div>
+                <ExamResultSwiper ExamData={ExamResult} />
+              </div>
             </div>
           </ReportContents>
 
+          <ToggleBox
+            isOpen={!isMobile}
+            align="left"
+            size="md"
+            addClass="mt-4 sm:mt-5 md:mt-6 border border-gray-300 rounded-lg lg:border-0 lg:bg-transparent"
+            bottomAddClass={undefined}
+          >
+            <ToggleBox.Top activeClass="" addClass="lg:p-0">
+              💡 해석 유의사항 확인
+            </ToggleBox.Top>
+            <ToggleBox.Bottom activeClass="" addClass="pt-0 lg:pt-3">
+              <InfoText texts={infoText} />
+            </ToggleBox.Bottom>
+          </ToggleBox>
+
+          <LayerPopup align="center" close={false} dimm isOpen={isOpenPopup.popup1} OpenEvent={() => OpenEventPopup('popup1')}>
+            <LayerPopup.Header>
+              <p className="mb-3text-sm md:text-lg lg:text-2xl">
+                <b>한국외국어대 영어 영역 등급표</b>
+              </p>
+            </LayerPopup.Header>
+
+            <LayerPopup.Body>
+              <div className="w-full sm:w-[20rem] md:w-[25rem]">
+                <ContTable>
+                  <Table>
+                    <Table.Colgroup>
+                      <col className="w-1/2" />
+                    </Table.Colgroup>
+                    <Table.Thead>
+                      <th className="py-5 lg:py-5">등급</th>
+                      <th className="py-5 lg:py-5">점수</th>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      {gradeTable.map((item, index) => (
+                        <tr key={index}>
+                          <td className="py-3 lg:py-3">{item.grade}</td>
+                          <td className="py-3 lg:py-3">{item.score}</td>
+                        </tr>
+                      ))}
+                    </Table.Tbody>
+                  </Table>
+                </ContTable>
+              </div>
+            </LayerPopup.Body>
+
+            <LayerPopup.Footer>
+              <ButtonBox>
+                <Button mode="tertiary" onClick={() => OpenEventPopup('popup1')}>
+                  닫기
+                </Button>
+              </ButtonBox>
+            </LayerPopup.Footer>
+          </LayerPopup>
 
           <p className="fixed bottom-0"></p>
         </div>
