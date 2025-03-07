@@ -71,7 +71,6 @@ body {
   color: var(--foreground);
   line-height: 1.43;
   background: var(--background);
-  /* overflow-x: hidden; */
   @apply scroll-smooth break-words;
 }
 
@@ -152,7 +151,7 @@ table td {
 }
 
 .tableTypeMd {
-  @apply flex md:table !border-t-0 md:!border-t;
+  @apply flex md:table !border-t-0 md:!border-t overflow-hidden;
 }
 
 .tableTypeMd th,
@@ -210,6 +209,10 @@ table td {
 .tableTypeRow tbody tr th,
 .tableTypeRow tbody tr td {
   @apply border-t-0 block w-full md:table-cell md:w-auto;
+}
+
+.tableTypeRow tbody tr th {
+  @apply py-3 md:py-5;
 }
 
 .tableTypeRow tbody tr td {

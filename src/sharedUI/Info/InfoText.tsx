@@ -12,12 +12,12 @@ interface InfoTextProps {
 
 export const InfoText: React.FC<InfoTextProps> = ({ child = false, children, texts, addClass }) => {
   return (
-    <ul className={`${cn('text-xs sm:text-sm md:text-base lg:text-md', addClass)}`}>
+    <ul className={`w-full ${cn('text-xs sm:text-sm md:text-base lg:text-md text-gray-400', addClass)}`}>
       {child
         ? children
         : texts?.map((item, index) => (
             <li key={index} className='pl-4 before:absolute before:left-0 before:content-["-"] relative'>
-              {item.text}
+              {item.text ?? ''}
             </li>
           ))}
     </ul>

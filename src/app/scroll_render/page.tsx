@@ -39,6 +39,7 @@ function ScrollPageContents() {
 
   const targetRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth < 1024);
   const [isMobile, setIsMobile] = useState(false);
 
   const [isOpenPopup, setIsOpenPopup] = useState<{ [key: string]: boolean }>({
@@ -73,6 +74,8 @@ function ScrollPageContents() {
 
     const resizeEvent = throttle(() => {
       setOffsetTop();
+      const win = window.innerWidth;
+      setWindowWidth(win);
     }, 50);
 
     window.addEventListener('resize', resizeEvent);
@@ -80,6 +83,13 @@ function ScrollPageContents() {
       window.removeEventListener('resize', resizeEvent);
     };
   }, [setThreshold]);
+
+  useEffect(() => {
+    // const isMobile = !IS_SERVER && windowWidth < 1024;
+    // console.log(windowWidth);
+    setIsMobile(windowWidth < 1024);
+    // console.log(isMobile);
+  }, [windowWidth]);
 
 
   const slides = [
@@ -234,8 +244,8 @@ function ScrollPageContents() {
     { label: '입시결과', url: '#/3' },
   ];
 
-  const topFixedHeight = `h-[2.75rem] md:h-[4.375rem]`;
-  const topFixedOffset = `top-[2.75rem] md:top-[4.375rem]`;
+  const topFixedHeight = `h-[3rem] sm:h-[3.5rem] md:h-[4.375rem]`;
+  const topFixedOffset = `top-[3rem] sm:top-[3.5rem] md:top-[4.375rem]`;
 
   return (
     <ReportLayout>

@@ -13,7 +13,7 @@ interface ReportTopProps {
   children?: React.ReactNode;
   isFixed: boolean;
   fixHeight: string;
-  onChange?: () => void;
+  onChange?: (option: DropDownOptionType) => void;
 }
 
 export const ReportTop = forwardRef<HTMLDivElement, ReportTopProps>(
@@ -47,7 +47,7 @@ export const ReportTop = forwardRef<HTMLDivElement, ReportTopProps>(
             ref={topRef}
             className={`${
               isFixed ? 'fixed bg-blue-800 transition duration-150 z-20' : 'relative'
-            } top-0 left-0 flex px-4 justify-between items-center w-full ${fixHeight} `}
+            } top-0 left-0 flex px-6 justify-between items-center w-full ${fixHeight} `}
           >
             <CloseButton size="md" type="backWhite" addClass="md:hidden" onClick={() => undefined} />
             <div className={`md:ml-auto ${isFixed ? 'hidden' : 'block'}`}>
@@ -56,8 +56,8 @@ export const ReportTop = forwardRef<HTMLDivElement, ReportTopProps>(
           </div>
         </div>
 
-        <div ref={ref} className={`bottomRef.. flex justify-center items-center flex-wrap h-[9.375rem] md:h-[13.125rem] `}>
-          <div className={`${isFixed ? 'fixed top-[0.4rem] sm:top-[0.3rem] md:top-[1.3rem] xl:top-[1.3rem] z-20' : ''}`}>
+        <div ref={ref} className={`bottomRef.. flex justify-center items-center content-center flex-wrap h-[10rem] md:h-[13.125rem] `}>
+          <div className={`${isFixed ? 'fixed top-[0.5rem] sm:top-[0.6rem] md:top-[1.3rem] xl:top-[1.3rem] z-20' : 'mb-6 md:mb-11 '}`}>
             <div className="w-full">
               <DropDown
                 label="선택"
@@ -98,3 +98,4 @@ export const ReportTop = forwardRef<HTMLDivElement, ReportTopProps>(
     );
   }
 );
+

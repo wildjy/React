@@ -2,10 +2,11 @@
 import React, { ReactNode } from 'react';
 
 interface ReportContentsProps {
+  addClass?: string;
   children?: ReactNode;
 }
 
-export const ReportContents: React.FC<ReportContentsProps> = ({ children }) => {
+export const ReportContents: React.FC<ReportContentsProps> = ({ children, addClass }) => {
   const slots = React.Children.toArray(children);
 
   return (
@@ -14,11 +15,11 @@ export const ReportContents: React.FC<ReportContentsProps> = ({ children }) => {
         slots.map((slot, index) => {
           if (React.isValidElement<{ className?: string; children?: ReactNode }>(slot) && slot.props?.children) {
             return (
-              <div key={index}>
+              <div key={index} className={addClass}>
                 {React.Children.map(slot.props.children, (child) => {
                   if (
                     React.isValidElement<{ className?: string; children?: ReactNode }>(child) &&
-                    child.props.className?.includes('title')
+                    child.props.className?.includes('reportTitle')
                   ) {
                     return React.cloneElement(child, {
                       children: (

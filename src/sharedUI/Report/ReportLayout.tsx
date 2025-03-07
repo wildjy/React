@@ -10,8 +10,8 @@ interface ReportLayoutProps {
 
 export const ReportLayout: React.FC<ReportLayoutProps> = ({ children, addClass }) => {
   const className = `
-    after:bg-blue-700
-  md:after:bg-[url('https://image.jinhak.com/jinhakImages/react/bg/bg_reportTop.jpg')]
+after:bg-blue-700
+  xl:after:bg-[url('https://image.jinhak.com/jinhakImages/react/bg/bg_reportTop.jpg')]
   after:w-full after:h-[350px]
   after:bg-[length:100%_100%]
   after:absolute after:top-0
