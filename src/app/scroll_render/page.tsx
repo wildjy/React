@@ -365,22 +365,39 @@ function ScrollPageContents() {
 
               <ReportTableTypeMd
                 datas={[
-                  { title: '군', data: '가군' },
-                  { title: '대학', data: '한국외국어대' },
-                  { title: '모집단위', data: '경영경제' },
-                  { title: '모집인원', data: '-' },
-                  { title: '전년도 경쟁률', data: '5.35' },
+                  {
+                    children: [
+                      { title: '군', data: '가군' },
+                      { title: '대학', data: '한국외국어대' },
+                      { title: '모집단위', data: '경영경제' },
+                      { title: '모집인원', data: '-' },
+                      { title: '전년도 경쟁률', data: '5.35' },
+                    ]
+                  },
+                  {
+                    children: [
+                      { data: '나군' },
+                      { data: '한국외국어대' },
+                      { data: '경영경제' },
+                      { data: '-' },
+                      { title: '전년도 경쟁률', data: '5.35' },
+                    ]
+                  },
                 ]}
               />
 
               <Title title="전형 요소별 반영방법" type="report" />
               <ReportTableTypeMd
                 datas={[
-                  { title: '사정단계(비율%)', data: '가군' },
-                  { title: '수능', data: '한국외국어대' },
-                  { title: '학생부', data: '경영경제' },
-                  { title: '모집인원', data: '-' },
-                  { title: '전년도 경쟁률', data: '5.35' },
+                  {
+                    children: [
+                      { title: '사정단계(비율%)', data: '가군' },
+                      { title: '수능', data: '한국외국어대' },
+                      { title: '학생부', data: '경영경제' },
+                      { title: '모집인원', data: '-' },
+                      { title: '전년도 경쟁률', data: '5.35' },
+                    ]
+                  }
                 ]}
               />
 
@@ -411,22 +428,26 @@ function ScrollPageContents() {
               <ReportTableTypeMd
                 addClass="mt-3 sm:mt-4 sm:mt-5"
                 datas={[
-                  { title: '국어', data: '60' },
-                  { title: '수학', data: '60' },
                   {
-                    title: (
-                      <>
-                        영어
-                        <button className="underline" onClick={() => OpenEventPopup('popup1')}>
-                          (등급표)
-                        </button>
-                      </>
-                    ),
-                    data: '40',
-                  },
-                  { title: '탐구', data: '40' },
-                  { title: '제2외/한문', data: '50' },
-                  { title: '한국사', data: '50' },
+                    children: [
+                      { title: '국어', data: '60' },
+                      { title: '수학', data: '60' },
+                      {
+                        title: (
+                          <>
+                            영어
+                            <button className="underline" onClick={() => OpenEventPopup('popup1')}>
+                              (등급표)
+                            </button>
+                          </>
+                        ),
+                        data: '40',
+                      },
+                      { title: '탐구', data: '40' },
+                      { title: '제2외/한문', data: '50' },
+                      { title: '한국사', data: '50' },
+                    ]
+                  }
                 ]}
               />
 

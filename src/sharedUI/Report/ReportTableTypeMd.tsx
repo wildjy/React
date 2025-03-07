@@ -6,30 +6,36 @@ interface ReportTableTypeMdProps {
   addClass?: string;
   thW?: string;
   tdW?: string;
-  datas?: {
-    title?: string | React.ReactNode;
-    data?: string | React.ReactNode;
+  datas: {
+    children: {
+      title?: string | React.ReactNode;
+      data?: string | React.ReactNode;
+      th?: boolean;
+      width?: string;
+    }[];
   }[];
 }
 export const ReportTableTypeMd: React.FC<ReportTableTypeMdProps> = ({ addClass, thW = 'w-1/3', tdW = 'w-2/3', datas }) => {
   return (
     <Table addClass={`${cn('tableTypeMd', addClass)}`}>
       <Table.Colgroup>
-        {datas?.map((_, index) => (
-          <col key={index} width={`${100 / datas.length}%`} />
-        ))}
+        {datas[0].children?.map((_, index) =>
+          _.width ? <col key={index} width={_.width} /> : <col key={index} width={`${100 / datas[0].children.length}%`} />
+        )}
       </Table.Colgroup>
       <Table.Thead thW={thW}>
-        {datas?.map((item, index) => (
-          <th key={index}>{item.title}</th>
+        {datas[0].children?.map((obj, i) => (
+          <th key={i}>{obj.title}</th>
         ))}
       </Table.Thead>
       <Table.Tbody tdW={tdW}>
-        <tr>
-          {datas?.map((item, index) => (
-            <td key={index}>{item.data}</td>
-          ))}
-        </tr>
+        {datas?.map((item, index) => (
+          <tr key={index}>
+            {item.children.map((obj, i) => (
+              <td key={i}>{obj.data}</td>
+            ))}
+          </tr>
+        ))}
       </Table.Tbody>
     </Table>
   );

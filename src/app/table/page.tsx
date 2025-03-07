@@ -292,6 +292,46 @@ const TablePage: React.FC = () => {
             </Table.Tbody>
           </Table>
 
+          <Table addClass="tableType1 double">
+            <Table.Colgroup>
+              <col width="20%" />
+              <col width="20%" />
+              <col width="20%" />
+              <col width="20%" />
+              <col width="20%" />
+            </Table.Colgroup>
+            <Table.Thead>
+              <th>영역</th>
+              <th>국어<br />(화법과 작문)</th>
+              <th>수학<br />(미적분)</th>
+              <th>4</th>
+              <th>5</th>
+            </Table.Thead>
+            <Table.Tbody>
+              <tr>
+                <td>영역별 점수</td>
+                <td>td 2</td>
+                <td>td 3</td>
+                <td>td 4</td>
+                <td className="bg-blue-50">688.575<br />(1000)</td>
+              </tr>
+              <tr>
+                <td>가감점</td>
+                <td>td 7</td>
+                <td>td 8</td>
+                <td>td 9</td>
+                <td className="bg-blue-50">100</td>
+              </tr>
+              <tr>
+                <td>내 환산점수<br />(만점)</td>
+                <td>td 12</td>
+                <td>td 13</td>
+                <td>td 14</td>
+                <td className="bg-blue-50">688.575<br />(1000)</td>
+              </tr>
+            </Table.Tbody>
+          </Table>
+
           <Table addClass="tableTypeMd mt-5">
             <Table.Colgroup>
               <col width="20%" />
