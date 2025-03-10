@@ -13,6 +13,9 @@ import { InfoTextBox } from "../../sharedUI/Info/InfoTextBox";
 import { Title } from "../../sharedUI/Title/Title";
 import ToggleBox from "../../sharedUI/ToggleBox/ToggleBox";
 import { ScrollBottom } from "../../sharedUI/Layout/ScrollBottom";
+import { TableBase } from "../../sharedUI/Table/TableBase";
+import { TableTypeMd } from "../../sharedUI/Table/TableTypeMd";
+import { TableTypeRow } from "../../sharedUI/Table/TableTypeRow";
 
 export default function MarkingPage() {
   return (
@@ -232,6 +235,136 @@ function ScrollPageContents() {
             <div>
               <p className="reportTitle">영역 1</p>
               <Title title="Sub Title" type="report" />
+                <TableBase
+                  datas={[
+                    {
+                      children: [
+                        { title: '계열', data: '인문계', width: '30%' },
+                        { title: '모집인원', data: '3.92' },
+                        { title: '지원자수', data: '2.351' },
+                        { title: '경쟁률', data: '5.34' },
+                      ],
+                    },
+                    {
+                      children: [{ data: '자연계', width: '30%' }, { data: '3.92' }, { data: '2.351' }, { data: '5.34' }],
+                    },
+                    {
+                      children: [{ data: '예체능계', width: '30%' }, { data: '3.92' }, { data: '2.351' }, { data: '5.34' }],
+                    },
+                    {
+                      children: [
+                        { data: '전체', width: '30%' },
+                        {
+                          data: (
+                            <>
+                              <b>1.920</b>
+                            </>
+                          ),
+                        },
+                        {
+                          data: (
+                            <>
+                              <b>11.351</b>
+                            </>
+                          ),
+                        },
+                        {
+                          data: (
+                            <>
+                              <b>5.34</b>
+                            </>
+                          ),
+                        },
+                      ],
+                    },
+                  ]}
+                />
+                <TableBase
+                  datas={[
+                    {
+                      children: [
+                        {
+                          title: '전형유형',
+                          data: (
+                            <>
+                              <span className="block md:inline">학생부위주</span>(교과)
+                            </>
+                          ),
+                          width: [{ pc: '15%', m: '20%' }],
+                          align: 'left',
+                        },
+                        {
+                          title: '세부유형별',
+                          data: '부모가 모두 외국인인 외국인(3월)/정원외',
+                          width: [{ pc: '30%', m: '30%' }],
+                          align: 'left',
+                        },
+                        {
+                          title: (
+                            <>
+                              <span className="block md:inline">모집</span>인원
+                            </>
+                          ),
+                          data: '999',
+                          width: [{ pc: '10%', m: '8%' }],
+                        },
+                        {
+                          title: (
+                            <>
+                              <span className="block md:inline">등록</span>인원
+                            </>
+                          ),
+                          data: '135',
+                          width: [{ pc: '10%', m: '8%' }],
+                        },
+                        { title: '등록률', data: '135.34', width: [{ pc: '10%', m: '8%' }] },
+                      ],
+                    },
+                    {
+                      children: [
+                        { data: '수능위주', align: 'left' },
+                        { data: '학생부종합(기초생활및차상위)/정원외', align: 'left' },
+                        { data: '70.6' },
+                        { data: '135' },
+                        { data: '135.34' },
+                      ],
+                    },
+                  ]}
+                />
+                <TableTypeMd
+                  datas={[
+                    {
+                      children: [
+                        { title: '군', data: '가군', width: '10%' },
+                        { title: '대학', data: '건국대(GLOCAL)', width: '15%' },
+                        { title: '모집단위', data: 'KMU International Business School', width: '20%' },
+                        { title: '모집인원', data: '-', width: '10%' },
+                        { title: '전년도 경쟁률', data: '5.35', width: '15%' },
+                        { title: '인터넷 접수 일정', data: '26.01.01~01.31', width: '20%' },
+                      ],
+                    },
+                  ]}
+                />
+                <TableTypeRow
+                  datas={[
+                    {
+                      children: [
+                        { label: '출신학교 유형', th: true },
+                        { label: '출신학교 유형' },
+                        { label: '출신학교 유형' },
+                        { label: '출신학교 유형' },
+                      ],
+                    },
+                    {
+                      children: [
+                        { label: '출신학교 유형', th: true },
+                        { label: '출신학교 유형' },
+                        { label: '출신학교 유형' },
+                        { label: '출신학교 유형' },
+                      ],
+                    },
+                  ]}
+                />
             </div>
 
             <div>
