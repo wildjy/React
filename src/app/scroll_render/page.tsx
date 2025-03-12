@@ -310,7 +310,7 @@ function ScrollPageContents() {
             <div>
               <p className="reportTitle">내 합격예측 분석 결과</p>
 
-              <AnalysisResult name="진학사" myScore="876.72" type="type2" Analysis={Analysis} />
+              <AnalysisResult name="진학사" myScore="876.72" type="type6" Analysis={Analysis} />
 
               <ReportTableTypeRow
                 datas={[

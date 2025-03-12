@@ -14,6 +14,7 @@ interface TableBaseProps {
       title?: string | React.ReactNode;
       data?: string | React.ReactNode;
       th?: boolean;
+      row?: number;
       width?: string | { pc?: string; m?: string }[];
       align?: string;
       active?: boolean;
@@ -32,6 +33,7 @@ export const TableBase: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3', t
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  if (datas.length === 0) return null;
   return (
     <ContTable>
       <Table addClass={`${cn('tableBase', addClass)}`}>
@@ -55,6 +57,7 @@ export const TableBase: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3', t
           })}
         </Table.Colgroup>
         <Table.Thead thW={thW}>
+          <tr>
             {datas[0].children?.map((obj, i) => (
               <th
                 key={i}
@@ -63,17 +66,20 @@ export const TableBase: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3', t
                 {obj.title}
               </th>
             ))}
+          </tr>
         </Table.Thead>
         <Table.Tbody tdW={tdW}>
-          {datas?.map((item, index) => (
+          {datas.map((item, index) => (
             <tr key={index}>
-              {item.children.map((obj, i) => (
+              {item.children?.map((obj, i) => (
                 <td
                   key={i}
+                  rowSpan={obj.row}
                   className={clsx({
                     'bg-blue-50': obj.active,
                     'text-gray-400': obj.disabled,
                     'text-left': obj.align === 'left',
+                    'border-r': obj.row,
                   })}
                 >
                   {obj.data}
