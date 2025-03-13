@@ -9,6 +9,7 @@ interface TableTypeRowProps {
   addClass?: string;
   datas: {
     children: {
+      title?: string | React.ReactNode;
       label?: string | React.ReactNode;
       th?: boolean;
       width?: string;
@@ -45,11 +46,11 @@ export const TableTypeRow: React.FC<TableTypeRowProps> = ({ addClass, datas }) =
               {item.children.map((obj, i) =>
                 obj.th ? (
                   <th key={i} className={clsx({ 'text-gray-400': obj.disabled })}>
-                    {obj.label}
+                    {obj.title || obj.label}
                   </th>
                 ) : (
                   <td key={i} className={clsx({ 'bg-blue-50': obj.active, 'text-gray-400': obj.disabled })}>
-                    {obj.label}
+                    {obj.title || obj.label}
                   </td>
                 )
               )}

@@ -52,21 +52,19 @@ export const TableBase: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3', t
             return _.width ? (
               <col key={index} width={isDesktop ? colPcWidth : colWidth} />
             ) : (
-              <col key={index} className="w-full md:w-auto" style={isDesktop ? { width: `${100 / datas[0].children.length}%` } : {}} />
+              <col key={index} className="w-full md:w-auto" style={{ width: `${100 / datas[0].children.length}%` }} />
             );
           })}
         </Table.Colgroup>
         <Table.Thead thW={thW}>
-          <tr>
-            {datas[0].children?.map((obj, i) => (
-              <th
-                key={i}
-                className={clsx({ 'text-gray-400': obj.disabled, 'text-left': obj.align === 'left', 'text-right': obj.align === 'right' })}
-              >
-                {obj.title}
-              </th>
-            ))}
-          </tr>
+          {datas[0].children?.map((obj, i) => (
+            <th
+              key={i}
+              className={clsx({ 'text-gray-400': obj.disabled, 'text-left': obj.align === 'left', 'text-right': obj.align === 'right' })}
+            >
+              {obj.title}
+            </th>
+          ))}
         </Table.Thead>
         <Table.Tbody tdW={tdW}>
           {datas.map((item, index) => (
@@ -79,7 +77,7 @@ export const TableBase: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3', t
                     'bg-blue-50': obj.active,
                     'text-gray-400': obj.disabled,
                     'text-left': obj.align === 'left',
-                    'border-r': obj.row,
+                    'border-l first:border-l-0 border-r': obj.row,
                   })}
                 >
                   {obj.data}

@@ -197,7 +197,7 @@ table td {
 }
 
 .tableTypeMd tbody tr td {
-  @apply w-full block items-center text-right md:text-center border-t-0 border-b
+  @apply w-full block items-center md:text-center border-t-0 border-b
   border-r-0 last:border-b
   md:w-auto md:table-cell
   md:border-b;

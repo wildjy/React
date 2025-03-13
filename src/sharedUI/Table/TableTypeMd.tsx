@@ -13,6 +13,7 @@ interface TableTypeMdProps {
       title?: string | React.ReactNode;
       data?: string | React.ReactNode;
       th?: boolean;
+      align?: string;
       width?: string;
       active?: boolean;
       disabled?: boolean;
@@ -39,7 +40,7 @@ export const TableTypeMd: React.FC<TableTypeMdProps> = ({ addClass, thW = 'w-1/3
           {datas?.map((item, index) => (
             <tr key={index}>
               {item.children.map((obj, i) => (
-                <td key={i} className={clsx({ 'bg-blue-50': obj.active, 'text-gray-400': obj.disabled })}>
+                <td key={i} className={`${cn('text-right md:text-center',  {'bg-blue-50': obj.active, 'text-gray-400': obj.disabled, 'text-left': obj.align === 'left', 'text-right': obj.align === 'right'} )}`}>
                   {obj.data}
                 </td>
               ))}

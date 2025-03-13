@@ -4,6 +4,10 @@ import { cva } from "class-variance-authority";
 import React from "react";
 import { useRef, useState, ChangeEvent } from 'react';
 import Table from "../../sharedUI/Table/Table";
+import { TableBase } from "../../sharedUI/Table/TableBase";
+import { TableType } from "../../sharedUI/Table/TableType";
+import { TableTypeRow } from "../../sharedUI/Table/TableTypeRow";
+import { TableTypeMd } from "../../sharedUI/Table/TableTypeMd";
 import { TextInput } from "../../sharedUI/Input/TextInput";
 import { CheckBox } from "../../sharedUI/Input/CheckBox";
 
@@ -90,12 +94,81 @@ const TablePage: React.FC = () => {
     // console.log(`Checked status: ${value}`, checked);
   };
 
+  const tableData = [
+    {
+      title: 'Column',
+      data: 'Data 1',
+    },
+    {
+      title: 'Column',
+      data: 'Data 2',
+    },
+    {
+      title: 'Column',
+      data: 'Data 3',
+    },
+    {
+      title: 'Column',
+      data: 'Data 4',
+    },
+    {
+      title: 'Column',
+      data: 'Data 5',
+    },
+  ]
+
+
+  const testData = [
+    {
+      title: '',
+      data1: '나',
+      data2: '나-내 계열차이',
+      data3: `ㅇㅇ계열 평균`,
+      data4: '전체평균',
+    },
+    {
+      title: '국어',
+      data1: '국어1 점수',
+      data2: '국어2 점수',
+      data3: '국어3 점수',
+      data4: '국어4 점수',
+    },
+    {
+      title: '수학',
+      data1: '수학1 점수',
+      data2: '수학2 점수',
+      data3: '수학3 점수',
+      data4: '수학4 점수',
+    },
+    {
+      title: '탐구',
+      data1: '탐구1 점수',
+      data2: '탐구2 점수',
+      data3: '탐구3 점수',
+      data4: '탐구4 점수',
+    },
+    {
+      title: '영어',
+      data1: '영어1 점수',
+      data2: '영어2 점수',
+      data3: '영어3 점수',
+      data4: '영어4 점수',
+    },
+  ];
+  const tableColumns = ['data1', 'data2', 'data3', 'data4'];
+  const datas = tableColumns.map((key) => ({
+    children: testData.map((row) => ({
+      title: row.title,
+      data: row[key as keyof typeof row],
+    })),
+  }));
+
   return (
     <>
       <div className="overflow-hidden">
         <div className="p-5">
 
-          <Table typeClass="">
+          <Table addClass="">
             <Table.Colgroup>
               <col width="20%" /><col width="20%" /><col width="20%" />
             </Table.Colgroup>
@@ -118,7 +191,7 @@ const TablePage: React.FC = () => {
             </Table.Tbody>
           </Table>
 
-          <Table typeClass="">
+          <Table addClass="">
             <Table.Colgroup>
               <col width="20%" />
               <col width="20%" className="hide" />
@@ -151,74 +224,321 @@ const TablePage: React.FC = () => {
             </Table.Tbody>
           </Table>
 
-          <Table typeClass="tableType1">
-            <Table.Colgroup>
-              <col width="20%" /><col width="20%" /><col width="20%" /><col width="20%" /><col width="20%" />
-            </Table.Colgroup>
-            <Table.Thead>
-              <th>1</th>
-              <th>2</th>
-              <th>3</th>
-              <th>4</th>
-              <th>5</th>
-            </Table.Thead>
-            <Table.Tbody>
-              <tr>
-                <td>원점수</td>
-                <td>td 2</td>
-                <td>td 3</td>
-                <td>td 4</td>
-                <td>td 5</td>
-              </tr>
-              <tr>
-                <td>표준점수</td>
-                <td>td 7</td>
-                <td>td 8</td>
-                <td>td 9</td>
-                <td>td 10</td>
-              </tr>
-              <tr>
-                <td>백분위</td>
-                <td>td 12</td>
-                <td>td 13</td>
-                <td>td 14</td>
-                <td>td 15</td>
-              </tr>
-              <tr>
-                <td>등급</td>
-                <td>td 12</td>
-                <td>td 13</td>
-                <td>td 14</td>
-                <td>td 15</td>
-              </tr>
-            </Table.Tbody>
-          </Table>
+          <TableBase
+            addClass="bg-red-50"
+            datas={datas}
+          />
 
-          <Table typeClass="tableType1">
-            <Table.Colgroup>
-              <col style={{ width: "calc(100%/3)" }} />
-              <col style={{ width: "calc(100%/3)" }} />
-              <col style={{ width: "calc(100%/3)" }} />
-            </Table.Colgroup>
-            <Table.Thead thW="w-1/3">
-              <th>1</th>
-              <th>2</th>
-              <th>3</th>
-            </Table.Thead>
-            <Table.Tbody tdW="w-2/3">
-              <tr>
-                <td>원점수</td>
-                <td>td 2</td>
-                <td>td 3</td>
-              </tr>
-              <tr>
-                <td>표준점수</td>
-                <td>td 7</td>
-                <td>td 8</td>
-              </tr>
-            </Table.Tbody>
-          </Table>
+          <TableBase
+            addClass=""
+            datas={[
+              {
+                children: [
+                  {
+                    title: 'Column 1',
+                    data: 'Data 1',
+                    row: 3,
+                    width: [
+                      {
+                        m: '10%',
+                        pc: '30%',
+                      },
+                    ],
+                  },
+                  {
+                    title: 'Column 2',
+                    data: 'Data 2',
+                    width: [
+                      {
+                        // m: '12.5%',
+                        pc: '17.5%',
+                      },
+                    ],
+                  },
+                  {
+                    title: 'Column 3',
+                    data: 'Data 3',
+                    row: 3,
+                    width: [
+                      {
+                        // m: '12.5%',
+                        pc: '17.5%',
+                      },
+                    ],
+                  },
+                  {
+                    title: 'Column 4',
+                    data: 'Data 4',
+                    width: [
+                      {
+                        // m: '12.5%',
+                        pc: '17.5%',
+                      },
+                    ],
+                  },
+                  {
+                    title: 'Column 5',
+                    data: 'Data 5',
+                    width: [
+                      {
+                        // m: '12.5%',
+                        pc: '17.5%',
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                children: [
+                  // {
+                  //   data: 'Data A',
+                  // },
+                  {
+                    data: 'Data A',
+                  },
+                  // {
+                  //   data: 'Data B',
+                  // },
+                  {
+                    data: 'Data C',
+                  },
+                  {
+                    data: 'Data D',
+                  },
+                ],
+              },
+              {
+                children: [
+                  {
+                    data: 'Data A',
+                  },
+                  // {
+                  //   data: 'Data B',
+                  // },
+                  {
+                    data: 'Data C',
+                  },
+                  {
+                    data: 'Data D',
+                  },
+                ],
+              },
+            ]}
+          />
 
+          <TableType
+            datas={[
+              {
+                children: [
+
+                  ...tableData.map((row, i) => ({
+                    title: row.title + `+ index ${i}`,
+                    data: row.data + `+ index ${i + 1}`,
+                  })),
+                ],
+              },
+              {
+                children: [
+                  {
+                    data: 'Data A',
+                  },
+                  {
+                    data: 'Data B',
+                  },
+                  {
+                    data: 'Data C',
+                  },
+                  {
+                    data: 'Data D',
+                  },
+                  {
+                    data: 'Data E',
+                  },
+                ],
+              },
+              {
+                children: [
+                  {
+                    data: 'Data A',
+                  },
+                  {
+                    data: 'Data B',
+                  },
+                  {
+                    data: 'Data C',
+                  },
+                  {
+                    data: 'Data D',
+                  },
+                  {
+                    data: 'Data E',
+                  },
+                ],
+              },
+            ]}
+          />
+
+          <TableType
+          addClass="double"
+            datas={[
+              {
+                children: [
+                  {
+                    title: <>Column 1<br /> Column 1</>,
+                    data: 'Data 1',
+                  },
+                  {
+                    title: 'Column 2',
+                    data: <>Data2 <br /> Data22</>,
+                  },
+                  {
+                    title: 'Column 3',
+                    data: 'Data 3',
+                  },
+                  {
+                    title: 'Column 4',
+                    data: 'Data 4',
+                  },
+                  {
+                    title: 'Column 5',
+                    data: 'Data 5',
+                  },
+                ],
+              },
+              {
+                children: [
+                  {
+                    data: 'Data A',
+                  },
+                  {
+                    data: 'Data B',
+                  },
+                  {
+                    data: 'Data C',
+                  },
+                  {
+                    data: 'Data D',
+                  },
+                  {
+                    data: 'Data E',
+                  },
+                ],
+              },
+              {
+                children: [
+                  {
+                    data: 'Data A',
+                  },
+                  {
+                    data: 'Data B',
+                  },
+                  {
+                    data: 'Data C',
+                  },
+                  {
+                    data: 'Data D',
+                  },
+                  {
+                    data: 'Data E',
+                  },
+                ],
+              },
+            ]}
+          />
+
+          <TableTypeRow
+            datas={[
+              {
+                children: [
+                  {
+                    title: 'Column 1',
+                    th: true,
+                  },
+                  {
+                    title: 'Column 2',
+                  },
+                  {
+                    title: 'Column 3',
+                  },
+                  {
+                    title: 'Column 4',
+                  },
+                  {
+                    title: 'Column 5',
+                  },
+                ],
+              },
+              {
+                children: [
+                  {
+                    title: 'Data A',
+                    th: true,
+                  },
+                  {
+                    title: 'Data B',
+                  },
+                  {
+                    title: 'Data C',
+                  },
+                  {
+                    title: 'Data D',
+                  },
+                  {
+                    title: 'Data E',
+                  },
+                ],
+              },
+            ]}
+          />
+
+          <TableTypeMd
+            datas={[
+              {
+                children: [
+                  {
+                    title: 'Column 1',
+                    data: 'Data 1',
+                    align: 'left'
+                  },
+                  {
+                    title: 'Column 2',
+                    data: 'Data 2',
+                  },
+                  {
+                    title: 'Column 3',
+                    data: 'Data 3',
+                  },
+                  {
+                    title: 'Column 4',
+                    data: 'Data 4',
+                  },
+                  {
+                    title: 'Column 5',
+                    data: 'Data 5',
+                  },
+                ],
+              },
+              {
+                children: [
+                  {
+                    data: 'Data 1',
+                  },
+                  {
+                    data: 'Data 2',
+                  },
+                  {
+                    data: 'Data 3',
+                  },
+                  {
+                    data: 'Data 4',
+                  },
+                  {
+                    data: 'Data 5',
+                  },
+                ],
+              },
+            ]}
+          />
 
           <Table addClass="tableTypeRow">
             <Table.Colgroup>
@@ -248,46 +568,6 @@ const TablePage: React.FC = () => {
                 <td>700~739</td>
                 <td>600~699</td>
                 <td>0~599</td>
-              </tr>
-            </Table.Tbody>
-          </Table>
-
-          <Table addClass="tableType1">
-            <Table.Colgroup>
-              <col width="20%" />
-              <col width="20%" />
-              <col width="20%" />
-              <col width="20%" />
-              <col width="20%" />
-            </Table.Colgroup>
-            <Table.Thead>
-              <th>1</th>
-              <th>2</th>
-              <th>3</th>
-              <th>4</th>
-              <th>5</th>
-            </Table.Thead>
-            <Table.Tbody>
-              <tr>
-                <td>원점수</td>
-                <td>td 2</td>
-                <td>td 3</td>
-                <td>td 4</td>
-                <td className="bg-blue-50">td 5</td>
-              </tr>
-              <tr>
-                <td>표준점수</td>
-                <td>td 7</td>
-                <td>td 8</td>
-                <td>td 9</td>
-                <td className="bg-blue-50">td 10</td>
-              </tr>
-              <tr>
-                <td>백분위</td>
-                <td>td 12</td>
-                <td>td 13</td>
-                <td>td 14</td>
-                <td className="bg-blue-50">td 15</td>
               </tr>
             </Table.Tbody>
           </Table>
