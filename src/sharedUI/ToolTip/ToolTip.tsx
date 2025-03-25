@@ -10,6 +10,7 @@ const ToolTipVariants = cva(
   p-6 min-w-[300px] max-w-[80dvw] w-max max-h-[90dvh] md:max-w-[500px]
   bg-white border border-gray-100 rounded-lg
   transition-all duration-300
+  drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] md:drop-shadow-[0_3px_3px_rgba(0,0,0,0.25)]
   `,
   {
     variants: {
