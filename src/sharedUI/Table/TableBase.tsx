@@ -15,6 +15,7 @@ interface TableBaseProps {
       data?: string | React.ReactNode;
       th?: boolean;
       row?: number;
+      hide?: boolean;
       width?: string | { pc?: string; m?: string }[];
       align?: string;
       active?: boolean;
@@ -50,9 +51,9 @@ export const TableBase: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3', t
             }
 
             return _.width ? (
-              <col key={index} width={isDesktop ? colPcWidth : colWidth} />
+              <col key={index} className={`${_.hide && 'hide'}`} width={isDesktop ? colPcWidth : colWidth} />
             ) : (
-              <col key={index} className="w-full md:w-auto" style={{ width: `${100 / datas[0].children.length}%` }} />
+              <col key={index} className={`${_.hide && 'hide'} w-full md:w-auto`} style={{ width: `${100 / datas[0].children.length}%` }} />
             );
           })}
         </Table.Colgroup>
@@ -60,7 +61,7 @@ export const TableBase: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3', t
           {datas[0].children?.map((obj, i) => (
             <th
               key={i}
-              className={clsx({ 'text-gray-400': obj.disabled, 'text-left': obj.align === 'left', 'text-right': obj.align === 'right' })}
+              className={clsx(`${obj.hide && 'hide'}`, { 'text-gray-400': obj.disabled, 'text-left': obj.align === 'left', 'text-right': obj.align === 'right' })}
             >
               {obj.title}
             </th>
@@ -73,7 +74,7 @@ export const TableBase: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3', t
                 <td
                   key={i}
                   rowSpan={obj.row}
-                  className={clsx({
+                  className={clsx(`${obj.hide && 'hide'}`, {
                     'bg-blue-50': obj.active,
                     'text-gray-400': obj.disabled,
                     'text-left': obj.align === 'left',

@@ -15,6 +15,7 @@ interface TableTypeMdProps {
       th?: boolean;
       align?: string;
       width?: string;
+      hide?: boolean;
       active?: boolean;
       disabled?: boolean;
     }[];
@@ -26,12 +27,12 @@ export const TableTypeMd: React.FC<TableTypeMdProps> = ({ addClass, thW = 'w-1/3
       <Table addClass={`${cn('tableTypeMd', addClass)}`}>
         <Table.Colgroup>
           {datas[0].children?.map((_, index) =>
-            _.width ? <col key={index} width={_.width} /> : <col key={index} width={`${100 / datas[0].children.length}%`} />
+            _.width ? <col key={index} className={`${_.hide && 'hide'}`} width={_.width} /> : <col key={index} className={`${_.hide && 'hide'}`} width={`${100 / datas[0].children.length}%`} />
           )}
         </Table.Colgroup>
         <Table.Thead thW={thW}>
             {datas[0].children?.map((obj, i) => (
-              <th key={i} className={clsx({ 'text-gray-400': obj.disabled })}>
+              <th key={i} className={clsx(`${obj.hide && 'hide'}`, { 'text-gray-400': obj.disabled })}>
                 {obj.title}
               </th>
             ))}
@@ -40,7 +41,7 @@ export const TableTypeMd: React.FC<TableTypeMdProps> = ({ addClass, thW = 'w-1/3
           {datas?.map((item, index) => (
             <tr key={index}>
               {item.children.map((obj, i) => (
-                <td key={i} className={`${cn('text-right md:text-center',  {'bg-blue-50': obj.active, 'text-gray-400': obj.disabled, 'text-left': obj.align === 'left', 'text-right': obj.align === 'right'} )}`}>
+                <td key={i} className={`${obj.hide && 'hide'} ${cn('text-right md:text-center',  {'bg-blue-50': obj.active, 'text-gray-400': obj.disabled, 'text-left': obj.align === 'left', 'text-right': obj.align === 'right'} )}`}>
                   {obj.data}
                 </td>
               ))}

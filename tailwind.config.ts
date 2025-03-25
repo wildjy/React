@@ -25,9 +25,6 @@ const config: Config = {
       fontFamily: {
         sans: ['Pretendard', 'Arial', 'sans-serif'],
       },
-      width: {
-        content: '1280px',
-      },
       fontSize: {
         '4xs': '0.583rem', // 10px
         '3xs': '0.688rem', // 11px
@@ -87,15 +84,15 @@ const config: Config = {
         20: '4.75rem', // 76px
         21: '5rem', // 80px
       },
+      width: {
+        mobile: '768px',
+        tablet: '1024px',
+        laptop: '1280px',
+        desktop: '1920px',
+        content: '1280px',
+      },
       margin: {
         center: '0 auto',
-      },
-      // eslint-disable-next-line no-dupe-keys
-      width: {
-        mobile: '720px',
-        tablet: '1080px',
-        laptop: '1280px',
-        desktop: '1440px',
       },
       colors: {
         'disabled-text': '#C4C4C4',

@@ -16,6 +16,9 @@ import { ScrollBottom } from "../../sharedUI/Layout/ScrollBottom";
 import { TableBase } from "../../sharedUI/Table/TableBase";
 import { TableTypeMd } from "../../sharedUI/Table/TableTypeMd";
 import { TableTypeRow } from "../../sharedUI/Table/TableTypeRow";
+import { BottomJson } from "../../sharedUI/Banner/BottomJson";
+import { NoData } from "../../sharedUI/NoData/NoData";
+import { Error } from "../../sharedUI/NoData/Error";
 
 export default function MarkingPage() {
   return (
@@ -105,7 +108,7 @@ function ScrollPageContents() {
   const drop = [
     {
       label: {
-        gun: '가',
+        gun: '가외',
         univ: '서경대',
         name: '[서울] 미디어커뮤니케이션학부',
       },
@@ -381,6 +384,46 @@ function ScrollPageContents() {
             </div>
           </ReportContents>
 
+      <Error
+        message={{
+          title: '서비스 이용에 불편을 드려 죄송합니다.',
+          sub: (
+            <>
+              서비스 처리 중 오류가 발생했습니다.
+              <br />
+              잠시 후 다시 시도해 주세요.
+              <br />
+              문제가 지속될 경우 고객센터(1544-7715) 혹은 1:1문의로 문의해 주시기 바랍니다.
+            </>
+          ),
+        }}
+        button={{ href: 'https://www.jinhak.com/', label: '메인으로 이동' }}
+      />
+
+          <BottomJson
+            datas={[
+              {
+                badge: {
+                  imgurl: 'https://navycdn.contentsfeed.com/RealMedia/ads/Creatives/JINHAK/2503_gachon_512x64_1/gachon250312_512x64re.png',
+                  imageHeight: '64',
+                  clickUrl:
+                    'https://wads.jinhak.com/RealMedia/ads/click_lx.ads/U_jinhakinfo/25_ListN_test/L26/1475506037/x01/JINHAK/2503_TEST_299x226/2503_TEST_299x226_250307.html/792f7563516d65316962414144746b44',
+                  openInExternalBrowser: '0',
+                },
+                info: { subj: '재능대학교', cont: '글로벌평생직업교육대학' },
+              },
+              {
+                badge: {
+                  imgurl: 'https://navycdn.contentsfeed.com/RealMedia/ads/Creatives/JINHAK/2503_dongguk_512x64_2/dongguk250312_512x64re.png',
+                  imageHeight: '64',
+                  clickUrl:
+                    'https://wads.jinhak.com/RealMedia/ads/click_lx.ads/U_jinhak/WMnesinA/L17/1862612116/x02/JINHAK/2503_dongguk_512x64_2/2503_dongguk_512x64_2_250312.html/792f7563516d65316962414144746b44',
+                  openInExternalBrowser: '0',
+                },
+                info: { subj: '재능대학교', cont: '글로벌평생직업교육대학' },
+              },
+            ]}
+          />
         </div>
       </div>
       {/* body */}

@@ -1,11 +1,15 @@
 import { cn } from "../common/cn";
 import { cva, cx, VariantProps } from 'class-variance-authority';
 import React, { createContext, HTMLAttributes, useContext, useEffect, forwardRef, useRef, useState } from 'react';
+import { Title }  from '../Title/Title';
+import { ButtonBox }  from '../Button/ButtonBox';
+import { Button }  from '../Button/Button';
 
 type typeMode = 'base' | 'shadow' | 'ghost' | 'ghostShadow' | 'check';
 type alignMode = 'left' | 'center';
 type iconMode = 'base' | 'report';
-interface DropDownContextProps {
+
+interface DropDownReportContextProps {
   type: typeMode;
   align: alignMode;
   icon: iconMode;
@@ -16,25 +20,25 @@ interface DropDownContextProps {
   selectValue: string | null;
   onOpen: () => void;
   onClose: () => void;
-  onChangeSelect: (option: DropDownOptionType) => void;
+  onChangeSelect: (option: DropDownReportOptionType) => void;
 }
 
-export interface DropDownOptionType {
+export interface DropDownReportOptionType {
   value: string;
   label: { gun?: string; univ?: string; name?: string } | string | React.ReactNode;
   disabled?: boolean;
 }
 
-const isLabelObject = (label: DropDownOptionType['label']): label is { gun?: string; univ?: string; name?: string } => {
+const isLabelObject = (label: DropDownReportOptionType['label']): label is { gun?: string; univ?: string; name?: string } => {
   return typeof label === 'object' && label !== null && 'univ' in label && 'name' in label;
 };
 
 // Report Common DropDown
-const ReportRenderLabel = (label: DropDownOptionType['label'], isInline: boolean, isFixedScroll?: boolean) => {
+const ReportRenderLabel = (label: DropDownReportOptionType['label'], isInline: boolean, isFixedScroll?: boolean) => {
   const gunClass = `
   ${cn(
     `mr-2
-    w-6 h-6 sm:w-7 sm:h-7 md:w-[1.625rem] md:h-[1.625rem] xl:w-9 xl:h-9
+    min-w-6 h-6 sm:min-w-7 sm:h-7 md:min-w-[1.625rem] md:h-[1.625rem] xl:min-w-9 xl:h-9
     text-sm sm:text-base md:text-[1.125rem] xl:text-[1.375rem]
     leading-[1.25rem] sm:leading-[1.5rem] md:leading-[1.625rem] xl:leading-[2rem]
     font-normal
@@ -42,7 +46,7 @@ const ReportRenderLabel = (label: DropDownOptionType['label'], isInline: boolean
     isInline || isFixedScroll
       ? `
     inline-block
-    w-[0.75rem] h-[0.75rem] sm:w-5 sm:h-5 md:w-[1.25rem] md:h-[1.25rem] xl:w-6 xl:h-6
+    px-1 min-w-[0.75rem] h-[0.75rem] sm:min-w-5 sm:h-5 md:min-w-[1.25rem] md:h-[1.25rem] xl:min-w-6 xl:h-6
     text-4xs sm:text-xs md:text-sm xl:text-sm
     leading-[0.75rem] sm:leading-[1rem] md:leading-[1.15rem] xl:leading-[1.25rem]
     text-gray-500
@@ -50,7 +54,7 @@ const ReportRenderLabel = (label: DropDownOptionType['label'], isInline: boolean
     rounded-sm md:rounded-sm
      `
       : `text-blue-800`,
-    isInline && 'absolute left-0 top-1/2 -translate-y-1/2 md:mt-1 border-gray-400',
+    isInline && ' border-gray-400', // absolute left-0 top-1/2 -translate-y-1/2 md:mt-1
     isFixedScroll && ''
   )}
   `;
@@ -59,7 +63,7 @@ const ReportRenderLabel = (label: DropDownOptionType['label'], isInline: boolean
   }
   if (isLabelObject(label)) {
     return (
-      <span className={isInline ? 'pl-5 sm:pl-7 md:pl-8 flex items-center md:block relative' : 'block'}>
+      <span className={isInline ? /* pl-5 sm:pl-7 md:pl-8  */ 'flex items-center md:block relative' : 'block'}>
         <span className="items-center justify-start text-center md:flex">
           <span className={`${isInline ? '' : 'flex items-center justify-center '}`}>
             {label.gun && <span className={gunClass}>{label.gun}</span>}
@@ -72,46 +76,43 @@ const ReportRenderLabel = (label: DropDownOptionType['label'], isInline: boolean
   }
   return label; // ReactNode 처리
 };
-
 // Report Common DropDown
-interface DropDownProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>, VariantProps<typeof DropDownVariants> {
+interface DropDownReportProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>, VariantProps<typeof DropDownReportVariants> {
   type?: typeMode;
   align?: alignMode;
   icon?: iconMode;
   addClass?: string;
   min?: string;
   custom?: boolean;
-  options?: DropDownOptionType[];
+  options?: DropDownReportOptionType[];
   isOpen?: boolean;
   width?: string;
   label?: string;
-  layer?: boolean;
   fixed?: boolean;
   isFixedScroll?: boolean;
   disabled?: boolean;
-  onChange?: (option: DropDownOptionType) => void;
+  onChange?: (option: DropDownReportOptionType) => void;
   value?: string | null; // 외부에서 전달받는 선택된 값
 }
 
 interface DropOptionProps
   extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof DropDownBoxVariants>,
-    VariantProps<typeof DropDownInnerBoxVariants> {
+    VariantProps<typeof DropDownReportBoxVariants>,
+    VariantProps<typeof DropDownReportInnerBoxVariants> {
   children?: React.ReactNode;
   resetClass?: string;
   addClass?: string;
-  options?: DropDownOptionType[];
+  options?: DropDownReportOptionType[];
   custom?: boolean;
-  layer?: boolean;
   fixed?: boolean;
   isOpen?: boolean;
   inner?: boolean;
   disabled?: boolean;
-  onChangeSelect: (option: DropDownOptionType) => void;
+  onChangeSelect: (option: DropDownReportOptionType) => void;
   onClose: () => void;
 }
 
-const DropDownContext = createContext<DropDownContextProps | null>(null);
+const DropDownContext = createContext<DropDownReportContextProps | null>(null);
 
 const useDropDownContext = () => {
   const context = useContext(DropDownContext);
@@ -123,7 +124,7 @@ const useDropDownContext = () => {
 
 const dropTopMargin = 'md:mt-2';
 
-const DropDownVariants = cva(
+const DropDownReportVariants = cva(
   `pe-[1.5rem] sm:pe-[1.8rem] md:pe-[2.5rem] bg-white border border-gray-200
   w-full md:max-w-full relative truncate rounded-lg
   after:right-[0.6rem] after:w-[0.75rem] after:h-[0.375rem]
@@ -132,7 +133,7 @@ const DropDownVariants = cva(
   lg:after:right-[1rem] lg:after:w-[0.625rem] lg:after:h-[0.375rem]
   after:bg-[length:100%_100%]
   after:absolute after:transform after:-translate-y-1/2 after:top-[50%]
-  after:content-[""] after:bg-center after:bg-no-repeat after:transition-all after:duration-200
+  after:content-[""] after:bg-center after:bg-no-repeat after:transition-all after:duration-200 cursor-pointer
   `,
   {
     variants: {
@@ -181,39 +182,34 @@ const DropDownVariants = cva(
   }
 );
 
-const DropDownBoxVariants = cva(`DropDownBox..`, {
+const DropDownReportBoxVariants = cva(`DropDownBox..`, {
   variants: {
-    layer: {
+    fixed: {
       true: `min-w-[7rem] fixed top-0 left-0 w-full h-dvh bg-gray-1000 bg-opacity-65 z-20
-      md:absolute md:top-auto md:right-0 md:w-auto md:h-auto md:bg-none md:bg-opacity-0
         `, //
       false: `min-w-[7rem] absolute left-0 w-[100%] z-10`,
     },
   },
 });
 
-const DropDownInnerBoxVariants = cva(
+const DropDownReportInnerBoxVariants = cva(
   `
   inner-box scroll overflow-auto bg-white border border-gray-300 rounded-lg transition-all duration-300
   `,
   {
     variants: {
-      layer: {
-        // true: `layer.. center_center max-w-[90dvw] w-max max-h-[50dvh]
-        // md:max-h-[10rem] md:relative md:w-full md:max-w-auto md:top-0 md:left-0 md:-translate-x-0 md:-translate-y-0
-
-        // true: `layer.. absolute right-0 bottom-0 flex flex-col w-full max-w-[90dvw] rounded-none rounded-t-xl md:rounded-lg
-        // md:max-h-[10rem] md:fixed md:w-auto md:max-w-auto md:top-1/2 left-1/2 -translate-x-1/2 md:-translate-y-1/2
-        true: `layer.. absolute left-0 right-0 bottom-0 flex flex-col w-full max-w-[100dvw] rounded-none rounded-t-xl md:rounded-lg
-        md:max-h-[10rem] md:relative md:w-full md:max-w-auto md:top-0 md:left-0 md:-translate-x-0 md:-translate-y-0
-        `, //
+      // Report top Fixed
+      fixed: {
+        true: `layer.. absolute right-0 bottom-0 flex flex-col w-full max-w-[100dvw] max-h-[50dvh] rounded-none rounded-t-xl md:rounded-lg
+        md:max-h-[25rem] md:fixed md:bottom-auto md:max-w-auto md:w-max md:top-1/2 left-1/2 -translate-x-1/2 md:-translate-y-1/2
+          `, //
         false: `base.. max-h-[10rem]`,
       },
     },
   }
 );
 
-export const DropDown: React.FC<DropDownProps> = ({
+export const DropDownReport: React.FC<DropDownReportProps> = ({
   options = [],
   type = 'base',
   size = 'md',
@@ -224,7 +220,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   width = 'w-full',
   label,
   custom = false,
-  layer = false,
+  fixed = false,
   isFixedScroll = false,
   onChange,
   disabled,
@@ -234,8 +230,8 @@ export const DropDown: React.FC<DropDownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectValue, setSelectValue] = useState<string | null>(value || null);
   const dropRef = useRef<HTMLDivElement | null>(null);
-
-  const className = DropDownVariants({
+  console.log(dropRef);
+  const className = DropDownReportVariants({
     type: type as typeMode | undefined,
     size: size as 'sm' | 'md' | 'lg' | undefined,
     icon: icon as iconMode | undefined,
@@ -252,7 +248,7 @@ export const DropDown: React.FC<DropDownProps> = ({
     }
   };
 
-  const ChangeSelectValue = (option: DropDownOptionType) => {
+  const ChangeSelectValue = (option: DropDownReportOptionType) => {
     setSelectValue(option.value);
     setIsOpen(false);
 
@@ -293,14 +289,14 @@ export const DropDown: React.FC<DropDownProps> = ({
           onChangeSelect: ChangeSelectValue,
         }}
       >
-        <div className={`${width} ${layer ? 'md:relative' : 'relative'}`}>
+        <div className={`${width} ${fixed ? 'md:relative' : 'relative'}`}>
           <div
-            className={`cursor-pointer ${cn(
+            className={`${cn(
               className,
               addClass,
               { 'border-blue-700 after:-rotate-180': isOpen },
               {
-                'bg-disabled-bg cursor-auto': disabled,
+                'bg-disabled-bg': disabled,
               }
             )}`}
             onClick={() => {
@@ -321,7 +317,7 @@ export const DropDown: React.FC<DropDownProps> = ({
             options={options}
             custom={custom}
             resetClass={`${isOpen ? 'opacity-100 visible transition' : 'opacity-0 invisible'}`}
-            layer={layer}
+            fixed={fixed}
             onChangeSelect={ChangeSelectValue}
             onClose={OpenEvent}
           />
@@ -334,18 +330,20 @@ export const DropDown: React.FC<DropDownProps> = ({
 
 // eslint-disable-next-line react/display-name
 const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
-  ({ isOpen, children, resetClass, addClass, options = [], custom, layer }, ref) => {
+  ({ isOpen, children, resetClass, addClass, options = [], custom, fixed }, ref) => {
     const { type, align, icon, min, onClose, onChangeSelect, selectValue } = useDropDownContext();
-    const className = DropDownBoxVariants({
-      layer: layer as boolean | undefined,
+
+    const className = DropDownReportBoxVariants({
+      fixed: fixed as boolean | undefined,
     });
 
-    const innerClassName = DropDownInnerBoxVariants({
-      layer: layer as boolean | undefined,
+    const innerClassName = DropDownReportInnerBoxVariants({
+      fixed: fixed as boolean | undefined,
     });
 
     const atShadow = ['ghostShadow', 'shadow', 'check'].includes(type);
     const atCheck = ['check'].includes(type);
+    const atReport = ['report'].includes(icon);
 
     return (
       <>
@@ -353,15 +351,17 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
         <div
           className={`${cn(className, addClass, {
             'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]': atShadow,
-            [min]: layer,
+            'md:!mt-0': fixed,
+            [min]: fixed,
           })} ${dropTopMargin} ${resetClass}`}
         >
           <div
             ref={ref}
             className={`${cn(innerClassName, addClass, {
               'py-3': atShadow,
-              'translate-y-0': layer && isOpen,
-              'translate-y-full': layer && !isOpen,
+              'overflow-hidden': atReport,
+              'translate-y-0': fixed && isOpen,
+              'translate-y-full': fixed && !isOpen,
             })}`}
           >
             {custom ? (
@@ -370,47 +370,58 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
                 <button onClick={onClose}>닫기</button>
               </div>
             ) : (
-              // eslint-disable-next-line react/jsx-no-useless-fragment
               <>
-                <ul
-                  className={`${cn(
-                    'p-3',
-                    { 'text-left': align === 'left' },
-                    { 'text-center': align === 'center' },
-                    { 'p-5 md:p-3': layer },
-                    { 'p-0': atShadow }
-                  )}`}
-                >
-                  {options.map((option) => {
-                    // const isSelected = selectValue === option.value;
-                    return (
-                      <li
-                        key={option.value}
-                        className={`
-                        ${cn(
-                          'px-4 py-2 text-xs md:text-sm rounded ',
-                          addClass,
-                          !option.disabled && selectValue === option.value && 'text-blue-800 font-bold',
-                          selectValue === (option.value && atCheck) &&
-                            `pl-7 md:pl-7 text-blue-500
-                            bg-no-repeat bg-[length:0.8rem] bg-[0.5rem_center]
-                            bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg")]`,
-                          layer && 'text-center md:text-left',
-                          atShadow && 'rounded-none',
-                          //disabled
-                          option.disabled ? 'text-disabled-text' : 'md:hover:bg-gray-200 cursor-pointer'
-                        )}`}
-                        onClick={() => {
-                          if (!option.disabled) {
-                            onChangeSelect(option);
-                          }
-                        }}
-                      >
-                        {ReportRenderLabel(option.label, true)}
-                      </li>
-                    );
-                  })}
-                </ul>
+                <div className={`hidden md:flex justify-center pt-5 pb-3 mb-3 border-b`}>
+                  <Title title="내 저장 목록" />
+                </div>
+
+                <div className="flex-1 overflow-hidden overflow-y-auto scroll">
+                  <ul
+                    className={`${cn(
+                      'p-3',
+                      { 'text-left': align === 'left' },
+                      { 'text-center': align === 'center' },
+                      { 'px-4 py-7 md:py-3 md:px-8': fixed },
+                      { 'p-0': atShadow }
+                    )}`}
+                  >
+                    {options.map((option) => {
+                      // const isSelected = selectValue === option.value;
+                      return (
+                        <li
+                          key={option.value}
+                          className={`
+                      ${cn(
+                        'px-4 py-2 text-xs md:text-sm rounded ',
+                        addClass,
+                        !option.disabled && selectValue === option.value && 'text-blue-800 font-bold',
+                        selectValue === (option.value && atCheck) &&
+                          `pl-7 md:pl-7 text-blue-500
+                          bg-no-repeat bg-[length:0.8rem] bg-[0.5rem_center]
+                          bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg")]`,
+                        fixed && 'text-sm md:text-lg md:font-normal text-center md:text-left',
+                        atShadow && 'rounded-none',
+                        //disabled
+                        option.disabled ? 'text-disabled-text' : 'md:hover:bg-gray-200 cursor-pointer'
+                      )}`}
+                          onClick={() => {
+                            if (!option.disabled) {
+                              onChangeSelect(option);
+                            }
+                          }}
+                        >
+                          {ReportRenderLabel(option.label, true)}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+
+                <ButtonBox addClass="hidden md:flex md:mt-5 mb-5">
+                  <Button mode="tertiary" onClick={onClose}>
+                    닫기
+                  </Button>
+                </ButtonBox>
               </>
             )}
           </div>

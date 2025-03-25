@@ -1,6 +1,6 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import React, { useState, useRef, useEffect, createContext, useContext,  HTMLAttributes } from 'react';
+import React, { useState, forwardRef, useRef, useEffect, createContext, useContext,  HTMLAttributes } from 'react';
 import { ScoreOption } from './ScoreOption';
 
 type typeMode = 'base' | 'shadow' | 'ghostShadow' | 'ghost';
@@ -212,11 +212,11 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
         onClose: () => setIsOpen(false),
         onChangeSelect: ChangeSelectValue
       }}>
-      <div ref={dropRef} className={`${width} ${layer ? 'md:relative' : 'relative'}`}>
-        <div className={`${cn(className, addClass,
+      <div className={`${width} ${layer ? 'md:relative' : 'relative'}`}>
+        <div className={`cursor-pointer ${cn(className, addClass,
             {'border-blue-700 after:-rotate-180': isOpen},
             {
-              'bg-disabled-bg': disabled,
+              'bg-disabled-bg cursor-auto': disabled,
             },
           )}`}
           onClick={() => {
@@ -230,6 +230,7 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
             {selectedOption?.label || label || '선택'}
         </div>
         <DropOption
+           ref={dropRef}
           isOpen={isOpen}
           options={options}
           options1={options1}
@@ -245,15 +246,9 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
   )
 }
 
-const DropOption: React.FC<DropOptionProps> = ({
-  isOpen,
-  children,
-  resetClass,
-  addClass,
-  options = [], options1 = [],
-  custom,
-  layer
-}) => {
+// eslint-disable-next-line react/display-name
+const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
+  ({ isOpen, children, resetClass, addClass, options = [], options1 = [], custom, layer }, ref) => {
   const { type, align, onClose, onChangeSelect, selectValue } = useDropDownContext();
 
   const className = DropDownBoxVariants ({
@@ -271,7 +266,9 @@ const DropOption: React.FC<DropOptionProps> = ({
       <div className={`${dropTopMargin} ${resetClass} ${cn(className, addClass, {
         'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]' : atShadow
         })}`}>
-        <div className={`${cn(innerClassName, addClass, {
+        <div
+          ref={ref}
+          className={`${cn(innerClassName, addClass, {
           'translate-y-0': layer && isOpen,
           'translate-y-full': layer && !isOpen,
         })}`}>
@@ -305,5 +302,6 @@ const DropOption: React.FC<DropOptionProps> = ({
         </div>
       </div>
     </>
-  )
-}
+    );
+  }
+);

@@ -13,6 +13,7 @@ interface TableTypeRowProps {
       label?: string | React.ReactNode;
       th?: boolean;
       width?: string;
+      hide?: boolean;
       active?: boolean;
       disabled?: boolean;
     }[];
@@ -34,9 +35,9 @@ export const TableTypeRow: React.FC<TableTypeRowProps> = ({ addClass, datas }) =
         <Table.Colgroup>
           {datas[0].children.map((_, index) =>
             _.width ? (
-              <col key={index} width={_.width} />
+              <col key={index} className={`${_.hide && 'hide'}`} width={_.width} />
             ) : (
-              <col key={index} className="w-full md:w-auto" style={isDesktop ? { width: `${100 / datas[0].children.length}%` } : {}} />
+              <col key={index} className={`${_.hide && 'hide'} w-full md:w-auto`} style={isDesktop ? { width: `${100 / datas[0].children.length}%` } : {}} />
             )
           )}
         </Table.Colgroup>
@@ -45,11 +46,11 @@ export const TableTypeRow: React.FC<TableTypeRowProps> = ({ addClass, datas }) =
             <tr key={index}>
               {item.children.map((obj, i) =>
                 obj.th ? (
-                  <th key={i} className={clsx({ 'text-gray-400': obj.disabled })}>
+                  <th key={i} className={clsx(`${obj.hide && 'hide'}`, {'text-gray-400': obj.disabled })}>
                     {obj.title || obj.label}
                   </th>
                 ) : (
-                  <td key={i} className={clsx({ 'bg-blue-50': obj.active, 'text-gray-400': obj.disabled })}>
+                  <td key={i} className={clsx(`${obj.hide && 'hide'}`, { 'bg-blue-50': obj.active, 'text-gray-400': obj.disabled })}>
                     {obj.title || obj.label}
                   </td>
                 )

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import LayerPopup from './layerPopup';
+import LayerPopup from './LayerPopup';
 
 const LayerPopupPage = () => {
   const [isOpen, setIsOpen] = useState<{[key: string]: boolean}>({

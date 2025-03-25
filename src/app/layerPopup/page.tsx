@@ -6,8 +6,8 @@ import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 const LayerPopupPage = () => {
 
   const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
-    popup1: true,
-    popup2: false,
+    popup1: false,
+    popup2: true,
     popup3: false,
     popup4: false,
     popup5: false,

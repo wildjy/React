@@ -248,6 +248,7 @@ const TablePage: React.FC = () => {
                   {
                     title: 'Column 2',
                     data: 'Data 2',
+                    hide: true,
                     width: [
                       {
                         // m: '12.5%',
@@ -295,6 +296,7 @@ const TablePage: React.FC = () => {
                   // },
                   {
                     data: 'Data A',
+                    hide: true,
                   },
                   // {
                   //   data: 'Data B',
@@ -311,6 +313,7 @@ const TablePage: React.FC = () => {
                 children: [
                   {
                     data: 'Data A',
+                    hide: true,
                   },
                   // {
                   //   data: 'Data B',
@@ -496,9 +499,10 @@ const TablePage: React.FC = () => {
               {
                 children: [
                   {
-                    title: 'Column 1',
+                    title: 'MD Column 1',
                     data: 'Data 1',
-                    align: 'left'
+                    align: 'left',
+                    hide: true,
                   },
                   {
                     title: 'Column 2',
@@ -511,6 +515,7 @@ const TablePage: React.FC = () => {
                   {
                     title: 'Column 4',
                     data: 'Data 4',
+                    hide: true,
                   },
                   {
                     title: 'Column 5',
@@ -522,6 +527,7 @@ const TablePage: React.FC = () => {
                 children: [
                   {
                     data: 'Data 1',
+                    hide: true,
                   },
                   {
                     data: 'Data 2',
@@ -531,6 +537,7 @@ const TablePage: React.FC = () => {
                   },
                   {
                     data: 'Data 4',
+                    hide: true,
                   },
                   {
                     data: 'Data 5',

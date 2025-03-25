@@ -3,17 +3,17 @@
 import React, { useState, useRef, forwardRef, useEffect } from 'react';
 import throttle from 'lodash/throttle';
 import { CloseButton } from '../Button/CloseButton';
-import { DropDown, DropDownOptionType } from '../DropDown/DropDown';
+import { DropDownReport, DropDownReportOptionType } from '../DropDown/DropDownReport';
 import { Logo } from '../Flag/Logo';
 
 interface ReportTopProps {
   selectValue?: string;
-  univOption?: DropDownOptionType[];
+  univOption?: DropDownReportOptionType[];
   info?: { label: string; data: string }[];
   children?: React.ReactNode;
   isFixed: boolean;
   fixHeight: string;
-  onChange?: (option: DropDownOptionType) => void;
+  onChange?: (option: DropDownReportOptionType) => void;
 }
 
 export const ReportTop = forwardRef<HTMLDivElement, ReportTopProps>(
@@ -59,7 +59,7 @@ export const ReportTop = forwardRef<HTMLDivElement, ReportTopProps>(
         <div ref={ref} className={`bottomRef.. flex justify-center items-center content-center flex-wrap h-[10rem] md:h-[13.125rem] `}>
           <div className={`${isFixed ? 'fixed top-[0.5rem] sm:top-[0.6rem] md:top-[1.3rem] xl:top-[1.3rem] z-20' : 'mb-6 md:mb-11 '}`}>
             <div className="w-full">
-              <DropDown
+              <DropDownReport
                 label="선택"
                 onChange={onChange}
                 options={univOption}
