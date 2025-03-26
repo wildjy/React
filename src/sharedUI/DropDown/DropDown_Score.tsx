@@ -37,6 +37,7 @@ const DropDownVariants = cva(
   after:bg-[length:100%_100%]
   after:absolute after:transform after:-translate-y-1/2 after:top-[50%]
   after:content-[""] after:bg-center after:bg-no-repeat after:transition-all after:duration-200
+  cursor-pointer
   `,
   {
     variants: {
@@ -213,10 +214,10 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
         onChangeSelect: ChangeSelectValue
       }}>
       <div className={`${width} ${layer ? 'md:relative' : 'relative'}`}>
-        <div className={`cursor-pointer ${cn(className, addClass,
+        <div className={` ${cn(className, addClass,
             {'border-blue-700 after:-rotate-180': isOpen},
             {
-              'bg-disabled-bg cursor-auto': disabled,
+              'bg-disabled-bg cursor-default': disabled,
             },
           )}`}
           onClick={() => {
