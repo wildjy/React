@@ -5,6 +5,7 @@ import React from "react";
 import { useRef, useState, ChangeEvent } from 'react';
 import Table from "../../sharedUI/Table/Table";
 import { TableBase } from "../../sharedUI/Table/TableBase";
+import { TableBaseTr } from "../../sharedUI/Table/TableBaseTr";
 import { TableType } from "../../sharedUI/Table/TableType";
 import { TableTypeRow } from "../../sharedUI/Table/TableTypeRow";
 import { TableTypeMd } from "../../sharedUI/Table/TableTypeMd";
@@ -235,7 +236,7 @@ const TablePage: React.FC = () => {
               {
                 children: [
                   {
-                    title: 'Column 1',
+                    title: 'TableBase 1',
                     data: 'Data 1',
                     row: 3,
                     width: [
@@ -295,6 +296,7 @@ const TablePage: React.FC = () => {
                   //   data: 'Data A',
                   // },
                   {
+                    title: 'TableBase 1',
                     data: 'Data A',
                     hide: true,
                   },
@@ -320,6 +322,110 @@ const TablePage: React.FC = () => {
                   // },
                   {
                     data: 'Data C',
+                  },
+                  {
+                    data: 'Data D',
+                  },
+                ],
+              },
+            ]}
+          />
+
+          <TableBaseTr
+            addClass=""
+            datas={[
+              {
+                children: [
+                  {
+                    title: 'TableBase 1',
+                    data: 'Data 1',
+                    thRow: 2,
+                    thCol: 2,
+                    row: 3,
+                    width: [
+                      {
+                        m: '10%',
+                        pc: '30%',
+                      },
+                    ],
+                  },
+                  {
+                    // title: 'Column 2',
+                    data: 'Data 2',
+                    thRow: 2,
+                    hide: true,
+                    width: [
+                      {
+                        pc: '17.5%',
+                      },
+                    ],
+                  },
+                  {
+                    title: 'Column 3',
+                    data: 'Data 3',
+                    row: 3,
+                    width: [
+                      {
+                        pc: '17.5%',
+                      },
+                    ],
+                  },
+                  {
+                    title: 'Column 4',
+                    data: 'Data 4',
+                    col: 2,
+                    width: [
+                      {
+                        pc: '17.5%',
+                      },
+                    ],
+                  },
+                  {
+                    title: 'Column 5',
+                    // data: 'Data 5',
+                    width: [
+                      {
+                        pc: '17.5%',
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                children: [
+                  // {
+                  //   data: 'Data A',
+                  // },
+                  {
+                    title: 'row 1',
+                    data: 'Data A',
+                    hide: true,
+                  },
+                  // {
+                  //   data: 'Data B',
+                  // },
+                  {
+                    title: 'row 2',
+                    data: 'Data C',
+                    row: 2,
+                  },
+                  {
+                    title: 'row 3',
+                    data: 'Data D',
+                  },
+                ],
+              },
+              {
+                children: [
+                  {
+                    data: 'Data A',
+                    hide: true,
+                  },
+                  // {
+                  //   data: 'Data B',
+                  // },
+                  {
+                    // data: 'Data C',
                   },
                   {
                     data: 'Data D',
