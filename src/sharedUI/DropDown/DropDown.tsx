@@ -392,7 +392,7 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
                           'px-4 py-2 text-xs md:text-sm rounded ',
                           addClass,
                           !option.disabled && selectValue === option.value && 'text-blue-800 font-bold',
-                          selectValue === (option.value && atCheck) &&
+                          atCheck && selectValue === option.value &&
                             `pl-7 md:pl-7 text-blue-500
                             bg-no-repeat bg-[length:0.8rem] bg-[0.5rem_center]
                             bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg")]`,
