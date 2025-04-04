@@ -340,8 +340,7 @@ const TablePage: React.FC = () => {
                     title: 'TableBase 1',
                     data: 'Data 1',
                     thRow: 2,
-                    thCol: 2,
-                    row: 3,
+                    row: 2,
                     width: [
                       {
                         m: '10%',
@@ -350,10 +349,9 @@ const TablePage: React.FC = () => {
                     ],
                   },
                   {
-                    // title: 'Column 2',
+                    title: 'Column 2',
                     data: 'Data 2',
                     thRow: 2,
-                    hide: true,
                     width: [
                       {
                         pc: '17.5%',
@@ -363,7 +361,7 @@ const TablePage: React.FC = () => {
                   {
                     title: 'Column 3',
                     data: 'Data 3',
-                    row: 3,
+                    row: 2,
                     width: [
                       {
                         pc: '17.5%',
@@ -399,7 +397,6 @@ const TablePage: React.FC = () => {
                   {
                     title: 'row 1',
                     data: 'Data A',
-                    hide: true,
                   },
                   // {
                   //   data: 'Data B',
@@ -419,14 +416,16 @@ const TablePage: React.FC = () => {
                 children: [
                   {
                     data: 'Data A',
-                    hide: true,
+                  },
+                  {
+                    data: 'Data A',
+                  },
+                  {
+                    data: 'Data B',
                   },
                   // {
-                  //   data: 'Data B',
+                  //   data: 'Data C',
                   // },
-                  {
-                    // data: 'Data C',
-                  },
                   {
                     data: 'Data D',
                   },
@@ -752,7 +751,7 @@ const TablePage: React.FC = () => {
           </Table>
 
         </div>
-
+{/*
         <table className="mt-[10rem] flex md:table">
           <caption>점수 입력 서식</caption>
           <colgroup>
@@ -1122,7 +1121,7 @@ const TablePage: React.FC = () => {
               </td>
             </tr>
           </tbody>
-        </table>
+        </table> */}
       </div>
     </>
   )

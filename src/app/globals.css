@@ -90,20 +90,20 @@ body {
 }
 
 .content-padding {
-  @apply px-6 md:px-7 lg:px-10 xl:px-0;
+  @apply px-5 md:px-6 lg:px-9 xl:px-0;
 }
 
 .responsive-margin {
-  @apply -mx-6 md:-mx-7 lg:-mx-10 xl:mx-0;
+  @apply -mx-5 md:-mx-6 lg:-mx-9 xl:mx-0;
 }
 
 .container {
-  @apply px-6 py-6 max-w-full m-center bg-white
-  md:px-7
+  @apply px-5 py-5 max-w-full m-center bg-white
+  md:px-6
   md:max-w-full
   lg:w-tablet
   xl:w-laptop
-  xl:px-12 xl:py-9;
+  xl:px-11 xl:py-8;
 }
 /* layout : end */
 
@@ -164,14 +164,14 @@ td {
   @apply text-2xs sm:text-sm md:text-base border border-t-0;
 }
 table th {
-  @apply px-2 py-[0.8125rem] sm:py-5 lg:py-8 lg:px-4 font-normal border border-l-0 border-r-0 border-b bg-[#F4F5F6];
+  @apply px-1 py-[0.8125rem] sm:py-4 lg:py-5 lg:px-3 font-md border border-l-0 border-r-0 border-b bg-[#F4F5F6];
 }
 table thead th {
   @apply border-t-gray-700 lg:border-t-0;
 }
 
 table td {
-  @apply px-3 py-[0.8125rem] sm:py-5 text-center border border-l-0 border-r-0 first:border-t-gray-700 lg:border-t-0 border-b;
+  @apply px-2 py-[0.8125rem] sm:py-4 text-center border border-l-0 border-r-0 first:border-t-gray-700 lg:border-t-0 border-b;
 }
 
 .tableType1 {
@@ -185,7 +185,7 @@ table td {
 
 .tableType1.double th,
 .tableType1.double td {
-  @apply flex justify-center lg:table-cell items-center py-[0.25rem] h-[3rem] sm:py-3 sm:h-[4.0625rem];
+  @apply flex justify-center lg:table-cell items-center py-[0.25rem] h-[3rem] sm:py-2 sm:h-[4.0625rem];
 }
 
 .tableType1.double th {
@@ -234,11 +234,11 @@ table td {
 
 .tableTypeMd th,
 .tableTypeMd td {
-  @apply py-2 md:py-5 border-b m-2;
+  @apply py-1 md:py-4 border-b m-1;
 }
 
 .tableTypeMd thead th {
-  @apply md:py-5 lg:py-8 border-b-grayBlue-50 md:border-b-[#d9d9d9] bg-grayBlue-50 rounded-[0.375rem];
+  @apply md:py-4 lg:py-7 border-b-grayBlue-50 md:border-b-[#d9d9d9] bg-grayBlue-50 rounded-[0.375rem];
 }
 
 .tableTypeMd thead tr,
@@ -290,11 +290,11 @@ table td {
 }
 
 .tableTypeRow tbody tr th {
-  @apply py-3 md:py-5;
+  @apply py-2 md:py-4;
 }
 
 .tableTypeRow tbody tr td {
-  @apply py-3 md:py-5;
+  @apply py-2 md:py-4;
 }
 
 caption {
