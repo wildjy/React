@@ -331,6 +331,37 @@ const TablePage: React.FC = () => {
             ]}
           />
 
+<TableBaseTr
+  datas={[
+    {
+      children: [
+        {
+          data: 'Row 1',
+          row: 2,
+          title: 'Header 1'
+        },
+        {
+          col: 2,
+          data: 'Row 2',
+          title: 'Header 2'
+        },
+        {
+          title: 'Header 3'
+        }
+      ]
+    },
+    {
+      children: [
+        {
+          data: 'Row 3'
+        },
+        {
+          data: 'Row 4'
+        }
+      ]
+    }
+  ]}
+ />
           <TableBaseTr
             addClass=""
             datas={[

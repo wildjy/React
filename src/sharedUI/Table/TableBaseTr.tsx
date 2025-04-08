@@ -70,9 +70,20 @@ export const TableBaseTr: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3',
           const visibleCells = row.children.filter((cell) => cell.title !== undefined);
 
           if (visibleCells.length === 0) return null;
+
+          let usedCols = 0;
+          const cellsToRender: typeof visibleCells = [];
+
+          for (const cell of visibleCells) {
+            const colSpan = cell.thCol ?? 1;
+            if (usedCols >= visibleCells.length) break; // 이미 다 찼으면 렌더 중단
+            cellsToRender.push(cell);
+            usedCols += colSpan;
+          }
+
           return (
             <tr key={rowIndex}>
-              {visibleCells.map((obj, i) => (
+              {cellsToRender.map((obj, i) => (
                 <th
                   key={i}
                   colSpan={obj.thCol ?? 1}
@@ -96,6 +107,17 @@ export const TableBaseTr: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3',
           const visibleCells = item.children.filter((cell) => cell.data);
 
           if (visibleCells.length === 0) return null;
+
+          let usedCols = 0;
+          const cellsToRender: typeof visibleCells = [];
+
+          for (const cell of visibleCells) {
+            const colSpan = cell.col ?? 1;
+            if (usedCols >= visibleCells.length) break; // 이미 다 찼으면 렌더 중단
+            cellsToRender.push(cell);
+            usedCols += colSpan;
+          }
+
           return (
             <tr key={index}>
               {visibleCells.map((obj, i) => (
