@@ -4,10 +4,12 @@ import React, { createContext, HTMLAttributes, useContext, useEffect, forwardRef
 
 type typeMode = 'base' | 'shadow' | 'ghost' | 'ghostShadow' | 'check';
 type alignMode = 'left' | 'center';
+type dropAlign = 'left' | 'right';
 type iconMode = 'base' | 'report';
 interface DropDownContextProps {
   type: typeMode;
   align: alignMode;
+  dropAlign?: dropAlign;
   icon: iconMode;
   min: string;
   isOpen: boolean;
@@ -219,6 +221,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   type = 'base',
   size = 'md',
   align = 'left',
+  dropAlign = 'left',
   icon = 'base',
   addClass,
   min = 'min-w-[7rem]',
@@ -284,6 +287,7 @@ export const DropDown: React.FC<DropDownProps> = ({
           type,
           icon,
           align,
+          dropAlign,
           min,
           isOpen,
           isFixedScroll,
@@ -336,7 +340,7 @@ export const DropDown: React.FC<DropDownProps> = ({
 // eslint-disable-next-line react/display-name
 const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
   ({ isOpen, children, resetClass, addClass, options = [], custom, layer }, ref) => {
-    const { type, align, icon, min, onClose, onChangeSelect, selectValue } = useDropDownContext();
+    const { type, align, dropAlign, min, onClose, onChangeSelect, selectValue } = useDropDownContext();
     const className = DropDownBoxVariants({
       layer: layer as boolean | undefined,
     });
@@ -354,7 +358,8 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
         <div
           className={`${cn(className, addClass, {
             'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]': atShadow,
-            [min]: layer,
+            [`${min}`]: layer || min,
+            'left-auto right-0': dropAlign === 'right',
           })} ${dropTopMargin} ${resetClass}`}
         >
           <div
