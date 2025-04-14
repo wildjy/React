@@ -4,12 +4,14 @@ import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 
+type modeType = 'base' | 'text' | 'rectangle' | 'icon' | 'toggle';
+
 const InputVariants = cva('relative leading-none after:content-[""] bg-white transition-all after:transition-all ', {
   variants: {
     // default size control
     size: {
-      sm: `w-5 h-5 after:h-5 after:w-5
-      sm:w-6 sm:h-6 sm:after:h-6 sm:after:w-6
+      sm: `w-4 h-4 after:h-4 after:w-4
+      sm:w-5 sm:h-5 sm:after:h-5 sm:after:w-5
       md:w-[1.625rem] md:h-[1.625rem] md:after:h-[1.625rem] md:after:w-[1.625rem]
       lg:w-[1.375rem] lg:h-[1.375rem] lg:after:h-[1.375rem] lg:after:w-[1.375rem]`,
       md: 'w-[1.75rem] h-[1.75rem] after:h-[1.75rem] after:w-[1.75rem]',
@@ -23,13 +25,14 @@ const InputVariants = cva('relative leading-none after:content-[""] bg-white tra
           after:bg-[length:60%_60%]
           peer-checked:after:bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checked.svg')]
         `,
-      text: `px-5 py-3
+      text: `
           after:content-none
           mr-0 w-auto h-auto
           after:w-auto
           after:h-auto
         `,
-      rectangle: `px-5 py-3
+      rectangle: `px-3 py-[0.375rem]
+          text-2xs sm:text-sm md:text-base
           border
           border-gray-200
           mr-0 w-auto h-auto
@@ -37,7 +40,7 @@ const InputVariants = cva('relative leading-none after:content-[""] bg-white tra
           after:h-auto
           after:content-none
         `,
-      icon: `pl-9 pr-5 py-3
+      icon: `pl-8 pr-4 py-2
           border
           bg-[length:17%]
           bg-[10%_center]
@@ -50,11 +53,23 @@ const InputVariants = cva('relative leading-none after:content-[""] bg-white tra
           peer-checked:bg-[10%_center]
           peer-checked:bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_input_error.svg')] bg-no-repeat
         `,
+      toggle: `
+          absolute top-1/2 -translate-y-1/2
+          w-4 h-4 md:w-5 md:h-5
+          !rounded-full !after:rounded-full
+        `,
     },
     color: {
-      base: 'border-gray-200 peer-checked:text-blue-700 peer-checked:after:bg-blue-700 peer-checked:border-blue-700',
-      fill: 'text-gray-500 border-transparent bg-gray-50 peer-checked:text-gray-700 peer-checked:border-gray-700 peer-checked:bg-white',
-      blue: '',
+      base: 'border-gray-200 peer-checked:text-blue-700 peer-checked:after:bg-blue-800 peer-checked:border-blue-800',
+      fill: 'text-gray-400 border-transparent bg-gray-50 peer-checked:text-blue-800 peer-checked:border-blue-800 peer-checked:bg-white',
+      switch: `
+        bg-white
+        translate-x-[0.15rem]
+        md:translate-x-[0.15rem]
+        transform transition-transform
+        peer-checked:translate-x-[1.32rem]
+        md:peer-checked:translate-x-[1.6rem]
+      `,
       lineCheck: "border-gray-700 peer-checked:after:bg-[url('https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg')]",
     },
     round: {
@@ -72,11 +87,9 @@ const InputVariants = cva('relative leading-none after:content-[""] bg-white tra
     round: 'base',
   },
 });
-interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">, VariantProps<typeof InputVariants> {
-  size?: "sm" | "md" | "lg" | "auto";
-  mode?: "base" | "text" | "rectangle" | "icon";
-  color?: "base" | "fill" | "blue" | "lineCheck";
-  round?: "base" | "none" | "md" | "lg" | "full";
+
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'color' | 'round'>, VariantProps<typeof InputVariants> {
+  mode?: modeType;
   name?: string;
   label?: string;
   addClass?: string;
@@ -87,13 +100,13 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">
 
 export const CheckBox: FC<InputProps> = ({
   size,
-  mode = "base",
+  mode = 'base',
   color,
   round,
   name,
   label,
   addClass,
-  value = "",
+  value = '',
   disabled,
   onChange,
   ...props
@@ -101,20 +114,24 @@ export const CheckBox: FC<InputProps> = ({
   // const id = useId();
 
   const className = InputVariants({
-    size: size as "sm" | "md" | "lg" | "auto" | undefined,
-    mode: mode as "base" | "text" | "rectangle" | "icon" | undefined,
-    color: color as "base" | "fill" | "blue" | "lineCheck" | undefined,
-    round: round as "base" | "none" | "md" | "lg" | "full" | undefined,
+    size: size as 'sm' | 'md' | 'lg' | 'auto' | undefined,
+    mode: mode as modeType | undefined,
+    color: color as 'base' | 'fill' | 'switch' | 'lineCheck' | undefined,
+    round: round as 'base' | 'none' | 'md' | 'lg' | 'full' | undefined,
   });
 
-  const atType = ["rectangle", "text", "icon"].includes(mode);
-  const atIcon = ["icon"].includes(mode);
-  const atText = ["text"].includes(mode);
+  const atType = ['rectangle', 'text', 'icon'].includes(mode);
+  const atIcon = ['icon'].includes(mode);
+  const atText = ['text'].includes(mode);
+  const atToggle = ['toggle'].includes(mode);
 
   return (
     <label
       htmlFor={value}
-      className={cn('relative flex items-center cursor-pointer', addClass, {"cursor-default" : disabled })}
+      className={cn('peer relative inline-flex items-center cursor-pointer', addClass, {
+        'cursor-default': disabled,
+        // 'w-12 h-6 bg-gray-200 rounded-full peer-checked:bg-blue-800': atToggle,
+      })}
     >
       <input
         type="checkbox"
@@ -127,18 +144,28 @@ export const CheckBox: FC<InputProps> = ({
         placeholder={label}
         {...props}
       />
-      <div className={cn(className, addClass,
-        { // disabled setting
-          "text-disabled-text bg-disabled-bg border-disabled-line peer-checked:border-disabled-line after:bg-gray-300 peer-checked:after:bg-gray-300 cursor-default" : disabled ,
-          "opacity-75 bg-[10%_center] peer-checked:bg-[10%_center] ": disabled && atIcon,
-          "bg-transparent": disabled && atText,
-          "mr-0": label,
-        }
-      )}>
-      {atType && label}
+      {atToggle && (
+        <div
+          className={`${cn('w-10 h-5 md:w-12 md:h-6 bg-gray-200 rounded-full peer-checked:bg-blue-800 transition-all duration-300', {
+            '': disabled && atToggle,
+          })}`}
+        ></div>
+      )}
+      <div
+        className={cn(className, addClass, {
+          // disabled setting
+          'text-disabled-text bg-disabled-bg border-disabled-line peer-checked:border-disabled-line after:bg-gray-300 peer-checked:after:bg-gray-300 cursor-default':
+            disabled,
+          'opacity-75 bg-[10%_center] peer-checked:bg-[10%_center] ': disabled && atIcon,
+          'bg-transparent': disabled && atText,
+          'bg-gray-50': disabled && atToggle,
+          'mr-0': label,
+        })}
+      >
+        {atType && label}
       </div>
-      { label && !atType  && (
-        <span className={cn('ml-3 text-gray-900 ', addClass, {"text-gray-500" : disabled })}>{label}</span>
+      {label && !atType && (
+        <span className={cn('ml-2 text-gray-900 ', addClass, { 'text-gray-500': disabled, 'sr-only': atToggle })}>{label}</span>
       )}
     </label>
   );
