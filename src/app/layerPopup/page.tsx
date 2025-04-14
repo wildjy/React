@@ -6,8 +6,9 @@ import LayerPopup from "../../sharedUI/LayerPopup/LayerPopup";
 const LayerPopupPage = () => {
 
   const [isOpenPopup, setIsOpenPopup] = useState<{[key: string]: boolean}>({
+    popup0: true,
     popup1: false,
-    popup2: true,
+    popup2: false,
     popup3: false,
     popup4: false,
     popup5: false,
@@ -30,7 +31,7 @@ const LayerPopupPage = () => {
           className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>팝업(default) 열기
         </button>
 
-        <LayerPopup align="center" dimm={false} isOpen={isOpenPopup.popup1} OpenEvent={() => OpenEventPopup('popup1')}>
+        <LayerPopup align="center" outClose isOpen={isOpenPopup.popup1} OpenEvent={() => OpenEventPopup('popup1')}>
           <LayerPopup.Header>
             <p className="text-4xl"><b>Header</b></p>
           </LayerPopup.Header>
@@ -40,6 +41,7 @@ const LayerPopupPage = () => {
               <p className="text-xl">
                 Body..
               </p>
+              <p>outClose={true} 팝업 밖 클릭시 레이어 닫힘 설정</p>
               <p>
                 컨텐츠가 박스 밖으로 넘치지 않는 한에서 박스가 가질 수 있는 가장 작은 크기를 말한다.
               </p>
@@ -49,6 +51,37 @@ const LayerPopupPage = () => {
           <LayerPopup.Footer>
             <div className='flex justify-center'>
               <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup1')}>Footer</a>
+            </div>
+          </LayerPopup.Footer>
+        </LayerPopup>
+
+        <button type="button"
+          onClick={() => OpenEventPopup('popup0')}
+          className='inline-block py-3 px-5 min-w-[12rem] text-center border border-blue-700 rounded'>팝업(change bottomSheet) 열기
+        </button>
+
+        <LayerPopup type="bottomSheet" align="center" outClose isOpen={isOpenPopup.popup0} OpenEvent={() => OpenEventPopup('popup0')}>
+          <LayerPopup.Header>
+            <p className="text-4xl"><b>Header</b></p>
+          </LayerPopup.Header>
+
+          <LayerPopup.Body>
+            <p className="text-xl">
+              Body..
+            </p>
+            <p>
+              Device Break point 768 이하에선 bottomSheet로 변형
+            </p>
+            <div className="flex flex-wrap">
+              <div className="w-full h-[250px] bg-green-500"></div>
+              <div className="block md:hidden w-full h-[250px] bg-blue-500"></div>
+              <div className="block md:hidden w-full h-[250px] bg-red-500"></div>
+            </div>
+          </LayerPopup.Body>
+
+          <LayerPopup.Footer>
+            <div className='flex justify-center'>
+              <a href="#self" className='px-5 py-3 text-center border border-blue-700 rounded' onClick={() => OpenEventPopup('popup0')}>Footer</a>
             </div>
           </LayerPopup.Footer>
         </LayerPopup>
@@ -70,10 +103,9 @@ const LayerPopupPage = () => {
               ※ 수능 성적증명서가 준비되었다면 인증을 완료해 주세요.
             </p>
 
-            <div className='flex flex-wrap'>
-              <div className='md:w-1/2'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
-              <div className='md:w-1/2'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
-              <div className='md:w-1/2'><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트"></img></div>
+            <div className="flex flex-wrap">
+              <div className="w-full h-[250px] bg-green-500"></div>
+              <div className="block md:hidden w-full h-[250px] bg-blue-500"></div>
             </div>
           </LayerPopup.Body>
 
@@ -100,9 +132,9 @@ const LayerPopupPage = () => {
               ※ 수능 성적증명서가 준비되었다면 인증을 완료해 주세요.
             </p>
 
-            <div>
-              <img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" />
-              <img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" />
+            <div className="flex flex-wrap">
+              <div className="w-full h-[250px] bg-green-500"></div>
+              <div className="block md:hidden w-full h-[250px] bg-blue-500"></div>
             </div>
           </LayerPopup.Body>
 
@@ -121,7 +153,7 @@ const LayerPopupPage = () => {
           className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>바텀시트 열기
         </button>
 
-        <BottomSheet align="center" dimm={false} isOpen={isOpenPopup.popup4} OpenEvent={() => OpenEventPopup('popup4')}>
+        <BottomSheet align="center" outClose dimm={false} isOpen={isOpenPopup.popup4} OpenEvent={() => OpenEventPopup('popup4')}>
           <BottomSheet.Header>
             <p className="text-4xl"><b>Header</b></p>
           </BottomSheet.Header>
@@ -130,6 +162,10 @@ const LayerPopupPage = () => {
             <p className="text-xl">
               인증이 완료되지 않으면 허수데이터로  수 있으며, 12월 23일부터 리포트 열람이 제한될 수 있습니다
             </p>
+            <div className="flex flex-wrap">
+              <div className="w-full h-[250px] bg-green-500"></div>
+              <div className="block md:hidden w-full h-[250px] bg-blue-500"></div>
+            </div>
           </BottomSheet.Body>
 
           <BottomSheet.Footer>
@@ -152,8 +188,10 @@ const LayerPopupPage = () => {
             <p className="text-xl">
               인증이 완료되지 않으면 허수데이터로 분류될 수 있으며
             </p>
-            <div><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" /></div>
-            <div><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" /></div>
+            <div className="flex flex-wrap">
+              <div className="w-full h-[250px] bg-green-500"></div>
+              <div className="block md:hidden w-full h-[250px] bg-blue-500"></div>
+            </div>
           </BottomSheet.Body>
 
           <BottomSheet.Footer>
@@ -184,8 +222,10 @@ const LayerPopupPage = () => {
             <p className="text-xl">
               인증이 완료되지 않으면 허수데이터로 분류될 수 있으며
             </p>
-            <div><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" /></div>
-            <div><img src="https://image.jinhak.com/jinhakImages/event/241125/img_title.png" alt="삼성전자 이벤트" /></div>
+            <div className="flex flex-wrap">
+              <div className="w-full h-[250px] bg-green-500"></div>
+              <div className="block md:hidden w-full h-[250px] bg-blue-500"></div>
+            </div>
           </BottomSheet.Body>
 
           <BottomSheet.Footer>

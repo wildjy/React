@@ -1,8 +1,8 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import React, { createContext, useContext, HTMLAttributes } from 'react';
+import React, { createContext, useContext, HTMLAttributes, useRef, useEffect } from 'react';
 
-type typeMode = 'base' | 'full' | 'scroll' | 'absolute';
+type typeMode = 'base' | 'full' | 'scroll' | 'absolute' | 'bottomSheet';
 interface LayerPopupContextType {
   type: typeMode;
 }
@@ -19,9 +19,9 @@ const useLayerPopupContext = () => {
 // size controls
 const BodyMargin = 'mt-0';
 const FooterMargin = 'mt-0';
-const ScrollBodyPadding = 'p-6 pt-0 md:p-9 md:pt-0';
-const ScrollCloseButtonPadding = 'pr-6 pt-6 md:pt-9 md:pr-9';
-const CloseButtonSize = 'w-9 h-9 sm:w-9 sm:h-9 md:w-11 md:h-11';
+const ScrollBodyPadding = 'p-5 pt-0 md:p-8 md:pt-0';
+const ScrollCloseButtonPadding = 'pr-5 pt-5 md:pt-8 md:pr-8';
+const CloseButtonSize = 'w-8 h-8 sm:w-8 sm:h-8 md:w-10 md:h-10';
 
 const LayerPopupVariants = cva(
   `
@@ -31,10 +31,22 @@ const LayerPopupVariants = cva(
   {
     variants: {
       type: {
-        base: 'px-6 pt-6 pb-6 md:px-11 md:pt-7 md:pb-13',
-        full: 'w-[100dvw] max-w-[100dvw] h-[100dvh] max-h-dvh md:min-w-[300px] md:max-w-[90dvw] md:w-max md:h-auto md:max-h-[90dvh] rounded-none',
-        scroll: ' overflow-hidden',
-        absolute: 'max-w-[100dvw] w-auto top-0 left-0 right-0 p-6 md:p-9',
+        base: 'px-5 pt-5 pb-5 md:px-10 md:pt-6 md:pb-12',
+        full: `
+          w-[100dvw] max-w-[100dvw] md:min-w-[300px] md:max-w-[90dvw] md:w-max
+          h-[100dvh] max-h-dvh md:h-auto md:max-h-[90dvh]
+          rounded-none
+        `,
+        scroll: 'overflow-hidden',
+        absolute: 'max-w-[100dvw] w-auto top-0 left-0 p-5 md:p-8',
+        bottomSheet: `
+          bottom-0 md:bottom-auto
+          max-w-[100dvw] max-h-[70dvh]
+          translate-y-full md:translate-none
+          px-5 pt-5 pb-5 md:px-10 md:py-7
+          transition-all duration-300 md:duration-0
+          rounded-b-none md:rounded-b-lg
+        `,
       },
       align: {
         left: 'text-left',
@@ -71,6 +83,7 @@ interface LayerPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'type' | 
   addClass?: string;
   closeType?: string;
   close?: boolean;
+  outClose?: boolean;
 }
 
 interface LayerPopupType extends React.FC<LayerPopupProps> {
@@ -103,12 +116,29 @@ const LayerPopup: LayerPopupType = ({
   dimm = true,
   closeType = 'default',
   close = true,
+  outClose = false,
   color,
   round,
   parentClass,
   addClass,
   ...props
 }) => {
+  const layerRef = useRef<HTMLDivElement | null>(null);
+  const isPopupOpen = isOpen ?? false;
+
+  const openMouseEvent = (event: MouseEvent) => {
+    if (outClose && isPopupOpen && layerRef.current && !layerRef.current.contains(event.target as Node)) {
+      OpenEvent?.();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', openMouseEvent);
+    return () => {
+      document.removeEventListener('mousedown', openMouseEvent);
+    };
+  }, [isPopupOpen]);
+
   const className = LayerPopupVariants({
     type: type as typeMode | undefined,
     align: align as 'left' | 'center' | 'right' | undefined,
@@ -117,19 +147,33 @@ const LayerPopup: LayerPopupType = ({
   });
 
   const atAbsolute = type === 'absolute';
+  const atBottomSheet = type === 'bottomSheet';
   // const atFull = type === 'full';
+  // ${type === 'full' && dimm ? 'md:bg-gray-1000 md:bg-opacity-65' : 'bg-gray-1000 bg-opacity-65'}
   const atScroll = type === 'scroll';
 
   return (
     <LayerPopupContext.Provider value={{ type }}>
       <div
-        className={`${cn('top-0 left-0 z-[100] transition-all duration-300', parentClass)}
-        ${atAbsolute ? '' : 'fixed w-dvw h-dvh flex justify-center items-center'}
-        ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}
-        ${type === 'full' && dimm ? 'md:bg-gray-1000 md:bg-opacity-65' : 'bg-gray-1000 bg-opacity-65'}
+        className={`
+        ${cn('top-0 left-0 transition-all duration-50 md:duration-0', parentClass, {
+          'opacity-100 visible z-[100]': isPopupOpen,
+          'opacity-0 invisible': !isPopupOpen,
+          'fixed w-dvw h-dvh md:w-full flex justify-center items-center': !atAbsolute,
+          'w-auto md:w-auto': atAbsolute,
+          'bg-gray-1000 bg-opacity-65': dimm,
+        })}
         `}
       >
-        <div className={`${cn(className, { 'md:pt-13': !close }, addClass)} ${dimm ? '' : 'border border-gray-300'}`} {...props}>
+        <div
+          ref={layerRef}
+          className={`${cn(className, { 'md:pt-12': !close }, addClass, {
+            'border border-gray-300': dimm,
+            'shadow-lg': !dimm,
+            'translate-y-0 md:translate-none': isPopupOpen && atBottomSheet,
+          })}`}
+          {...props}
+        >
           {close && (
             <div
               className={`flex ${
@@ -144,7 +188,7 @@ const LayerPopup: LayerPopupType = ({
                       ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
                       : 'bg-right bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'
                   }
-                  `}
+                `}
                 onClick={OpenEvent}
               >
                 <span className="sr-only">팝업 닫기</span>
@@ -168,7 +212,7 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children, addClass }) => {
 
   return (
     <div
-      className={`${cn('pb-1 popup-body flex-1 scroll', addClass)}
+      className={`${cn('pb-.5 popup-body flex-1 scroll', addClass)}
       ${type === 'full' ? '' : BodyMargin}
       ${type === 'scroll' ? '' : 'overflow-hidden overflow-y-auto'}`}
     >
@@ -188,3 +232,4 @@ LayerPopup.Body = PopupBody;
 LayerPopup.Footer = PopupFooter;
 
 export default LayerPopup;
+
