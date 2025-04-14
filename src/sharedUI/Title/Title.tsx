@@ -21,7 +21,7 @@ export const Title: React.FC<TitleProps> = ({
   children,
   title,
   sub,
-  align,
+  align = 'left',
   addClass,
   subClass,
 }) => {
@@ -33,13 +33,20 @@ export const Title: React.FC<TitleProps> = ({
   const typeClass = typeMargin[type];
 
   return (
-    <Tag className={`${typeClass.class} ${child ? addClass : `flex items-baseline ${align}`}`}>
+    <Tag
+      className={`${cn(`${typeClass.class} `, addClass, {
+        'justify-start text-left': align === 'left',
+        'justify-center text-center': align === 'center',
+        'justify-end text-right': align === 'right',
+      })}
+     ${child ? addClass : `flex items-baseline`}`}
+    >
       {child ? (
         children
       ) : (
         <>
-          <b className={`${cn(`text-md sm:text-lg md:text-xl xl:text-2xl`, addClass)}`}>{title}</b>
-          <span className={`${cn(`hidden ml-5 text-gray-400 lg:inline-block`, subClass)}`}>{sub}</span>
+          <b className={``}>{title}</b>
+          {sub && <span className={`${cn(`hidden ml-4 text-base text-gray-400 lg:inline-block`, subClass)}`}>{sub}</span>}
         </>
       )}
     </Tag>
