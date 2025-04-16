@@ -4,18 +4,23 @@ import { cn } from "../common/cn";
 
 interface TableProps {
   children?: React.ReactNode;
+  caption?: string;
   addClass?: string;
+  typeClass?: string;
 }
 interface ColgroupProps {
   children?: React.ReactNode;
+  addClass?: string;
 }
 interface TheadProps extends HTMLAttributes<HTMLTableSectionElement> {
   children?: React.ReactNode;
   thW?: string;
+  addClass?: string;
 }
 interface TbodyProps extends HTMLAttributes<HTMLTableSectionElement> {
   children?: React.ReactNode;
   tdW?: string;
+  addClass?: string;
 }
 
 interface TableType extends React.FC<TableProps> {
@@ -24,47 +29,26 @@ interface TableType extends React.FC<TableProps> {
   Tbody: typeof Tbody;
 }
 
-const Table: TableType = ({ children, addClass}) => {
+const Table: TableType = ({ children, caption = 'table caption..', addClass }) => {
   return (
-    <>
-      <table className={cn(addClass, '')}>
-        { children }
-      </table>
-    </>
-  )
-}
+    <table className={cn(addClass, '')}>
+      <caption className="hidden">{caption}</caption>
+      {children}
+    </table>
+  );
+};
 
 const Colgroup: React.FC<ColgroupProps> = ({ children }) => {
-  return (
-    <>
-      <colgroup>
-        { children }
-      </colgroup>
-    </>
-  )
-}
+  return <colgroup className={cn(`lg:w-full`)}>{children}</colgroup>;
+};
 
-const Thead: React.FC<TheadProps> = ({ children, thW = "w-1/5" }) => {
-  return (
-    <>
-      <thead className={`${thW} md:w-full`}>
-        <tr>
-          { children }
-        </tr>
-      </thead>
-    </>
-  )
-}
+const Thead: React.FC<TheadProps> = ({ children, thW = 'w-1/5', addClass }) => {
+  return <thead className={cn(`${thW} lg:w-full`, addClass)}>{children}</thead>;
+};
 
-const Tbody: React.FC<TbodyProps> = ({ children, tdW = "w-4/5" }) => {
-  return (
-    <>
-      <tbody className={`${tdW} md:w-full`}>
-        { children }
-      </tbody>
-    </>
-  )
-}
+const Tbody: React.FC<TbodyProps> = ({ children, tdW = 'w-4/5', addClass }) => {
+  return <tbody className={cn(`${tdW} lg:w-full`, addClass)}>{children}</tbody>;
+};
 
 Table.Colgroup = Colgroup;
 Table.Thead = Thead;

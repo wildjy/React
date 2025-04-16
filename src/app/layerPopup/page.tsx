@@ -28,7 +28,7 @@ const LayerPopupPage = () => {
       <div>
         <button type="button"
           onClick={() => OpenEventPopup('popup1')}
-          className='inline-block py-3 w-[12rem] text-center border border-blue-700 rounded'>팝업(default) 열기
+          className='inline-block py-3 min-w-[12rem] text-center border border-blue-700 rounded'>팝업(default + outClose) 열기
         </button>
 
         <LayerPopup align="center" outClose isOpen={isOpenPopup.popup1} OpenEvent={() => OpenEventPopup('popup1')}>
@@ -41,7 +41,7 @@ const LayerPopupPage = () => {
               <p className="text-xl">
                 Body..
               </p>
-              <p>outClose={true} 팝업 밖 클릭시 레이어 닫힘 설정</p>
+              <p className='text-red-500'><b>outClose={true} 팝업 밖 클릭시 레이어 닫힘 설정</b></p>
               <p>
                 컨텐츠가 박스 밖으로 넘치지 않는 한에서 박스가 가질 수 있는 가장 작은 크기를 말한다.
               </p>

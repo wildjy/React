@@ -21,9 +21,11 @@ interface TableBaseProps {
       hide?: boolean;
       align?: string;
       active?: boolean;
+      activeCustom?: [boolean, string];
       addThClass?: string;
       addTdClass?: string;
       disabled?: boolean;
+      disabledCustom?: [boolean, string];
     }[];
   }[];
 }
@@ -103,42 +105,49 @@ export const TableBaseTr: React.FC<TableBaseProps> = ({ addClass, thW = 'w-1/3',
         })}
       </TableTr.Thead>
       <TableTr.Tbody tdW={tdW}>
-        {datas.map((item, index) => {
-          const visibleCells = item.children.filter((cell) => cell.data);
+          {datas
+            ?.filter((item) => item.children.some((obj) => obj.data !== undefined && obj.data !== null && obj.data !== ''))
+            .map((item, index) => {
+              const visibleCells = item.children.filter((cell) => {
+                return cell.data !== undefined || cell.data !== null;
+              });
 
-          if (visibleCells.length === 0) return null;
+              if (visibleCells.length === 0) return null;
 
-          let usedCols = 0;
-          const cellsToRender: typeof visibleCells = [];
+              let usedCols = 0;
+              const cellsToRender: typeof visibleCells = [];
 
-          for (const cell of visibleCells) {
-            const colSpan = cell.col ?? 1;
-            if (usedCols >= visibleCells.length) break; // 이미 다 찼으면 렌더 중단
-            cellsToRender.push(cell);
-            usedCols += colSpan;
-          }
+              for (const cell of visibleCells) {
+                const colSpan = cell.col ?? 1;
+                if (usedCols >= visibleCells.length) break; // 이미 다 찼으면 렌더 중단
+                cellsToRender.push(cell);
+                usedCols += colSpan;
+              }
 
-          return (
-            <tr key={index}>
-              {visibleCells.map((obj, i) => (
-                <td
-                  key={i}
-                  colSpan={obj.col ?? 1}
-                  rowSpan={obj.row ?? 1}
-                  className={`${obj.hide ? 'hide' : ''} ${cn('px-0 lg:px-3', obj.addTdClass, {
-                    'py-2 TD TEST..': hasRowSpan,
-                    'bg-blue-50': obj.active,
-                    'text-gray-400': obj.disabled,
-                    'text-left': obj.align === 'left',
-                    'border-l first:border-l-0 border-r last:border-r-0': obj.row,
-                  })}`}
-                >
-                  {obj.data}
-                </td>
-              ))}
-            </tr>
-          );
-        })}
+              return (
+                <tr key={index}>
+                  {cellsToRender.map((obj, i) => (
+                    <td
+                      key={i}
+                      colSpan={obj.col ?? 1}
+                      rowSpan={obj.row ?? 1}
+                      className={`${obj.hide ? 'hide' : ''} ${cn('px-0 lg:px-3', obj.addTdClass, {
+                        'py-2': hasRowSpan,
+                        'bg-blue-50': obj.active,
+                        'text-gray-400': obj.disabled,
+                        ...(obj.activeCustom?.[0] ? { [obj.activeCustom[1]]: true } : {}),
+                        ...(obj.disabledCustom?.[0] ? { [obj.disabledCustom[1]]: true } : {}),
+                        'px-1 text-left': obj.align === 'left',
+                        'px-1 text-right': obj.align === 'right',
+                        'border-l first:border-l-0 border-r last:border-r-0': obj.row,
+                      })}`}
+                    >
+                      {obj.data}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
       </TableTr.Tbody>
     </TableTr>
     </ContTable>

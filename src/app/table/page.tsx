@@ -331,37 +331,39 @@ const TablePage: React.FC = () => {
             ]}
           />
 
-<TableBaseTr
-  datas={[
-    {
-      children: [
-        {
-          data: 'Row 1',
-          row: 2,
-          title: 'Header 1'
-        },
-        {
-          col: 2,
-          data: 'Row 2',
-          title: 'Header 2'
-        },
-        {
-          title: 'Header 3'
-        }
-      ]
-    },
-    {
-      children: [
-        {
-          data: 'Row 3'
-        },
-        {
-          data: 'Row 4'
-        }
-      ]
-    }
-  ]}
- />
+          <TableBaseTr
+            datas={[
+              {
+                children: [
+                  {
+                    row: 2,
+                    title: 'Header 1'
+                  },
+                  {
+                    col: 2,
+                    title: 'Header 2'
+                  },
+                  {
+                    title: 'Header 3'
+                  }
+                ]
+              },
+              {
+                children: [
+                  {
+                    data: 'Row 2 1'
+                  },
+                  {
+                    data: 'Row 2 2'
+                  },
+                  {
+                    data: 'Row 2 3'
+                  },
+                ]
+              }
+            ]}
+          />
+
           <TableBaseTr
             addClass=""
             datas={[
@@ -469,10 +471,9 @@ const TablePage: React.FC = () => {
             datas={[
               {
                 children: [
-
                   ...tableData.map((row, i) => ({
                     title: row.title + `+ index ${i}`,
-                    data: row.data + `+ index ${i + 1}`,
+                    // data: row.data + `+ index ${i + 1}`,
                   })),
                 ],
               },
