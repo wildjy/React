@@ -15,10 +15,11 @@ import Title from "../../sharedUI/Title/TitleDemo";
 import dynamic from 'next/dynamic';
 
 import { SwiperSlide } from 'swiper/react';
+import { SwiperSlider } from '../../sharedUI/Swiper/SwiperSlider';
 import { lastIndexOf } from "lodash";
-const SwiperSlider = dynamic(() => import('../../sharedUI/Swiper/Swiper'), {
-  ssr: false
-});
+// const SwiperSlider = dynamic(() => import('../../sharedUI/Swiper/Swiper'), {
+//   ssr: false
+// });
 
 const HighSchoolPage: React.FC = () => {
   // input

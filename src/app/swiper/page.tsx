@@ -3,6 +3,7 @@ import React from "react";
 import { useEffect, useState } from 'react'
 import Title from "../../sharedUI/Title/TitleDemo";
 import SwiperComponent from "../../sharedUI/Swiper/Swiper";
+import { SwiperSlider} from "../../sharedUI/Swiper/SwiperSlider";
 import { SwiperGroup } from "../../sharedUI/Swiper/SwiperGroup";
 import { RecomGroupSwiper } from "./RecomGroupSwiper";
 import { SwiperSlide } from 'swiper/react';
@@ -165,6 +166,53 @@ const SwiperPage: React.FC = () => {
           <Title title="Swiper" size="md" bold="semi" />
 
           <div>
+            <div className="mb-10">
+              <SwiperSlider autoplay pager arrow freeMode loop delay={2000}>
+                {slides_img.map((slide, index) => (
+                  <SwiperSlide
+                    key={index}
+                    style={{width: 'auto'}}
+                    className="pr-5 last:pr-0 flex justify-center items-center w-auto "
+                  >
+                    <a
+                      href={slide.url}
+                      className={`${slide.active} block py-2 font-bold ${
+                        slide.active
+                          ? 'text-blue-700 border-b-[0.313rem] border-blue-700 '
+                          : ''
+                      }`}
+                    >
+                        <img src={slide.imgUrl} alt="" />
+                    </a>
+                  </SwiperSlide>
+                ))}
+              </SwiperSlider>
+            </div>
+
+            <div className="mb-10">
+              <SwiperSlider pager arrow freeMode delay={1800}>
+                {slidesItems.map((slide, index) => (
+                  <SwiperSlide
+                    key={index}
+                    style={{width: 'auto'}}
+                    className="pr-5 last:pr-0 flex justify-center items-center w-auto "
+                  >
+                    <a
+                      href={slide.url}
+                      className={`${slide.active} block py-2 font-bold ${
+                        slide.active
+                          ? 'text-blue-700 border-b-[0.313rem] border-blue-700 '
+                          : ''
+                      }`}
+                    >
+                        {/* <img src={slide.imgUrl} alt="" /> */}
+                        <p className="text-lg">{slide.title}</p>
+                        <p className='text-md'>{slide.sub_txt}</p>
+                    </a>
+                  </SwiperSlide>
+                ))}
+              </SwiperSlider>
+            </div>
 
             <div className="border-b border-gray-300">
               <SwiperComponent

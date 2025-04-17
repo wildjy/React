@@ -127,25 +127,21 @@ const SwiperSlider: React.FC<swiperProps> = ({ children, id, image = false, slid
 
         <div className={`controller`}>
           <button
-            className={`swiper-${id}-prev absolute y_center left-4 z-10 bg-white rounded-full  ${arrow ? '' : 'hidden'}`}
+            className={`swiper-${id}-prev absolute top-[50%] transform -translate-y-1/2 left-3 z-10 bg-white rounded-full  ${
+              arrow ? '' : 'hidden'
+            }`}
           >
-            <img
-              src="https://image.jinhak.com/jinhakImages/react/icon/arrow_off.svg"
-              className="w-8 md:w-9"
-              alt=""
-            />
+            <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg" className="rotate-180 w-7 md:w-8 lg:w-10" alt="" />
           </button>
           <div className={` ${pager ? '' : 'hidden'}`}>
-            <div ref={paginationRef} className={`swiper-pagination`}></div>
+            <div ref={paginationRef} className={`swiper-pagination !-bottom-6 md:!-bottom-9 !z-0`}></div>
           </div>
           <button
-            className={`swiper-${id}-next absolute y_center right-4 z-10 bg-white rounded-full ${arrow ? '' : 'hidden'}`}
+            className={`swiper-${id}-next absolute top-[50%] transform -translate-y-1/2 right-3 z-10 bg-white rounded-full ${
+              arrow ? '' : 'hidden'
+            }`}
           >
-            <img
-              src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg"
-              className="w-8 md:w-9"
-              alt=""
-            />
+            <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg" className="w-7 md:w-8 lg:w-10" alt="" />
           </button>
         </div>
 

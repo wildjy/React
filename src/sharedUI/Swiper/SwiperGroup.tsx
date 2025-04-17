@@ -128,7 +128,7 @@ export const SwiperGroup: React.FC<swiperProps> = ({
 
       <div className={`controller`}>
         <button className={`swiper-${id}-prev absolute y_center -left-4 lg:-left-5 z-10 bg-white rounded-full  ${arrow ? '' : 'hidden'}`}>
-          <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_off.svg" className="w-8 md:w-9 lg:w-11" alt="" />
+          <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg" className="rotate-180  w-8 md:w-9 lg:w-11" alt="" />
         </button>
         <div className={`${pager ? '' : 'hidden'}`}>
           <div ref={paginationRef} className={`swiper-pagination !relative !mt-2 !md:mt-5 !top-auto !bottom-auto`}></div>

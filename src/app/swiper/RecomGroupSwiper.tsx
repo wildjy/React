@@ -112,7 +112,7 @@ export const RecomGroupSwiper: React.FC<RecomGroupSwiperProps> = ({ items, isSel
                 <div
                   key={idx}
                   onClick={src.url === '' ? undefined : () => selectEvent(src.id)}
-                  className={`${windowWidth < 768 ? 'w-[calc(100%/3-0.35rem)]' : 'w-[calc(100%/4-0.4rem)] md:w-[calc(100%/4-0.75rem)]'}
+                  className={`${windowWidth < 768 ? 'w-[calc(100%/3-0.5rem)]' : 'w-[calc(100%/4-0.5rem)] md:w-[calc(100%/4-1rem)]'}
                   ${idx === 0 ? 'py-5 sm:py-7 lg:py-12' : ''}
                   ${isSelect.includes(src.id) ? 'text-blue-800 border-blue-800' : 'border-gray-100'}
                   py-5 sm:py-6 md:py-8 lg:py-10
