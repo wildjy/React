@@ -60,7 +60,7 @@ const LayerPopupPage = () => {
           className='inline-block py-3 px-5 min-w-[12rem] text-center border border-blue-700 rounded'>팝업(change bottomSheet) 열기
         </button>
 
-        <LayerPopup type="bottomSheet" align="center" outClose isOpen={isOpenPopup.popup0} OpenEvent={() => OpenEventPopup('popup0')}>
+        <LayerPopup type="bottomSheet" align="center" isOpen={isOpenPopup.popup0} OpenEvent={() => OpenEventPopup('popup0')}>
           <LayerPopup.Header>
             <p className="text-4xl"><b>Header</b></p>
           </LayerPopup.Header>

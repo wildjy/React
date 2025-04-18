@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef, ChangeEvent } from "react";
 import UseStatePage from './useState';
 import UseEffectPage from './useEffect';
+import { UseItem } from './UseItem';
 import Conditional from './Conditional';
 import throttle from 'lodash/throttle';
 import debounce from 'lodash/debounce';
@@ -226,58 +227,12 @@ export default function Page() {
   };
 
 // 학폭 기능
-interface Item {
-  id: string;
-  name: string;
-}
-
-const limit = 2;
-const defaultItem: Item = { id: '0', name: 'Please select an item' };
-const [items] = useState<Item[]>([
-  { id: '1', name: 'Item 1' },
-  { id: '2', name: 'Item 2' },
-  { id: '3', name: 'Item 3' },
-  { id: '4', name: 'Item 4' },
-  { id: '5', name: 'Item 5' },
-]);
-
-const [selectedItems, setSelectedItems] = useState<Item[]>([]);
-const [dropdownVisible, setDropdownVisible] = useState(false);
-const [selectedTitle, setSelectedTitle] = useState<string>(defaultItem.name);
-
-// dropdown
-const handleToggleDropdown = () => {
-  setDropdownVisible(!dropdownVisible);
-};
-
-const handleSelectItem = (item: Item) => {
-  if (selectedItems.length >= limit) {
-    alert(`최대 ${limit}개까지 선택 가능합니다.`);
-    setDropdownVisible(false);
-    return;
-  }
-
-  setSelectedItems((prev) => [...prev, item]);
-  setSelectedTitle(item.name); // Update the val_tit
-  setDropdownVisible(false); // Close dropdown after selection
-};
-
-const handleRemoveItem = (index: number) => {
-  const updatedItems = [...selectedItems];
-  updatedItems.splice(index, 1);
-  setSelectedItems(updatedItems);
-
-  // Update title if the removed item is the last selected
-  if (updatedItems.length === 0) {
-    setSelectedTitle(defaultItem.name);
-  } else {
-    setSelectedTitle(updatedItems[updatedItems.length - 1].name);
-  }
-};
 
   return (
     <>
       <div className="p-6 w-full tablet:w-tablet m-center">
+
+        <UseItem />
 
         <h1 className="mb-5 text-2xl"><b>React Study</b></h1>
         <button className="p-5 py-2 border border-gray-600" onClick={() => handleControl('Su-57')}>click handleControl</button>
@@ -503,50 +458,6 @@ const handleRemoveItem = (index: number) => {
         <button className="p-5 py-2 border border-gray-600" onClick={() => {handleType(0, 'FGR-4', 'middle'); handleType(1, 'F-111', 'attack');}}>click handleType</button>
         <p>{[testArray[0].name, testArray[0].type]}</p>
         <p>{testArray[1].name}{testArray[1].type}</p>
-
-        <div id="violence" className="w-[300px] relative">
-          {/* Title */}
-          <div
-            className="val_tit cursor-pointer border px-4 py-2"
-            onClick={handleToggleDropdown}
-          >
-            {selectedTitle}
-          </div>
-
-          {/* Dropdown */}
-          {dropdownVisible && (
-            <div id="save_list" className="absolute z-10 mt-1 border bg-white w-full shadow-md">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="item cursor-pointer px-4 py-2 hover:bg-gray-100"
-                  onClick={() => handleSelectItem(item)}
-                >
-                  {item.name}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Selected Items */}
-          <div className="mt-4">
-            {selectedItems.map((item, index) => (
-              <div key={`${item.id}-${index}`} className="item flex items-center mb-2">
-                <span className="mr-2">{item.name}</span>
-                <button
-                  onClick={() => handleRemoveItem(index)}
-                  className="text-red-500 underline"
-                >
-                  삭제
-                </button>
-              </div>
-            ))}
-          </div>
-          {selectedItems.length >= limit && (
-            <p className="info_txt">최대 {limit}개까지 선택 가능합니다.</p>
-          )}
-        </div>
-
 
         {/* cloneElement */}
         <div className="mt-5 p-6 border border-gray-400">

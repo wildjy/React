@@ -110,42 +110,42 @@ const SwiperPage: React.FC = () => {
       },
       {
         id: 2,
-        url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
+        url: 'https://image.jinhak.com/renewal2009/UnivLogo/1120m.gif',
         label: '대학명',
       },
       {
         id: 3,
-        url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
+        url: 'https://image.jinhak.com/renewal2009/UnivLogo/1120m.gif',
         label: 'ㅇㅇㅇdd \n 대학명',
       },
       {
         id: 4,
-        url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
+        url: 'https://image.jinhak.com/renewal2009/UnivLogo/1120m.gif',
         label: 'ㅇㅇㅇdd \n 대학명',
       },
       {
         id: 5,
-        url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
+        url: 'https://image.jinhak.com/renewal2009/UnivLogo/1120m.gif',
         label: 'ㅇㅇㅇdd \n 대학명',
       },
       {
         id: 6,
-        url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
+        url: 'https://image.jinhak.com/renewal2009/UnivLogo/1120m.gif',
         label: 'ㅇㅇㅇdd \n 대학명',
       },
       {
         id: 7,
-        url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
+        url: 'https://image.jinhak.com/renewal2009/UnivLogo/1120m.gif',
         label: 'ㅇㅇㅇdd \n 대학명',
       },
       {
         id: 8,
-        url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
+        url: 'https://image.jinhak.com/renewal2009/UnivLogo/1120m.gif',
         label: 'ㅇㅇㅇdd \n 대학명',
       },
       {
         id: 9,
-        url: 'https://imgorg.jinhak.com/renewal2009/UnivLogo/1120m.gif',
+        url: 'https://image.jinhak.com/renewal2009/UnivLogo/1120m.gif',
         label: 'ㅇㅇㅇdd \n 대학명',
       },
     ];
@@ -161,6 +161,10 @@ const SwiperPage: React.FC = () => {
     <div id="contents" className="bg-gray-50">
       <div className="container">
       <div className="p-5 flex gap-y-7 flex-wrap">
+
+        <img src="https://image.jinhak.com/aaa/test.jpg" alt="" />
+        <img src="https://image.jinhak.com/aaa/test1.jpg" alt="" />
+        <img src="https://image.jinhak.com/aaa/test2.jpg" alt="" />
 
         <div className="stepbar w-full">
           <Title title="Swiper" size="md" bold="semi" />

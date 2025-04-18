@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 'use client';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { cn } from "../common/cn";
@@ -53,16 +54,23 @@ export const SwiperSlider: React.FC<swiperProps> = ({
 
   useEffect(() => {
     const swiper = swiperRef.current;
+
     const timer = setTimeout(() => {
       swiperRef.current?.update();
     }, 50);
 
     if (!swiper || !swiper.autoplay) return;
 
-    if (autoplay) {
-      swiper.autoplay.start();
-    } else {
-      swiper.autoplay.stop();
+    if (swiper.autoplay) {
+      autoplay ? swiper.autoplay.start() : swiper.autoplay.stop();
+    }
+
+    if (swiper.pagination && typeof swiper.pagination.update === 'function') {
+      swiper.loopDestroy();
+      swiper.loopCreate();
+      swiper.update();
+      swiper.pagination.render();
+      swiper.pagination.update();
     }
 
     const handleResize = () => {
@@ -81,7 +89,7 @@ export const SwiperSlider: React.FC<swiperProps> = ({
       window.removeEventListener('resize', handleResize);
       clearTimeout(timer);
     };
-  }, [contentWidth, autoplay]);
+  }, [contentWidth, autoplay, loop]);
 
   // active slide
   useLayoutEffect(() => {
