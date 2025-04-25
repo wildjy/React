@@ -3,6 +3,7 @@ import { useState, useEffect, createContext, useContext } from 'react';
 import throttle from 'lodash/throttle';
 
 interface TongContextType {
+  innerClass: string;
   sideNav: boolean;
   isCheck: boolean;
 }
@@ -17,10 +18,11 @@ interface TongProviderProps {
 
 export const TongProvider = ({ sideNav, children }: TongProviderProps) => {
   const [isCheck, setIsCheck] = useState(false);
-
+  const innerClass = 'mx-auto w-[80rem]';
+  console.log(innerClass);
   useEffect(() => {
     const resizeEvent = throttle(() => {
-      setIsCheck(window.innerWidth < 1456);
+      setIsCheck(window.innerWidth < 1570);
     }, 50);
 
     resizeEvent();
@@ -31,7 +33,7 @@ export const TongProvider = ({ sideNav, children }: TongProviderProps) => {
     };
   }, [setIsCheck]);
 
-  return <TongContext.Provider value={{ sideNav, isCheck }}>{children}</TongContext.Provider>;
+  return <TongContext.Provider value={{ innerClass, sideNav, isCheck }}>{children}</TongContext.Provider>;
 };
 
 export const useTong = () => {

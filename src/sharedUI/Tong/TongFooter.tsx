@@ -8,10 +8,10 @@ interface TongFooterProps {
 }
 
 export const TongFooter: React.FC<TongFooterProps> = ({ children }) => {
-  const { sideNav, isCheck } = useTong();
+  const { innerClass, sideNav, isCheck } = useTong();
   return (
     <footer className={`${sideNav && !isCheck ? 'px-[17.375rem]' : ''} border-t border-gray-200 bg-white relative z-[1]`}>
-      <div className={`${cn('mx-auto w-[72.5rem]', '')}`}>TongFooter{children}</div>
+      <div className={`${cn([`${innerClass} footer class`], '')}`}>TongFooter{children}</div>
     </footer>
   );
 };

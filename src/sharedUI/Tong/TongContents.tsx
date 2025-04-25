@@ -25,7 +25,7 @@ export default function TongContents({
 }
 
 function ScrollPageContents({ addClass, children }: { sideNav?: boolean; addClass?: string; children?: React.ReactNode }) {
-  const { sideNav, isCheck } = useTong();
+  const { innerClass, sideNav, isCheck } = useTong();
   const [isOpen, setIsOpen] = useState(false);
   const slots = React.Children.toArray(children);
 
@@ -89,7 +89,7 @@ function ScrollPageContents({ addClass, children }: { sideNav?: boolean; addClas
               )
             ) : (
               <div key={index} className={`${sideNav && !isCheck ? 'px-[17.375rem]' : ''}  grow`}>
-                <div className={`mx-auto w-[72.5rem]`}>{slot}</div>
+                <div className={`${innerClass}`}>{slot}</div>
               </div>
             )
           )
