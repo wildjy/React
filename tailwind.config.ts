@@ -21,6 +21,7 @@ const config: Config = {
         lg: '1024px', // laptop
         xl: '1280px', //  desktop
         '2xl': '1440px', // full
+        '3xl': '1570px', // Tong
       },
       fontFamily: {
         sans: ['Pretendard', 'Arial', 'sans-serif'],

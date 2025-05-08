@@ -4,26 +4,37 @@ import throttle from 'lodash/throttle';
 
 interface TongContextType {
   innerClass: string;
-  sideNav: boolean;
-  isCheck: boolean;
+  sideNav: boolean | undefined;
+  topBottom: boolean | undefined;
+  isOpen: boolean | undefined;
+  isNavOpen: boolean | undefined;
+  isMobile: boolean | undefined;
+  isDesktop: boolean | undefined;
+  setIsOpen: (open: boolean) => void;
+  setIsNavOpen: (open: boolean) => void;
 }
 
 export const TongContext = createContext<TongContextType | undefined>(undefined);
 export const useSideNav = () => useContext(TongContext);
 
 interface TongProviderProps {
-  sideNav: boolean;
+  sideNav?: boolean;
+  topBottom?: boolean;
   children: React.ReactNode;
 }
 
-export const TongProvider = ({ sideNav, children }: TongProviderProps) => {
-  const [isCheck, setIsCheck] = useState(false);
-  const innerClass = 'mx-auto w-[80rem]';
-  console.log(innerClass);
+export const TongProvider = ({ sideNav, topBottom, children }: TongProviderProps) => {
+  const [isDesktop, setDesktop] = useState<boolean | undefined>(undefined);
+  const [isMobile, setMobile] = useState<boolean | undefined>(undefined);
+  const [isOpen, setIsOpen] = useState<boolean | undefined>(undefined);
+  const [isNavOpen, setIsNavOpen] = useState<boolean | undefined>(undefined);
+  const innerClass = 'px-5 mx-auto w-full xl:w-[80rem]'; // 1160 = 72.5rem, 1280 = 80rem
+
   useEffect(() => {
     const resizeEvent = throttle(() => {
-      setIsCheck(window.innerWidth < 1570);
-    }, 50);
+      setDesktop(window.innerWidth < 1570); // 1160 = 1450,  1280 = 1570
+      setMobile(window.innerWidth < 768); // 1160 = 1450,  1280 = 1570
+    }, 10);
 
     resizeEvent();
 
@@ -31,9 +42,20 @@ export const TongProvider = ({ sideNav, children }: TongProviderProps) => {
     return () => {
       window.removeEventListener('resize', resizeEvent);
     };
-  }, [setIsCheck]);
+  }, [setDesktop, setMobile]);
 
-  return <TongContext.Provider value={{ innerClass, sideNav, isCheck }}>{children}</TongContext.Provider>;
+  useEffect(() => {
+    if (isMobile === false) {
+      setIsOpen(false);
+      setIsNavOpen(false);
+    }
+  }, [isMobile]);
+
+  return (
+    <TongContext.Provider value={{ innerClass, sideNav, topBottom, isDesktop, isMobile, isOpen, setIsOpen, isNavOpen, setIsNavOpen }}>
+      {children}
+    </TongContext.Provider>
+  );
 };
 
 export const useTong = () => {

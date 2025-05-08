@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import throttle from 'lodash/throttle';
 
 interface ScrollContextType {
@@ -20,6 +20,7 @@ export const ScrollProvider: React.FC<ScrollFixedProps> = ({ children, initTop =
   const [scrollDirection, setScrollDirection] = useState(false);
   const [threshold, setThreshold] = useState(initTop);
   const [prevScrollY, setPrevScrollY] = useState(0);
+  const prevScrollYRef = useRef(0);
 
   useEffect(() => {
     const savedScrollY = window.scrollY;
@@ -33,21 +34,21 @@ export const ScrollProvider: React.FC<ScrollFixedProps> = ({ children, initTop =
       setIsFixed(currentScroll > threshold);
 
       // direction scroll
-      if (currentScroll > prevScrollY && currentScroll > 5) {
+      if (currentScroll > prevScrollYRef.current && currentScroll > 5) {
         // console.log('down');
         setScrollDirection(true);
       } else {
         // console.log('up');
         setScrollDirection(false);
       }
-      setPrevScrollY(currentScroll);
+      prevScrollYRef.current = currentScroll;
     }, 50);
 
     window.addEventListener('scroll', scrollEvent, { passive: true });
     return () => {
       window.removeEventListener('scroll', scrollEvent);
     };
-  }, [isFixed, prevScrollY, scrollDirection, threshold]);
+  }, [threshold]);
 
   return <ScrollContext.Provider value={{ setThreshold, isFixed, scrollDirection }}>{children}</ScrollContext.Provider>;
 };

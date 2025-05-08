@@ -1,4 +1,4 @@
-/* eslint-disable @nx/enforce-module-boundaries */
+
 'use client';
 import React from 'react';
 import { cn } from "../common/cn";
