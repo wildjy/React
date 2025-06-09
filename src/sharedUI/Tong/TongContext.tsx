@@ -4,6 +4,8 @@ import throttle from 'lodash/throttle';
 
 interface TongContextType {
   innerClass: string;
+  top: boolean | undefined;
+  gnb: boolean | undefined;
   sideNav: boolean | undefined;
   topBottom: boolean | undefined;
   isOpen: boolean | undefined;
@@ -18,17 +20,20 @@ export const TongContext = createContext<TongContextType | undefined>(undefined)
 export const useSideNav = () => useContext(TongContext);
 
 interface TongProviderProps {
+  top?: boolean;
+  gnb?: boolean;
   sideNav?: boolean;
   topBottom?: boolean;
   children: React.ReactNode;
 }
 
-export const TongProvider = ({ sideNav, topBottom, children }: TongProviderProps) => {
+export const TongProvider = ({ top, gnb, sideNav, topBottom, children }: TongProviderProps) => {
   const [isDesktop, setDesktop] = useState<boolean | undefined>(undefined);
   const [isMobile, setMobile] = useState<boolean | undefined>(undefined);
   const [isOpen, setIsOpen] = useState<boolean | undefined>(undefined);
   const [isNavOpen, setIsNavOpen] = useState<boolean | undefined>(undefined);
-  const innerClass = 'px-5 mx-auto w-full xl:w-[80rem]'; // 1160 = 72.5rem, 1280 = 80rem
+
+  const innerClass = 'px-5 mx-auto w-full xl:px-0 xl:w-[80rem]'; // 1160 = 72.5rem, 1280 = 80rem
 
   useEffect(() => {
     const resizeEvent = throttle(() => {
@@ -52,7 +57,9 @@ export const TongProvider = ({ sideNav, topBottom, children }: TongProviderProps
   }, [isMobile]);
 
   return (
-    <TongContext.Provider value={{ innerClass, sideNav, topBottom, isDesktop, isMobile, isOpen, setIsOpen, isNavOpen, setIsNavOpen }}>
+    <TongContext.Provider
+      value={{ innerClass, top, gnb, sideNav, topBottom, isDesktop, isMobile, isOpen, setIsOpen, isNavOpen, setIsNavOpen }}
+    >
       {children}
     </TongContext.Provider>
   );
