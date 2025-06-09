@@ -4,7 +4,7 @@ import { useState, useEffect, HTMLAttributes } from 'react';
 import { cn } from "../common/cn";
 import { cva } from 'class-variance-authority';
 
-const BarGraphVariants = cva(`flex  rounded-full bg-[#ddd]`, {
+const BarGraphVariants = cva(`flex rounded-full bg-[#ddd]`, {
   variants: {
     type: {
       base: ``,
@@ -12,9 +12,10 @@ const BarGraphVariants = cva(`flex  rounded-full bg-[#ddd]`, {
       type_2: ``,
     },
     size: {
-      sm: 'h-[1rem] text-2xs',
-      md: 'h-[1.25rem] text-xs',
-      lg: 'h-[2.25rem] text-md',
+      sm: 'h-[1.25rem] text-2xs',
+      md: 'h-[1.5rem] text-xs',
+      lg: 'h-[2rem] text-md',
+      xl: 'h-[2.25rem] text-md',
     },
   },
   defaultVariants: {
@@ -23,11 +24,14 @@ const BarGraphVariants = cva(`flex  rounded-full bg-[#ddd]`, {
   },
 });
 
-interface BarGraphProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof BarGraphVariants> {
+interface BarGraphProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'color'>,
+    VariantProps<typeof BarGraphVariants> {
   disabled?: boolean;
   children?: React.ReactNode;
   min?: number;
   max?: number;
+  color?: [string, string];
   average?: number;
   myscore?: number;
   addClass?: string;
@@ -41,6 +45,8 @@ export const BarGraph: React.FC<BarGraphProps> = ({
   average = 0,
   myscore = 0,
   disabled = false,
+  color = ['#A4BEF0', 'bg-[#ddd]'],
+  children,
   addClass,
 }) => {
   const [width, setWidth] = useState<string>('0%');
@@ -48,7 +54,10 @@ export const BarGraph: React.FC<BarGraphProps> = ({
 
   useEffect(() => {
     function getLeftPercent(score: number, min: number, max: number) {
-      const percent = Math.max(0, Math.min(100, ((score - min) / (max - min)) * 100));
+      const percent = Math.max(
+        0,
+        Math.min(100, ((score - min) / (max - min)) * 100)
+      );
       return `${percent}%`;
     }
     const calcWidth = getLeftPercent(average, min, max);
@@ -59,7 +68,7 @@ export const BarGraph: React.FC<BarGraphProps> = ({
 
   const className = BarGraphVariants({
     type: type as 'base' | 'type_1' | 'type_2' | undefined,
-    size: size as 'sm' | 'md' | 'lg' | undefined,
+    size: size as 'sm' | 'md' | 'lg' | 'xl' | undefined,
   });
 
   return (
@@ -85,8 +94,10 @@ export const BarGraph: React.FC<BarGraphProps> = ({
                 'absolute -top-[2rem] left-1/2 -translate-x-1/2 min-w-[4rem] text-sm md:text-md text-center text-[#FF0048] ',
                 '',
                 {
-                  'text-left -left-[0.3rem] -translate-x-0': Number(myscore) === Number(min),
-                  'text-right left-auto right-0 -translate-x-0': Number(myscore) > Number(max) - 27,
+                  'text-left -left-[0.3rem] -translate-x-0':
+                    Number(myscore) < Number(min) + 5,
+                  'text-right left-auto -right-[0.3rem] -translate-x-0':
+                    Number(myscore) > Number(max) - 10,
                 }
               )}`}
             >
@@ -96,19 +107,29 @@ export const BarGraph: React.FC<BarGraphProps> = ({
         )}
         <span
           className={`bar..
-              ${cn('flex items-center gap-x-1 px-3 justify-end rounded-full bg-[#A4BEF0] relative', '', {
-                'bg-[#FEDA62]': type === 'type_1',
-                'bg-[#84DCCA]': type === 'type_2',
-              })}
+              ${cn(
+                'flex items-center gap-x-1 px-3 justify-end rounded-full bg-[#A4BEF0] relative',
+                '',
+                {
+                  'bg-[#FEDA62]': type === 'type_1',
+                  'bg-[#84DCCA]': type === 'type_2',
+                }
+              )}
             `}
           data-averege={average}
-          style={disabled ? {} : { width }}
+          style={
+            disabled ? { width: '2.4%' } : { width, backgroundColor: color[0] }
+          }
         >
           {!disabled && (
             <span
-              className={`${cn('absolute top-1/2 -translate-y-1/2 right-3 ', '', {
-                'right-auto left-auto min-w-[2.5rem]': average <= min + 50,
-              })}`}
+              className={`${cn(
+                'absolute top-1/2 -translate-y-1/2 right-3 ',
+                '',
+                {
+                  'right-auto left-auto min-w-[2.5rem]': average <= min + 50,
+                }
+              )}`}
               style={width < '5%' ? { right: '-3rem' } : {}}
             >
               평균 <b>{average}</b>
