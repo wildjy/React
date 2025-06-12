@@ -20,60 +20,31 @@ export default function TongLayoutTestPage() {
       */}
       <TongLayoutPage>
         <div className="h-[1500px] bg-gray-50">
-          <div className="flex justify-center w-full">
+          <div className="flex justify-center w-[12.5rem] bg-[#222] md:bg-white md:w-full">
             <DonutGraphCanvas
-              size={{ size: 200, depth: 10 }}
+              tick={{ show: true, label: true }}
+              size={{ size: 200, depth: 10, p: 30 }}
               color={['orange', '#e9e9e9']}
               min={0}
               max={100}
-              score={99}
-              addClass="text-xl"
-              disabled
+              score={11}
+              myscore={82}
+              unit="점"
+              addClass="text-xl text-white md:text-[#272727]"
             />
           </div>
-          <div className="flex flex-wrap gap-5">
+          <div>
             <DonutGraphCanvas
-              size={{ size: 100, depth: 20 }}
-              min={0}
-              max={100}
-              score={21}
-            />
-            <DonutGraphCanvas
-              size={{ size: 300, depth: 60 }}
-              color={['#23d599', '#e9e9e9']}
-              min={0}
-              max={1000}
-              score={715}
-              addClass="text-[1.875rem]"
-            />
-            <DonutGraph
-              size={{ width: 100, depth: 10 }}
+              tick={{ show: true, label: true }}
+              half
+              size={{ size: 250, depth: 10, p: 30 }}
               color={['orange', '#e9e9e9']}
               min={0}
               max={100}
-              score={78}
-            />
-            <DonutGraph
-              size={{ width: 178, depth: 25 }}
-              color={['red', '#e9e9e9']}
-              min={0}
-              max={100}
-              score={78}
-            />
-            <DonutGraph
-              size={{ width: 300, depth: 15 }}
-              min={0}
-              max={100}
-              score={78}
-              addClass="text-[3.5rem]"
-            />
-            <DonutGraph
-              size={{ width: 300, depth: 40 }}
-              color={['#23d599', '#e9e9e9']}
-              min={0}
-              max={1000}
-              score={817}
-              addClass="text-[2rem]"
+              score={47}
+              myscore={100}
+              unit="%"
+              addClass="pb-4 text-xl text-white md:text-[#272727]"
             />
           </div>
           <div className="flex flex-wrap gap-15">
