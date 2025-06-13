@@ -33,7 +33,7 @@ export default function TongLayoutTestPage() {
               addClass="text-xl text-white md:text-[#272727]"
             />
           </div>
-          <div>
+          <div className='mb-5'>
             <DonutGraphCanvas
               tick={{ show: true, label: true }}
               half

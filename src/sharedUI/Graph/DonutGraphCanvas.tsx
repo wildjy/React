@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 'use client';
 import { VariantProps } from 'class-variance-authority';
 import { useRef, useState, useEffect, HTMLAttributes } from 'react';
@@ -5,9 +6,11 @@ import { cn } from "../common/cn";
 import { cva } from 'class-variance-authority';
 
 interface DonutGraphCanvasProps {
+  activeLine?: boolean;
   half?: boolean;
   tick?: {
     show: boolean;
+    length?: number;
     label?: boolean;
   };
   mark?: boolean;
@@ -27,8 +30,9 @@ interface DonutGraphCanvasProps {
 }
 
 export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
+  activeLine = false,
   half = false,
-  tick = { show: false, label: false },
+  tick = { show: false, length: 4, label: false },
   mark = false,
   size = { size: 100, depth: 10, p: 0 },
   min = 0,
@@ -54,23 +58,25 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     const centerY = size.size / 2;
     const padding = tick.show
       ? tick.label
-        ? size.p || 20
+        ? size.p || 25
         : size.p || 10
       : size.p || 0;
     const lineWidth = size.depth;
-    const radius = (size.size - lineWidth - padding * 2) / 2;
+    const calcRadius = (size.size - lineWidth - padding * 2) / 2;
+    const radius = calcRadius > 0 ? calcRadius : 20;
     const dpr = window.devicePixelRatio || 1;
     const baseScore = Math.max(0, Math.min(1, (score - min) / (max - min)));
     const endAngle = baseScore * 2 * Math.PI;
     const startHalfAngle = Math.PI;
     const endHalfAngle = startHalfAngle + Math.PI;
-    console.log(endAngle);
+    const halfBottomP = 10;
+
     // donut size
     if (half) {
       canvas.width = size.size * dpr;
-      canvas.height = (size.size / 2) * dpr + 10;
+      canvas.height = (size.size / 2 + halfBottomP) * dpr;
       canvas.style.width = graphSize;
-      canvas.style.height = graphHalfSize + 10;
+      canvas.style.height = `calc(${graphHalfSize} + ${halfBottomP / 16}rem)`;
       // ctx.lineCap = 'round';
     } else {
       canvas.width = size.size * dpr;
@@ -79,11 +85,15 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
       canvas.style.height = graphSize;
     }
 
-    ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
     ctx.scale(dpr, dpr);
 
     // donut base
-    ctx.clearRect(0, 0, size.size, size.size);
+    ctx.clearRect(
+      0,
+      0,
+      size.size,
+      half ? size.size + halfBottomP / 2 : size.size
+    );
     ctx.beginPath();
     half
       ? ctx.arc(centerX, centerY, radius, startHalfAngle, endHalfAngle)
@@ -114,10 +124,10 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
       ctx.lineWidth = lineWidth;
       ctx.stroke(); // 게이지 채움
     }
-    ctx.strokeStyle = color[0];
-    ctx.lineWidth = 1;
+    // ctx.strokeStyle = color[0];
+    // ctx.lineWidth = 1;
 
-    // 게이지 선 위치 (score 위치)
+    // active line 위치 (score 위치)
     const scoreRatio = (score - min) / (max - min);
     const angle = half
       ? Math.PI + scoreRatio * Math.PI
@@ -131,50 +141,20 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     const gx2 = centerX + Math.cos(angle) * gaugeEnd;
     const gy2 = centerY + Math.sin(angle) * gaugeEnd;
 
-    ctx.beginPath();
-    ctx.moveTo(gx1, gy1);
-    ctx.lineTo(gx2, gy2);
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // my score padding값 조절해야함.
-    if (myscore) {
-      const myScoreRatio = (myscore - min) / (max - min);
-      const textOffset = 10;
-      const myAngle = half
-        ? Math.PI + myScoreRatio * Math.PI
-        : -Math.PI / 2 + myScoreRatio * (2 * Math.PI);
-
-      const myGaugeStart = radius - lineWidth / 2;
-      const myGaugeEnd = gaugeStart + size.depth; // 눈금 길이 조정
-
-      const my_gx1 = centerX + Math.cos(myAngle) * myGaugeStart;
-      const my_gy1 = centerY + Math.sin(myAngle) * myGaugeStart;
-      const my_gx2 = centerX + Math.cos(myAngle) * myGaugeEnd;
-      const my_gy2 = centerY + Math.sin(myAngle) * myGaugeEnd;
-
-      ctx.beginPath();
-      ctx.moveTo(my_gx1, my_gy1);
-      ctx.lineTo(my_gx2, my_gy2);
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      const markRadius = radius + lineWidth / 2 + textOffset * 2; // 도넛 바깥쪽에 표시
-      const markX = centerX + Math.cos(myAngle) * markRadius;
-      const markY = centerY + Math.sin(myAngle) * markRadius;
-
-      ctx.fillStyle = '#000';
-      ctx.font = '.8rem sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`MY ${myscore}`, markX, markY);
+    if (activeLine) {
+      if (!disabled) {
+        ctx.beginPath();
+        ctx.moveTo(gx1, gy1);
+        ctx.lineTo(gx2, gy2);
+        ctx.strokeStyle = '#FF0048';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
     }
 
-    // 구간
+    // tick 구간표시
     if (tick.show) {
-      const tickLength = 4;
+      const tickLength = tick.show ? tick.length || 4 : 0;
       const textOffset = 10;
       for (let i = 0; i <= tickLength; i++) {
         const ratio = i / tickLength;
@@ -199,19 +179,54 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         ctx.moveTo(xStart, yStart);
         ctx.lineTo(xEnd, yEnd);
         ctx.strokeStyle = '#888';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
         ctx.stroke();
 
         const labelRadius = tickStart + tickEnd + textOffset;
         const labelX = centerX + Math.cos(angle) * labelRadius;
         const labelY = centerY + Math.sin(angle) * labelRadius;
         if (tick.label) {
-          ctx.fillStyle = '#666';
-          ctx.font = '.8rem sans-serif';
+          ctx.fillStyle = '#888';
+          ctx.font = '.7rem sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(`${tickLabel}`, labelX, labelY);
         }
+      }
+    }
+
+    // my score padding값 조절해야함.
+    if (myscore) {
+      const myScoreRatio = (myscore - min) / (max - min);
+      const textOffset = 10;
+      const myAngle = half
+        ? Math.PI + myScoreRatio * Math.PI
+        : -Math.PI / 2 + myScoreRatio * (2 * Math.PI);
+
+      const myGaugeStart = radius - lineWidth / 2;
+      const myGaugeEnd = gaugeStart + size.depth; // 눈금 길이 조정
+
+      const my_gx1 = centerX + Math.cos(myAngle) * myGaugeStart;
+      const my_gy1 = centerY + Math.sin(myAngle) * myGaugeStart;
+      const my_gx2 = centerX + Math.cos(myAngle) * myGaugeEnd;
+      const my_gy2 = centerY + Math.sin(myAngle) * myGaugeEnd;
+
+      const markRadius = radius + lineWidth / 2 + textOffset * 1.5; // 도넛 바깥쪽에 표시
+      const markX = centerX + Math.cos(myAngle) * markRadius;
+      const markY = centerY + Math.sin(myAngle) * markRadius;
+      if (!disabled) {
+        ctx.beginPath();
+        ctx.moveTo(my_gx1, my_gy1);
+        ctx.lineTo(my_gx2, my_gy2);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#000';
+        ctx.font = '.8rem sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`MY`, markX, markY); // ${myscore}
       }
     }
 
@@ -264,7 +279,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
       >
         <span className="leading-none">
           <b>
-            {disabled ? '**' : score}
+            {disabled ? '**' : myscore ? myscore : score}
             {unit}
           </b>
         </span>
