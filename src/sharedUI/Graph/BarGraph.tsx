@@ -4,23 +4,16 @@ import { useState, useEffect, HTMLAttributes } from 'react';
 import { cn } from "../common/cn";
 import { cva } from 'class-variance-authority';
 
-const BarGraphVariants = cva(`flex rounded-full bg-[#ddd]`, {
+const BarGraphVariants = cva(`w-full flex rounded-full relative`, {
   variants: {
     type: {
       base: ``,
       type_1: ``,
       type_2: ``,
     },
-    size: {
-      sm: 'h-[1.25rem] text-2xs',
-      md: 'h-[1.5rem] text-xs',
-      lg: 'h-[2rem] text-md',
-      xl: 'h-[2.25rem] text-md',
-    },
   },
   defaultVariants: {
     type: 'base',
-    size: 'md',
   },
 });
 
@@ -29,6 +22,7 @@ interface BarGraphProps
     VariantProps<typeof BarGraphVariants> {
   disabled?: boolean;
   children?: React.ReactNode;
+  size?: number;
   min?: number;
   max?: number;
   color?: [string, string];
@@ -39,18 +33,20 @@ interface BarGraphProps
 
 export const BarGraph: React.FC<BarGraphProps> = ({
   type,
-  size,
+  size = 20,
   min = 0,
   max = 0,
   average = 0,
   myscore = 0,
   disabled = false,
-  color = ['#A4BEF0', 'bg-[#ddd]'],
+  color = ['#A4BEF0', '#dddddd'],
   children,
   addClass,
 }) => {
   const [width, setWidth] = useState<string>('0%');
   const [myPos, setMyPos] = useState<string>('0%');
+  const height = size / 16 + 'rem';
+  const fontSize = size / 1.7 / 16 + 'rem';
 
   useEffect(() => {
     function getLeftPercent(score: number, min: number, max: number) {
@@ -68,79 +64,84 @@ export const BarGraph: React.FC<BarGraphProps> = ({
 
   const className = BarGraphVariants({
     type: type as 'base' | 'type_1' | 'type_2' | undefined,
-    size: size as 'sm' | 'md' | 'lg' | 'xl' | undefined,
   });
 
   return (
-    <div className="relative w-full" data-reset="">
-      <div
-        className={cn(className, addClass)}
-        data-min={disabled ? undefined : min}
-        data-max={disabled ? undefined : max}
-        data-average={disabled ? undefined : average}
-      >
-        {!disabled && (
-          <p
-            className={`my.. absolute top-0 bottom-0 w-[0.125rem] bg-[#FF0048] z-[2]
+    <div
+      className={cn(className, addClass)}
+      data-min={disabled ? undefined : min}
+      data-max={disabled ? undefined : max}
+      data-average={disabled ? undefined : average}
+      style={{
+        height: height,
+        // fontSize: fontSize,
+        backgroundColor: color[1],
+      }}
+    >
+      {!disabled && (
+        <p
+          className={`my.. absolute top-0 bottom-0 w-[0.125rem] bg-[#FF0048] z-[2]
               before:content-[''] before:absolute before:-top-[0.6rem] before:left-1/2 before:-translate-x-1/2
               before:w-0 before:h-0
               before:border-l-[0.375rem] before:border-r-[0.375rem] before:border-t-[0.4375rem]
               before:border-l-transparent before:border-r-transparent before:border-t-[#FF0048]
             `}
-            style={{ left: myPos }}
+          style={{ left: myPos }}
+        >
+          <b
+            className={`${cn(
+              'absolute -top-[2rem] left-1/2 -translate-x-1/2 min-w-[4rem] text-sm md:text-md text-center text-[#FF0048] ',
+              '',
+              {
+                'text-left -left-[0.3rem] -translate-x-0':
+                  Number(myscore) < Number(min) + 5,
+                'text-right left-auto -right-[0.3rem] -translate-x-0':
+                  Number(myscore) > Number(max) - 10,
+              }
+            )}`}
           >
-            <b
-              className={`${cn(
-                'absolute -top-[2rem] left-1/2 -translate-x-1/2 min-w-[4rem] text-sm md:text-md text-center text-[#FF0048] ',
-                '',
-                {
-                  'text-left -left-[0.3rem] -translate-x-0':
-                    Number(myscore) < Number(min) + 5,
-                  'text-right left-auto -right-[0.3rem] -translate-x-0':
-                    Number(myscore) > Number(max) - 10,
-                }
-              )}`}
-            >
-              나 <span className="score">{myscore}</span>
-            </b>
-          </p>
-        )}
-        <span
-          className={`bar..
+            나 <span className="score">{myscore}</span>
+          </b>
+        </p>
+      )}
+      <span
+        className={`bar..
               ${cn(
-                'flex items-center gap-x-1 px-3 justify-end rounded-full bg-[#A4BEF0] relative',
-                '',
-                {
-                  'bg-[#FEDA62]': type === 'type_1',
-                  'bg-[#84DCCA]': type === 'type_2',
-                }
+                'flex items-center gap-x-1 px-3 justify-end rounded-full relative',
+                ''
               )}
             `}
-          data-averege={average}
-          style={
-            disabled ? { width: '2.4%' } : { width, backgroundColor: color[0] }
-          }
-        >
-          {!disabled && (
-            <span
-              className={`${cn(
-                'absolute top-1/2 -translate-y-1/2 right-3 ',
-                '',
-                {
-                  'right-auto left-auto min-w-[2.5rem]': average <= min + 50,
-                }
-              )}`}
-              style={width < '5%' ? { right: '-3rem' } : {}}
-            >
-              평균 <b>{average}</b>
-            </span>
-          )}
-        </span>
-        <span className="absolute guideBox -bottom-[1.5rem] left-0 right-0 flex justify-between text-s md:text-md">
-          <span>{disabled ? '**.**' : min}</span>
-          <span>{disabled ? '**.**' : max}</span>
-        </span>
-      </div>
+        data-averege={average}
+        style={
+          disabled
+            ? { width: '2.4%', backgroundColor: color[0] }
+            : {
+                width,
+                backgroundColor:
+                  type === 'type_1'
+                    ? '#FEDA62'
+                    : type === 'type_2'
+                    ? '#84DCCA'
+                    : color[0],
+              }
+        }
+      >
+        {!disabled && (
+          <span
+            className={`${cn('absolute top-1/2 -translate-y-1/2 right-3 ', '', {
+              'right-auto left-auto min-w-[2.5rem]': average <= min + 50,
+            })}`}
+            style={average <= min + 6 ? { right: '-3rem' } : {}}
+          >
+            평균 <b>{average}</b>
+          </span>
+        )}
+      </span>
+      <span className="absolute guideBox -bottom-[1.5rem] left-0 right-0 flex justify-between text-s md:text-md text-[#272727]">
+        <span>{min}</span>
+        <span>{max}</span>
+      </span>
     </div>
   );
 };
+

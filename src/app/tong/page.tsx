@@ -28,7 +28,7 @@ export default function TongLayoutTestPage() {
               min={0}
               max={100}
               score={11}
-              myscore={82}
+              myscore={{ score:82 }}
               unit="점"
               addClass="text-xl text-white md:text-[#272727]"
             />
@@ -42,7 +42,7 @@ export default function TongLayoutTestPage() {
               min={0}
               max={100}
               score={47}
-              myscore={100}
+              myscore={{ score:100, label: '상위' }}
               unit="%"
               addClass="pb-4 text-xl text-white md:text-[#272727]"
             />
@@ -50,7 +50,7 @@ export default function TongLayoutTestPage() {
           <div className="flex flex-wrap gap-15">
             <BarGraph disabled />
             <BarGraph
-              size="sm"
+              size={25}
               color={['#84DCCA', '#ddd']}
               min={0}
               max={100}
@@ -58,21 +58,23 @@ export default function TongLayoutTestPage() {
               myscore={99}
             />
             <BarGraph
-              size="md"
+              size={30}
               color={['#FEDA62', '#ddd']}
               min={350}
               max={900}
               average={800}
               myscore={10}
             />
-            <BarGraph size="lg" min={200} max={850} average={7} myscore={650} />
             <BarGraph
+              size={40} min={200} max={850} average={7} myscore={650} />
+            <BarGraph
+
               color={['purple', '#ddd']}
               min={200}
               max={850}
               average={700}
               myscore={650}
-              addClass="h-[3rem] text-base text-white"
+              addClass="h-[3rem] text-sm text-white"
             />
           </div>
         </div>
