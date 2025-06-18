@@ -21,8 +21,10 @@ export const DownLoadTable = () => {
               <col width="50%" />
             </Table.Colgroup>
             <Table.Thead>
-              <th>구분</th>
-              <th>문제</th>
+              <tr>
+                <th>구분</th>
+                <th>문제</th>
+              </tr>
             </Table.Thead>
             <Table.Tbody>
               <tr>
@@ -44,8 +46,10 @@ export const DownLoadTable = () => {
               <col width="50%" />
             </Table.Colgroup>
             <Table.Thead>
-              <th>구분</th>
-              <th>문제</th>
+              <tr>
+                <th>구분</th>
+                <th>문제</th>
+              </tr>
             </Table.Thead>
             <Table.Tbody>
               <tr>

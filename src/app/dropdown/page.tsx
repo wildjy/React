@@ -129,6 +129,8 @@ const DropDownPage = () => {
               </ul>
             </DropDownMore>
           </div>
+
+          <div className="h-[1000px]"></div>
         </div>
       </div>
     </>

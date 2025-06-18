@@ -174,9 +174,11 @@ const TablePage: React.FC = () => {
               <col width="20%" /><col width="20%" /><col width="20%" />
             </Table.Colgroup>
             <Table.Thead>
-              <th>1</th>
-              <th>2</th>
-              <th>3</th>
+              <tr>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+              </tr>
             </Table.Thead>
             <Table.Tbody>
               <tr>
@@ -201,11 +203,13 @@ const TablePage: React.FC = () => {
               <col width="20%" />
             </Table.Colgroup>
             <Table.Thead>
-              <th>1</th>
-              <th className="hide">hide 2</th>
-              <th>3</th>
-              <th className="hide">hide 4</th>
-              <th>5</th>
+              <tr>
+                <th>1</th>
+                <th className="hide">hide 2</th>
+                <th>3</th>
+                <th className="hide">hide 4</th>
+                <th>5</th>
+              </tr>
             </Table.Thead>
             <Table.Tbody>
               <tr>
@@ -725,11 +729,13 @@ const TablePage: React.FC = () => {
               <col width="20%" />
             </Table.Colgroup>
             <Table.Thead>
-              <th>영역</th>
-              <th>국어<br />(화법과 작문)</th>
-              <th>수학<br />(미적분)</th>
-              <th>4</th>
-              <th>5</th>
+              <tr>
+                <th>영역</th>
+                <th>국어<br />(화법과 작문)</th>
+                <th>수학<br />(미적분)</th>
+                <th>4</th>
+                <th>5</th>
+              </tr>
             </Table.Thead>
             <Table.Tbody>
               <tr>
@@ -765,11 +771,13 @@ const TablePage: React.FC = () => {
               <col width="20%" />
             </Table.Colgroup>
             <Table.Thead thW="w-1/3">
-              <th>군</th>
-              <th>대학</th>
-              <th>모집단위</th>
-              <th>모집인원</th>
-              <th>전년도 경쟁률</th>
+              <tr>
+                <th>군</th>
+                <th>대학</th>
+                <th>모집단위</th>
+                <th>모집인원</th>
+                <th>전년도 경쟁률</th>
+              </tr>
             </Table.Thead>
             <Table.Tbody tdW="w-2/3">
               <tr>
@@ -783,377 +791,6 @@ const TablePage: React.FC = () => {
           </Table>
 
         </div>
-{/*
-        <table className="mt-[10rem] flex md:table">
-          <caption>점수 입력 서식</caption>
-          <colgroup>
-            <col width="9%" /><col width="9%" /><col width="17%" /><col width="17%" /><col width="9%" /><col width="30%" /><col width="9%" />
-          </colgroup>
-          <thead className='w-1/5 md:w-full'>
-            <tr className="block md:table-row">
-              <th scope="col" className={theadThStyle}>체크</th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_1"
-                  checked={isChecked["checkbox_1"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_2"
-                  checked={isChecked["checkbox_2"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_3"
-                  checked={isChecked["checkbox_3"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_4"
-                  checked={isChecked["checkbox_4"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_5"
-                  checked={isChecked["checkbox_5"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_6"
-                  checked={isChecked["checkbox_6"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-            </tr>
-          </thead>
-          <tbody className='w-4/5 md:w-full'>
-            <tr className="block md:table-row">
-              <th scope="col" className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivPTopStyle}>영역</div>
-                  <div className={tbodyTdDivPBottomStyle}>선택과목</div>
-                </div>
-              </th>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className="w-full">한국사</div>
-                </div>
-              </td>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivPTopStyle}>국어</div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </div>
-                </div>
-              </td>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivPTopStyle}>수학</div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </div>
-                </div>
-              </td>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className="w-full">영어</div>
-                </div>
-              </td>
-              <td className={`${tbodyTdStyle}`}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivStyle}>
-                    <div className={tbodyTdDivPTopStyle}>
-                      <select title="수학 구분">
-                        <option>--선택--</option>
-                        <option>확률과통계</option>
-                        <option>미적분</option>
-                        <option>기하</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className={tbodyTdDivStyle}>
-                    <div className="w-full md:p-5 md:w-1/2">
-                      <select title="수학 구분">
-                        <option>--선택--</option>
-                        <option>확률과통계</option>
-                        <option>미적분</option>
-                        <option>기하</option>
-                      </select>
-                    </div>
-                    <div className="w-full md:p-5 md:w-1/2">
-                      <select title="수학 구분">
-                        <option>--선택--</option>
-                        <option>확률과통계</option>
-                        <option>미적분</option>
-                        <option>기하</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivPTopStyle}>제2외국어</div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-
-        <table className="flex md:table">
-          <caption>점수 입력 서식</caption>
-          <colgroup>
-            <col width="9%" /><col width="9%" /><col width="17%" /><col width="17%" /><col width="9%" /><col width="30%" /><col width="9%" />
-          </colgroup>
-          <thead className='w-1/5 md:w-full'>
-            <tr className="block md:table-row">
-              <th scope="col" className={theadThStyle}>선택</th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_1"
-                  checked={isChecked["checkbox_1"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_2"
-                  checked={isChecked["checkbox_2"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_3"
-                  checked={isChecked["checkbox_3"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_4"
-                  checked={isChecked["checkbox_4"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={`${theadThStyle} h-[5rem]`}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_5"
-                  checked={isChecked["checkbox_5"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-              <th scope="col" className={theadThStyle}>
-                <CheckBox
-                  size="sm"
-                  value="checkbox_6"
-                  checked={isChecked["checkbox_6"] || false}
-                  onChange={handleCheckChange}
-                />
-              </th>
-            </tr>
-          </thead>
-          <tbody className='w-4/5 md:w-full'>
-            <tr className="block md:table-row">
-              <th scope="col" className={`${tbodyTdStyle} md:bg-white`}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={`${tbodyTdDivPTopStyle}`}>영역</div>
-                  <div className={tbodyTdDivPTopStyle}>선택과목</div>
-                  <div className={tbodyTdDivPBottomStyle}>표준점수</div>
-                </div>
-              </th>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivPTopStyle}>한국사</div>
-                  <div className={tbodyTdDivPTopStyle}>-</div>
-                  <div className={`${tbodyTdDivPBottomStyle}`}>
-                    <TextInput
-                      type="text"
-                      addId="inp-1"
-                      label="한국사"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
-                      value={inputValue[0].score1}
-                      onChange={(e) => handleInputChange(e, 0, "score1")}
-                    />
-                  </div>
-                </div>
-              </td>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivPTopStyle}>국어</div>
-                  <div className={tbodyTdDivPTopStyle}>
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <TextInput
-                      type="text"
-                      addId="inp-1"
-                      label="국어"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
-                      value={inputValue[0].score2}
-                      onChange={(e) => handleInputChange(e, 0, "score2")}
-                    />
-                  </div>
-                </div>
-              </td>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivPTopStyle}>수학</div>
-                  <div className={tbodyTdDivPTopStyle}>
-                    <select title="수학 구분">
-                      <option>--선택--</option>
-                      <option>확률과통계</option>
-                      <option>미적분</option>
-                      <option>기하</option>
-                    </select>
-                  </div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <TextInput
-                      type="text"
-                      addId="inp-1"
-                      label="수학"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
-                      value={inputValue[0].score3}
-                      onChange={(e) => handleInputChange(e, 0, "score3")}
-                    />
-                  </div>
-                </div>
-              </td>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivPTopStyle}>영어</div>
-                  <div className={tbodyTdDivPTopStyle}>-</div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <TextInput
-                      type="text"
-                      addId="inp-1"
-                      label="영어"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
-                      value={inputValue[0].score4}
-                      onChange={(e) => handleInputChange(e, 0, "score4")}
-                    />
-                  </div>
-                </div>
-              </td>
-              <td className={`${tbodyTdStyle} md:p-0 md:py-0 h-[5rem]`}>
-                <div className={`${tbodyTdDivStyle} md:h-full`}>
-                  <div className={`${cn(tbodyTdStyle, 'h-auto w-1/3 md:w-full md:h-full items-center border-none')}`}>
-                    <div className={`${tbodyTdDivPTopStyle}`}>
-                      <select title="수학 구분">
-                        <option>--선택1--</option>
-                        <option>확률과통계</option>
-                        <option>미적분</option>
-                        <option>기하</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className={`table-cell w-1/3 md:w-full md:flex`}>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 md:border-b h-[2.5rem] md:h-auto">
-                      <select title="수학 구분">
-                        <option>--선택2--</option>
-                        <option>확률과통계</option>
-                        <option>미적분</option>
-                        <option>기하</option>
-                      </select>
-                    </div>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 md:border-b h-[2.5rem] md:h-auto">
-                      <select title="수학 구분">
-                        <option>--선택3--</option>
-                        <option>확률과통계</option>
-                        <option>미적분</option>
-                        <option>기하</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className={`table-cell w-1/3 md:w-full md:flex`}>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
-                      <TextInput
-                        type="text"
-                        addId="inp-1"
-                        label="사과탐1"
-                        addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
-                        value={inputValue[0].score5}
-                        onChange={(e) => handleInputChange(e, 0, "score5")}
-                      />
-                    </div>
-                    <div className="w-full flex items-center justify-center md:table-cell md:w-1/2 md:py-5 h-[2.5rem] md:h-auto">
-                      <TextInput
-                        type="text"
-                        addId="inp-1"
-                        label="사과탐2"
-                        addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
-                        value={inputValue[0].score6}
-                        onChange={(e) => handleInputChange(e, 0, "score6")}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td className={tbodyTdStyle}>
-                <div className={tbodyTdDivStyle}>
-                  <div className={tbodyTdDivPTopStyle}>제2외국어</div>
-                  <div className={tbodyTdDivPTopStyle}>제2외국어</div>
-                  <div className={tbodyTdDivPBottomStyle}>
-                    <TextInput
-                      type="text"
-                      addId="inp-1"
-                      label="영어"
-                      addClass="p-0 py-[0.1rem] w-4/5 h-full text-center border-gray-300"
-                      value={inputValue[0].score7}
-                      onChange={(e) => handleInputChange(e, 0, "score7")}
-                    />
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table> */}
       </div>
     </>
   )

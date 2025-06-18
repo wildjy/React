@@ -70,14 +70,16 @@ const gradeInsertPage = () => {
               <col style={{ width: "calc(100%/8)" }} />
             </Table.Colgroup>
             <Table.Thead thW="w-1/3">
-              <th>구분</th>
-              <th>한국사</th>
-              <th>국어 <span className="inline md:block">(화법과 작문)</span></th>
-              <th>수학 <span className="inline md:block">(화법과 작문)</span></th>
-              <th>영어</th>
-              <th>한국지리</th>
-              <th>물리학I</th>
-              <th><span className="hidden md:block" >(제2외국어)</span>영어</th>
+              <tr>
+                <th>구분</th>
+                <th>한국사</th>
+                <th>국어 <span className="inline md:block">(화법과 작문)</span></th>
+                <th>수학 <span className="inline md:block">(화법과 작문)</span></th>
+                <th>영어</th>
+                <th>한국지리</th>
+                <th>물리학I</th>
+                <th><span className="hidden md:block" >(제2외국어)</span>영어</th>
+              </tr>
             </Table.Thead>
             <Table.Tbody tdW="w-2/3">
               <tr>

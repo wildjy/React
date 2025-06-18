@@ -158,17 +158,19 @@ const gradeMarkingPage = () => {
             <col width="15%" />
           </Table.Colgroup>
           <Table.Thead>
-            <th>구분</th>
-            <th>원점수</th>
-            <th className="hide">
-              <span className="flex justify-center gap-8">
-                <span>표점</span>
-                <span>백분위</span>
-                <span>등급급</span>
-              </span>
-            </th>
-            <th>채점</th>
-            <th>결과</th>
+            <tr>
+              <th>구분</th>
+              <th>원점수</th>
+              <th className="hide">
+                <span className="flex justify-center gap-8">
+                  <span>표점</span>
+                  <span>백분위</span>
+                  <span>등급급</span>
+                </span>
+              </th>
+              <th>채점</th>
+              <th>결과</th>
+            </tr>
           </Table.Thead>
           <Table.Tbody>
             <tr>

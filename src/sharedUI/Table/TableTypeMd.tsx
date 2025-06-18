@@ -31,11 +31,13 @@ export const TableTypeMd: React.FC<TableTypeMdProps> = ({ addClass, thW = 'w-1/3
           )}
         </Table.Colgroup>
         <Table.Thead thW={thW}>
+          <tr>
             {datas[0].children?.map((obj, i) => (
               <th key={i} className={clsx(`${obj.hide && 'hide'}`, { 'text-gray-400': obj.disabled })}>
                 {obj.title}
               </th>
             ))}
+          </tr>
         </Table.Thead>
         <Table.Tbody tdW={tdW}>
           {datas?.map((item, index) => (
