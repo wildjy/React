@@ -110,7 +110,7 @@ export interface OptionType {
   disabled?: boolean;
 }
 
-interface DropDownProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>, VariantProps<typeof DropDownVariants> {
+interface DropDownProps extends VariantProps<typeof DropDownVariants> {
   type?: typeMode;
   align?: alignMode;
   addClass?: string;
@@ -158,6 +158,8 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectValue, setSelectValue] = useState<string | null>(null);
+  const [focusIndex, setFocusIndex] = useState<number | null>(null);
+  const [ulIndex, setUlIndex] = useState(0);
   const dropRef = useRef<HTMLDivElement | null>(null);
 
   const className = DropDownVariants ({
@@ -171,11 +173,22 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
     setIsOpen((prevOpen) => !prevOpen);
   }
 
+  const CloseEvent = () => {
+    setIsOpen(false);
+    setFocusIndex(null);
+  };
+
   const openMouseEvent = (event: MouseEvent) => {
     if (dropRef.current && !dropRef.current.contains(event.target as Node)) {
       setIsOpen(false);
     }
   }
+
+  const closeFocusOut = (e: FocusEvent) => {
+    if (dropRef.current && !dropRef.current.contains(e.relatedTarget as Node)) {
+      setIsOpen(false);
+    }
+  };
 
   const ChangeSelectValue = (option: OptionType) => {
     setSelectValue(option.value);
@@ -186,16 +199,94 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if(!isOpen) return;
+
+    if(dropRef.current) {
+      const uls = dropRef.current.querySelectorAll('ul');
+      const currentUl = uls[ulIndex];
+      const nextUl = uls[(ulIndex + 1) % uls.length];
+      const prevUl = uls[(ulIndex - 1 + uls.length) % uls.length];
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+
+        let nextIndex = focusIndex;
+        if (focusIndex === null || focusIndex < 0) {
+          nextIndex = 0;
+        } else {
+          nextIndex = focusIndex + 1;
+        }
+
+        if (currentUl && nextIndex < currentUl.children.length) {
+          setFocusIndex(nextIndex);
+          (currentUl.children[nextIndex] as HTMLElement)?.focus();
+        } else {
+          // 현재 UL 마지막 → 다음 UL 첫 번째
+          const nextUlIndex = (ulIndex + 1) % uls.length;
+          setUlIndex(nextUlIndex);
+          setFocusIndex(0);
+          (nextUl.children[0] as HTMLElement)?.focus();
+        }
+      }
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+
+        let prevIndex = focusIndex;
+        if (focusIndex === null || focusIndex < 0) {
+          prevIndex = 0;
+        } else {
+          prevIndex = focusIndex - 1;
+        }
+
+        if (prevIndex >= 0) {
+          setFocusIndex(prevIndex);
+          (currentUl.children[prevIndex] as HTMLElement)?.focus();
+        } else {
+          // 현재 UL 첫 번째 → 이전 UL 마지막
+          const prevUlIndex = (ulIndex - 1 + uls.length) % uls.length;
+          const lastIndex = prevUl.children.length - 1;
+          setUlIndex(prevUlIndex);
+          setFocusIndex(lastIndex);
+          (prevUl.children[lastIndex] as HTMLElement)?.focus();
+        }
+      } else if (e.key === 'Escape') {
+        CloseEvent();
+      }
+    }
+  }
+
   useEffect(() => {
+    if(focusIndex != null && dropRef.current) {
+      const findUl = dropRef.current.querySelectorAll('ul');
+      const targetUl = findUl[ulIndex];
+
+      if(targetUl && targetUl.children.length > focusIndex){
+        const optionItem = targetUl.children[focusIndex] as HTMLElement;
+        optionItem?.focus();
+      }
+    }
+
     // 외부 value가 변경되면 내부 상태 업데이트
     if (value) {
       setSelectValue(value);
     }
-  }, [value]);
+  }, [value, focusIndex, ulIndex]);
 
   useEffect(() => {
+    const currentRef = dropRef.current;
     document.addEventListener('mousedown', openMouseEvent);
-    return () => {document.removeEventListener('mousedown', openMouseEvent);}
+
+    if (currentRef) {
+      currentRef.addEventListener('focusout', closeFocusOut);
+    }
+    return () => {
+      document.removeEventListener('mousedown', openMouseEvent);
+      if (currentRef) {
+        currentRef.removeEventListener('focusout', closeFocusOut);
+      }
+    }
   }, [])
 
   const selectedOption = [...options, ...options1].find((option) => option.value === selectValue);
@@ -213,8 +304,15 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
         onClose: () => setIsOpen(false),
         onChangeSelect: ChangeSelectValue
       }}>
-      <div className={`${width} ${layer ? 'md:relative' : 'relative'}`}>
-        <div className={` ${cn(className, addClass,
+      <div className={`${width} ${layer ? 'md:relative' : 'relative'}`}
+        role="combobox"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        onKeyDown={handleKeyDown}
+      >
+        <button
+            type="button"
+            className={` ${cn(className, addClass,
             {'border-blue-700 after:-rotate-180': isOpen},
             {
               'bg-disabled-bg cursor-default': disabled,
@@ -229,7 +327,7 @@ export const DropDown_Score: React.FC<DropDownProps> = ({
           {...props}
         >
             {selectedOption?.label || label || '선택'}
-        </div>
+        </button>
         <DropOption
            ref={dropRef}
           isOpen={isOpen}

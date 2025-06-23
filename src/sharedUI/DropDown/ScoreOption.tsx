@@ -26,10 +26,13 @@ export const ScoreOption: React.FC<ScoreOptionProps> = ({
     { 'text-center': align === 'center' },
   )}`}>
     <p className="text-center"><b>{title}</b></p>
-    <ul className={`whitespace-pre`}>
+    <ul className={`whitespace-pre`} role="listbox">
       {options.map((option) => (
         <li
           key={option.value}
+          role="option"
+          aria-selected={selectValue === option.value}
+          tabIndex={0}
           className={`text-2xs md:text-s ${cn('md:px-4 py-2 rounded md:hover:bg-gray-200 cursor-pointer', addClass,
             option.disabled ? 'text-disabled-text' : 'md:hover:bg-gray-200 cursor-pointer',
             { 'text-blue-800 font-bold': !option.disabled && selectValue === option.value },
@@ -38,6 +41,12 @@ export const ScoreOption: React.FC<ScoreOptionProps> = ({
           onClick={() => {
             if(!option.disabled){
               onChangeSelect(option)
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onChangeSelect(option);
             }
           }}
         >

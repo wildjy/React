@@ -9,9 +9,9 @@ type iconMode = 'base' | 'report';
 interface DropDownContextProps {
   type: typeMode;
   align: alignMode;
-  dropAlign?: dropAlign;
   icon: iconMode;
   min: string;
+  dropAlign: string;
   isOpen: boolean;
   isFixedScroll: boolean;
   disabled: boolean;
@@ -75,53 +75,6 @@ const ReportRenderLabel = (label: DropDownOptionType['label'], isInline: boolean
   return label; // ReactNode 처리
 };
 
-// Report Common DropDown
-interface DropDownProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>, VariantProps<typeof DropDownVariants> {
-  type?: typeMode;
-  align?: alignMode;
-  icon?: iconMode;
-  addClass?: string;
-  min?: string;
-  custom?: boolean;
-  options?: DropDownOptionType[];
-  isOpen?: boolean;
-  width?: string;
-  label?: string;
-  layer?: boolean;
-  fixed?: boolean;
-  isFixedScroll?: boolean;
-  disabled?: boolean;
-  onChange?: (option: DropDownOptionType) => void;
-  value?: string | null; // 외부에서 전달받는 선택된 값
-}
-
-interface DropOptionProps
-  extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof DropDownBoxVariants>,
-    VariantProps<typeof DropDownInnerBoxVariants> {
-  children?: React.ReactNode;
-  resetClass?: string;
-  addClass?: string;
-  options?: DropDownOptionType[];
-  custom?: boolean;
-  layer?: boolean;
-  fixed?: boolean;
-  isOpen?: boolean;
-  inner?: boolean;
-  disabled?: boolean;
-  onChangeSelect: (option: DropDownOptionType) => void;
-  onClose: () => void;
-}
-
-const DropDownContext = createContext<DropDownContextProps | null>(null);
-
-const useDropDownContext = () => {
-  const context = useContext(DropDownContext);
-  if (!context) {
-    throw new Error('Error');
-  }
-  return context;
-};
 
 const dropTopMargin = 'md:mt-2';
 
@@ -184,6 +137,56 @@ const DropDownVariants = cva(
   }
 );
 
+// Report Common DropDown
+interface DropDownProps extends VariantProps<typeof DropDownVariants> {
+  type?: typeMode;
+  align?: alignMode;
+  icon?: iconMode;
+  dropAlign?: string;
+  addClass?: string;
+  min?: string;
+  custom?: boolean;
+  options?: DropDownOptionType[];
+  isOpen?: boolean;
+  width?: string;
+  label?: string;
+  layer?: boolean;
+  fixed?: boolean;
+  isFixedScroll?: boolean;
+  disabled?: boolean;
+  onChange?: (option: DropDownOptionType) => void;
+  value?: string | null; // 외부에서 전달받는 선택된 값
+}
+
+interface DropOptionProps
+  extends HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof DropDownBoxVariants>,
+    VariantProps<typeof DropDownInnerBoxVariants> {
+  children?: React.ReactNode;
+  resetClass?: string;
+  dropAlign?: string;
+  addClass?: string;
+  options?: DropDownOptionType[];
+  custom?: boolean;
+  layer?: boolean;
+  fixed?: boolean;
+  isOpen?: boolean;
+  inner?: boolean;
+  disabled?: boolean;
+  onChangeSelect: (option: DropDownOptionType) => void;
+  onClose: () => void;
+}
+
+const DropDownContext = createContext<DropDownContextProps | null>(null);
+
+const useDropDownContext = () => {
+  const context = useContext(DropDownContext);
+  if (!context) {
+    throw new Error('Error');
+  }
+  return context;
+};
+
 const DropDownBoxVariants = cva(`DropDownBox..`, {
   variants: {
     layer: {
@@ -237,6 +240,7 @@ export const DropDown: React.FC<DropDownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectValue, setSelectValue] = useState<string | null>(value || null);
+  const [focusIndex, setFocusIndex] = useState<number | null>(null);
   const dropRef = useRef<HTMLDivElement | null>(null);
 
   const className = DropDownVariants({
@@ -250,8 +254,19 @@ export const DropDown: React.FC<DropDownProps> = ({
     setIsOpen((prevOpen) => !prevOpen);
   };
 
+  const CloseEvent = () => {
+    setIsOpen(false);
+    setFocusIndex(null);
+  };
+
   const openMouseEvent = (event: MouseEvent) => {
     if (dropRef.current && !dropRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  };
+
+  const closeFocusOut = (e: FocusEvent) => {
+    if (dropRef.current && !dropRef.current.contains(e.relatedTarget as Node)) {
       setIsOpen(false);
     }
   };
@@ -266,16 +281,43 @@ export const DropDown: React.FC<DropDownProps> = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if(!isOpen) return;
+
+    if(e.key === 'ArrowDown') {
+      e.preventDefault();
+      setFocusIndex((prev) => (prev === null || prev === options.length - 1 ? 0 : prev + 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setFocusIndex((prev) => (prev === null || prev === 0 ? options.length - 1 : prev - 1));
+    } else if (e.key === 'Escape') {
+      CloseEvent();
+    }
+  }
+
   useEffect(() => {
+    if(focusIndex != null && dropRef.current) {
+      const findUl = dropRef.current.querySelector('ul');
+      const optionItem = findUl?.children[focusIndex] as HTMLElement;
+      optionItem?.focus();
+    }
     // 외부 value가 변경되면 내부 상태 업데이트
     // 초기화 = null
     setSelectValue(value as string | null);
-  }, [value]);
+  }, [value, focusIndex]);
 
   useEffect(() => {
+    const currentRef = dropRef.current;
     document.addEventListener('mousedown', openMouseEvent);
+
+    if (currentRef) {
+      currentRef.addEventListener('focusout', closeFocusOut);
+    }
     return () => {
       document.removeEventListener('mousedown', openMouseEvent);
+    if (currentRef) {
+      currentRef.removeEventListener('focusout', closeFocusOut);
+    }
     };
   }, []);
 
@@ -298,8 +340,13 @@ export const DropDown: React.FC<DropDownProps> = ({
           onChangeSelect: ChangeSelectValue,
         }}
       >
-        <div className={`${width} ${layer ? 'md:relative' : 'relative'}`}>
-          <div
+        <div className={`${width} ${layer ? 'md:relative' : 'relative'}`}
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+          onKeyDown={handleKeyDown}>
+          <button
+            type="button"
             className={` ${cn(
               className,
               addClass,
@@ -318,7 +365,7 @@ export const DropDown: React.FC<DropDownProps> = ({
           >
             {/* options에서 value를 찾아서 label 보여주기 */}
             {ReportRenderLabel(options.find((option) => option.value === selectValue)?.label || label || '선택', false, isFixedScroll)}
-          </div>
+          </button>
           {/* {isOpen && ( */}
           <DropOption
             ref={dropRef}
@@ -386,12 +433,16 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
                     { 'p-5 md:p-3': layer },
                     { 'p-0': atShadow }
                   )}`}
+                  role="listbox"
                 >
                   {options.map((option) => {
                     // const isSelected = selectValue === option.value;
                     return (
                       <li
                         key={option.value}
+                        role="option"
+                        aria-selected={selectValue === option.value}
+                        tabIndex={0}
                         className={`
                         ${cn(
                           'px-4 py-2 text-xs md:text-sm rounded ',
@@ -408,6 +459,12 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
                         )}`}
                         onClick={() => {
                           if (!option.disabled) {
+                            onChangeSelect(option);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
                             onChangeSelect(option);
                           }
                         }}
