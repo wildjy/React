@@ -23,9 +23,15 @@ interface DonutGraphCanvasProps {
     p?: number;
   };
   color?: [string, string];
+  colors?: string[];
   min?: number;
   max?: number;
   score?: number;
+  scores?: {
+    score: number | number[];
+    total?: boolean;
+    label?: string | string[];
+  }
   myscore?: {
     score: number;
     label?: string;
@@ -42,11 +48,13 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
   mark = false,
   size = { size: 100, depth: 10, p: 0 },
   min = 0,
-  max = 0,
+  max = 100,
   color = ['#A4BEF0', '#dddddd'],
+  colors = ['#A4BEF0', '#dddddd'],
   score = 0,
+  scores = { score: [], total: false, label: []},
   myscore = { score: 0 },
-  unit,
+  unit = '',
   addClass,
   disabled = false,
 }) => {
@@ -67,6 +75,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         ? size.p || 25
         : size.p || 10
       : size.p || 0;
+
     const lineDepth = size.depth;
     const calcRadius = (size.size - lineDepth - padding * 2) / 2;
     const radius = calcRadius > 0 ? calcRadius : 20;
@@ -76,6 +85,15 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     const startHalfAngle = Math.PI;
     const endHalfAngle = startHalfAngle + Math.PI;
     const halfBottomP = 10;
+    const singleScore = typeof scores.score === 'number' || (Array.isArray(scores.score) && scores.score.length === 1);
+
+    const rawScore = scores.score;
+    const markScore =
+      typeof rawScore === 'number'
+        ? rawScore
+        : Array.isArray(rawScore) && rawScore.length > 0
+        ? rawScore[0]
+        : 0;
 
     // text position
     const textOffset = 10;
@@ -110,39 +128,92 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     half
       ? ctx.arc(centerX, centerY, radius, startHalfAngle, endHalfAngle)
       : ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.strokeStyle = color[1];
+    ctx.strokeStyle = singleScore && colors[1] || '#dddddd';
     ctx.lineWidth = lineDepth;
     ctx.stroke();
 
     // donut active
-    if (!disabled) {
-      ctx.beginPath();
-      half
-        ? ctx.arc(
-            centerX,
-            centerY,
-            radius,
-            startHalfAngle,
-            startHalfAngle + Math.PI * baseScore
-          )
-        : ctx.arc(
-            centerX,
-            centerY,
-            radius,
-            -Math.PI / 2,
-            -Math.PI / 2 + endAngle
-          );
-      ctx.strokeStyle = color[0];
-      ctx.lineWidth = lineDepth;
-      ctx.stroke(); // 게이지 채움
+    // if (!disabled && score) {
+    //   ctx.beginPath();
+    //   half
+    //     ? ctx.arc(
+    //         centerX,
+    //         centerY,
+    //         radius,
+    //         startHalfAngle,
+    //         startHalfAngle + Math.PI * baseScore
+    //       )
+    //     : ctx.arc(
+    //         centerX,
+    //         centerY,
+    //         radius,
+    //         -Math.PI / 2,
+    //         -Math.PI / 2 + endAngle
+    //       );
+    //   ctx.strokeStyle = color[0];
+    //   ctx.lineWidth = lineDepth;
+    //   ctx.stroke(); // 게이지 채움
+    // }
+
+    // donut active (multiple scores)
+    const scoreList = Array.isArray(scores.score) ? scores.score : [scores.score ?? 0];
+    if (!disabled && scores) {
+      const total = scoreList.reduce((sum, i) => sum + i, 0);
+      const accStandard = scores.total ? total : max || total || 1;
+      let accumulated = 0;
+
+      scoreList.forEach((s, i) => {
+        if(s < 0 || max <= 0) return;
+
+        const startRatio = accumulated / accStandard;
+        const endRatio = (accumulated + s) / accStandard;
+
+        const startAngle = half
+          ? startHalfAngle + Math.PI * startRatio
+          : -Math.PI / 2 + 2 * Math.PI * startRatio;
+
+        const endAngle = half
+          ? startHalfAngle + Math.PI * endRatio
+          : -Math.PI / 2 + 2 * Math.PI * endRatio;
+
+        const middleAngle = (startAngle + endAngle) / 2;
+
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.strokeStyle = colors[i] ?? colors[0];
+        ctx.lineWidth = lineDepth;
+        ctx.stroke();
+
+        if(scores.label) {
+          ctx.fillStyle = '#333';
+          ctx.font = '.6rem sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          if(tick.show) {
+
+            const textRadius = radius - lineDepth / 2 - 13;
+            const labelX = centerX + Math.cos(middleAngle) * textRadius;
+            const labelY = centerY + Math.sin(middleAngle) * textRadius;
+            ctx.fillText(`${s}${unit}`, labelX, labelY);
+          } else {
+            const labelX = centerX + Math.cos(middleAngle) * textRadius;
+            const labelY = centerY + Math.sin(middleAngle) * textRadius;
+            ctx.fillText(`${s}${unit}`, labelX, labelY);
+          }
+        }
+
+        //accumulated number
+        accumulated += s;
+      });
     }
-    // ctx.strokeStyle = color[0];
-    // ctx.lineWidth = 1;
 
     // tick 구간표시
     if (tick.show) {
       const tickLength = tick.show ? tick.length || 4 : 0;
       for (let i = half ? 0 : 1; i <= tickLength; i++) {
+        if(max <= 0) return;
+
         const ratio = i / tickLength;
         const tickLabel = Math.round((i * (max - min)) / tickLength + min);
         const angle = half
@@ -178,7 +249,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     }
 
     // active line 위치 (score 위치)
-    const scoreRatio = (score - min) / (max - min);
+    const scoreRatio = (markScore - min) / (max - min);
     const angle = half
       ? Math.PI + scoreRatio * Math.PI
       : -Math.PI / 2 + scoreRatio * (2 * Math.PI);
@@ -207,7 +278,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
           ctx.font = '.8rem sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(`${score}${unit ? unit : ''}`, labelX - 5, labelY);
+          ctx.fillText(`${markScore}${unit ? unit : ''}`, labelX - 5, labelY);
         }
       }
     }
@@ -247,7 +318,6 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     }
 
     if (mark) {
-      const markScore = score;
       const textOffset = 15;
       const markAngle = half
         ? Math.PI + (Math.PI * (markScore - min)) / (max - min)
@@ -265,7 +335,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
       ctx.textBaseline = 'middle';
       ctx.fillText(`${markScore}${unit}`, markStart, markEnd);
     }
-  }, [score, min, max, color, size, disabled]);
+  }, [score, scores, min, max, color, colors, size, disabled]);
 
   return (
     <div
@@ -293,21 +363,42 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         items-center z-[1]
         `}
       >
-        <span className="leading-none">
-          {myscore?.label && <b className="block mb-1">{myscore?.label}</b>}
-          <b>
-            {disabled ? '**' : myscore.score ? myscore.score : score}
-            {unit}
-          </b>
-        </span>
-        {!myscore.score && (
-          <span className="leading-none">
-            /{max}
-            {unit}
-          </span>
+        {!Array.isArray(scores.score) && (
+          <>
+            <span className="leading-none">
+              {myscore?.label && <b className="block mb-1">{myscore?.label}</b>}
+              <b>
+                {disabled ? '**' : myscore.score ? `${myscore.score}${unit}` : `${scores.score}${unit}`}
+              </b>
+            </span>
+            {!myscore.score && (
+              <span className="leading-none">
+                /{max}
+                {unit}
+              </span>
+            )}
+          </>
         )}
+      </div>
+
+      <div className={`flex flex-wrap justify-center gap-1`}>
+          {Array.isArray(scores.label) ? (
+            scores.label.map((s, i) => (
+              <b key={i} className="flex items-center gap-1 text-2xs">
+                <span className='w-2 h-2 border border-black' style={{ backgroundColor: colors[i] ?? color[0] }} ></span>
+                {s}
+              </b>
+            )
+          )) : (Array.isArray(scores.score) && scores.score.map((s, i) => (
+            <b key={i} className="flex items-center gap-1 text-2xs">
+              <span className='w-2 h-2 border border-black' style={{ backgroundColor: colors[i] ?? color[0] }} ></span>
+              {s}{unit}
+            </b>
+          )))}
+        {/* {Array.isArray(scores.score) && (
+
+        )} */}
       </div>
     </div>
   );
 };
-

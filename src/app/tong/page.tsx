@@ -6,6 +6,7 @@ import { TongLayoutPage } from '../../sharedUI/Tong/TongLayout';
 import { BarGraph } from '../../sharedUI/Graph/BarGraph';
 import { DonutGraph } from '../../sharedUI/Graph/DonutGraph';
 import { DonutGraphCanvas } from '../../sharedUI/Graph/DonutGraphCanvas';
+import { DistributionGraph } from '../../sharedUI/Graph/DistributionGraph';
 
 export default function TongLayoutTestPage() {
   return (
@@ -20,33 +21,115 @@ export default function TongLayoutTestPage() {
       */}
       <TongLayoutPage>
         <div className="h-[1500px] bg-gray-50">
-          <div className="flex justify-center w-[12.5rem] bg-[#222] md:bg-white md:w-full">
+          <div>
+            <DistributionGraph center />
+          </div>
+
+          <div className="flex flex-wrap justify-center w-full gap-y-8">
             <DonutGraphCanvas
-              tick={{ show: true, label: true }}
-              size={{ size: 200, depth: 10, p: 30 }}
-              color={['orange', '#e9e9e9']}
+              activeLine={{ show: true, label: true }}
+              tick={{ show: true, length: 20, label: true }}
+              size={{ size: 200, depth: 20, p: 0 }}
+              colors={['orange']}
+              min={0}
+              // mark
+              max={100}
+              scores={{score: 30}}
+              unit="점"
+              addClass="text-white md:text-[#272727]"
+            />
+            <DonutGraphCanvas
+              // activeLine={{ show: true, label: true }}
+              tick={{ show: true, length: 10, label: true }}
+              size={{ size: 200, depth: 20, p: 0 }}
+              colors={['#FFCA69', '#FFFF69', '#6969FF']}
               min={0}
               max={100}
-              score={11}
-              myscore={{ score:82 }}
-              unit="점"
-              addClass="text-xl text-white md:text-[#272727]"
+              scores={{score: [6.54, 22.46, 31]}}
+              unit="%"
+            />
+            <DonutGraphCanvas
+              tick={{ show: true, length: 10, label: true }}
+              size={{ size: 200, depth: 20, p: 0 }}
+              colors={['#FFCA69', '#FFFF69', '#6969FF', '#358035', '#FF9191']}
+              min={0}
+              max={100}
+              scores={{score: [10, 15, 25, 10, 40], total: true}}
+              unit="%"
+            />
+            <DonutGraphCanvas
+              half
+              tick={{ show: false, length: 10, label: true }}
+              size={{ size: 300, depth: 20, p: 25 }}
+              colors={['#8393D6', '#54AEC8', '#99CC33', '#B2B1B1', '#7D7D7D']}
+              min={0}
+              max={100}
+              scores={{score: [10, 15, 25, 10, 40], total: true, label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2']}}
+              unit="%"
             />
           </div>
-          <div className='mb-5'>
+          <div>
             <DonutGraphCanvas
-              tick={{ show: true, label: true }}
               half
+              tick={{ show: true, length: 4, label: true }}
               size={{ size: 250, depth: 10, p: 30 }}
-              color={['orange', '#e9e9e9']}
+              colors={['orange', '#ccc']}
               min={0}
               max={100}
-              score={47}
-              myscore={{ score:100, label: '상위' }}
+              scores={{ score: 77 }}
+              myscore={{ score: 87.7, label: '상위' }}
               unit="%"
               addClass="pb-4 text-xl text-white md:text-[#272727]"
             />
           </div>
+
+          <div className="flex flex-wrap gap-10">
+            <DonutGraphCanvas
+              tick={{ show: true, length: 5 }}
+              size={{ size: 200, depth: 20 }}
+              min={0}
+              max={100}
+              scores={{ score: 20 }}
+            />
+            <DonutGraphCanvas
+              size={{ size: 300, depth: 60 }}
+              colors={['#23d599', '#e9e9e9']}
+              min={0}
+              max={1000}
+              scores={{score: 777}}
+              addClass="text-[1.875rem]"
+            />
+            <DonutGraph
+              size={{ width: 100, depth: 10 }}
+              color={['orange', '#e9e9e9']}
+              min={0}
+              max={100}
+              score={78}
+            />
+            {/* <DonutGraph
+              size={{ width: 178, depth: 25 }}
+              color={['red', '#e9e9e9']}
+              min={0}
+              max={100}
+              score={78}
+            />
+            <DonutGraph
+              size={{ width: 300, depth: 15 }}
+              min={0}
+              max={100}
+              score={78}
+              addClass="text-[3.5rem]"
+            />
+            <DonutGraph
+              size={{ width: 300, depth: 40 }}
+              color={['#23d599', '#e9e9e9']}
+              min={0}
+              max={1000}
+              score={817}
+              addClass="text-[2rem]"
+            /> */}
+          </div>
+
           <div className="flex flex-wrap gap-15">
             <BarGraph disabled />
             <BarGraph
@@ -68,7 +151,6 @@ export default function TongLayoutTestPage() {
             <BarGraph
               size={40} min={200} max={850} average={7} myscore={650} />
             <BarGraph
-
               color={['purple', '#ddd']}
               min={200}
               max={850}

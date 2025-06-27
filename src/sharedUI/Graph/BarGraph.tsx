@@ -106,24 +106,24 @@ export const BarGraph: React.FC<BarGraphProps> = ({
       )}
       <span
         className={`bar..
-              ${cn(
-                'flex items-center gap-x-1 px-3 justify-end rounded-full relative',
-                ''
-              )}
-            `}
+          ${cn(
+            'flex items-center gap-x-1 px-3 justify-end rounded-full relative',
+            ''
+          )}
+        `}
         data-averege={average}
         style={
           disabled
             ? { width: '2.4%', backgroundColor: color[0] }
             : {
-                width,
-                backgroundColor:
-                  type === 'type_1'
-                    ? '#FEDA62'
-                    : type === 'type_2'
-                    ? '#84DCCA'
-                    : color[0],
-              }
+              width,
+              backgroundColor:
+                type === 'type_1'
+                  ? '#FEDA62'
+                  : type === 'type_2'
+                  ? '#84DCCA'
+                  : color[0],
+            }
         }
       >
         {!disabled && (
