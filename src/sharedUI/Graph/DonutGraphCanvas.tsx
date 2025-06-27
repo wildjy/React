@@ -30,7 +30,9 @@ interface DonutGraphCanvasProps {
   scores?: {
     score: number | number[];
     total?: boolean;
-    label?: string | string[];
+    label?: string | string[] | number[];
+    center?: boolean;
+    hide?: boolean;
   }
   myscore?: {
     score: number;
@@ -52,7 +54,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
   color = ['#A4BEF0', '#dddddd'],
   colors = ['#A4BEF0', '#dddddd'],
   score = 0,
-  scores = { score: [], total: false, label: []},
+  scores = { score: [], total: false, label: [], center: false, hide: false},
   myscore = { score: 0 },
   unit = '',
   addClass,
@@ -74,6 +76,10 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
       ? tick.label
         ? size.p || 25
         : size.p || 10
+      : scores.label
+        ? scores.hide && scores.center
+        ? size.p || 0
+        : size.p || 30
       : size.p || 0;
 
     const lineDepth = size.depth;
@@ -185,14 +191,21 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         ctx.stroke();
 
         if(scores.label) {
-          ctx.fillStyle = '#333';
+          if(scores.center) {
+            ctx.font = '.5rem sans-serif';
+            ctx.fillStyle = '#fefefe';
+            ctx.shadowColor = 'rgba(0,0,0,1)';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 1.5;
+            ctx.shadowOffsetY = 0.5;
+          }
           ctx.font = '.6rem sans-serif';
+          ctx.shadowColor = 'rgba(0,0,0,0.5)';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
-          if(tick.show) {
-
-            const textRadius = radius - lineDepth / 2 - 13;
+          if(tick.show || scores.center) {
+            const textRadius = scores.center ? size.depth === 100 ? radius * 2 : radius : radius - lineDepth / 2 - 13;
             const labelX = centerX + Math.cos(middleAngle) * textRadius;
             const labelY = centerY + Math.sin(middleAngle) * textRadius;
             ctx.fillText(`${s}${unit}`, labelX, labelY);
@@ -202,6 +215,8 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
             ctx.fillText(`${s}${unit}`, labelX, labelY);
           }
         }
+        // text-shadow reset
+        ctx.shadowColor = 'transparent';
 
         //accumulated number
         accumulated += s;
@@ -381,24 +396,24 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         )}
       </div>
 
-      <div className={`flex flex-wrap justify-center gap-1`}>
+      {!scores.hide && (
+        <div className={`flex flex-wrap justify-center gap-[0.3125rem]`}>
           {Array.isArray(scores.label) ? (
             scores.label.map((s, i) => (
-              <b key={i} className="flex items-center gap-1 text-2xs">
-                <span className='w-2 h-2 border border-black' style={{ backgroundColor: colors[i] ?? color[0] }} ></span>
+              <b key={i} className={`flex items-center gap-1 text-2xs`}>
+                <span className={`w-2 h-2 border border-black`} style={{ backgroundColor: colors[i] ?? color[0] }} ></span>
                 {s}
+                {typeof s === 'number' && unit}
               </b>
             )
           )) : (Array.isArray(scores.score) && scores.score.map((s, i) => (
-            <b key={i} className="flex items-center gap-1 text-2xs">
+            <b key={i} className="flex items-center gap-1 mt-2 text-2xs">
               <span className='w-2 h-2 border border-black' style={{ backgroundColor: colors[i] ?? color[0] }} ></span>
-              {s}{unit}
+              <span>{s}{unit}</span>
             </b>
           )))}
-        {/* {Array.isArray(scores.score) && (
-
-        )} */}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
