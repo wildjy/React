@@ -77,7 +77,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         ? size.p || 25
         : size.p || 10
       : scores.label
-        ? scores.hide && scores.center
+        ? scores.center // scores.hide &&
         ? size.p || 0
         : size.p || 30
       : size.p || 0;
@@ -190,7 +190,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         ctx.lineWidth = lineDepth;
         ctx.stroke();
 
-        if(scores.label) {
+        if(!tick.show) { //  || scores.label
           if(scores.center) {
             ctx.font = '.5rem sans-serif';
             ctx.fillStyle = '#fefefe';
@@ -205,7 +205,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
           ctx.textBaseline = 'middle';
 
           if(tick.show || scores.center) {
-            const textRadius = scores.center ? size.depth === 100 ? radius * 2 : radius : radius - lineDepth / 2 - 13;
+            const textRadius = scores.center ? size.depth === size.size / 2 ? radius + 17 : radius : radius - lineDepth / 2 - 13; //radius * 2
             const labelX = centerX + Math.cos(middleAngle) * textRadius;
             const labelY = centerY + Math.sin(middleAngle) * textRadius;
             ctx.fillText(`${s}${unit}`, labelX, labelY);

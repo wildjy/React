@@ -22,9 +22,8 @@ export default function TongLayoutTestPage() {
       <TongLayoutPage>
         <div className="h-[1500px] bg-gray-50">
           <div>
-            <DistributionGraph center />
+            <DistributionGraph  />
           </div>
-
 
           <div className="flex flex-wrap justify-center w-full gap-y-8">
             <DonutGraphCanvas
@@ -50,11 +49,12 @@ export default function TongLayoutTestPage() {
               unit="%"
             />
             <DonutGraphCanvas
+              tick={{ show: true, length: 6, label: true }}
               size={{ size: 200, depth: 20, p: 0 }}
               colors={['#FFCA69', '#358035', '#6969FF']}
               min={0}
-              max={100}
-              scores={{score: [6.54, 22.46, 31], hide: true, label: [6.54, 22.46, 31], center: true}}
+              max={60}
+              scores={{score: [6.54, 22.46, 31], total: true, label: [6.54, 22.46, 31], center: true}}
             />
             <DonutGraphCanvas
               tick={{ show: true, length: 10, label: true }}
@@ -66,21 +66,21 @@ export default function TongLayoutTestPage() {
               unit="%"
             />
             <DonutGraphCanvas
-              tick={{ show: true, length: 10, label: true }}
-              size={{ size: 200, depth: 100, p: 0 }}
+              tick={{ show: false, length: 10, label: true }}
+              size={{ size: 200, depth: 40, p: 0 }}
               colors={['#FFCA69', '#FFFF00', '#6969FF', '#358035', '#FF9191']}
               min={0}
               max={100}
-              scores={{score: [10, 15, 25, 10, 40], total: true, label: [10, 15, 25, 10, 40], center: true}}
+              scores={{score: [10, 15, 25, 10, 40], hide: true, total: true, label: [10, 15, 25, 10, 40], center: true}}
               unit="%"
             />
             <DonutGraphCanvas
-              // tick={{ show: true, length: 10, label: true }}
-              size={{ size: 200, depth: 20, p: 0 }}
+              tick={{ show: false, length: 10, label: true }}
+              size={{ size: 180, depth: 90, p: 0 }}
               colors={['#FFCA69', '#FFFF00', '#6969FF', '#358035', '#FF9191']}
               min={0}
               max={100}
-              scores={{score: [10, 15, 25, 10, 40], total: true, label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2'], center: false }}
+              scores={{score: [15, 10, 25, 10, 40], total: false, label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2'], center: true }}
               unit="%"
             />
             <DonutGraphCanvas
@@ -90,10 +90,21 @@ export default function TongLayoutTestPage() {
               colors={['#8393D6', '#54AEC8', '#99CC33', '#B2B1B1', '#7D7D7D']}
               min={0}
               max={100}
-              scores={{score: [10, 15, 25, 10, 40], total: true, label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2']}}
+              scores={{score: [5, 10, 25, 10, 20], total: false, label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2'], center: true}}
+              unit="%"
+            />
+            <DonutGraphCanvas
+              half
+              tick={{ show: false, length: 10, label: true }}
+              size={{ size: 300, depth: 150, p: 0 }}
+              colors={['#8393D6', '#54AEC8', '#99CC33', '#B2B1B1', '#7D7D7D']}
+              min={0}
+              max={100}
+              scores={{score: [10, 15, 25, 10, 40], total: true, label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2'], center: false}}
               unit="%"
             />
           </div>
+
           <div>
             <DonutGraphCanvas
               half
