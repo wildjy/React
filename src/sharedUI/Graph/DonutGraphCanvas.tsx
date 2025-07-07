@@ -30,9 +30,11 @@ interface DonutGraphCanvasProps {
   scores?: {
     score: number | number[];
     total?: boolean;
-    label?: string | string[] | number[];
+    label?: boolean | string | string[] | number[];
     center?: boolean;
-    hide?: boolean;
+    legend?: boolean | undefined;
+    fontSize?: string | undefined;
+    color?: string;
   }
   myscore?: {
     score: number;
@@ -54,7 +56,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
   color = ['#A4BEF0', '#dddddd'],
   colors = ['#A4BEF0', '#dddddd'],
   score = 0,
-  scores = { score: [], total: false, label: [], center: false, hide: false},
+  scores = { score: [], total: false, label: [], center: false, fontSize: '.6rem', color, legend: false },
   myscore = { score: 0 },
   unit = '',
   addClass,
@@ -189,17 +191,17 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         ctx.strokeStyle = colors[i] ?? colors[0];
         ctx.lineWidth = lineDepth;
         ctx.stroke();
-
-        if(!tick.show) { //  || scores.label
+        if(scores.label && Array.isArray(scores.label) || scores.label) { //  !tick.show &&
           if(scores.center) {
             ctx.font = '.5rem sans-serif';
-            ctx.fillStyle = '#fefefe';
+            // ctx.fillStyle = `${scores.color ?? '#fefefe'}`;
             ctx.shadowColor = 'rgba(0,0,0,1)';
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 1.5;
             ctx.shadowOffsetY = 0.5;
           }
-          ctx.font = '.6rem sans-serif';
+          ctx.font = `${scores.fontSize ?? '.6rem'} sans-serif`;
+          ctx.fillStyle = `${scores.center ? scores.color ?? '#fefefe' : scores.color ?? '#272727' }`;
           ctx.shadowColor = 'rgba(0,0,0,0.5)';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
@@ -328,7 +330,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         ctx.font = '.8rem sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`MY`, markX, markY); // ${myscore}
+        ctx.fillText(`MY`, markX, markY); // ${myscore.score}
       }
     }
 
@@ -396,7 +398,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         )}
       </div>
 
-      {!scores.hide && (
+      {scores.legend && (
         <div className={`flex flex-wrap justify-center gap-[0.3125rem]`}>
           {Array.isArray(scores.label) ? (
             scores.label.map((s, i) => (
