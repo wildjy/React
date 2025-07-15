@@ -90,7 +90,7 @@ export default function TongLayoutTestPage() {
             />
             <DonutGraphCanvas
               half
-              tick={{ show: false, length: 10, label: true }}
+              tick={{ show: true, length: 10, label: true, fontSize: '.8rem', }}
               size={{ size: 300, depth: 20, p: 25 }}
               colors={['#8393D6', '#54AEC8', '#99CC33', '#B2B1B1', '#7D7D7D']}
               min={0}
@@ -118,6 +118,7 @@ export default function TongLayoutTestPage() {
                 total: true,
                 label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2'],
                 center: true,
+                fontSize: '.8rem',
                 legend: true,
               }}
               unit="%"
