@@ -7,6 +7,29 @@ import Conditional from './Conditional';
 import throttle from 'lodash/throttle';
 import debounce from 'lodash/debounce';
 
+function AlertBtn ({ message, onCheck, children }) {
+  const [ newMessage, setNewMessage ]= useState(false);
+
+  return (
+    <div>
+      <p className={`${newMessage ? 'text-red-600' : 'text-gray-1000'}`}>{message}</p>
+      <button onClick={onCheck}>
+        {children}
+      </button>
+    </div>
+  )
+}
+
+function Button ({ onCheck, children }) {
+  return (
+    <div>
+      <button onClick={onCheck}>
+        {children}
+      </button>
+    </div>
+  )
+}
+
 export default function Page() {
   // Sample count
   const [count, setCount] = useState(0);
@@ -228,9 +251,28 @@ export default function Page() {
 
 // 학폭 기능
 
+  const [ newMessage, setNewMessage ]= useState(false);
+  function onCheckTest () {
+    setNewMessage((prev) => !prev);
+  }
   return (
     <>
       <div className="p-6 w-full tablet:w-tablet m-center">
+        <AlertBtn message={`${newMessage ? 'click true' : 'click false'}`} onCheck={onCheckTest}>
+          Click message
+        </AlertBtn>
+
+        <Button onCheck={() => alert('alert')}>
+          Check alert
+        </Button>
+        <Button onCheck={() => console.log('console')}>
+          Check Console
+        </Button>
+
+        <div onClickCapture={() => { alert('this runs first') }}>
+          <button onClick={e => {e.stopPropagation(); alert('11 e.stopPropagation')}}>11</button>
+          <button onClick={e => {e.stopPropagation(); alert('22 e.stopPropagation')}}>22</button>
+        </div>
 
         <UseItem />
 
