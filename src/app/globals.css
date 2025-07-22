@@ -80,7 +80,7 @@ body {
 
 html,
 body {
-  @apply text-xsBase sm:text-smBase md:text-mdBase lg:text-lgBase xl:text-base text-gray-800;
+  @apply h-full text-xsBase sm:text-smBase md:text-mdBase lg:text-lgBase xl:text-base text-gray-800;
 }
 
 /* layout : start */
