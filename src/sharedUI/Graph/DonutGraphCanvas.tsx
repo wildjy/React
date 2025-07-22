@@ -97,6 +97,10 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     const endHalfAngle = startHalfAngle + Math.PI;
     const halfBottomP = 10;
     const singleScore = typeof scores.score === 'number' || (Array.isArray(scores.score) && scores.score.length === 1);
+    const scoreList = Array.isArray(scores.score) ? scores.score : [scores.score ?? 0];
+    const totalScore = scoreList.reduce((sum, i) => sum + i, 0);
+    const accStandard = scores.total ? totalScore : max || totalScore || 1;
+    const accumulated = 0;
 
     const parseFontSize = (fontS = '0.6rem'): number => {
       const remMatch = fontS.match(/^([\d.]+)rem$/);
@@ -147,13 +151,32 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
       size.size,
       half ? size.size + halfBottomP / 2 : size.size
     );
-    ctx.beginPath();
-    half
-      ? ctx.arc(centerX, centerY, radius, startHalfAngle, endHalfAngle)
-      : ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.strokeStyle = singleScore && colors[1] || '#dddddd';
-    ctx.lineWidth = lineDepth;
-    ctx.stroke();
+    if (singleScore || scores.total) {
+      ctx.beginPath();
+      half
+        ? ctx.arc(centerX, centerY, radius, startHalfAngle, endHalfAngle)
+        : ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      ctx.strokeStyle = colors[1] || '#dddddd';
+      ctx.lineWidth = lineDepth;
+      ctx.stroke();
+    }
+
+    if (accumulated < accStandard) {
+      const startRatio = accumulated / accStandard;
+      const startAngle = half
+        ? startHalfAngle + Math.PI * startRatio
+        : -Math.PI / 2 + 2 * Math.PI * startRatio;
+
+      const endAngle = half
+        ? startHalfAngle + Math.PI
+        : -Math.PI / 2 + 2 * Math.PI;
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.strokeStyle = '#dddddd'; // ✅ 남은 회색 처리
+      ctx.lineWidth = lineDepth;
+      ctx.stroke();
+    }
 
     // donut active
     // if (!disabled && score) {
@@ -179,7 +202,6 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     // }
 
     // donut active (multiple scores)
-    const scoreList = Array.isArray(scores.score) ? scores.score : [scores.score ?? 0];
     if (!disabled && scores) {
       const total = scoreList.reduce((sum, i) => sum + i, 0);
       const accStandard = scores.total ? total : max || total || 1;
@@ -257,8 +279,8 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         const xEnd = centerX + Math.cos(angle) * (textStart + textEnd);
         const yEnd = centerY + Math.sin(angle) * (textStart + textEnd);
 
-        const isActiveTick =
-          score >= tickLabel && score < tickLabel + (max - min) / tickLength;
+        // const isActiveTick =
+        //   score >= tickLabel && score < tickLabel + (max - min) / tickLength;
         // console.log(isActiveTick);
 
         ctx.beginPath();

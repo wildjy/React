@@ -17,12 +17,78 @@ export default function TongLayoutTestPage() {
       sideNav = 좌측 네비게이션,
       topBottom = 현재 상담중인 학생 DropDown영역
        'bg-[#FEDA62]': type === 'type_1',
-                  'bg-[#84DCCA]'
+                  'bg-[#84DCCA]'  bg-gray-50
       */}
       <TongLayoutPage>
-        <div className="h-[1500px] bg-gray-50">
-          <div>
-            <DistributionGraph  />
+        <div className="md:h-[1500px]">
+          <div className='flex flex-wrap md:flex-nowrap justify-center gap-5'>
+            <DistributionGraph
+              value={[
+                {value: 4.1 },
+                {value: 15.5 },
+                {value: 32.8 },
+                {value: 6.9 },
+                {value: 4.3 },
+                {value: 16 },
+                {value: 8.7 },
+                {value: 6.8 },
+                {value: 5.2 },
+              ]}
+            />
+            <DistributionGraph
+              value={[
+                {value: 50 },
+                {value: 20.1 },
+                {value: 30.1 },
+                {value: 24.1 },
+                {value: 10.1 },
+                {value: 5.1 },
+                {value: 15.1 },
+                {value: 22.1 },
+                {value: 8.1 },
+              ]}
+            />
+          </div>
+          <div className='flex flex-wrap md:flex-nowrap justify-center gap-5'>
+            <DistributionGraph
+              value={[
+                {value: 4.1 },
+                {value: 15.5 },
+                {value: 32.8 },
+                {value: 6.9 },
+                {value: 4.3 },
+                {value: 16 },
+                {value: 8.7 },
+                {value: 6.8 },
+                {value: 5.2 },
+              ]}
+            />
+            <DistributionGraph
+              value={[
+                {value: 50 },
+                {value: 20.1 },
+                {value: 30.1 },
+                {value: 24.1 },
+                {value: 10.1 },
+                {value: 5.1 },
+                {value: 15.1 },
+                {value: 22.1 },
+                {value: 8.1 },
+              ]}
+            />
+            <DistributionGraph
+              value={[
+                {value: 50 },
+                {value: 20.1 },
+                {value: 30.1 },
+                {value: 24.1 },
+                {value: 10.1 },
+                {value: 5.1 },
+                {value: 15.1 },
+                {value: 22.1 },
+                {value: 8.1 },
+              ]}
+            />
           </div>
 
           <div className="flex flex-wrap justify-center w-full gap-y-8">
@@ -45,7 +111,7 @@ export default function TongLayoutTestPage() {
               colors={['#FFCA69', '#FFFF00', '#6969FF']}
               min={0}
               max={100}
-              scores={{score: [6.54, 22.46, 31]}}
+              scores={{score: [6.54, 22.46, 31], label: true}}
               unit="%"
             />
             <DonutGraphCanvas
@@ -92,7 +158,7 @@ export default function TongLayoutTestPage() {
               half
               tick={{ show: true, length: 10, label: true, fontSize: '.8rem', }}
               size={{ size: 300, depth: 20, p: 25 }}
-              colors={['#8393D6', '#54AEC8', '#99CC33', '#B2B1B1', '#7D7D7D']}
+              colors={['#8393D6', '#54AEC8', '#99CC33', '#B2B1B1', 'orange']}
               min={0}
               max={100}
               myscore={{ score: 87.7, label: '상위' }}
