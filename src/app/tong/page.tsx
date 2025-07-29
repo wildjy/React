@@ -20,7 +20,7 @@ export default function TongLayoutTestPage() {
                   'bg-[#84DCCA]'  bg-gray-50
       */}
       <TongLayoutPage>
-        <div className="md:h-[1500px]">
+        <div className="md:min-h-[1500px]">
           <div className='flex flex-wrap md:flex-nowrap justify-center gap-5'>
             <DistributionGraph
               value={[

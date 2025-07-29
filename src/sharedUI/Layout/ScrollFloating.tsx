@@ -16,6 +16,7 @@ export const ScrollFloating: React.FC<ScrollFloatingProps> = ({ children, direct
   const { scrollDirection } = useScroll();
   const [ footerY, setFooterY ] = useState(0);
   const [ scrollTop, setScrollTop ] = useState(0);
+  const [ scrollBottom, setScrollBottom ] = useState(0);
   const [ targetTop, setTargetTop ] = useState(0);
   const targetRef = useRef<HTMLInputElement>(null);
 
@@ -44,9 +45,11 @@ export const ScrollFloating: React.FC<ScrollFloatingProps> = ({ children, direct
       const pageY = window.scrollY;
       const docHeight = document.documentElement.scrollHeight;
       const winHeight = window.innerHeight;
+      const calcBottomY = docHeight - winHeight - pageY;
+      const calcFooterY = docHeight - targetTop - winHeight - pageY;
 
       setScrollTop(pageY);
-      const calcFooterY = docHeight - targetTop - winHeight - pageY;
+      setScrollBottom(calcBottomY);
       setFooterY(calcFooterY);
     }, 10);
 
@@ -56,29 +59,45 @@ export const ScrollFloating: React.FC<ScrollFloatingProps> = ({ children, direct
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [scrollTop, targetTop]);
+  }, [scrollTop, scrollBottom, targetTop]);
+
+  // style
+  const displayClass = (() => {
+    if(!scrollTop && !direction) return 'block';
+    if(scrollDirection) {
+      return scrollBottom === 0 ? 'block' : 'hidden';
+    }
+    return 'block';
+  })();
+
+  const marginBottom = (() => {
+    if(targetF) {
+      if(footerY <= 0) return 'mb-[4.5rem] sm:mb-[4rem]'; // mb-[4.5rem] sm:mb-[4rem]
+      return 'mb-[7rem] sm:mb-[7.5rem]'; // mb-[7rem] sm:mb-[7.5rem]
+    }
+    return 'b-[4rem] sm:mb-[4.5rem]'; // mb-[7rem]
+  })();
+
+  const alignClass = (() => {
+    if(align === 'left') {
+      return 'left-4 mb-[4rem] sm:mb-[4.5rem]';
+    }
+    return 'right-4';
+  })();
 
   return (
     <div
-      className={`block fixed bottom-0`} // md:hidden
+      className={`block md:hidden fixed bottom-0 z-[10]`}
     >
       {/* footer 기준 높이 추출용 */}
-      <div ref={targetRef} className="w-[1px] sm:pb-17 md:pb-18 xl:pb-0 bg-red-700">
-        <div className={`${align === 'left' ? 'h-[12rem]' : 'h-[15.7rem] md:h-[12rem] xl:h-[14.1875rem]'}`}></div>
+      <div ref={targetRef} className="sm:pb-17 md:pb-18 xl:pb-0">
+        <div className={`${align === 'left' ? 'h-[12rem]' : 'h-[15rem]'}`}></div>
       </div>
 
       <div>
         <div className={`
-          ${cn('fixed mb-4 bottom-0 z-[10] transition-[background-color] duration-100',
-            align === 'left' ?
-            'left-4' :
-            'right-4 ',
-            // 'right-4 mb-[7rem] sm:mb-[7.5rem]',
-            direction && (scrollDirection ? 'opacity-1' : 'opacity-0'),
-            scrollTop ? 'block' : 'hidden',
-            targetF ? (
-              footerY <= 0 && 'mb-0' //mb-[4.5rem] sm:mb-[4rem]
-            ) : undefined
+          ${cn('fixed mb-4 bottom-0 transition-[background-color] duration-100',
+            displayClass, marginBottom, alignClass,
           )}
         `}
 
