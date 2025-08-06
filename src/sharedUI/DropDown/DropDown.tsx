@@ -1,6 +1,7 @@
 import { cn } from "../common/cn";
 import { cva, cx, VariantProps } from 'class-variance-authority';
 import React, { createContext, HTMLAttributes, useContext, useEffect, forwardRef, useRef, useState } from 'react';
+import { useOutHandler } from "../StepBar/useOutHandler";
 
 type typeMode = 'base' | 'shadow' | 'ghost' | 'ghostShadow' | 'check';
 type alignMode = 'left' | 'center';
@@ -238,10 +239,11 @@ export const DropDown: React.FC<DropDownProps> = ({
   value,
   ...props
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const [selectValue, setSelectValue] = useState<string | null>(value || null);
   const [focusIndex, setFocusIndex] = useState<number | null>(null);
-  const dropRef = useRef<HTMLDivElement | null>(null);
+  const targetRef = useRef<HTMLDivElement | null>(null);
+  const { isOpen, setIsOpen } = useOutHandler({ targetRef });
 
   const className = DropDownVariants({
     type: type as typeMode | undefined,
@@ -259,17 +261,17 @@ export const DropDown: React.FC<DropDownProps> = ({
     setFocusIndex(null);
   };
 
-  const openMouseEvent = (event: MouseEvent) => {
-    if (dropRef.current && !dropRef.current.contains(event.target as Node)) {
-      setIsOpen(false);
-    }
-  };
+  // const openMouseEvent = (event: MouseEvent) => {
+  //   if (dropRef.current && !dropRef.current.contains(event.target as Node)) {
+  //     setIsOpen(false);
+  //   }
+  // };
 
-  const closeFocusOut = (e: FocusEvent) => {
-    if (dropRef.current && !dropRef.current.contains(e.relatedTarget as Node)) {
-      setIsOpen(false);
-    }
-  };
+  // const closeFocusOut = (e: FocusEvent) => {
+  //   if (dropRef.current && !dropRef.current.contains(e.relatedTarget as Node)) {
+  //     setIsOpen(false);
+  //   }
+  // };
 
   const ChangeSelectValue = (option: DropDownOptionType) => {
     setSelectValue(option.value);
@@ -296,8 +298,8 @@ export const DropDown: React.FC<DropDownProps> = ({
   }
 
   useEffect(() => {
-    if(focusIndex != null && dropRef.current) {
-      const findUl = dropRef.current.querySelector('ul');
+    if(focusIndex != null && targetRef.current) {
+      const findUl = targetRef.current.querySelector('ul');
       const optionItem = findUl?.children[focusIndex] as HTMLElement;
       optionItem?.focus();
     }
@@ -306,20 +308,20 @@ export const DropDown: React.FC<DropDownProps> = ({
     setSelectValue(value as string | null);
   }, [value, focusIndex]);
 
-  useEffect(() => {
-    const currentRef = dropRef.current;
-    document.addEventListener('mousedown', openMouseEvent);
+  // useEffect(() => {
+  //   const currentRef = dropRef.current;
+  //   document.addEventListener('mousedown', openMouseEvent);
 
-    if (currentRef) {
-      currentRef.addEventListener('focusout', closeFocusOut);
-    }
-    return () => {
-      document.removeEventListener('mousedown', openMouseEvent);
-    if (currentRef) {
-      currentRef.removeEventListener('focusout', closeFocusOut);
-    }
-    };
-  }, []);
+  //   if (currentRef) {
+  //     currentRef.addEventListener('focusout', closeFocusOut);
+  //   }
+  //   return () => {
+  //     document.removeEventListener('mousedown', openMouseEvent);
+  //   if (currentRef) {
+  //     currentRef.removeEventListener('focusout', closeFocusOut);
+  //   }
+  //   };
+  // }, []);
 
   return (
     <>
@@ -368,7 +370,7 @@ export const DropDown: React.FC<DropDownProps> = ({
           </button>
           {/* {isOpen && ( */}
           <DropOption
-            ref={dropRef}
+            ref={targetRef}
             isOpen={isOpen}
             options={options}
             custom={custom}

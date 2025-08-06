@@ -4,6 +4,7 @@ import { cn } from "../common/cn";
 import { cva } from "class-variance-authority";
 import { HTMLAttributes, FC, useEffect, useRef, useState } from "react";
 import { CloseButton } from "../Button/CloseButton";
+import { useOutHandler } from "./useOutHandler";
 import Link from 'next/link';
 
 const StepItems = cva(
@@ -89,26 +90,26 @@ export const JStepBar: FC<JStepBarProps> = ({
   disabled,
   onClose,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const layerRef = useRef<HTMLDivElement | null>(null);
+  const targetRef = useRef<HTMLDivElement | null>(null);
+  const { isOpen, setIsOpen } = useOutHandler({ targetRef });
 
-  console.log(isOpenLayer)
   const openStepLayer = () => {
     setIsOpen((prev) => !prev);
   };
 
-  const openLayerEvent = (e: MouseEvent) => {
-    if (layerRef.current && !layerRef.current.contains(e.target as Node)) {
-      setIsOpen(false);
-    }
-  };
+  // const openLayerEvent = (e: MouseEvent) => {
+  //   if (layerRef.current && !layerRef.current.contains(e.target as Node)) {
+  //     setIsOpen(false);
+  //   }
+  // };
 
-  const closeFocusOut = (e: FocusEvent) => {
-    if (layerRef.current && !layerRef.current.contains(e.relatedTarget as Node)) {
-      setIsOpen(false);
-    }
-  };
+  // const closeFocusOut = (e: FocusEvent) => {
+  //   if (layerRef.current && !layerRef.current.contains(e.relatedTarget as Node)) {
+  //     setIsOpen(false);
+  //   }
+  // };
 
   useEffect(() => {
     const checkMobile = () => {
@@ -123,20 +124,20 @@ export const JStepBar: FC<JStepBarProps> = ({
     }
   }, []);
 
-  useEffect(() => {
-    const currentRef = layerRef.current;
-    document.addEventListener('mousedown', openLayerEvent);
-    if (currentRef) {
-      currentRef.addEventListener('focusout', closeFocusOut);
-    }
+  // useEffect(() => {
+  //   const currentRef = layerRef.current;
+  //   document.addEventListener('mousedown', openLayerEvent);
+  //   if (currentRef) {
+  //     currentRef.addEventListener('focusout', closeFocusOut);
+  //   }
 
-    return () => {
-      document.removeEventListener('mousedown', openLayerEvent);
-      if (currentRef) {
-        currentRef.removeEventListener('focusout', closeFocusOut);
-      }
-    };
-  }, []);
+  //   return () => {
+  //     document.removeEventListener('mousedown', openLayerEvent);
+  //     if (currentRef) {
+  //       currentRef.removeEventListener('focusout', closeFocusOut);
+  //     }
+  //   };
+  // }, []);
 
   const disabledTxt = [
     {
@@ -167,7 +168,7 @@ export const JStepBar: FC<JStepBarProps> = ({
   return (
     <div className='md:bg-[#FAFBFC] md:border-gray-100 rounded-lg'>
       <div
-        ref={layerRef}
+        ref={targetRef}
         className={`
           ${cn([`
               transition-all duration-300
