@@ -243,7 +243,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   const [selectValue, setSelectValue] = useState<string | null>(value || null);
   const [focusIndex, setFocusIndex] = useState<number | null>(null);
   const targetRef = useRef<HTMLDivElement | null>(null);
-  const { isOpen, setIsOpen } = useOutHandler({ targetRef });
+  const { isOpen, setIsOpen } = useOutHandler({ refs: [targetRef] });
 
   const className = DropDownVariants({
     type: type as typeMode | undefined,
@@ -378,6 +378,11 @@ export const DropDown: React.FC<DropDownProps> = ({
             layer={layer}
             onChangeSelect={ChangeSelectValue}
             onClose={OpenEvent}
+            // onClick={(e) => {
+            //   if(e.target === e.currentTarget) {
+            //     setIsOpen(false)
+            //   }
+            // }}
           />
           {/* )} */}
         </div>

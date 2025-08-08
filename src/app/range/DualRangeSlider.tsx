@@ -1,97 +1,157 @@
-import React, { useState } from "react";
+import { useState, useEffect,  useRef } from "react";
 
-interface DualRangeSliderProps {
-  min: number;
-  max: number;
+export interface DualRangeSliderProps {
+  min?: number;
+  max?: number;
   step?: number;
   value: { min: number; max: number };
   onChange: (minValue: number, maxValue: number) => void;
+  addClass?: string;
 }
 
 export const DualRangeSlider: React.FC<DualRangeSliderProps> = ({
   min = 0,
   max = 100,
-  step = 5,
+  step = 1,
   value,
   onChange,
+  addClass,
 }) => {
   const [minValue, setMinValue] = useState(value.min);
   const [maxValue, setMaxValue] = useState(value.max);
+  const [active, setActive] = useState<"min" | "max" | null>(null);
 
-  // ✅ 최소값 핸들러 (정상 작동하도록 수정)
-  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newValue = Math.round(Number(e.target.value) / step) * step;
-    if (newValue < min) newValue = min;
-    if (newValue >= maxValue - step) newValue = maxValue - step; // 최소값이 최대값을 넘지 않도록 제한
-    setMinValue(newValue);
-    onChange(newValue, maxValue);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  // 외부에서 value가 바뀌면 동기화
+  useEffect(() => {
+    setMinValue(value.min);
+    setMaxValue(value.max);
+  }, [value.min, value.max]);
+
+  const clampToStep = (n: number) => Math.round(n / step) * step;
+
+  const commitMin = (v: number) => {
+    let val = clampToStep(v);
+    if (val < min) val = min;
+    if (val >= maxValue - step) val = maxValue - step;
+    setMinValue(val);
+    onChange(val, maxValue);
   };
 
-  // ✅ 최대값 핸들러 (정상 작동하도록 수정)
-  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newValue = Math.round(Number(e.target.value) / step) * step;
-    if (newValue > max) newValue = max;
-    if (newValue <= minValue + step) newValue = minValue + step; // 최대값이 최소값보다 작아지지 않도록 제한
-    setMaxValue(newValue);
-    onChange(minValue, newValue);
+  const commitMax = (v: number) => {
+    let val = clampToStep(v);
+    if (val > max) val = max;
+    if (val <= minValue + step) val = minValue + step;
+    setMaxValue(val);
+    onChange(minValue, val);
   };
 
-  // ✅ 슬라이더 진행 바 위치 계산
+  const posToValue = (clientX: number) => {
+    const track = trackRef.current!;
+    const rect = track.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    return min + ratio * (max - min);
+  };
+
+  const pickHandle = (v: number): "min" | "max" => {
+    if (v <= minValue) return "min";
+    if (v >= maxValue) return "max";
+    const dMin = Math.abs(v - minValue);
+    const dMax = Math.abs(v - maxValue);
+    return dMin <= dMax ? "min" : "max";
+  };
+
+  const startDrag = (clientX: number) => {
+    const v = posToValue(clientX);
+    const handle = pickHandle(v);
+    setActive(handle);
+    if (handle === "min") commitMin(v);
+    else commitMax(v);
+
+    const onMove = (e: PointerEvent) => {
+      const v2 = posToValue(e.clientX);
+      if (handle === "min") commitMin(v2);
+      else commitMax(v2);
+    };
+
+    const onUp = () => {
+      setActive(null);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+  };
+
+  const onTrackPointerDownCapture = (e: React.PointerEvent<HTMLDivElement>) => {
+    // 캡처 단계에서 먼저 가로채 트랙 클릭/드래그 지원
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    startDrag(e.clientX);
+  };
+
   const progressStart = ((minValue - min) / (max - min)) * 100;
   const progressEnd = ((maxValue - min) / (max - min)) * 100;
 
+  const rangeInputClass = `
+    absolute top-1/2 -translate-y-1/2
+    w-full h-8
+    bg-transparent
+    pointer-events-none appearance-none
+  `;
+
   return (
-    <div className="flex flex-col items-center w-full max-w-md">
-      {/* 눈금 표시 */}
-      <div className="relative w-full mb-2">
-        {[...Array((max - min) / step + 1)].map((_, index) => {
-          const tickValue = min + index * step;
-          const tickPosition = ((tickValue - min) / (max - min)) * 100;
-          return (
-            <div
-              key={tickValue}
-              className="absolute h-3 border-l border-gray-400 text-gray-700 text-xs"
-              style={{ left: `${tickPosition}%`, transform: "translateX(-50%)" }}
-            >
-              {tickValue}
-            </div>
-          );
-        })}
-      </div>
+    <div className={`${addClass}`}>
+      <div
+        ref={trackRef}
+        className={`relative w-full h-8 cursor-pointer`}
+        onPointerDownCapture={onTrackPointerDownCapture}
+      >
+        {/* 바 배경 */}
+        <div className={`absolute top-1/2 left-0 right-0 h-2 -translate-y-1/2 bg-gray-200 pointer-events-none rounded-lg `} />
+        {/* 채워진 영역 */}
 
-      {/* 슬라이더 바 */}
-      <div className="relative w-full h-2 bg-gray-300 rounded-lg">
-        {/* 채워지는 진행 바 */}
         <div
-          className="absolute top-0 left-0 h-full bg-blue-500 rounded-lg"
-          style={{ left: `${progressStart}%`, width: `${progressEnd - progressStart}%` }}
-        ></div>
+          className={`absolute top-1/2 h-2 -translate-y-1/2 bg-blue-500 pointer-events-none rounded-lg`}
+          style={{
+            left: `${progressStart}%`,
+            width: `${progressEnd - progressStart}%`,
+          }}
+        />
 
-        {/* 최소값 슬라이더 */}
+        {/* min 핸들 */}
         <input
           type="range"
           min={min}
           max={max}
           step={step}
           value={minValue}
-          onChange={handleMinChange}
-          className="absolute top-0 left-0 w-full h-2 opacity-0 cursor-pointer"
+          onChange={(e) => commitMin(Number(e.target.value))}
+          onPointerDown={() => setActive("min")}
+          onPointerUp={() => setActive(null)}
+          className={`${rangeInputClass} ${active === "min" ? "z-[20]" : "z-[10]"}`}
+          aria-label="Minimum value"
         />
 
-        {/* 최대값 슬라이더 */}
+        {/* max 핸들 */}
         <input
           type="range"
           min={min}
           max={max}
           step={step}
           value={maxValue}
-          onChange={handleMaxChange}
-          className="absolute top-0 left-0 w-full h-2 opacity-0 cursor-pointer"
+          onChange={(e) => commitMax(Number(e.target.value))}
+          onPointerDown={() => setActive("max")}
+          onPointerUp={() => setActive(null)}
+          className={`${rangeInputClass} ${active === "max" ? "z-[20]" : "z-[10]"}}`}
+          aria-label="Maximum value"
         />
       </div>
 
-      {/* 현재 값 표시 */}
-      <div className="mt-2 text-lg font-semibold text-gray-700">
+      <div className="d">
         {minValue} - {maxValue}
       </div>
     </div>

@@ -8,7 +8,10 @@ import { useOutHandler } from "./useOutHandler";
 import Link from 'next/link';
 
 const StepItems = cva(
-  `flex items-center w-full md:relative after:content-[""] after:block after:bg-gray-300`,
+  `flex items-center
+  w-full md:w-auto grow md:last:grow-0
+  md:relative after:content-[""] after:block
+  after:bg-gray-300`, // md:w-auto  md:last:grow-0
   {
     variants: {
       status: {
@@ -21,7 +24,7 @@ const StepItems = cva(
 );
 
 const StepPoints = cva(
-  `text-sm xl:text-3xs z-5 w-6 h-6 text-white hover:text-white hover:bg-blue-700 relative flex justify-center items-center rounded-full transition`,
+  `text-sm xl:text-3xs z-5 size-6 md:size-5 lg:size-6 lg:h-6 text-white hover:text-white hover:bg-blue-700 relative flex justify-center items-center rounded-full transition`,
   {
     variants: {
       status: {
@@ -64,8 +67,9 @@ const StepLines = cva(
 );
 
 export interface JStep {
-  label?: string;
-  result?: {active: boolean, label: string | React.ReactNode, url?: string};
+  id: number;
+  label: string;
+  result?: {active: boolean, label: string | React.ReactNode | number, url?: string};
   url?: string;
   isCompleted?: boolean;
 }
@@ -92,8 +96,11 @@ export const JStepBar: FC<JStepBarProps> = ({
 }) => {
   // const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const targetRef = useRef<HTMLDivElement | null>(null);
-  const { isOpen, setIsOpen } = useOutHandler({ targetRef });
+  const layerRef = useRef<HTMLDivElement | null>(null);
+  const layerMobileRef = useRef<HTMLDivElement | null>(null);
+  const { isOpen, setIsOpen } = useOutHandler({
+    refs: [ layerRef, layerMobileRef ]
+  });
 
   const openStepLayer = () => {
     setIsOpen((prev) => !prev);
@@ -103,41 +110,54 @@ export const JStepBar: FC<JStepBarProps> = ({
   //   if (layerRef.current && !layerRef.current.contains(e.target as Node)) {
   //     setIsOpen(false);
   //   }
+  //   if (layerMobileRef.current && !layerMobileRef.current.contains(e.target as Node)) {
+  //     onClose?.();
+  //   }
   // };
 
   // const closeFocusOut = (e: FocusEvent) => {
   //   if (layerRef.current && !layerRef.current.contains(e.relatedTarget as Node)) {
   //     setIsOpen(false);
   //   }
+  //   if (layerMobileRef.current && !layerMobileRef.current.contains(e.relatedTarget as Node)) {
+  //     onClose?.();
+  //   }
   // };
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    }
-
-    checkMobile();
-
-    window.addEventListener('resize', checkMobile);
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    }
-  }, []);
-
   // useEffect(() => {
-  //   const currentRef = layerRef.current;
   //   document.addEventListener('mousedown', openLayerEvent);
+  //   const currentRef = layerRef.current;
   //   if (currentRef) {
   //     currentRef.addEventListener('focusout', closeFocusOut);
   //   }
 
   //   return () => {
   //     document.removeEventListener('mousedown', openLayerEvent);
+  //     const currentRef = layerRef.current;
   //     if (currentRef) {
   //       currentRef.removeEventListener('focusout', closeFocusOut);
   //     }
   //   };
   // }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 768);
+      }
+
+      checkMobile();
+
+      if (!isMobile) {
+        if(isOpen) return setIsOpen(false);
+        if(isOpenLayer) return onClose?.();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobile, isOpen, isOpenLayer, onClose, setIsOpen]);
+
 
   const disabledTxt = [
     {
@@ -160,7 +180,7 @@ export const JStepBar: FC<JStepBarProps> = ({
     },
   ]
 
-  const sizeClass = `md:px-5 md:pr-10 gap-2 md:gap-0`;
+  const sizeClass = `md:px-6 lg:px-[3rem] xl:px-[7.25rem] md:pr-15 gap-2 md:gap-0`;
   const className = `${sizeClass} md:py-3 flex flex-col md:flex-row items-center justify-start md:justify-between relative`; // xl:px-4 xl:py-3 xl:pb-0
   const buttonClass = `${isOpen ? '-rotate-180' : '-rotate-0'} hidden md:block absolute top-1/2 right-0 -translate-y-1/2 w-10 h-10 bg-[length:40%] bg-center bg-no-repeat
   bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_toggle.svg")] transition-all duration-300`;
@@ -168,7 +188,7 @@ export const JStepBar: FC<JStepBarProps> = ({
   return (
     <div className='md:bg-[#FAFBFC] md:border-gray-100 rounded-lg'>
       <div
-        ref={targetRef}
+        ref={layerRef}
         className={`
           ${cn([`
               transition-all duration-300
@@ -178,13 +198,20 @@ export const JStepBar: FC<JStepBarProps> = ({
             'h-dvh bg-gray-1000 bg-opacity-65 md:bg-transparent md:bg-opacity-1' :
             'md:bg-transparent md:bg-opacity-1 transition-all duration-300'
           )}`}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              // console.log('Dimm 클릭됨 → 닫힘');
+              onClose?.();
+            }
+          }}
         >
         <div
+          ref={layerMobileRef}
           className={`
             md:relative absolute left-0 right-0 bottom-0
             p-5 md:p-0
             ${isOpen || isOpenLayer ?
-            'bg-[#FAFBFC] border-gray-100 rounded-tl-lg rounded-tr-lg translate-y-0 transition-all duration-300' :
+            'translate-y-0  bg-[#FAFBFC] border-gray-100 rounded-tl-lg rounded-tr-lg transition-all duration-300' :
             ' translate-y-full md:translate-y-0'}
           `}
         >
@@ -196,21 +223,22 @@ export const JStepBar: FC<JStepBarProps> = ({
           {/* mobile */}
 
           {/* Step */}
-          <div className={`${cn(className, addClass)}`}>
-            {disabled && isMobile ? (
-              isMobile ? (
+          <div className={`relative`}>
+            <div className={`${cn(className, addClass)}`}>
+              {disabled && isMobile ? (
+                // Mobile disabled
                 step.map((item, index) => {
                   return (
                     <div
-                      key={index}
+                      key={item.id}
                       className={cn(StepItems({
                         status: index + 1 === currentStep ? 'completed' : false,
                       }))}
                     >
                       <Link
-                        href={disabled.url || ''}
-                        className={`relative flex flex-wrap items-center z-5 group`}
-                        prefetch={disabled.url?.includes('aspx') ? false : true}
+                        href={item.url || ''}
+                        className={`flex flex-wrap items-center z-5 group`}
+                        prefetch={item.url?.includes('aspx') ? false : true}
                       >
                         <div
                           className={cn(StepPoints({ status: true }))}
@@ -232,63 +260,66 @@ export const JStepBar: FC<JStepBarProps> = ({
                     </div>
                   );
                 })
+                // Mobile disabled
               ) : (
-                <div className='block text-center md:hidden'>
-                  <Link href={disabled.url || ''} className='underline'>{disabled.label}</Link>
-                </div>
-              )
-            ) : (
-              step.map((item, index) => {
-                return (
-                  <div
-                    key={index}
-                    className={cn(StepItems({
-                      status: index + 1 === currentStep ? 'completed' : false,
-                    }))}
-                  >
-                    <Link
-                      href={item.url || ''}
-                      className={`relative flex flex-wrap items-center z-5 group`}
-                      prefetch={item.url?.includes('aspx') ? false : true}
+                step.map((item, index) => {
+                  return (
+                    <div
+                      key={item.id}
+                      className={cn(StepItems({
+                        status: index + 1 === currentStep ? 'completed' : false,
+                      }))}
                     >
-                      <div
-                        className={cn(StepPoints({
-                          status: index + 1 === currentStep ? true : false,
-                        }))}
-                        onClick={() => onStepClick && onStepClick(index)}
-                      >
-                        {index + 1}
-                      </div>
-
-                      <div
-                        className={StepLabels({ base: 'label' })}
-                        onClick={() => onStepClick && onStepClick(index)}
-                      >
-                        <span
-                          className={StepLabels({
-                            label: index + 1 === currentStep ? true : false,
-                          })}
+                      <div className={`flex flex-wrap items-center z-5 group`}>
+                        <div
+                          className={cn(StepPoints({
+                            status: index + 1 === currentStep ? true : false,
+                          }))}
+                          onClick={() => onStepClick && onStepClick(index)}
                         >
-                          <b>{item.label}</b>
-                          <span
-                            className={`
-                              block md:hidden text-xs underline
-                              ${item.result?.active ? 'text-blue-600' : 'text-grayBlue-600'}
-                            `}
-                          >
-                            {item.result?.label}
-                          </span>
-                        </span>
-                      </div>
-                    </Link>
+                          {index + 1}
+                        </div>
 
-                    {index < step.length - 1 && (
-                      <div className={cn(StepLines({ line: true }))}></div>
-                    )}
-                  </div>
-                );
-              })
-            )}
+                        <div
+                          className={StepLabels({ base: 'label' })}
+                          onClick={() => onStepClick && onStepClick(index)}
+                        >
+                          <span
+                            className={cn(StepLabels({
+                              label: index + 1 === currentStep ? true : false,
+                            }))}
+                          >
+
+                            <Link
+                              href={item.id === 4 ? item.result?.active ? item.url || '' : item.result?.url || '' : item.url || ''}
+                              prefetch={item.url?.includes('aspx') ? false : true}
+                            >
+                              {item.label}
+                            </Link>
+
+                            <Link
+                              href={item.id === 4 ? item.result?.active ? item.url || '' : item.result?.url || '' : item.url || ''}
+                              prefetch={item.url?.includes('aspx') ? false : true}
+                              className={`${cn('md:absolute top-14 text-xs md:text-md font-light underline z-[10]',
+                                isOpen && !disabled ? 'md:flex' : 'block md:hidden',
+                                item.result?.active ? 'text-blue-600' : 'text-grayBlue-600'
+                              )}
+                              `}
+                            >
+                              {item.result?.label}
+                            </Link>
+                          </span>
+                        </div>
+                      </div>
+
+                      {index < step.length - 1 && (
+                        <div className={cn(StepLines({ line: true }))}></div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
 
             <button type="button" className={buttonClass} onClick={openStepLayer}>
               <span className="sr-only">스텝 안내 레이어 열기</span>
@@ -300,40 +331,13 @@ export const JStepBar: FC<JStepBarProps> = ({
           <div className="relative hidden md:block">
             <div
               className={`
-                ${isOpen ? 'hidden md:block' : 'hidden'}
-                -mt-.5 absolute left-0 right-0 z-5 px-0 py-5 bg-white border border-gray-100 rounded-lg z-[7]
+                ${isOpen ? 'hidden md:flex' : 'hidden'}
+                -mt-.5 absolute left-0 right-0 z-5 px-0 h-[4rem] justify-center items-center bg-white border border-gray-100 rounded-lg z-[7]
               `}
             >
-              {disabled ? (
+              {disabled && (
                 <div className='text-center'>
                   <Link href={disabled.url || ''} className='underline'>{disabled.label}</Link>
-                </div>
-              ) : (
-                <div className={`${sizeClass} flex justify-center gap-2 md:gap-0`}>
-                  {step.map((item, index) => {
-                    return (
-                      <div key={index} className={`w-1/5 relative mt-4 first:mt-0 md:mt-0 text-center`}>
-                        <Link
-                          href={item.result?.url || ''}
-                          className={`
-                            md:block
-                            flex items-center gap-2
-                            w-full text-center
-                            lg:pl-8 lg:text-left
-                            group hover:underline
-                          `}
-                        >
-                          <span
-                            className={cn(StepLabels({
-                              result: item.result?.active ? true : false,
-                            }), 'text-sm')}
-                          >
-                            {item.result?.label}
-                          </span>
-                        </Link>
-                      </div>
-                    );
-                  })}
                 </div>
               )}
             </div>

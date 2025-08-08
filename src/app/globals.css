@@ -317,3 +317,39 @@ caption {
 .after_center {
   @apply after:absolute after:top-[50%] after:left-[50%] after:transform after:-translate-x-1/2 after:-translate-y-1/2;
 }
+
+
+/* WebKit 트랙/썸 */
+.range-input::-webkit-slider-runnable-track {
+  height: 8px;
+  background: transparent;
+}
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
+  margin-top: -5px; /* 트랙 중앙 정렬 */
+  pointer-events: auto; /* ✅ thumb만 이벤트 허용 */
+  cursor: pointer;
+}
+
+/* Firefox 트랙/썸 */
+.range-input::-moz-range-track {
+  height: 8px;
+  background: transparent;
+}
+.range-input::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
+  pointer-events: auto; /* ✅ thumb만 이벤트 허용 */
+  cursor: pointer;
+}

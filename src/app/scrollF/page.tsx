@@ -58,92 +58,95 @@ function ScrollPageContents() {
           header {isFixed ? 'fix' : 'not fix'}
         </div>
 
-        <div className="h-[9.375rem] bg-gray-500">
-          <JungsiStepBar
-            currentStep={3}
-            step={[
-              {
-                label: '기본정보',
-                url: '#1/',
-                result: { active: false, label: '00년 졸업예정', url: '#result1/' },
-              },
-              {
-                label: '수능인증',
-                url: '#2/',
-                result: { active: true, label: '인증완료' },
-              },
-              {
-                label: '모의지원',
-                url: '#3/',
-                result: {
-                  active: true,
-                  label: '20/30개',
-                  url: '#result3/'
-                },
-              },
-              {
-                label: '합격예측',
-                url: '#4/',
-                result: { active: false, label: '미결제', url: '#result4/' },
-              },
-              {
-                label: '점수공개',
-                url: '#5/',
-                result: { active: true, label: '1/3개', url: '#result5/' },
-              },
-              {
-                label: '점수공개',
-                url: '#5/',
-                result: { active: true, label: '1/3개', url: '#result5/' },
-              },
-            ]}
-            // disabled={{ label: '로그인 후 이용가능합니다.', url: '#goDisabledLink/' }}
-          />
-
-          {/* <JStepBar
-            currentStep={3}
-            step={[
-              {
-                label: '기본정보',
-                url: '#1/',
-                result: { active: false, label: '00년 졸업예정', url: '#result1/' },
-              },
-              {
-                label: '수능인증',
-                url: '#2/',
-                result: { active: true, label: '인증완료' },
-              },
-              {
-                label: '모의지원',
-                url: '#3/',
-                result: {
-                  active: true,
-                  label:
-                  <>
-                    20/30개
-                    <span className='md:block'>불합격 or 발표대기</span>
-                  </>,
-                  url: '#result3/'
-                },
-              },
-              {
-                label: '합격예측',
-                url: '#4/',
-                result: { active: false, label: '미결제', url: '#result4/' },
-              },
-              {
-                label: '점수공개',
-                url: '#5/',
-                result: { active: true, label: '1/3개', url: '#result5/' },
-              },
-            ]}
-          /> */}
-
-        </div>
         <div className="absolute top-[9.375rem] left-0 w-[10px] h-[1px] bg-red-600 z-50"></div>
 
         <div className="flex flex-grow flex-col bg-green-100">
-          <div className='h-[62.5rem]'></div>
+          <div className='h-[62.5rem]'>
+
+          <div className="mx-auto xl:w-[72.5rem] h-[9.375rem]">
+            <JungsiStepBar
+              currentStep={3}
+              step={[
+                {
+                  id: 1,
+                  label: '기본정보',
+                  url: '#1/',
+                  result: { active: false, label: '재학생' },
+                },
+                {
+                  id: 2,
+                  label: '수능인증',
+                  url: '#2/',
+                  result: { active: true, label: '인증완료' },
+                },
+                {
+                  id: 3,
+                  label: '모의지원',
+                  url: '#3/',
+                  result: {
+                    active: false,
+                    label: <>20/20개</>,
+                    url: '#result3/'
+                  },
+                },
+                {
+                  id: 4,
+                  label: '합격예측',
+                  url: '#4/',
+                  result: { active: false, label: '미결제', url: '#completedPayUrl/' },
+                },
+                {
+                  id: 5,
+                  label: '점수공개',
+                  url: '#5/',
+                  result: { active: true, label: <>0/3개</>},
+                },
+              ]}
+              // disabled={{ label: '로그인 후 이용가능합니다.', url: '#goDisabledLink/' }}
+            />
+
+            {/* <JStepBar
+              currentStep={3}
+              step={[
+                {
+                  label: '기본정보',
+                  url: '#1/',
+                  result: { active: false, label: '00년 졸업예정', url: '#result1/' },
+                },
+                {
+                  label: '수능인증',
+                  url: '#2/',
+                  result: { active: true, label: '인증완료' },
+                },
+                {
+                  label: '모의지원',
+                  url: '#3/',
+                  result: {
+                    active: true,
+                    label:
+                    <>
+                      20/30개
+                      <span className='md:block'>불합격 or 발표대기</span>
+                    </>,
+                    url: '#result3/'
+                  },
+                },
+                {
+                  label: '합격예측',
+                  url: '#4/',
+                  result: { active: false, label: '미결제', url: '#result4/' },
+                },
+                {
+                  label: '점수공개',
+                  url: '#5/',
+                  result: { active: true, label: '1/3개', url: '#result5/' },
+                },
+              ]}
+            /> */}
+
+          </div>
+
+          </div>
         </div>
 
         <div ref={targetRef} className="sm:pb-17 md:pb-18 xl:pb-0">

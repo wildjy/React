@@ -1,38 +1,47 @@
 import { useEffect, useState, RefObject  } from "react";
 
 interface UseOutHandlerProps {
-  targetRef: RefObject<HTMLElement>;
+  refs: RefObject<HTMLElement>[];
 }
 
-export function  useOutHandler ({ targetRef }: UseOutHandlerProps) {
+export function  useOutHandler ({ refs }: UseOutHandlerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const isOutSide = (target: EventTarget | null) => {
+    return refs.every((ref) => {
+      return ref.current && !ref.current.contains(target as Node);
+    })
+  }
+
   const openLayerEvent = (e: MouseEvent) => {
-    if (targetRef.current && !targetRef.current.contains(e.target as Node)) {
+    if (isOutSide(e.target)) {
       setIsOpen(false);
     }
   };
 
   const closeFocusOut = (e: FocusEvent) => {
-    if (targetRef.current && !targetRef.current.contains(e.relatedTarget as Node)) {
+    if (isOutSide(e.relatedTarget)) {
       setIsOpen(false);
     }
   };
 
   useEffect(() => {
-    const currentRef = targetRef.current;
     document.addEventListener('mousedown', openLayerEvent);
-    if (currentRef) {
-      currentRef.addEventListener('focusout', closeFocusOut);
-    }
+    refs.forEach(ref => {
+      if (ref.current) {
+        ref.current.addEventListener('focusout', closeFocusOut);
+      }
+    })
 
     return () => {
       document.removeEventListener('mousedown', openLayerEvent);
-      if (currentRef) {
-        currentRef.removeEventListener('focusout', closeFocusOut);
-      }
+      refs.forEach(ref => {
+        if (ref.current) {
+          ref.current.removeEventListener('focusout', closeFocusOut);
+        }
+      })
     };
-  }, [targetRef]);
+  }, [refs]);
 
   return { isOpen, setIsOpen };
 }
