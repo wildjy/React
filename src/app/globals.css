@@ -135,6 +135,7 @@ pre {
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 0.25rem;
   }
+
 }
 
 @layer base {
@@ -172,6 +173,18 @@ table thead th {
 
 table td {
   @apply px-2 py-[0.8125rem] sm:py-4 text-center border border-l-0 border-r-0 first:border-t-gray-700 lg:border-t-0 border-b;
+}
+
+.arrow-cut {
+  @apply w-0 h-0 border-l-[4px]  border-l-transparent border-r-[4px] border-r-transparent;
+}
+
+.arrow-cut-up {
+  @apply border-b-[6px] border-b-[#EC0045];
+}
+
+.arrow-cut-down {
+  @apply border-t-[6px] border-t-blue-700;
 }
 
 .tableType1 {
