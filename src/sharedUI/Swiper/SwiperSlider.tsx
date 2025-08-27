@@ -41,6 +41,7 @@ export const SwiperSlider: React.FC<swiperProps> = ({
   const [contentWidth, setContentWidth] = useState<number>(0);
   const swiperRef = useRef<SwiperClass | null>(null);
   const paginationRef = useRef(null);
+  
   const pagination = {
     el: paginationRef.current,
     clickable: true,

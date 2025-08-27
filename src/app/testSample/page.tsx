@@ -204,10 +204,10 @@ const HighSchoolPage: React.FC = () => {
   useEffect(() => {
     const fetchSlides = [
       { active: '', title: '3.28 학력평가', url: '#/' },
-      { active: 'active', title: '5.8 학력평가', url: '#/' },
+      { active: '', title: '5.8 학력평가', url: '#/' },
       { active: '', title: '6.4 모의평가', url: '#/' },
       { active: '', title: '7.11 학력평가', url: '#/' },
-      { active: '', title: '9.4 모의평가', url: '#/' },
+      { active: 'active', title: '9.4 모의평가', url: '#/' },
       { active: '', title: '10.15 학력평가', url: '#/' },
     ];
     setSlides(fetchSlides);
@@ -678,7 +678,7 @@ const HighSchoolPage: React.FC = () => {
                         ${slide.active ? 'text-blue-700 border-b-[0.313rem] border-blue-700 ' : ''}
                       `}>
                         <>
-                          <p className='text-xl'>{slide.title}</p>
+                          <p className='text-xl'>a{slide.title}</p>
                           {/* <p className='text-0'>{slide.sub_txt}</p> */}
                         </>
                       </a>

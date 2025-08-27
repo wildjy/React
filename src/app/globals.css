@@ -333,6 +333,9 @@ caption {
 
 
 /* WebKit 트랙/썸 */
+.range-input.none {
+  display: none;
+}
 .range-input::-webkit-slider-runnable-track {
   height: 8px;
   background: transparent;
@@ -343,10 +346,10 @@ caption {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #000;
   border: 2px solid #fff;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
-  margin-top: -5px; /* 트랙 중앙 정렬 */
+  margin-top: -5px;
   pointer-events: auto; /* ✅ thumb만 이벤트 허용 */
   cursor: pointer;
 }
@@ -360,7 +363,7 @@ caption {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #000;
   border: 2px solid #fff;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
   pointer-events: auto; /* ✅ thumb만 이벤트 허용 */
