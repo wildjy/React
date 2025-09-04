@@ -81,6 +81,15 @@ const DivVariants = cva(
       },
       // ...props
     },
+
+    compoundVariants: [
+      {
+        size: 'lg',
+        intent: 'primary',
+        className: 'uppercase', // size=lg + intent=primary 일 때만 적용
+      },
+    ],
+
     defaultVariants: {
       size: "",
       color: "",

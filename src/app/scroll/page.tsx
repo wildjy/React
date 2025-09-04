@@ -38,10 +38,13 @@ function ScrollPageContents() {
     };
   }, [setThreshold]);
 
+
   return (
     <div className="h-[1500px]">
       <div className="absolute top-[9.375rem] left-0 w-[10px] h-[1px] bg-red-600 z-50"></div>
-      <div className="h-[9.375rem] bg-gray-100"></div>
+      <div className="h-[9.375rem] bg-gray-100">
+
+      </div>
 
       <ScrollFixed top={`top-0`} fixHeight={'h-[75px]'}>
         <div ref={targetRef} className="flex justify-center items-center w-full h-[75px]">
