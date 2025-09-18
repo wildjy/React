@@ -29,6 +29,22 @@ function ScrollPageContents() {
   const { isFixed, setThreshold, scrollDirection } = useScroll();
   const [ targetTop, setTargetTop ] = useState(0);
   const targetRef = useRef<HTMLInputElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = throttle(() => {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 768);
+      }
+
+      checkMobile();
+    }, 10);
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobile]);
 
   useEffect(() => {
     const setOffsetTop = () => {
@@ -295,32 +311,33 @@ function ScrollPageContents() {
 
         <div className="flex flex-grow flex-col bg-green-100">
           <div className='mx-auto xl:w-[72.5rem] min-h-[62.5rem]'>
-  <ToolTip
-    addClass=""
-    align="left"
-    iconUrl="https://image.jinhak.com/jinhakImages/react/icon/icon_tooltip.svg"
-    onClick={() => {}}
-    type="base"
-  >
-    <p className="text-sm text-gray-700">
-      이것은 툴팁 내용입니다.
-    </p>
-  </ToolTip>
-            <div className=" h-[9.375rem]">
+          <ToolTip
+            addClass=""
+            align="left"
+            iconUrl="https://image.jinhak.com/jinhakImages/react/icon/icon_tooltip.svg"
+            onClick={() => {}}
+            type="base"
+          >
+            <p className="text-sm text-gray-700">
+              이것은 툴팁 내용입니다.
+            </p>
+          </ToolTip>
+
+            <div>
               <JungsiStepBar
                 currentStep={3}
                 step={[
                   {
                     id: 1,
-                    label: '기본정보',
+                    label: {label: '기본정보', userName: 'ㅇㅇㅇ'},
                     url: '#1/',
-                    result: { active: false, label: '재학생' },
+                    result: { active: false, value: '재학생' },
                   },
                   {
                     id: 2,
                     label: '수능인증',
                     url: '#2/',
-                    result: { active: true, label: '인증완료' },
+                    result: { active: true, value: '인증완료' },
                   },
                   {
                     id: 3,
@@ -328,64 +345,64 @@ function ScrollPageContents() {
                     url: '#3/',
                     result: {
                       active: false,
-                      label: <>20/20개</>,
-                      url: '#result3/'
+                      value: 20,
                     },
                   },
                   {
                     id: 4,
                     label: '합격예측',
                     url: '#4/',
-                    result: { active: false, label: '미결제', url: '#completedPayUrl/' },
+                    result: { active: false, value: '미결제', activeUrl: '#completedPayUrl/' },
                   },
                   {
                     id: 5,
                     label: '점수공개',
                     url: '#5/',
-                    result: { active: true, label: <>0/3개</>},
+                    result: { active: false, value: 1, message: '12/29 오픈예정',  disabled: true},
                   },
                 ]}
+                disabledUrl={'#disabled'}
                 // disabled={{ label: '로그인 후 이용가능합니다.', url: '#goDisabledLink/' }}
               />
 
-              {/* <JStepBar
-                currentStep={3}
+              <JStepBar
                 step={[
                   {
-                    label: '기본정보',
+                    id: 1,
+                    label: {label: '기본정보', userName: 'ㅇㅇㅇ'},
                     url: '#1/',
-                    result: { active: false, label: '00년 졸업예정', url: '#result1/' },
+                    result: { active: true, value: '재학생' },
                   },
                   {
+                    id: 2,
                     label: '수능인증',
                     url: '#2/',
-                    result: { active: true, label: '인증완료' },
+                    result: { active: true, value: '인증완료' },
                   },
                   {
+                    id: 3,
                     label: '모의지원',
                     url: '#3/',
                     result: {
-                      active: true,
-                      label:
-                      <>
-                        20/30개
-                        <span className='md:block'>불합격 or 발표대기</span>
-                      </>,
-                      url: '#result3/'
+                      active: false,
+                      value: 20,
                     },
                   },
                   {
+                    id: 4,
                     label: '합격예측',
                     url: '#4/',
-                    result: { active: false, label: '미결제', url: '#result4/' },
+                    result: { active: false, value: '미결제', activeUrl: '#completedPayUrl/' },
                   },
                   {
+                    id: 5,
                     label: '점수공개',
                     url: '#5/',
-                    result: { active: true, label: '1/3개', url: '#result5/' },
+                    result: { active: false, value: 3, disabled: true },
                   },
                 ]}
-              /> */}
+                isMobile={false}
+              />
             </div>
 
             <div className='bg-white'>

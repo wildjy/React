@@ -73,8 +73,8 @@ const DropDownPage = () => {
           <DropDown options={dropOptions.dropOption1} layer min="min-w-[9rem]" value={selectedOption.drop1?.value} onChange={(option) => handleChange('drop1', option)} label="선택 layer"/>
           <DropDown options={dropOptions.dropOption2} disabled={true} type="shadow" size="sm" value={selectedOption.drop2?.value} onChange={(option) => handleChange('drop2', option)} width="w-[13rem]" align="center" label="선택 shadow" />
           <DropDown options={dropOptions.dropOption2} type="ghost" value={selectedOption.drop3?.value} onChange={(option) => handleChange('drop3', option)} />
-          <DropDown options={dropOptions.dropOption3} type="check" size="sm" width="" />
-          <DropDown options={dropOptions.dropOption1} width="min-w-[12rem]" label="선택2" />
+          <DropDown options={dropOptions.dropOption3} type="check" size="sm" />
+          <DropDown options={dropOptions.dropOption1} width="min-w-[10rem]" label="선택2" min="min-w-[20rem]" />
 
           <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} value={"c"} layer width="min-w-[10rem]" align="center" label="선택" />
           <DropDown_Score options={dropOptions.dropOption1} options1={dropOptions.dropOption2} disabled={true} value={"a"} layer width="min-w-[10rem]" align="center" label="선택" />

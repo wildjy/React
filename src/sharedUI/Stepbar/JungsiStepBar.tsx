@@ -1,15 +1,43 @@
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollFloating } from '../Layout/ScrollFloating';
 import { JStepBar, JStep } from './JStepBar';
+import { throttle } from 'lodash';
 
-export const JungsiStepBar = ({ step, currentStep, disabled }: { step: JStep[], currentStep: number, disabled?: {label: string, url: string} }) => {
+export const JungsiStepBar = ({
+  step,
+  currentStep,
+  disabled,
+  disabledUrl
+}: {
+  step: JStep[],
+  currentStep: number,
+  // disabled?: {label: string, url: string},
+  disabledUrl?: string,
+}) => {
+  const [isMobile, setIsMobile] = useState(false);
   const [isMobileOpen, setMobileIsOpen] = useState(false);
 
   const openStepLayer = () => {
     setMobileIsOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    const handleResize = throttle(() => {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 768);
+      }
+
+      checkMobile();
+    }, 10);
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobile]);
+
 
   return (
     <div>
@@ -17,8 +45,9 @@ export const JungsiStepBar = ({ step, currentStep, disabled }: { step: JStep[], 
         currentStep={currentStep}
         isOpenLayer={isMobileOpen}
         onClose={openStepLayer}
-        disabled={disabled}
+        disabledUrl={disabledUrl}
         step={step}
+        isMobile={isMobile}
       />
 
       {/*
