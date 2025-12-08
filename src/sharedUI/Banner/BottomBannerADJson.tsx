@@ -1,17 +1,13 @@
 'use client';
 import { BannerItem } from './BannerItem';
 import Image from 'next/image';
-import { cn } from "../common/cn";
 
-export type sizeType = 'default' | 'full';
-interface BottomADJsonProps {
+interface BottomBannerADJsonProps {
   datas?: BannerItem[];
-  size?: sizeType;
 }
 
-export const BottomADJson: React.FC<BottomADJsonProps> = ({
+export const BottomBannerADJson: React.FC<BottomBannerADJsonProps> = ({
   datas,
-  size = 'default',
 }) => {
   return (
     <div
@@ -25,18 +21,12 @@ export const BottomADJson: React.FC<BottomADJsonProps> = ({
         <div
           key={index}
           className={`
-          ${cn(
-            `
-            w-full lg:w-1/2 h-full
+            flex
+            px-3 md:px-6 xl:px-0
+            py-3 sm:py-4
+            w-full
             items-center justify-center text-center grow
             rounded-md md:rounded-lg overflow-hidden
-            `,
-            size === 'full'
-              ? 'sizeFull.. px-0 py-0 min-h-[4.125rem]'
-              : 'py-3 sm:py-4 px-3 md:px-6 xl:px-0',
-            index === 1 ? 'hidden lg:flex' : 'flex'
-          )}
-
           `}
           style={{
             backgroundColor:
@@ -57,8 +47,8 @@ export const BottomADJson: React.FC<BottomADJsonProps> = ({
               <Image
                 src={items?.badge.imgurl}
                 alt={'대학이미지'}
-                width={Number(items?.badge.imageWidth || 512)} // 512 저장소 배너 기본값
-                height={Number(items?.badge.imageHeight || 64)} // 64 저장소 배너 기본값
+                width={Number(items?.badge.imageWidth)}
+                height={Number(items?.badge.imageHeight)}
               />
             </div>
           </a>

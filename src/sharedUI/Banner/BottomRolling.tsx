@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @nx/enforce-module-boundaries */
 'use client';
 import React, { useState, useEffect } from 'react';
 import { BannerItem } from './BannerItem';
