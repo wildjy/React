@@ -9,9 +9,9 @@ import  LayerPopup  from "../../sharedUI/LayerPopup/LayerPopup";
 
 interface UnivSaveLayerProps {
   active: boolean;
-  value: {min: number, max: number},
+  value: { from: number; to: number },
   onReset?: () => void;
-  onChangeRange?: (newRange: {min: number, max: number}) => void;
+  onChangeRange?: (newRange: {from: number; to: number}) => void;
   onClosed?: () => void;
 }
 
@@ -43,10 +43,10 @@ export default function RecommendRangeLayer ({
               min={0}
               max={9}
               step={0.5}
-              tick
+              tick={{ show: true, length: 9 }}
               input={{ show: true, readonly: true}}
               value={range}
-              onChange={(min, max) => setRange({ min, max })}
+              onChange={(from, to) => setRange({ from, to })}
             />
           </div>
 

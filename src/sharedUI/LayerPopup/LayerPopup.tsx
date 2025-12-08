@@ -1,6 +1,6 @@
 import { cn } from "../common/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import React, { createContext, useContext, HTMLAttributes, useRef, useEffect } from 'react';
+import React, { createContext, useContext, HTMLAttributes, useRef, useEffect, useCallback } from 'react';
 
 type typeMode = 'base' | 'full' | 'scroll' | 'absolute' | 'bottomSheet';
 interface LayerPopupContextType {
@@ -126,18 +126,74 @@ const LayerPopup: LayerPopupType = ({
   const layerRef = useRef<HTMLDivElement | null>(null);
   const isPopupOpen = isOpen ?? false;
 
-  const openMouseEvent = (event: MouseEvent) => {
-    if (outClose && isPopupOpen && layerRef.current && !layerRef.current.contains(event.target as Node)) {
-      OpenEvent?.();
-    }
-  };
+  const openMouseEvent = useCallback(
+    (event: MouseEvent) => {
+      if (
+        outClose &&
+        isPopupOpen &&
+        layerRef.current &&
+        !layerRef.current.contains(event.target as Node)
+      ) {
+        OpenEvent?.();
+      }
+    },
+    [outClose, isPopupOpen, OpenEvent]
+  );
 
+  // 초기 포커스 설정 (isOpen이 true가 될 때 한 번만 실행)
   useEffect(() => {
+    if (!isOpen || !layerRef.current) return;
+
+    const focusable = layerRef.current.querySelectorAll<HTMLElement>(
+      'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+
+    // requestAnimationFrame을 사용하여 렌더링이 완전히 끝난 후 포커스 이동
+    requestAnimationFrame(() => {
+      first?.focus();
+    });
+  }, [isOpen]);
+
+  // 이벤트 리스너 관리
+  useEffect(() => {
+    if (!isOpen || !layerRef.current) return;
+
+    const focusable = layerRef.current.querySelectorAll<HTMLElement>(
+      'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    const trapFocus = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        OpenEvent?.();
+      }
+    };
+
+    document.addEventListener('keydown', trapFocus);
+    document.addEventListener('keydown', handleEsc);
     document.addEventListener('mousedown', openMouseEvent);
     return () => {
       document.removeEventListener('mousedown', openMouseEvent);
+      document.removeEventListener('keydown', trapFocus);
+      document.removeEventListener('keydown', handleEsc);
     };
-  }, [isPopupOpen]);
+  }, [isOpen, openMouseEvent, OpenEvent]);
+
 
   const className = LayerPopupVariants({
     type: type as typeMode | undefined,

@@ -37,14 +37,15 @@ export const RecommendRange: React.FC<RecommendRangeProps> = ({
     return { start, end };
   });
 
-  const handleChangeRange = (newRange:{min: number, max:number}) => {
-    const start = ((newRange.min - min) / (max - min)) * 100;
-    const end = ((newRange.max - min) / (max - min)) * 100;
+  const handleChangeRange = (newRange:{from: number; to: number}) => {
+    const start = ((newRange.from - min) / (max - min)) * 100;
+    const end = ((newRange.to - min) / (max - min)) * 100;
 
-    setRange({ first: newRange});
-    setChangeRange(newRange);
+    const mapped = { min: newRange.from, max: newRange.to };
+    setRange({ first: mapped });
+    setChangeRange(mapped);
     setProgress({start, end});
-    handleResultValue(newRange);
+    handleResultValue(mapped);
 
     openLayer('popup1');
   }
@@ -100,7 +101,7 @@ export const RecommendRange: React.FC<RecommendRangeProps> = ({
 
       <RecommendRangeLayer
         active={isOpen.popup1}
-        value={range.first}
+        value={{ from: range.first.min, to: range.first.max }}
         onReset={handleResetRange}
         onChangeRange={handleChangeRange}
         onClosed={() => setIsOpen((prev) => ({ ...prev, popup1: false }))}

@@ -15,7 +15,10 @@ interface ScrollFixedProps {
   initTop?: number;
 }
 
-export const ScrollProvider: React.FC<ScrollFixedProps> = ({ children, initTop = 0 }) => {
+export const ScrollProvider: React.FC<ScrollFixedProps> = ({
+  children,
+  initTop = 0,
+}) => {
   const [isFixed, setIsFixed] = useState(false);
   const [scrollDirection, setScrollDirection] = useState(false);
   const [threshold, setThreshold] = useState(initTop);
@@ -50,7 +53,26 @@ export const ScrollProvider: React.FC<ScrollFixedProps> = ({ children, initTop =
     };
   }, [threshold]);
 
-  return <ScrollContext.Provider value={{ setThreshold, isFixed, scrollDirection }}>{children}</ScrollContext.Provider>;
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1280) setThreshold(200);
+      else if (window.innerWidth >= 768) setThreshold(100);
+      else setThreshold(50);
+
+      setIsFixed(false);
+      prevScrollYRef.current = window.scrollY;
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <ScrollContext.Provider value={{ setThreshold, isFixed, scrollDirection }}>
+      {children}
+    </ScrollContext.Provider>
+  );
 };
 
 export const useScroll = () => {

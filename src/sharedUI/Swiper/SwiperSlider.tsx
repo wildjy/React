@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 'use client';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -16,12 +17,16 @@ interface swiperProps {
   autoplay?: boolean;
   delay?: number;
   slidesPerView?: number | 'auto';
+  spaceBetween?: number;
   children?: React.ReactNode;
   addClass?: string;
-  id?: number;
+  id?: number | string;
   image?: boolean;
-  arrow?: boolean;
-  pager?: boolean;
+  arrow?:
+    | boolean
+    | { show: boolean; leftAddClass?: string; rightAddClass?: string };
+  allowTouchMove?: boolean;
+  pager?: boolean | { show: boolean; addClass?: string; pagerClass?: string };
   onSlideChange?: (swiper: SwiperClass) => void;
 }
 
@@ -31,23 +36,31 @@ export const SwiperSlider: React.FC<swiperProps> = ({
   autoplay,
   delay = 2500,
   slidesPerView = 'auto',
+  spaceBetween = 0,
   children,
   addClass,
   id,
   arrow = true,
+  allowTouchMove = true,
   pager,
   onSlideChange,
 }) => {
   const [contentWidth, setContentWidth] = useState<number>(0);
   const swiperRef = useRef<SwiperClass | null>(null);
   const paginationRef = useRef(null);
-  
   const pagination = {
     el: paginationRef.current,
     clickable: true,
-    renderBullet: function (index: number, className?: string) {
+    renderBullet: function (index: number) {
       return `
-      <span class="!w-[0.375rem] !h-[0.375rem] md:!w-[0.625rem] md:!h-[0.625rem] ${className}" style="background-color: #272727">
+      <span class="
+      ${cn(
+        `!w-[0.375rem] !h-[0.375rem] md:!w-[0.625rem] md:!h-[0.625rem]
+        !opacity-100 !bg-gray-400 [&.swiper-pagination-bullet-active]:!bg-gray-800
+      `,
+        typeof pager === 'object' && pager.pagerClass
+      )}
+      ">
         <span class="sr-only">' + (index + 1) + '</span>
       </span>`;
     },
@@ -97,7 +110,9 @@ export const SwiperSlider: React.FC<swiperProps> = ({
     const activeSlide = () => {
       const swiperWrap = document.querySelector(`.swipers-${id}`);
       if (swiperWrap) {
-        const slides = swiperWrap.querySelectorAll('.swiper-slide a');
+        const slides = swiperWrap.querySelectorAll(
+          '.swiper-slide a, .swiper-slide button, .swiper-slide div'
+        );
         slides.forEach((slide, index) => {
           if (slide.classList.contains('active')) {
             swiperRef.current?.slideTo(index, 100, false);
@@ -122,10 +137,10 @@ export const SwiperSlider: React.FC<swiperProps> = ({
     },
     centeredSlides: false,
     loop: loop,
-    spaceBetween: 0,
+    spaceBetween: spaceBetween,
     slidesPerView: slidesPerView,
     className: 'visible !important', //  !overflow-visible
-    allowTouchMove: true, // (false-스와이핑안됨)버튼으로만 슬라이드 조작이 가능
+    allowTouchMove: allowTouchMove, // (false-스와이핑안됨)버튼으로만 슬라이드 조작이 가능
     watchOverflow: true, // 슬라이드가 1개 일 때 pager, button 숨김 여부 설정
     observer: true,
     observeParents: true,
@@ -135,7 +150,7 @@ export const SwiperSlider: React.FC<swiperProps> = ({
     },
     pagination: pagination, // {{type: 'fraction', clickable: true }}
     onSwiper: (swiper: SwiperClass) => {
-      // console.log(swiper)
+      // console.log(swiper);
       swiperRef.current = swiper;
       // handleSwiperInit(swiper);
     },
@@ -153,27 +168,77 @@ export const SwiperSlider: React.FC<swiperProps> = ({
 
   return (
     <div className={`${cn(`swipers-${id} relative`, addClass)}`}>
-      <Swiper modules={[FreeMode, Navigation, Pagination, Autoplay]} {...swiperOption}>
+      <Swiper
+        modules={[FreeMode, Navigation, Pagination, Autoplay]}
+        {...swiperOption}
+      >
         {children}
       </Swiper>
 
       <div className={`controller`}>
         <button
-          className={`swiper-${id}-prev absolute top-[50%] transform -translate-y-1/2 left-3 z-10 bg-white rounded-full  ${
-            arrow ? '' : 'hidden'
+          className={`${cn(
+            `
+            disabled:opacity-35 disabled:cursor-default
+            swiper-${id}-prev absolute top-[50%] transform -translate-y-1/2 left-3 z-10 bg-white rounded-full`,
+            typeof arrow === 'object' && arrow.leftAddClass
+          )}
+          ${
+            arrow === true ||
+            (arrow &&
+              typeof arrow === 'object' &&
+              'show' in arrow &&
+              arrow.show)
+              ? ''
+              : 'hidden'
           }`}
         >
-          <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg" className="rotate-180 w-7 md:w-8 lg:w-10" alt="" />
+          <img
+            src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg"
+            className="rotate-180 w-7 md:w-8 lg:w-10"
+            alt=""
+          />
         </button>
-        <div className={` ${pager ? '' : 'hidden'}`}>
-          <div ref={paginationRef} className={`swiper-pagination !-bottom-6 md:!-bottom-9 !z-0`}></div>
+        <div
+          className={`${
+            pager === true ||
+            (pager &&
+              typeof pager === 'object' &&
+              'show' in pager &&
+              pager.show)
+              ? ''
+              : 'hidden'
+          }`}
+        >
+          <div
+            ref={paginationRef}
+            className={`${cn(
+              'swiper-pagination !-bottom-6 md:!-bottom-9 !z-0',
+              typeof pager === 'object' && pager.addClass && pager.addClass
+            )}`}
+          ></div>
         </div>
         <button
-          className={`swiper-${id}-next absolute top-[50%] transform -translate-y-1/2 right-3 z-10 bg-white rounded-full ${
-            arrow ? '' : 'hidden'
+          className={`${cn(
+            `
+            disabled:opacity-35 disabled:cursor-default
+            swiper-${id}-next absolute top-[50%] transform -translate-y-1/2 right-3 z-10 bg-white rounded-full`,
+            typeof arrow === 'object' && arrow.rightAddClass
+          )} ${
+            arrow === true ||
+            (arrow &&
+              typeof arrow === 'object' &&
+              'show' in arrow &&
+              arrow.show)
+              ? ''
+              : 'hidden'
           }`}
         >
-          <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg" className="w-7 md:w-8 lg:w-10" alt="" />
+          <img
+            src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg"
+            className="w-7 md:w-8 lg:w-10"
+            alt=""
+          />
         </button>
       </div>
 

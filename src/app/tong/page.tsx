@@ -161,8 +161,8 @@ export default function TongLayoutTestPage() {
               colors={['#8393D6', '#54AEC8', '#99CC33', '#B2B1B1', 'orange']}
               min={0}
               max={100}
-              myscore={{ score: 87.7, label: '상위' }}
               scores={{
+                show: true,
                 score: [5, 10, 25, 10, 20],
                 total: false,
                 label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2'],
@@ -170,6 +170,27 @@ export default function TongLayoutTestPage() {
                 fontSize: '.8rem',
                 color: '#0069E2'
               }}
+              myscore={{show: true, score: 87.7, label: '상위' }}
+              unit="%"
+            />
+            <DonutGraphCanvas
+              half
+              activeLine={{ show: true, label: true }}
+              tick={{ show: true, length: 10, label: true, fontSize: '.8rem', }}
+              size={{ size: 300, depth: 20, p: 25 }}
+              colors={['#8393D6', '#54AEC8', '#99CC33', '#B2B1B1', 'orange']}
+              min={0}
+              max={100}
+              scores={{
+                show: true,
+                score: 47.6,
+                total: false,
+                label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2'],
+                center: false,
+                fontSize: '.8rem',
+                color: '#0069E2'
+              }}
+              myscore={{show: true, score: 87.7, label: '상위', tick: true }}
               unit="%"
             />
             <DonutGraphCanvas

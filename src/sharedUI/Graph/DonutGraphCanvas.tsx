@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 'use client';
-import { VariantProps } from 'class-variance-authority';
-import { useRef, useState, useEffect, HTMLAttributes } from 'react';
+import { useRef, useEffect } from 'react';
 import { cn } from "../common/cn";
-import { cva } from 'class-variance-authority';
-
 interface DonutGraphCanvasProps {
   activeLine?: {
     show: boolean;
@@ -29,19 +26,25 @@ interface DonutGraphCanvasProps {
   max?: number;
   score?: number;
   scores?: {
-    score: number | number[];
+    show?: boolean;
+    score: number | number[] | undefined;
     total?: boolean;
-    label?: boolean | string | string[] | number[];
+    label?: boolean | string | string[] | number[] | undefined;
+    maxLabel?: boolean;
     center?: boolean;
     legend?: boolean | undefined;
+    legendScore?: boolean | undefined;
     fontSize?: string | undefined;
     color?: string;
+    round?: boolean;
     addClass?: string;
-  }
+  };
   myscore?: {
+    show?: boolean;
     score: number;
     label?: string;
     tick?: boolean;
+    addClass?: string;
   };
   unit?: string;
   addClass?: string;
@@ -59,8 +62,20 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
   color = ['#A4BEF0', '#dddddd'],
   colors = ['#A4BEF0', '#dddddd'],
   score = 0,
-  scores = { score: [], total: false, label: [], center: false, fontSize: '.6rem', color, legend: false },
-  myscore = { score: 0, tick: false },
+  scores = {
+    show: false,
+    score: [],
+    total: false,
+    label: [],
+    maxLabel: false,
+    center: false,
+    fontSize: '.6rem',
+    color,
+    round: false,
+    legend: false,
+    legendScore: false,
+  },
+  myscore = { show: false, score: 0, tick: false },
   unit = '',
   addClass,
   disabled = false,
@@ -82,7 +97,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         ? size.p || 25
         : size.p || 10
       : scores.label
-        ? scores.center // scores.hide &&
+      ? scores.center // scores.hide &&
         ? size.p || 0
         : size.p || 30
       : size.p || 0;
@@ -96,8 +111,12 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     const startHalfAngle = Math.PI;
     const endHalfAngle = startHalfAngle + Math.PI;
     const halfBottomP = 10;
-    const singleScore = typeof scores.score === 'number' || (Array.isArray(scores.score) && scores.score.length === 1);
-    const scoreList = Array.isArray(scores.score) ? scores.score : [scores.score ?? 0];
+    const singleScore =
+      typeof scores.score === 'number' ||
+      (Array.isArray(scores.score) && scores.score.length === 1);
+    const scoreList = Array.isArray(scores.score)
+      ? scores.score
+      : [scores.score ?? 0];
     const totalScore = scoreList.reduce((sum, i) => sum + i, 0);
     const accStandard = scores.total ? totalScore : max || totalScore || 1;
     const accumulated = 0;
@@ -208,7 +227,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
       let accumulated = 0;
 
       scoreList.forEach((s, i) => {
-        if(s < 0 || max <= 0) return;
+        if (s < 0 || max <= 0) return;
 
         const startRatio = accumulated / accStandard;
         const endRatio = (accumulated + s) / accStandard;
@@ -224,12 +243,31 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         const middleAngle = (startAngle + endAngle) / 2;
 
         ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+
+        if (Array.isArray(scores.score) || !scores.round) {
+          ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        } else {
+          const capOffset = lineDepth / 2 / radius;
+
+          ctx.arc(
+            centerX,
+            centerY,
+            radius,
+            startAngle + capOffset,
+            endAngle - capOffset
+          );
+        }
         ctx.strokeStyle = colors[i] ?? colors[0];
         ctx.lineWidth = lineDepth;
+        if (Array.isArray(scores.score) || !scores.round) {
+          ctx.lineJoin = 'round';
+        } else {
+          ctx.lineCap = 'round';
+        }
         ctx.stroke();
-        if(scores.label && Array.isArray(scores.label) || scores.label) { //  !tick.show &&
-          if(scores.center) {
+        if ((scores.label && Array.isArray(scores.label)) || scores.label) {
+          //  !tick.show &&
+          if (scores.center) {
             ctx.font = '.5rem sans-serif';
             // ctx.fillStyle = `${scores.color ?? '#fefefe'}`;
             ctx.shadowColor = 'rgba(0,0,0,1)';
@@ -238,16 +276,26 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
             ctx.shadowOffsetY = 0.5;
           }
           ctx.font = `${scores.fontSize ?? '.6rem'} sans-serif`;
-          ctx.fillStyle = `${scores.center ? scores.color ?? '#fefefe' : scores.color ?? '#272727' }`;
+          ctx.fillStyle = `${
+            scores.center
+              ? scores.color ?? '#fefefe'
+              : scores.color ?? '#272727'
+          }`;
           ctx.shadowColor = 'rgba(0,0,0,0.5)';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
-          if(tick.show || scores.center) {
-            const textRadius = scores.center ? size.depth === size.size / 2 ? radius + 17 : radius : radius - lineDepth / 2 - 13; //radius * 2
+          if (tick.show || scores.center) {
+            const textRadius = scores.center
+              ? size.depth === size.size / 2
+                ? radius + 17
+                : radius
+              : radius - lineDepth / 2 - 13; //radius * 2
             const labelX = centerX + Math.cos(middleAngle) * textRadius;
             const labelY = centerY + Math.sin(middleAngle) * textRadius;
-            ctx.fillText(`${s}${unit}`, labelX, labelY);
+            if (!scores.legendScore) {
+              ctx.fillText(`${s}${unit}`, labelX, labelY);
+            }
           } else {
             const labelX = centerX + Math.cos(middleAngle) * textRadius;
             const labelY = centerY + Math.sin(middleAngle) * textRadius;
@@ -266,7 +314,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     if (tick.show) {
       const tickLength = tick.show ? tick.length || 4 : 0;
       for (let i = half ? 0 : 1; i <= tickLength; i++) {
-        if(max <= 0) return;
+        if (max <= 0) return;
 
         const ratio = i / tickLength;
         const tickLabel = Math.round((i * (max - min)) / tickLength + min);
@@ -359,8 +407,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
       const markX = centerX + Math.cos(myAngle) * markRadius;
       const markY = centerY + Math.sin(myAngle) * markRadius;
       if (!disabled) {
-
-        if(myscore.tick) {
+        if (myscore.tick) {
           ctx.beginPath();
           ctx.moveTo(my_gx1, my_gy1);
           ctx.lineTo(my_gx2, my_gy2);
@@ -400,7 +447,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
   return (
     <div>
       <div
-        className={`${cn('relative', addClass)}`}
+        className={`${cn('mx-auto relative', addClass)}`}
         style={{
           width: graphSize,
           height: half ? graphHalfSize : graphSize,
@@ -427,41 +474,87 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
           {!Array.isArray(scores.score) && (
             <>
               <span className="leading-none">
-                {myscore?.label && <b className="block mb-1">{myscore?.label}</b>}
-                <b>
-                  {disabled ? '**' : myscore.score ? `${myscore.score}${unit}` : `${scores.score}${unit}`}
+                {myscore.show && myscore?.label && (
+                  <b className={`${cn('block mb-1', myscore.addClass)}`}>
+                    {myscore?.label}
+                  </b>
+                )}
+                <b className={`${cn('', scores.addClass || myscore.addClass)}`}>
+                  {disabled
+                    ? '**'
+                    : myscore.score
+                    ? myscore.show
+                      ? `${myscore.score}${unit}`
+                      : null
+                    : scores.show
+                    ? `${scores.score}${unit}`
+                    : null}
                 </b>
               </span>
-              {!myscore.score && (
-                <span className="leading-none">
-                  /{max}
-                  {unit}
-                </span>
-              )}
+              {!scores.maxLabel ||
+                (!myscore.score && (
+                  <span className="leading-none">
+                    /{max}
+                    {unit}
+                  </span>
+                ))}
             </>
           )}
         </div>
       </div>
       {scores.legend && (
-        <div className={`${cn('mt-2 flex flex-wrap justify-center gap-[0.3125rem]', scores.addClass)}`}
-          style={{
-            width: graphSize,
-          }}
+        <div
+          className={`${cn(
+            'mt-2 flex flex-wrap justify-center gap-[0.3125rem]',
+            scores.addClass
+          )}`}
+          style={scores.addClass ? undefined : { width: graphSize }}
         >
-          {Array.isArray(scores.label) ? (
-            scores.label.map((s, i) => (
-              <b key={i} className={`grow flex items-center gap-1 text-2xs`}>
-                <span className={`w-2 h-2 border border-black`} style={{ backgroundColor: colors[i] ?? color[0] }} ></span>
-                {s}
-                {typeof s === 'number' && unit}
-              </b>
-            )
-          )) : (Array.isArray(scores.score) && scores.score.map((s, i) => (
-            <b key={i} className="flex items-center gap-1 mt-2 text-2xs">
-              <span className='w-2 h-2 border border-black' style={{ backgroundColor: colors[i] ?? color[0] }} ></span>
-              <span>{s}{unit}</span>
-            </b>
-          )))}
+          {Array.isArray(scores.label)
+            ? scores.label.map((s, i) => {
+                const score = Array.isArray(scores.score)
+                  ? scores.score[i]
+                  : null;
+
+                return (
+                  <b
+                    key={i}
+                    className={`grow flex items-center gap-1 text-2xs`}
+                  >
+                    <span
+                      className={`w-2 h-2 border border-black`}
+                      style={{ backgroundColor: colors[i] ?? color[0] }}
+                    ></span>
+                    {scores.legendScore ? (
+                      <>
+                        {s}
+                        {typeof s === 'number' && unit}
+                        {typeof s !== 'number' &&
+                          score !== null &&
+                          ` ${score}${unit}`}
+                      </>
+                    ) : (
+                      <>
+                        {s}
+                        {typeof s === 'number' && unit}
+                      </>
+                    )}
+                  </b>
+                );
+              })
+            : Array.isArray(scores.score) &&
+              scores.score.map((s, i) => (
+                <b key={i} className="flex items-center gap-1 mt-2 text-2xs">
+                  <span
+                    className="w-2 h-2 border border-black"
+                    style={{ backgroundColor: colors[i] ?? color[0] }}
+                  ></span>
+                  <span>
+                    {s}
+                    {unit}
+                  </span>
+                </b>
+              ))}
         </div>
       )}
     </div>

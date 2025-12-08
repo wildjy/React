@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { RecommendRange } from "./RecommendRange";
 import { RangeSlider } from "./RangeSlider";
 import { DualRangeSlider } from "../../sharedUI/Range/DualRangeSlider";
+import { from } from '../../../postcss.config.cjs';
 
 const App = () => {
 
@@ -67,7 +68,7 @@ const App = () => {
           min={0}
           max={9}
           step={0.5}
-          value={range.first}
+          value={{ from: range.first.min, to: range.first.max }}
           onChange={(min, max) => setRange((prev) => ({...prev, first: { min, max }}))}
           addClass="w-full"
         />
@@ -82,7 +83,7 @@ const App = () => {
             max={9}
             step={0.5}
             input={{ show: true, readonly: false }}
-            value={range.second}
+            value={{ from: range.second.min, to: range.second.max }}
             onChange={(min, max) => setRange((prev) => ({ ...prev, second: { min, max }}))}
             addClass="w-full"
           />
