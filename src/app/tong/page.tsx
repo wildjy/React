@@ -128,7 +128,7 @@ export default function TongLayoutTestPage() {
               colors={['#FFCA69', '#FFFF00', '#6969FF', '#358035', '#FF9191']}
               min={0}
               max={100}
-              scores={{score: [10, 15, 25, 10, 40], label: true, total: true, legend: true, center: false}}
+              scores={{score: [10, 15, 25, 10, 40], label: ['A', 'B', 'C', 'D', 'E'], total: true, legend: true, legendScore: { show: true, color: 'red', addClass: '' }, center: false}}
               unit="%"
             />
             <DonutGraphCanvas
@@ -147,10 +147,10 @@ export default function TongLayoutTestPage() {
               min={0}
               max={100}
               scores={{
-                score: [15, 10, 25, 10, 40],
+                score: [0.9, 48.3, 10, 0.8, 40, ],
                 total: false,
                 label: ['국어', '사탐/사탐', '사탐/과탐1', '외국어', '과탐2/과탐2'],
-                center: true
+                center: false
               }}
               unit="%"
             />

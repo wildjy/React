@@ -13,12 +13,12 @@ export default {
     },
     mode: {
       control: 'select',
-      options: ['base', 'text', 'rectangle', 'icon'],
+      options: ['base', 'text', 'rectangle', 'icon', 'toggle'],
       description: 'CheckBox의 모드 설정',
     },
     color: {
       control: 'select',
-      options: ['base', 'fill', 'blue', 'lineCheck'],
+      options: ['base', 'fill', 'blue', 'lineCheck', 'switch'],
       description: 'CheckBox의 색상 테마',
     },
     round: {
@@ -81,12 +81,42 @@ IconMode.args = {
   color: 'fill',
 };
 
+// 사각박스
+export const Rectangle = Template.bind({});
+Rectangle.args = {
+  label: '사각박스 체크박스',
+  value: 'checkbox_Rectangle',
+  mode: 'rectangle',
+  round: 'none',
+  size: 'lg',
+};
+
 // 테두리 둥글기 테스트
 export const Rounded = Template.bind({});
 Rounded.args = {
   label: '둥근 테두리 체크박스',
   value: 'checkbox_rounded',
+  mode: 'rectangle',
   round: 'full',
   size: 'lg',
-  color: 'blue',
+};
+
+// 토글 스위치
+export const Toggle = Template.bind({});
+Toggle.args = {
+  label: '토글 스위치',
+  value: 'checkbox_toggle',
+  mode: 'toggle',
+  size: 'auto',
+  color: 'switch',
+  disabled: false,
+};
+export const ToggleDisabled = Template.bind({});
+ToggleDisabled.args = {
+  label: '토글 스위치',
+  value: 'checkbox_toggle_disabled',
+  mode: 'toggle',
+  size: 'auto',
+  color: 'switch',
+  disabled: true,
 };

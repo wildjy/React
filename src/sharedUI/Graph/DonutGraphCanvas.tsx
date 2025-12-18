@@ -2,6 +2,7 @@
 'use client';
 import { useRef, useEffect } from 'react';
 import { cn } from "../common/cn";
+
 interface DonutGraphCanvasProps {
   activeLine?: {
     show: boolean;
@@ -33,7 +34,11 @@ interface DonutGraphCanvasProps {
     maxLabel?: boolean;
     center?: boolean;
     legend?: boolean | undefined;
-    legendScore?: boolean | undefined;
+    legendScore?: {
+      show: boolean | undefined;
+      color?: string;
+      addClass?: string;
+    };
     fontSize?: string | undefined;
     color?: string;
     round?: boolean;
@@ -73,7 +78,8 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     color,
     round: false,
     legend: false,
-    legendScore: false,
+    addClass: '',
+    legendScore: { show: false, color: '#272727', addClass: '' },
   },
   myscore = { show: false, score: 0, tick: false },
   unit = '',
@@ -106,8 +112,8 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     const calcRadius = (size.size - lineDepth - padding * 2) / 2;
     const radius = calcRadius > 0 ? calcRadius : 20;
     const dpr = window.devicePixelRatio || 1;
-    const baseScore = Math.max(0, Math.min(1, (score - min) / (max - min)));
-    const endAngle = baseScore * 2 * Math.PI;
+    // const baseScore = Math.max(0, Math.min(1, (score - min) / (max - min)));
+    // const endAngle = baseScore * 2 * Math.PI;
     const startHalfAngle = Math.PI;
     const endHalfAngle = startHalfAngle + Math.PI;
     const halfBottomP = 10;
@@ -293,9 +299,10 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
               : radius - lineDepth / 2 - 13; //radius * 2
             const labelX = centerX + Math.cos(middleAngle) * textRadius;
             const labelY = centerY + Math.sin(middleAngle) * textRadius;
-            if (!scores.legendScore) {
-              ctx.fillText(`${s}${unit}`, labelX, labelY);
+            if (!scores.legendScore?.show) {
+              //ctx.fillText(`${s}${unit}`, labelX, labelY);
             }
+            ctx.fillText(`${s}${unit}`, labelX, labelY);
           } else {
             const labelX = centerX + Math.cos(middleAngle) * textRadius;
             const labelY = centerY + Math.sin(middleAngle) * textRadius;
@@ -425,7 +432,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     }
 
     if (mark) {
-      const textOffset = 15;
+      // const textOffset = 15;
       const markAngle = half
         ? Math.PI + (Math.PI * (markScore - min)) / (max - min)
         : -Math.PI / 2 + (2 * Math.PI * (markScore - min)) / (max - min);
@@ -442,7 +449,29 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
       ctx.textBaseline = 'middle';
       ctx.fillText(`${markScore}${unit}`, markStart, markEnd);
     }
-  }, [score, scores, min, max, color, colors, size, disabled]);
+  }, [
+    score,
+    scores,
+    min,
+    max,
+    color,
+    colors,
+    size,
+    disabled,
+    tick.show,
+    tick.label,
+    tick.length,
+    tick.fontSize,
+    half,
+    activeLine.show,
+    activeLine.label,
+    myscore.score,
+    myscore.tick,
+    mark,
+    graphSize,
+    graphHalfSize,
+    unit,
+  ]);
 
   return (
     <div>
@@ -517,21 +546,28 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
                   : null;
 
                 return (
-                  <b
+                  <span
                     key={i}
-                    className={`grow flex items-center gap-1 text-2xs`}
+                    className={cn('grow flex items-center gap-1 text-2xs')}
                   >
                     <span
                       className={`w-2 h-2 border border-black`}
                       style={{ backgroundColor: colors[i] ?? color[0] }}
                     ></span>
-                    {scores.legendScore ? (
+                    {scores.legendScore?.show ? (
                       <>
                         {s}
-                        {typeof s === 'number' && unit}
-                        {typeof s !== 'number' &&
-                          score !== null &&
-                          ` ${score}${unit}`}
+                        <span
+                          className={cn('', scores.legendScore?.addClass)}
+                          style={{
+                            color: scores.legendScore?.color || '#272727',
+                          }}
+                        >
+                          {typeof s === 'number' && unit}
+                          {typeof s !== 'number' &&
+                            score !== null &&
+                            ` ${score}${unit}`}
+                        </span>
                       </>
                     ) : (
                       <>
@@ -539,7 +575,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
                         {typeof s === 'number' && unit}
                       </>
                     )}
-                  </b>
+                  </span>
                 );
               })
             : Array.isArray(scores.score) &&

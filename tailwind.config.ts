@@ -6,11 +6,14 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/sharedUI/**/*.{js,ts,jsx,tsx}",
-    "./src/**/*.{js,ts ,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   // important: true,
   theme: {
     extend: {
+      boxShadow: {
+        custom: '2.672px 5.344px 10.688px 0px rgba(0, 0, 0, 0.08)',
+      },
       screens: {
         portrait: { raw: '(orientation: portrait)' }, // 세로 화면
         landscape: { raw: '(orientation: landscape)' }, // 가로 화면
@@ -31,7 +34,7 @@ const config: Config = {
         '3xs': '0.688rem', // 11px
         '2xs': '0.75rem', // 12px
         xs: '0.813rem', // 13px
-        s: '0.875rem', // 14px
+        sm: '0.875rem', // 14px
         md: '0.938rem', // 15px
         // smMobile: '4.166vw', // ~  480 : 20px = 4.166vw
         // mobile: '3.125vw', // ~  768 : 24px = 3.125vw
@@ -81,7 +84,7 @@ const config: Config = {
         16: '4rem', // 64px
         17: '4.25rem', // 68px
         18: '4.5rem', // 72px
-        19: '4.75rem', // 80px
+        19: '4.75rem', // 76px
         20: '5rem', // 80px
         21: '5.25rem', // 84px
       },
@@ -103,6 +106,10 @@ const config: Config = {
         success: '#07bc0c',
         warning: '#f1c40f',
         error: '#FF2361',
+        red: {
+          700: '#EC0045',
+          800: '#EC0045',
+        },
         blue: {
           50: '#eef6ff',
           100: '#bbe1ff',

@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useRef, ChangeEvent } from "react";
 import UseStatePage from './useState';
 import UseEffectPage from './useEffect';
-import { UseItem } from './UseItem';
+import { Itemtype, UseItem } from './UseItem';
 import Conditional from './Conditional';
 import throttle from 'lodash/throttle';
 import debounce from 'lodash/debounce';
@@ -255,6 +255,17 @@ export default function Page() {
   function onCheckTest () {
     setNewMessage((prev) => !prev);
   }
+
+  const useItemList: Itemtype[] = [
+    { id: '1', name: 'Item 1' },
+    { id: '2', name: 'Item 222' },
+    { id: '3', name: 'Item 3' },
+    { id: '4', name: 'Item 44444' },
+    { id: '5', name: 'Item 5' },
+  ];
+
+  const [selectedItems, setSelectedItems] = useState<Itemtype[]>([]);
+  console.log(selectedItems)
   return (
     <>
       <div className="p-6 w-full tablet:w-tablet m-center">
@@ -274,7 +285,14 @@ export default function Page() {
           <button onClick={e => {e.stopPropagation(); alert('22 e.stopPropagation')}}>22</button>
         </div>
 
-        <UseItem />
+        {/* useItem */}
+        <UseItem
+          initText="select item"
+          items={useItemList}
+          limits={5}
+          value={selectedItems}
+          onChange={setSelectedItems}
+        />
 
         <h1 className="mb-5 text-2xl"><b>React Study</b></h1>
         <button className="p-5 py-2 border border-gray-600" onClick={() => handleControl('Su-57')}>click handleControl</button>
