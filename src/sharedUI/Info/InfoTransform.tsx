@@ -5,6 +5,12 @@ import { Arrow } from '../Flag/Arrow';
 import { ToolTip } from "../ToolTip/ToolTip";
 import { cn } from "../common/cn";
 
+/*
+  InfoTransform 컴포넌트는 여러 개의 정보 항목을 나열하여 보여주는 단독 UI 컴포넌트입니다.
+  각 항목은 제목, 점수, 화살표 표시, 툴팁 등의 정보를 포함할 수 있으며,
+  열(column) 또는 행(row) 형태로 배치할 수 있습니다.
+*/
+
 export interface  InfoTransformItemType {
   title: string | { tit: string; sub?: string } | React.ReactNode;
   score?: string | React.ReactNode | [string, boolean] | [string, string];

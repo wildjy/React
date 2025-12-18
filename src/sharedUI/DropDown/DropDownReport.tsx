@@ -9,36 +9,40 @@ type typeMode = 'base' | 'shadow' | 'ghost' | 'ghostShadow' | 'check';
 type alignMode = 'left' | 'center';
 type iconMode = 'base' | 'report';
 
-interface DropDownReportContextProps {
-  type: typeMode;
-  align: alignMode;
-  icon: iconMode;
-  min: string;
-  isOpen: boolean;
-  isFixedScroll: boolean;
-  disabled: boolean;
-  selectValue: string | null;
-  onOpen: () => void;
-  onClose: () => void;
-  onChangeSelect: (option: DropDownReportOptionType) => void;
-}
-
 export interface DropDownReportOptionType {
   value: string;
-  label: { gun?: string; univ?: string; name?: string } | string | React.ReactNode;
+  label:
+    | { gun?: string; univ?: string; name?: string }
+    | string
+    | React.ReactNode;
   disabled?: boolean;
 }
 
-const isLabelObject = (label: DropDownReportOptionType['label']): label is { gun?: string; univ?: string; name?: string } => {
-  return typeof label === 'object' && label !== null && 'univ' in label && 'name' in label;
+const isLabelObject = (
+  label: DropDownReportOptionType['label']
+): label is { gun?: string; univ?: string; name?: string } => {
+  return (
+    typeof label === 'object' &&
+    label !== null &&
+    'univ' in label &&
+    'name' in label
+  );
 };
 
 // Report Common DropDown
-const ReportRenderLabel = (label: DropDownReportOptionType['label'], isInline: boolean, isFixedScroll?: boolean) => {
+const RenderLabel = ({
+  label,
+  isInline,
+  isFixedScroll,
+}: {
+  label: DropDownReportOptionType['label'];
+  isInline: boolean;
+  isFixedScroll?: boolean;
+}) => {
   const gunClass = `
   ${cn(
-    `mr-2
-    min-w-6 h-6 sm:min-w-7 sm:h-7 md:min-w-[1.625rem] md:h-[1.625rem] xl:min-w-9 xl:h-9
+    `mr-1
+    min-w-5 h-5 sm:min-w-6 sm:h-6 md:min-w-[1.625rem] md:h-[1.625rem] xl:min-w-8 xl:h-8
     text-sm sm:text-base md:text-[1.125rem] xl:text-[1.375rem]
     leading-[1.25rem] sm:leading-[1.5rem] md:leading-[1.625rem] xl:leading-[2rem]
     font-normal
@@ -46,7 +50,7 @@ const ReportRenderLabel = (label: DropDownReportOptionType['label'], isInline: b
     isInline || isFixedScroll
       ? `
     inline-block
-    px-1 min-w-[0.75rem] h-[0.75rem] sm:min-w-5 sm:h-5 md:min-w-[1.25rem] md:h-[1.25rem] xl:min-w-6 xl:h-6
+    px-.5 min-w-[0.75rem] h-[0.75rem] sm:min-w-4 sm:h-4 md:min-w-[1.25rem] md:h-[1.25rem] xl:min-w-5 xl:h-5
     text-4xs sm:text-xs md:text-sm xl:text-sm
     leading-[0.75rem] sm:leading-[1rem] md:leading-[1.15rem] xl:leading-[1.25rem]
     text-gray-500
@@ -63,21 +67,32 @@ const ReportRenderLabel = (label: DropDownReportOptionType['label'], isInline: b
   }
   if (isLabelObject(label)) {
     return (
-      <span className={isInline ? /* pl-5 sm:pl-7 md:pl-8  */ 'flex items-center md:block relative' : 'block'}>
+      <span
+        className={
+          isInline
+            ? /* pl-5 sm:pl-7 md:pl-8  */ 'flex items-center md:block relative'
+            : 'block'
+        }
+      >
         <span className="items-center justify-start text-center md:flex">
-          <span className={`${isInline ? '' : 'flex items-center justify-center '}`}>
+          <span
+            className={`${isInline ? '' : 'flex items-center justify-center '}`}
+          >
             {label.gun && <span className={gunClass}>{label.gun}</span>}
             <span>{label.univ}</span>
           </span>
-          <span className={cx(isInline ? 'ml-2' : 'ml-3')}>{label.name}</span>
+          <span className={cx(isInline ? 'ml-1' : 'ml-2')}>{label.name}</span>
         </span>
       </span>
     );
   }
   return label; // ReactNode 처리
 };
+
 // Report Common DropDown
-interface DropDownReportProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>, VariantProps<typeof DropDownReportVariants> {
+interface DropDownReportProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>,
+    VariantProps<typeof DropDownReportVariants> {
   type?: typeMode;
   align?: alignMode;
   icon?: iconMode;
@@ -112,6 +127,20 @@ interface DropOptionProps
   onClose: () => void;
 }
 
+interface DropDownReportContextProps {
+  type: typeMode;
+  align: alignMode;
+  icon: iconMode;
+  min: string;
+  isOpen: boolean;
+  isFixedScroll: boolean;
+  disabled: boolean;
+  selectValue: string | null;
+  onOpen: () => void;
+  onClose: () => void;
+  onChangeSelect: (option: DropDownReportOptionType) => void;
+}
+
 const DropDownContext = createContext<DropDownReportContextProps | null>(null);
 
 const useDropDownContext = () => {
@@ -121,8 +150,6 @@ const useDropDownContext = () => {
   }
   return context;
 };
-
-const dropTopMargin = 'md:mt-2';
 
 const DropDownReportVariants = cva(
   `pe-[1.5rem] sm:pe-[1.8rem] md:pe-[2.5rem] bg-white border border-gray-200
@@ -147,18 +174,18 @@ const DropDownReportVariants = cva(
       size: {
         // pr-[1.2rem]  sm:pr-[1.2rem]
         sm: `pe-[1.2rem]
-          pl-[0.4rem] sm:pl-[0.625rem] lg:pl-4 lg:pr-8
+          pl-[0.4rem] sm:pl-[0.625rem] lg:pl-3 lg:pr-7
           py-[0.1rem] sm:py-[0.3rem] md:py-[0.5rem]
           h-[1.375rem] sm:h-[1.875rem] md:h-[2.5rem] lg:h-[2.375rem]
           text-2xs sm:text-sm md:text-base lg:text-sm
           rounded md:rounded-lg
           after:w-[0.5rem] after:h-[0.25rem]`,
         md: `
-          px-4 py-3
+          px-3 py-2
           pl-[0.4rem] sm:pl-[0.625rem]
           text-2xs sm:text-sm md:text-base
         `,
-        lg: 'px-5 py-4 text-xl',
+        lg: 'px-4 py-3 text-xl',
       },
       align: {
         left: 'text-left',
@@ -200,7 +227,7 @@ const DropDownReportInnerBoxVariants = cva(
     variants: {
       // Report top Fixed
       fixed: {
-        true: `layer.. absolute right-0 bottom-0 flex flex-col w-full max-w-[100dvw] max-h-[50dvh] rounded-none rounded-t-xl md:rounded-lg
+        true: `layer.. absolute right-0 bottom-0 flex flex-col w-full md:min-w-[400px] max-w-[100dvw] max-h-[50dvh] rounded-none rounded-t-xl md:rounded-lg
         md:max-h-[25rem] md:fixed md:bottom-auto md:max-w-auto md:w-max md:top-1/2 left-1/2 -translate-x-1/2 md:-translate-y-1/2
           `, //
         false: `base.. max-h-[10rem]`,
@@ -230,7 +257,6 @@ export const DropDownReport: React.FC<DropDownReportProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectValue, setSelectValue] = useState<string | null>(value || null);
   const dropRef = useRef<HTMLDivElement | null>(null);
-  console.log(dropRef);
   const className = DropDownReportVariants({
     type: type as typeMode | undefined,
     size: size as 'sm' | 'md' | 'lg' | undefined,
@@ -308,30 +334,42 @@ export const DropDownReport: React.FC<DropDownReportProps> = ({
             {...props}
           >
             {/* options에서 value를 찾아서 label 보여주기 */}
-            {ReportRenderLabel(options.find((option) => option.value === selectValue)?.label || label || '선택', false, isFixedScroll)}
+            <RenderLabel
+              label={
+                options.find((option) => option.value === selectValue)?.label ||
+                label ||
+                '선택'
+              }
+              isInline={false}
+              isFixedScroll={isFixedScroll}
+            />
           </div>
-          {/* {isOpen && ( */}
+
           <DropOption
             ref={dropRef}
             isOpen={isOpen}
             options={options}
             custom={custom}
-            resetClass={`${isOpen ? 'opacity-100 visible transition' : 'opacity-0 invisible'}`}
+            resetClass={`${
+              isOpen ? 'opacity-100 visible transition' : 'opacity-0 invisible'
+            }`}
             fixed={fixed}
             onChangeSelect={ChangeSelectValue}
             onClose={OpenEvent}
           />
-          {/* )} */}
         </div>
       </DropDownContext.Provider>
     </>
   );
 };
 
-// eslint-disable-next-line react/display-name
 const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
-  ({ isOpen, children, resetClass, addClass, options = [], custom, fixed }, ref) => {
-    const { type, align, icon, min, onClose, onChangeSelect, selectValue } = useDropDownContext();
+  (
+    { isOpen, children, resetClass, addClass, options = [], custom, fixed },
+    ref
+  ) => {
+    const { type, align, icon, min, onClose, onChangeSelect, selectValue } =
+      useDropDownContext();
 
     const className = DropDownReportBoxVariants({
       fixed: fixed as boolean | undefined,
@@ -353,12 +391,12 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
             'drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]': atShadow,
             'md:!mt-0': fixed,
             [min]: fixed,
-          })} ${dropTopMargin} ${resetClass}`}
+          })} 'md:mt-1' ${resetClass}`}
         >
           <div
             ref={ref}
             className={`${cn(innerClassName, addClass, {
-              'py-3': atShadow,
+              'py-2': atShadow,
               'overflow-hidden': atReport,
               'translate-y-0': fixed && isOpen,
               'translate-y-full': fixed && !isOpen,
@@ -371,17 +409,19 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
               </div>
             ) : (
               <>
-                <div className={`hidden md:flex justify-center pt-5 pb-3 mb-3 border-b`}>
+                <div
+                  className={`hidden md:flex justify-center pt-4 pb-2 mb-2 border-b`}
+                >
                   <Title title="내 저장 목록" />
                 </div>
 
                 <div className="flex-1 overflow-hidden overflow-y-auto scroll">
                   <ul
                     className={`${cn(
-                      'p-3',
+                      'p-2',
                       { 'text-left': align === 'left' },
                       { 'text-center': align === 'center' },
-                      { 'px-4 py-7 md:py-3 md:px-8': fixed },
+                      { 'px-3 py-6 md:py-2 md:px-7': fixed },
                       { 'p-0': atShadow }
                     )}`}
                   >
@@ -392,17 +432,23 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
                           key={option.value}
                           className={`
                       ${cn(
-                        'px-4 py-2 text-xs md:text-sm rounded ',
+                        'px-3 py-1 text-xs md:text-sm rounded ',
                         addClass,
-                        !option.disabled && selectValue === option.value && 'text-blue-800 font-bold',
-                        selectValue === (option.value && atCheck) &&
-                          `pl-7 md:pl-7 text-blue-500
+                        !option.disabled &&
+                          selectValue === option.value &&
+                          'text-blue-800 font-bold',
+                        selectValue === option.value &&
+                          atCheck &&
+                          `pl-6 md:pl-6 text-blue-500
                           bg-no-repeat bg-[length:0.8rem] bg-[0.5rem_center]
                           bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_checked_blue.svg")]`,
-                        fixed && 'text-sm md:text-lg md:font-normal text-center md:text-left',
+                        fixed &&
+                          'text-sm md:text-lg md:font-normal text-center md:text-left',
                         atShadow && 'rounded-none',
                         //disabled
-                        option.disabled ? 'text-disabled-text' : 'md:hover:bg-gray-200 cursor-pointer'
+                        option.disabled
+                          ? 'text-disabled-text'
+                          : 'md:hover:bg-gray-200 cursor-pointer'
                       )}`}
                           onClick={() => {
                             if (!option.disabled) {
@@ -410,14 +456,14 @@ const DropOption = forwardRef<HTMLDivElement, DropOptionProps>(
                             }
                           }}
                         >
-                          {ReportRenderLabel(option.label, true)}
+                          <RenderLabel label={option.label} isInline={true} />
                         </li>
                       );
                     })}
                   </ul>
                 </div>
 
-                <ButtonBox addClass="hidden md:flex md:mt-5 mb-5">
+                <ButtonBox addClass="hidden md:flex md:mt-4 mb-4">
                   <Button mode="tertiary" onClick={onClose}>
                     닫기
                   </Button>

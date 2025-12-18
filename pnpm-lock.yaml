@@ -102,6 +102,9 @@ importers:
       babel-loader:
         specifier: ^10.0.0
         version: 10.0.0(@babel/core@7.28.5)(webpack@5.104.0(esbuild@0.25.12))
+      css-loader:
+        specifier: ^7.1.2
+        version: 7.1.2(webpack@5.104.0(esbuild@0.25.12))
       eslint:
         specifier: ^9.39.2
         version: 9.39.2(jiti@1.21.7)
@@ -111,9 +114,15 @@ importers:
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
+      postcss-loader:
+        specifier: ^8.2.0
+        version: 8.2.0(postcss@8.5.6)(typescript@5.7.3)(webpack@5.104.0(esbuild@0.25.12))
       storybook:
         specifier: ^8.6.14
         version: 8.6.14
+      style-loader:
+        specifier: ^4.0.0
+        version: 4.0.0(webpack@5.104.0(esbuild@0.25.12))
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.19
@@ -2164,6 +2173,18 @@ packages:
       webpack:
         optional: true
 
+  css-loader@7.1.2:
+    resolution: {integrity: sha512-6WvYYn7l/XEGN8Xu2vWFt9nVzrCn39vKyTEFf/ExEyoksJjjSZV/0/35XPlMbpnr6VGhZIUg5yJrL8tGfes/FA==}
+    engines: {node: '>= 18.12.0'}
+    peerDependencies:
+      '@rspack/core': 0.x || 1.x
+      webpack: ^5.27.0
+    peerDependenciesMeta:
+      '@rspack/core':
+        optional: true
+      webpack:
+        optional: true
+
   css-select@4.3.0:
     resolution: {integrity: sha512-wPpOYtnsVontu2mODhA19JrqWxNsfdatRKd64kmpRbQgh1KtItko5sTnEpPdpSaJszTOhEMlF/RPz28qj4HqhQ==}
 
@@ -3966,6 +3987,12 @@ packages:
     engines: {node: '>= 12.13.0'}
     peerDependencies:
       webpack: ^5.0.0
+
+  style-loader@4.0.0:
+    resolution: {integrity: sha512-1V4WqhhZZgjVAVJyt7TdDPZoPBPNHbekX4fWnCJL1yQukhCeZhJySUL+gL9y6sNdN95uEOS83Y55SqHcP7MzLA==}
+    engines: {node: '>= 18.12.0'}
+    peerDependencies:
+      webpack: ^5.27.0
 
   styled-jsx@5.1.6:
     resolution: {integrity: sha512-qSVyDTeMotdvQYoHWLNGwRFJHC+i+ZvdBRYosOFgC+Wg1vx4frN2/RG/NA7SYqqvKNLf39P2LSRA2pu6n0XYZA==}
@@ -6693,6 +6720,19 @@ snapshots:
     optionalDependencies:
       webpack: 5.104.0(esbuild@0.25.12)
 
+  css-loader@7.1.2(webpack@5.104.0(esbuild@0.25.12)):
+    dependencies:
+      icss-utils: 5.1.0(postcss@8.5.6)
+      postcss: 8.5.6
+      postcss-modules-extract-imports: 3.1.0(postcss@8.5.6)
+      postcss-modules-local-by-default: 4.2.0(postcss@8.5.6)
+      postcss-modules-scope: 3.2.1(postcss@8.5.6)
+      postcss-modules-values: 4.0.0(postcss@8.5.6)
+      postcss-value-parser: 4.2.0
+      semver: 7.7.3
+    optionalDependencies:
+      webpack: 5.104.0(esbuild@0.25.12)
+
   css-select@4.3.0:
     dependencies:
       boolbase: 1.0.0
@@ -8799,6 +8839,10 @@ snapshots:
   strip-json-comments@3.1.1: {}
 
   style-loader@3.3.4(webpack@5.104.0(esbuild@0.25.12)):
+    dependencies:
+      webpack: 5.104.0(esbuild@0.25.12)
+
+  style-loader@4.0.0(webpack@5.104.0(esbuild@0.25.12)):
     dependencies:
       webpack: 5.104.0(esbuild@0.25.12)
 

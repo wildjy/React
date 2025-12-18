@@ -1,6 +1,6 @@
 
 "use client";
-import React, { } from "react";
+import React, { JSX } from "react";
 import { cn } from "../common/cn";
 
 interface GradeFlagProps {

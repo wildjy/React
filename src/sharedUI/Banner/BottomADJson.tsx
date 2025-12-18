@@ -13,6 +13,11 @@ export const BottomADJson: React.FC<BottomADJsonProps> = ({
   datas,
   size = 'default',
 }) => {
+
+  const isStorybook =
+  typeof window !== 'undefined' &&
+  window.location.pathname.includes('iframe.html');
+
   return (
     <div
       className={`
@@ -59,6 +64,7 @@ export const BottomADJson: React.FC<BottomADJsonProps> = ({
                 alt={'대학이미지'}
                 width={Number(items?.badge.imageWidth || 512)} // 512 저장소 배너 기본값
                 height={Number(items?.badge.imageHeight || 64)} // 64 저장소 배너 기본값
+                unoptimized={isStorybook}
               />
             </div>
           </a>

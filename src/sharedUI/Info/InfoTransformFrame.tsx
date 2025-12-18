@@ -3,7 +3,10 @@ import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from "../common/cn";
 import { InfoTransformProvider, InfoTransformType } from "./Provider/InfoTransformProvider";
 
-// export type typeMode = InfoTransformType;
+/*
+ InfoTransformFrame 컴포넌트는 InfoTransformItem 컴포넌트를 감싸서 레이아웃을 구성하는 역할을 합니다.
+ 다양한 타입의 프레임을 지원하며, 각 타입에 따라 다른 스타일과 레이아웃을 적용할 수 있습니다.
+*/
 
 const InfoTransformFrameVariants = cva('flex flex-col md:flex-row', {
   variants: {

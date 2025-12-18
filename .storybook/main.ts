@@ -16,9 +16,39 @@ const config: StorybookConfig = {
     options: {},
   },
   webpackFinal: async (config) => {
+    if (config.module?.rules) {
+      // 기본 CSS 룰 제거 (충돌 방지)
+      config.module.rules = config.module.rules.filter((rule: any) => {
+        return !(rule.test instanceof RegExp && rule.test.test("test.css"));
+      });
+    }
+
     config.module = config.module || { rules: [] } as any;
     const rules = (config.module as any).rules || [];
     
+    // PostCSS/Tailwind 처리
+    rules.push({
+      test: /\.css$/,
+      use: [
+        "style-loader",
+        {
+          loader: "css-loader",
+          options: { importLoaders: 1 }
+        },
+        {
+          loader: "postcss-loader",
+          options: {
+            postcssOptions: {
+              plugins: {
+                tailwindcss: {},
+                autoprefixer: {},
+              }
+            }
+          }
+        }
+      ]
+    });
+
     rules.push({
       test: /\.(ts|tsx)$/,
       exclude: /node_modules/,

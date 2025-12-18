@@ -5,6 +5,10 @@ import { useInfoTransformContext } from "./Provider/InfoTransformProvider";
 import { ToolTip } from "../ToolTip/ToolTip";
 import { Arrow } from '../Flag/Arrow';
 
+/*
+  InfoTransformItem 컴포넌트는 개별 정보 항목을 표시하는 UI 컴포넌트입니다.
+  제목, 값, 부가 정보, 화살표 표시, 링크, 툴팁 등을 포함할 수 있습니다.
+*/
 interface InfoTransformItemProps {
   title: string | { tit: string; sub?: string } | React.ReactNode;
   value: string | React.ReactNode;
@@ -67,7 +71,12 @@ export const InfoTransformItem: React.FC<InfoTransformItemProps> = ({
         )}
       `}>
         {url ? <Link href={url} passHref>
-          {isObjectTitle(title) ? title.tit : title}
+          {isObjectTitle(title) ? (
+            <span className=''>
+              <span>{title.tit}</span>
+              <span className='block lg:text-base'>{title.sub}</span>
+            </span>
+          ): title}
         </Link> : (
         <span className={`flex items-start gap-x-1 text-xs sm:text-md lg:text-lg`}>
           {isObjectTitle(title) ? (
