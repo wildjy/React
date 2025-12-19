@@ -1,7 +1,7 @@
 import { cn } from "../common/cn";
 import { cva, cx, VariantProps } from 'class-variance-authority';
 import React, { createContext, HTMLAttributes, useContext, useEffect, forwardRef, useRef, useState } from 'react';
-import { useOutHandler } from "../StepBar/useOutHandler";
+import { useOutHandler } from "../Stepbar/useOutHandler";
 
 type typeMode = 'base' | 'shadow' | 'ghost' | 'ghostShadow' | 'check';
 type alignMode = 'left' | 'center';
