@@ -25,7 +25,7 @@ type Story = StoryObj<typeof BarGraph>;
 
 export const Basic: Story = {
   render: (args) => (
-    <div className="max-w-[32rem] p-6">
+    <div className="p-6">
       <BarGraph {...args} />
     </div>
   ),
@@ -39,7 +39,7 @@ export const Basic: Story = {
 
 export const WithLabels: Story = {
   render: (args) => (
-    <div className="max-w-[32rem] p-6">
+    <div className="p-6">
       <BarGraph {...args} />
     </div>
   ),
@@ -63,7 +63,7 @@ export const WithLabels: Story = {
 
 export const RightDirection: Story = {
   render: (args) => (
-    <div className="max-w-[32rem] p-6">
+    <div className="p-6">
       <BarGraph {...args} />
     </div>
   ),
@@ -84,7 +84,7 @@ export const RightDirection: Story = {
 
 export const TypeVariants: Story = {
   render: () => (
-    <div className="max-w-[32rem] p-6 space-y-6">
+    <div className="p-6 space-y-6">
       <BarGraph min={0} max={100} value={85} score={5} type="base" />
       <BarGraph min={0} max={100} value={10} score={95} type="type_1" />
       <BarGraph min={0} max={100} value={56} score={35} type="type_2" />
