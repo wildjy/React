@@ -5,7 +5,7 @@ import { Container } from "../../sharedUI/Layout/Container";
 import { ContFull  } from "../../sharedUI/Layout/ContFull";
 import { SubTop } from "../../sharedUI/Layout/SubTop";
 import { ContSlot } from "../../sharedUI/Layout/ContSlot";
-import { StepBar } from "../../sharedUI/Stepbar/Stepbar";
+import { StepBar } from "../../sharedUI/StepBar/Stepbar";
 import { GradeTable2 } from "../../sharedUI/Table/GradeInsertTable2";
 import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
 import { ButtonLink } from "../../sharedUI/Button/Link";

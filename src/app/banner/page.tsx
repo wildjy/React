@@ -10,7 +10,7 @@ import { SideADRolling } from "../../sharedUI/Banner/SideADRolling";
 import { BottomJson } from "../../sharedUI/Banner/BottomJson";
 import { BottomRolling } from "../../sharedUI/Banner/BottomRolling";
 
-import { StepBar } from "../../sharedUI/Stepbar/Stepbar";
+import { StepBar } from "../../sharedUI/StepBar/Stepbar";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });

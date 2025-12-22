@@ -8,7 +8,7 @@ import { ContFull  } from "../../../sharedUI/Layout/ContFull";
 import { DownLoadTable } from "..//DownLoadTable";
 import { SubTop } from "../../../sharedUI/Layout/SubTop";
 
-import { StepBar } from "../../../sharedUI/StepBar/StepBar";
+import { StepBar } from "../../../sharedUI/StepBar/Stepbar";
 const SwiperSlider = dynamic(() => import("../../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });
