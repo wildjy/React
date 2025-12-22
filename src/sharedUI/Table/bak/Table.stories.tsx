@@ -2,7 +2,7 @@ import { Meta, StoryFn } from '@storybook/react';
 import Table from '../Table';
 
 export default {
-  title: 'UI/Table',
+  title: 'UI/Table/Table',
   component: Table,
   argTypes: {
     addClass: {
@@ -53,45 +53,44 @@ const Template: StoryFn<typeof Table> = (args) => {
       {/* thW={args.thW} */}
       <Table.Thead>
         <tr>
+          <th>Header 1</th>
           {shouldDouble ? (
-            <th>
-              Header 1<br />
+            <th className={typeClass}>
+              Header 2<br />
               (123){' '}
             </th>
           ) : (
-            <th>Header 1</th>
+            <th className={typeClass}>Header 2</th>
           )}
-          <th className={typeClass}>Header 2</th>
           <th>Header 3</th>
         </tr>
       </Table.Thead>
       {/* tdW={args.tdW} */}
-      <Table.Tbody>
+      <Table.Tbody tdW={args.tdW}>
         {typeClass ? null : (
           <>
             <tr>
               <td>Row 1 1</td>
-              <td className={typeClass}>Row 1 2</td>
-
-              {shouldDouble ? (
-                <td>
-                  Row 1 3<br />
-                  (123){' '}
-                </td>
-              ) : (
-                <td>Row 1</td>
-              )}
+              <td>Row 1 2</td>
+              <td>Row 1 3</td>
             </tr>
             <tr>
               <td>Row 2 1</td>
-              <td className={typeClass}>Row 2 2</td>
+              <td>Row 2 2</td>
               <td>Row 2 3</td>
             </tr>
           </>
         )}
         <tr>
           <td>Row 3 1</td>
-          <td className={typeClass}>Row 3 2</td>
+          {shouldDouble ? (
+            <td className={typeClass}>
+              Row 3 2<br />
+              (123){' '}
+            </td>
+          ) : (
+            <td className={typeClass}>Row 3 2</td>
+          )}
           <td>Row 3 3</td>
         </tr>
       </Table.Tbody>
@@ -106,25 +105,25 @@ Default_1024.args = {
   // tdW: 'w-4/5',
 };
 
-export const tableType_1024 = Template.bind({});
-tableType_1024.args = {
+export const TableType_1024 = Template.bind({});
+TableType_1024.args = {
   addClass: 'TableType',
   // thW: 'w-1/3',
   // tdW: 'w-2/3',
 };
 
-export const tableType_double_1024 = Template.bind({});
-tableType_double_1024.args = {
+export const TableType_double_1024 = Template.bind({});
+TableType_double_1024.args = {
   addClass: 'TableType double',
   // thW: 'w-1/3',
   // tdW: 'w-2/3',
 };
 
-export const tableTypeMd_768 = Template.bind({});
-tableTypeMd_768.args = {
+export const TableTypeMd_768 = Template.bind({});
+TableTypeMd_768.args = {
   addClass: 'tableTypeMd',
-  // thW: 'w-1/3',
-  // tdW: 'w-2/3',
+  // thW: 'w-1/5',
+  // tdW: 'w-4/5',
 };
 
 export const Hide_1024 = Template.bind({});
@@ -134,11 +133,25 @@ Hide_1024.args = {
   // tdW: 'w-2/3',
 };
 
-export const Hide_768 = Template.bind({});
-Hide_768.args = {
+export const HideM_768 = Template.bind({});
+HideM_768.args = {
   addClass: 'hideM',
   // thW: 'w-1/3',
   // tdW: 'w-2/3',
+};
+
+export const TableTypeChangeWidth = Template.bind({});
+TableTypeChangeWidth.args = {
+  addClass: 'TableType',
+  // thW: 'w-1/3',
+  // tdW: 'w-2/3',
+};
+
+export const TableTypeMdChangeWidth = Template.bind({});
+TableTypeMdChangeWidth.args = {
+  addClass: 'tableTypeMd',
+  thW: 'w-1/5',
+  tdW: 'w-4/5',
 };
 
 export const StyledTable = Template.bind({});

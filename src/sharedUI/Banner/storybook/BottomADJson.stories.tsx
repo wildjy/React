@@ -21,7 +21,7 @@ type Story = StoryObj<typeof BottomADJson>;
 const dummyData: BannerItem[] = [
   {
     badge: {
-      imgurl: 'https://navycdn.contentsfeed.com/RealMedia/ads/Creatives/JINHAK/2505_konyang_WMNesinR_564x91_1/konyang220621_564x91.jpg',
+      imgurl: 'https://image.jinhak.com/jinhakImages/banner/storybook/bottom_ad_1.jpg',
       clickUrl:
         'https://wads.jinhak.com/RealMedia/ads/click_lx.ads/U_jinhakinfo/x01',
       openInExternalBrowser: '1',
@@ -32,7 +32,7 @@ const dummyData: BannerItem[] = [
   },
   {
     badge: {
-      imgurl: 'https://navycdn.contentsfeed.com/RealMedia/ads/Creatives/JINHAK/2503_gachon_WMNesinR_564x91_2/gachon210107_564x91r.jpg',
+      imgurl: 'https://image.jinhak.com/jinhakImages/banner/storybook/bottom_ad_2.jpg',
       clickUrl:
         'https://wads.jinhak.com/RealMedia/ads/click_lx.ads/U_jinhakinfo/x02',
       openInExternalBrowser: '1',

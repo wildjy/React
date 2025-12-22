@@ -1,68 +1,98 @@
-import React from 'react';
-import { Meta, StoryFn } from '@storybook/react';
-import { InfoText } from '../InfoText';
+import type { Meta, StoryObj } from '@storybook/react';
+import { InfoText, InfoTextLiClassName } from '../InfoText';
 
-export default {
+const meta: Meta<typeof InfoText> = {
   title: 'UI/Info/InfoText',
   component: InfoText,
+  tags: ['autodocs'],
   argTypes: {
     icon: {
       control: 'select',
-      options: ['bar', 'dot', 'star', 'number'],
-      description: 'Size of the dropdown',},
-    child: { control: 'boolean' },
-    addClass: { control: 'text' },
-    texts: { control: 'object' },
+      options: ['bar', 'star', 'dot', 'number', 'none'],
+    },
   },
-  tags: ['autodocs'],
-} as Meta<typeof InfoText>;
-
-const Template: StoryFn<typeof InfoText> = (args) => <InfoText {...args} />;
-
-// 기본 InfoText
-export const Default = Template.bind({});
-Default.args = {
-  texts: [{ text: '첫 번째 정보 항목입니다.' }, { text: '두 번째 정보 항목입니다.' }, { text: '세 번째 정보 항목입니다.' }],
 };
 
-// 기본 InfoText
-export const Icon = Template.bind({});
-Icon.args = {
-  icon: 'number',
-  texts: [
-    { text: '첫 번째 정보 항목입니다.' },
-    { text: '두 번째 정보 항목입니다.' },
-    { text: '세 번째 정보 항목입니다.' },
-    { text: '네 번째 정보 항목입니다.' },
-    { text: '다섯 번째 정보 항목입니다.' }
-  ],
+export default meta;
+type Story = StoryObj<typeof InfoText>;
+
+const dummyTexts = [
+  { text: '첫 번째 안내 문구입니다.' },
+  { text: '두 번째 안내 문구입니다.' },
+  { text: '세 번째 안내 문구입니다.' },
+];
+
+export const Default: Story = {
+  args: {
+    icon: 'bar',
+    texts: dummyTexts,
+  },
 };
 
-// 사용자 정의 스타일 추가
-export const CustomClass = Template.bind({});
-CustomClass.args = {
-  texts: [{ text: '이것은 사용자 정의 스타일이 적용된 정보입니다.' }, { text: '리스트 스타일을 변경할 수 있습니다.' }],
-  addClass: 'text-blue-500 font-bold',
+export const Star: Story = {
+  args: {
+    icon: 'star',
+    texts: dummyTexts,
+  },
 };
 
-// HTML 태그 사용
-export const WithHTML = Template.bind({});
-WithHTML.args = {
-  texts: [
-    { text: <strong>굵은 텍스트</strong> },
-    { text: <span className="text-red-500">빨간색 텍스트</span> },
-    { text: <em>기울어진 텍스트</em> },
-  ],
+export const Dot: Story = {
+  args: {
+    icon: 'dot',
+    texts: dummyTexts,
+  },
 };
 
-// 자식 요소 직접 전달
-export const WithChildren = Template.bind({});
-WithChildren.args = {
-  children: (
-    <>
-      <li className="text-green-500">※ 이것은 직접 전달된 첫 번째 항목입니다.</li>
-      <li className="text-blue-500">☆ 이것은 직접 전달된 두 번째 항목입니다.</li>
-      <li>▶ 이것은 직접 전달된 세 번째 항목입니다.</li>
-    </>
+export const Number: Story = {
+  args: {
+    icon: 'number',
+    texts: dummyTexts,
+  },
+};
+
+export const None: Story = {
+  args: {
+    icon: 'none',
+    texts: dummyTexts,
+  },
+};
+
+export const WithHTML: Story = {
+  args: {
+    icon: 'dot',
+    texts: [
+      {
+        isHTML: true,
+        text: '<b>HTML</b> 텍스트도 <span style="color:red">정상</span> 동작',
+      },
+      {
+        text: '일반 텍스트도 함께 사용 가능',
+      },
+    ],
+  },
+};
+
+export const CustomClass: Story = {
+  args: {
+    icon: 'star',
+    texts: [
+      {
+        text: '강조 텍스트',
+        addClass: 'text-red-600 font-semibold',
+      },
+      {
+        text: '보조 텍스트',
+        addClass: 'text-gray-400',
+      },
+    ],
+  },
+};
+
+export const ChildrenIcon: Story = {
+  render: () => (
+    <InfoText>
+      <li className={InfoTextLiClassName}>번호형 1</li>
+      <li className={InfoTextLiClassName}>번호형 2</li>
+    </InfoText>
   ),
 };

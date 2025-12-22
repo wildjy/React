@@ -41,7 +41,7 @@ type Story = StoryObj<typeof SideADRolling>;
 const dummyData = [
   {
     badge: {
-      imgurl: 'https://navycdn.contentsfeed.com/RealMedia/ads/Creatives/JINHAK/hongik_2023_0410_173x182/hongik200227_173x182.jpg',
+      imgurl: 'https://image.jinhak.com/jinhakImages/banner/storybook/side_ad_1.jpg',
       clickUrl:
         'https://wads.jinhak.com/RealMedia/ads/click_lx.ads/U_jinhakinfo/22_NesinP/L22/1768910538/x01/JINHAK/hongik_2023_0410_173x182/hongik_2023_0410_173x182.html/792f7563516d67416f573441446d7746',
       openInExternalBrowser: '1',
@@ -49,7 +49,7 @@ const dummyData = [
   },
   {
     badge: {
-      imgurl: 'https://navycdn.contentsfeed.com/RealMedia/ads/Creatives/JINHAK/2408_iajou_173x182/iajou250509_173x18.jpg',
+      imgurl: 'https://image.jinhak.com/jinhakImages/banner/storybook/side_ad_2.jpg',
       clickUrl:
         'https://wads.jinhak.com/RealMedia/ads/click_lx.ads/U_jinhakinfo/22_NesinP/L22/98121208/x01/JINHAK/2408_iajou_173x182/2408_iajou_173x182_240903.html/792f7563516d67416f573441446d7746',
       openInExternalBrowser: '1',

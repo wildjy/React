@@ -1,4 +1,5 @@
-import { cn } from '@hijinhak-front/utils';
+'use client';
+import { cn } from "../common/cn";
 
 interface InfoNumberTextProps {
   datas?: {

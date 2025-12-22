@@ -5,6 +5,8 @@ import { cn } from "../common/cn";
 interface TableProps {
   children?: React.ReactNode;
   caption?: string;
+  thW?: string;
+  tdW?: string;
   addClass?: string;
   typeClass?: string;
 }
@@ -42,12 +44,12 @@ const Colgroup: React.FC<ColgroupProps> = ({ children }) => {
   return <colgroup className={cn(`lg:w-full`)}>{children}</colgroup>;
 };
 
-const Thead: React.FC<TheadProps> = ({ children, thW = 'w-1/5', addClass }) => {
-  return <thead className={cn(`${thW} lg:w-full`, addClass)}>{children}</thead>;
+const Thead: React.FC<TableProps> = ({ children, thW = 'w-1/5', addClass }) => {
+  return <thead className={cn(`lg:w-full`, addClass, thW)}>{children}</thead>;
 };
 
-const Tbody: React.FC<TbodyProps> = ({ children, tdW = 'w-4/5', addClass }) => {
-  return <tbody className={cn(`${tdW} lg:w-full`, addClass)}>{children}</tbody>;
+const Tbody: React.FC<TableProps> = ({ children, tdW = 'w-4/5', addClass }) => {
+  return <tbody className={cn(`lg:w-full`, addClass, tdW)}>{children}</tbody>;
 };
 
 Table.Colgroup = Colgroup;
