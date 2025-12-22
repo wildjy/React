@@ -1,6 +1,13 @@
 'use client';
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import throttle from 'lodash/throttle';
+
+import { throttle } from 'lodash';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 
 interface ScrollContextType {
   isFixed: boolean;
@@ -55,9 +62,10 @@ export const ScrollProvider: React.FC<ScrollFixedProps> = ({
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1280) setThreshold(200);
-      else if (window.innerWidth >= 768) setThreshold(100);
-      else setThreshold(50);
+      if (window.innerWidth >= 1280) setThreshold(200); // xl
+      else if (window.innerWidth >= 1024) setThreshold(200); // lg
+      else if (window.innerWidth >= 768) setThreshold(150); // md
+      else setThreshold(200); // sm 이하
 
       setIsFixed(false);
       prevScrollYRef.current = window.scrollY;

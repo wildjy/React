@@ -8,7 +8,7 @@ import { throttle } from 'lodash';
 export const JungsiStepBar = ({
   step,
   currentStep,
-  disabled,
+  // disabled,
   disabledUrl
 }: {
   step: JStep[],
