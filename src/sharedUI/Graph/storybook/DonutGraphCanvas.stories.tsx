@@ -210,6 +210,7 @@ LegendScore.args = {
   size: { size: 200, depth: 20, p: 25 },
   min: 0,
   max: 100,
+  colors: ['#FFCA69', '#FFFF37', '#6969FF', '#FF9191', '#358035'],
   scores: {
     show: true,
     score: [10, 15, 25, 10, 40],
