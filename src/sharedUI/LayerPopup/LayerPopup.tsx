@@ -1,8 +1,25 @@
-import { cn } from "../common/cn";
-import { cva, VariantProps } from "class-variance-authority";
-import React, { createContext, useContext, HTMLAttributes, useRef, useEffect, useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @nx/enforce-module-boundaries */
+'use client';
+import { cva, VariantProps } from 'class-variance-authority';
+import React, {
+  createContext,
+  HTMLAttributes,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+} from 'react';
+import { cn } from '../common/cn';
 
-type typeMode = 'base' | 'full' | 'scroll' | 'absolute' | 'bottomSheet';
+type typeMode =
+  | 'plain'
+  | 'plainBottomSheet'
+  | 'base'
+  | 'full'
+  | 'scroll'
+  | 'absolute'
+  | 'bottomSheet';
 interface LayerPopupContextType {
   type: typeMode;
 }
@@ -25,17 +42,27 @@ const CloseButtonSize = 'w-8 h-8 sm:w-8 sm:h-8 md:w-10 md:h-10';
 
 const LayerPopupVariants = cva(
   `
-  min-w-[300px] max-w-[90dvw] w-max max-h-[90dvh] xl:max-w-[1280px] absolute flex flex-col
-  scroll overflow-hidden rounded-lg transition-all
+  landscape:max-h-[95dvh]
+  min-w-[300px] max-w-[90dvw] w-max max-h-[90dvh] xl:max-w-[1280px]
+  absolute flex flex-col
+  scroll overflow-hidden rounded-lg
   `,
   {
     variants: {
       type: {
+        plain: 'lg:rounded-2xl',
+        plainBottomSheet: `
+          bottom-0 md:bottom-auto
+          max-w-[100dvw] max-h-[70dvh]
+          translate-y-full md:translate-none
+          transition-all duration-300 md:duration-0
+          rounded-b-none md:rounded-b-lg
+        `,
         base: 'px-5 pt-5 pb-5 md:px-10 md:pt-6 md:pb-12',
         full: `
           w-[100dvw] max-w-[100dvw] md:min-w-[300px] md:max-w-[90dvw] md:w-max
           h-[100dvh] max-h-dvh md:h-auto md:max-h-[90dvh]
-          rounded-none
+          rounded-none md:rounded-lg
         `,
         scroll: 'overflow-hidden',
         absolute: 'max-w-[100dvw] w-auto top-0 left-0 p-5 md:p-8',
@@ -55,6 +82,7 @@ const LayerPopupVariants = cva(
       },
       color: {
         base: 'bg-white',
+        none: 'bg-transparent',
         type1: '',
       },
       round: {
@@ -64,6 +92,18 @@ const LayerPopupVariants = cva(
         xl: 'rounded-xl',
       },
     },
+    compoundVariants: [
+      {
+        type: 'plain',
+        color: 'base',
+        className: 'bg-transparent',
+      },
+      {
+        type: 'plainBottomSheet',
+        color: 'base',
+        className: 'bg-transparent',
+      },
+    ],
     defaultVariants: {
       type: 'base',
       align: 'left',
@@ -73,7 +113,9 @@ const LayerPopupVariants = cva(
   }
 );
 
-interface LayerPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'type' | 'color'>, VariantProps<typeof LayerPopupVariants> {
+interface LayerPopupProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'type' | 'color'>,
+    VariantProps<typeof LayerPopupVariants> {
   type?: typeMode;
   children: React.ReactNode;
   isOpen?: boolean;
@@ -84,6 +126,7 @@ interface LayerPopupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'type' | 
   closeType?: string;
   close?: boolean;
   outClose?: boolean;
+  disabledAutoFocus?: boolean;
 }
 
 interface LayerPopupType extends React.FC<LayerPopupProps> {
@@ -97,7 +140,9 @@ interface PopupHeaderProps {
   addClass?: string;
 }
 
-interface PopupBodyProps extends Omit<HTMLAttributes<HTMLDivElement>, 'type' | 'color'>, VariantProps<typeof LayerPopupVariants> {
+interface PopupBodyProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'type' | 'color'>,
+    VariantProps<typeof LayerPopupVariants> {
   children?: React.ReactNode;
   addClass?: string;
 }
@@ -114,6 +159,7 @@ const LayerPopup: LayerPopupType = ({
   type = 'base',
   align,
   dimm = true,
+  disabledAutoFocus = false,
   closeType = 'default',
   close = true,
   outClose = false,
@@ -142,7 +188,7 @@ const LayerPopup: LayerPopupType = ({
 
   // 초기 포커스 설정 (isOpen이 true가 될 때 한 번만 실행)
   useEffect(() => {
-    if (!isOpen || !layerRef.current) return;
+    if (!isOpen  || disabledAutoFocus || !layerRef.current) return;
 
     const focusable = layerRef.current.querySelectorAll<HTMLElement>(
       'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
@@ -153,7 +199,7 @@ const LayerPopup: LayerPopupType = ({
     requestAnimationFrame(() => {
       first?.focus();
     });
-  }, [isOpen]);
+  }, [isOpen, disabledAutoFocus]);
 
   // 이벤트 리스너 관리
   useEffect(() => {
@@ -194,7 +240,6 @@ const LayerPopup: LayerPopupType = ({
     };
   }, [isOpen, openMouseEvent, OpenEvent]);
 
-
   const className = LayerPopupVariants({
     type: type as typeMode | undefined,
     align: align as 'left' | 'center' | 'right' | undefined,
@@ -204,6 +249,7 @@ const LayerPopup: LayerPopupType = ({
 
   const atAbsolute = type === 'absolute';
   const atBottomSheet = type === 'bottomSheet';
+  const atPlainBottomSheet = type === 'plainBottomSheet';
   // const atFull = type === 'full';
   // ${type === 'full' && dimm ? 'md:bg-gray-1000 md:bg-opacity-65' : 'bg-gray-1000 bg-opacity-65'}
   const atScroll = type === 'scroll';
@@ -212,28 +258,45 @@ const LayerPopup: LayerPopupType = ({
     <LayerPopupContext.Provider value={{ type }}>
       <div
         className={`
-        ${cn('top-0 left-0 transition-all duration-50 md:duration-0', parentClass, {
-          'opacity-100 visible z-[100]': isPopupOpen,
-          'opacity-0 invisible': !isPopupOpen,
-          'fixed w-dvw h-dvh md:w-full flex justify-center items-center': !atAbsolute,
+        ${cn('top-0 left-0', parentClass, {
+          'opacity-100 visible z-[100] transition-all duration-200':
+            isPopupOpen,
+          'opacity-0 invisible z-[49] transition-all duration-200':
+            !isPopupOpen,
+          'fixed w-dvw h-dvh md:w-full flex justify-center items-center':
+            !atAbsolute,
           'w-auto md:w-auto': atAbsolute,
-          'bg-gray-1000 bg-opacity-65': dimm,
+          'bg-gray-1000/[0.65]': dimm,
         })}
         `}
       >
         <div
           ref={layerRef}
-          className={`${cn(className, { 'md:pt-12': !close }, addClass, {
-            'border border-gray-300': dimm,
-            'shadow-lg': !dimm,
-            'translate-y-0 md:translate-none': isPopupOpen && atBottomSheet,
-          })}`}
+          className={`${cn(
+            className,
+            {
+              'md:border border-gray-300': dimm,
+              'shadow-lg': !dimm,
+              'md:pt-12': !close && type !== 'full',
+              'md:pt-0 md:border-0':
+                type === 'plain' || type === 'plainBottomSheet',
+              'translate-y-0 md:translate-none':
+                (isPopupOpen && atBottomSheet) ||
+                (isPopupOpen && atPlainBottomSheet),
+            },
+            addClass
+          )}`}
+          tabIndex={0}
           {...props}
         >
           {close && (
             <div
               className={`flex ${
-                closeType === 'back' ? 'justify-start' : atScroll ? `${ScrollCloseButtonPadding} justify-end` : 'justify-end'
+                closeType === 'back'
+                  ? 'justify-start'
+                  : atScroll
+                  ? `${ScrollCloseButtonPadding} justify-end`
+                  : 'justify-end'
               }`}
             >
               <button
@@ -242,7 +305,9 @@ const LayerPopup: LayerPopupType = ({
                   ${
                     closeType === 'back'
                       ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_back.svg")]'
-                      : 'bg-right bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'
+                      : closeType === 'white'
+                      ? 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close_white.svg")]'
+                      : 'bg-[url("https://image.jinhak.com/jinhakImages/react/icon/icon_close.svg")]'
                   }
                 `}
                 onClick={OpenEvent}
@@ -252,7 +317,15 @@ const LayerPopup: LayerPopupType = ({
             </div>
           )}
 
-          {atScroll ? <div className={`${ScrollBodyPadding} flex flex-col w-full h-full scroll overflow-auto`}>{children}</div> : children}
+          {atScroll ? (
+            <div
+              className={`${ScrollBodyPadding} flex flex-col w-full h-full scroll overflow-auto`}
+            >
+              {children}
+            </div>
+          ) : (
+            children
+          )}
         </div>
       </div>
     </LayerPopupContext.Provider>
@@ -268,9 +341,12 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children, addClass }) => {
 
   return (
     <div
-      className={`${cn('pb-.5 popup-body flex-1 scroll', addClass)}
-      ${type === 'full' ? '' : BodyMargin}
-      ${type === 'scroll' ? '' : 'overflow-hidden overflow-y-auto'}`}
+      className={`${cn(
+        'pb-.5 popup-body flex-1 scroll relative',
+        type !== 'full' && BodyMargin,
+        type !== 'scroll' && 'overflow-hidden overflow-y-auto',
+        addClass
+      )}`}
     >
       {children}
     </div>
@@ -280,7 +356,15 @@ const PopupBody: React.FC<PopupBodyProps> = ({ children, addClass }) => {
 const PopupFooter: React.FC<PopupFooterProps> = ({ children, addClass }) => {
   const { type } = useLayerPopupContext();
 
-  return <div className={`${cn('popup-footer', addClass)} ${type === 'full' ? '' : FooterMargin}`}>{children}</div>;
+  return (
+    <div
+      className={`${cn('popup-footer', addClass)} ${
+        type === 'full' ? '' : FooterMargin
+      }`}
+    >
+      {children}
+    </div>
+  );
 };
 
 LayerPopup.Header = PopupHeader;
@@ -288,4 +372,3 @@ LayerPopup.Body = PopupBody;
 LayerPopup.Footer = PopupFooter;
 
 export default LayerPopup;
-

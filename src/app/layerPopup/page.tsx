@@ -31,7 +31,7 @@ const LayerPopupPage = () => {
           className='inline-block py-3 min-w-[12rem] text-center border border-blue-700 rounded'>팝업(default + outClose) 열기
         </button>
 
-        <LayerPopup align="center" outClose isOpen={isOpenPopup.popup1} OpenEvent={() => handleEventPopup('popup1')}>
+        <LayerPopup align="center" dimm={true} outClose isOpen={isOpenPopup.popup1} OpenEvent={() => handleEventPopup('popup1')}>
           <LayerPopup.Header>
             <p className="text-4xl"><b>Header</b></p>
           </LayerPopup.Header>

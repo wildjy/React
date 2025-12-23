@@ -32,7 +32,7 @@ export default {
 } as Meta<typeof DonutGraphCanvas>;
 
 const Template: StoryFn<typeof DonutGraphCanvas> = (args) => (
-  <div className='flex justify-center items-center'>
+  <div className="flex items-center justify-center">
     <DonutGraphCanvas {...args} />
   </div>
 );
@@ -50,7 +50,7 @@ Default.args = {
   size: { size: 200, depth: 20, p: 35 },
   min: 0,
   max: 100,
-  scores: {score: 75},
+  scores: { score: 75 },
   disabled: false,
 };
 
@@ -59,7 +59,7 @@ Size.args = {
   size: {
     size: 200,
     depth: 5,
-    p: 25
+    p: 25,
   },
   tick: {
     show: true,
@@ -68,7 +68,7 @@ Size.args = {
   },
   min: 0,
   max: 100,
-  scores: {score: 75},
+  scores: { score: 75 },
 };
 
 export const Color = Template.bind({});
@@ -77,7 +77,7 @@ Color.args = {
   colors: ['#84DCCA', '#999'],
   min: 0,
   max: 100,
-  scores: {score: 90},
+  scores: { score: 90 },
 };
 
 export const Unit = Template.bind({});
@@ -86,7 +86,7 @@ Unit.args = {
   size: { size: 200, depth: 20, p: 25 },
   min: 0,
   max: 100,
-  scores: {show: true, score: 75},
+  scores: { show: true, score: 75 },
 };
 
 export const MinMax = Template.bind({});
@@ -99,7 +99,7 @@ MinMax.args = {
   size: { size: 200, depth: 10 },
   min: 720,
   max: 1000,
-  scores: {score: 890},
+  scores: { score: 890 },
 };
 
 export const Half = Template.bind({});
@@ -114,7 +114,7 @@ Half.args = {
   min: 0,
   max: 100,
   myscore: { score: 83, label: '상위' },
-  scores: {score: 56},
+  scores: { score: 56 },
   unit: '%',
   disabled: false,
 };
@@ -129,7 +129,7 @@ Tick.args = {
   size: { size: 200, depth: 10 },
   min: 0,
   max: 100,
-  scores: {score: 45},
+  scores: { score: 45 },
 };
 
 export const TickLabel = Template.bind({});
@@ -143,11 +143,11 @@ TickLabel.args = {
   size: {
     size: 200,
     depth: 10,
-    p: 25
+    p: 25,
   },
   min: 0,
   max: 100,
-  scores: {score: 45},
+  scores: { score: 45 },
 };
 
 export const ActiveLine = Template.bind({});
@@ -157,7 +157,7 @@ ActiveLine.args = {
   size: { size: 200, depth: 15, p: 30 },
   min: 0,
   max: 100,
-  scores: {score: 75},
+  scores: { score: 75 },
   unit: '점',
   disabled: false,
 };
@@ -169,7 +169,7 @@ ActiveLineLabel.args = {
   size: { size: 200, depth: 15, p: 35 },
   min: 0,
   max: 100,
-  scores: {show: true, score: 75},
+  scores: { show: true, score: 75 },
   unit: '점',
   disabled: false,
 };
@@ -187,7 +187,7 @@ MyScore.args = {
   max: 100,
   scores: {
     show: true,
-    score: 34
+    score: 34,
   },
   myscore: {
     show: true,
@@ -219,10 +219,10 @@ LegendScore.args = {
     legendScore: {
       show: true,
       color: 'red',
-      addClass: ''
+      addClass: '',
     },
     center: false,
-    addClass: 'text-left bg-blue-50'
+    addClass: 'text-left bg-blue-50',
   },
   myscore: {
     show: true,
@@ -240,7 +240,7 @@ Accumulate.args = {
   colors: ['#FFCA69', '#FFFF37', '#6969FF', '#FF9191'],
   min: 0,
   max: 100,
-  scores: {score: [8, 3, 27, 31], center: true},
+  scores: { score: [8, 3, 27, 31], center: true },
   unit: '%',
 };
 
@@ -255,7 +255,7 @@ AccumulateLabel.args = {
   colors: ['#FFCA69', '#358035', '#6969FF', '#FF9191'],
   min: 0,
   max: 100,
-  scores: {score: [8, 22, 30, 10], label: true, center: false}, //  label: [8, 3, 27, 31],
+  scores: { score: [8, 22, 30, 10], label: true, center: false }, //  label: [8, 3, 27, 31],
   unit: '%',
 };
 
@@ -270,7 +270,13 @@ AccumulateLegend.args = {
   colors: ['#FFCA69', '#358035', '#6969FF', '#FF9191'],
   min: 0,
   max: 100,
-  scores: {score: [8, 22, 27, 13], label: false, fontSize: '.9rem', center: true, legend: true}, //  label: [8, 3, 27, 31],
+  scores: {
+    score: [8, 22, 27, 13],
+    label: false,
+    fontSize: '.9rem',
+    center: true,
+    legend: true,
+  }, //  label: [8, 3, 27, 31],
   unit: '%',
 };
 
@@ -285,7 +291,13 @@ AccumulateTotal.args = {
   colors: ['#FFCA69', '#FFFF69', '#6969FF', '#FF9191', '#358035'],
   min: 0,
   max: 100,
-  scores: {score: [10, 30, 20, 20, 20], label: false, total: true, center: true, legend: true},
+  scores: {
+    score: [10, 30, 20, 20, 20],
+    label: false,
+    total: true,
+    center: true,
+    legend: true,
+  },
   unit: '%',
 };
 
@@ -300,7 +312,13 @@ AccumulateTotalLabel.args = {
   colors: ['#FFCA69', '#FFFF69', '#6969FF', '#FF9191', '#358035'],
   min: 0,
   max: 100,
-  scores: {score: [10, 30, 20, 20, 20], label: ['국어', '영어', '수학', '과탐', '외국어'], total: true, center: false, legend: true},
+  scores: {
+    score: [10, 30, 20, 20, 20],
+    label: ['국어', '영어', '수학', '과탐', '외국어'],
+    total: true,
+    center: false,
+    legend: true,
+  },
   unit: '%',
 };
 
@@ -316,7 +334,7 @@ AccumulateHalf.args = {
   colors: ['#FFCA69', '#FFFF69', '#6969FF', '#FF9191'],
   min: 0,
   max: 100,
-  scores: {score: [8, 3, 27, 31], center: true, legend: true},
+  scores: { score: [8, 3, 27, 31], center: true, legend: true },
   unit: '%',
 };
 
@@ -331,7 +349,14 @@ AccumulateFull.args = {
   colors: ['#FFCA69', '#20B2AA', '#6969FF', '#FF9191', '#358035'],
   min: 0,
   max: 100,
-  scores: {score: [15, 20, 27, 23, 15], fontSize: '.9rem', color: '#fefefe', label: ['국어', '영어', '수학', '과탐', '외국어'], center: true, legend: true},
+  scores: {
+    score: [15, 20, 27, 23, 15],
+    fontSize: '.9rem',
+    color: '#fefefe',
+    label: ['국어', '영어', '수학', '과탐', '외국어'],
+    center: true,
+    legend: true,
+  },
   unit: '%',
 };
 
@@ -347,7 +372,14 @@ AccumulateHalfFull.args = {
   colors: ['#FFCA69', '#20B2AA', '#6969FF', '#FF9191', '#358035'],
   min: 0,
   max: 100,
-  scores: {score: [15, 20, 27, 23, 15], fontSize: '.8rem', color: '#eee', label: true, center: true, legend: true},
+  scores: {
+    score: [15, 20, 27, 23, 15],
+    fontSize: '.8rem',
+    color: '#eee',
+    label: true,
+    center: true,
+    legend: true,
+  },
   unit: '%',
 };
 
@@ -363,7 +395,7 @@ AddClass.args = {
   size: { size: 200, depth: 20, p: 35 },
   min: 0,
   max: 100,
-  scores: {score: 75},
+  scores: { score: 75 },
   addClass: 'text-2xl text-[red]',
 };
 
@@ -379,6 +411,6 @@ Disabled.args = {
   size: { size: 200, depth: 20, p: 25 },
   min: 0,
   max: 100,
-  scores: {score: 75},
+  scores: { score: 75 },
   disabled: true,
 };

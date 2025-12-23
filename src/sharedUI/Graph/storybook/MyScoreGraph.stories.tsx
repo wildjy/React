@@ -51,7 +51,7 @@ export const CustomTicks: Story = {
       show: true,
       length: 5,
       label: true,
-      addClass: 'text-2xs text-blue-500',
+      addClass: 'text-3xs md:text-md text-blue-500',
     },
   },
 };

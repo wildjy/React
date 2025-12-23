@@ -23,8 +23,8 @@ const CloseButtonSize = 'w-7 h-7 md:w-8 md:h-8';
 
 const BottomSheetVariants = cva(
   `
-  min-w-[300px] max-w-[100dvw] w-max xl:max-w-[1280px] fixed x_center bottom-0 flex flex-col
-  scroll overflow-hidden transition-all duration-500 rounded-t-lg z-[100]
+  min-w-[300px] max-w-[100dvw] w-max xl:max-w-[1280px] fixed left-[50%] transform -translate-x-1/2 bottom-0 flex flex-col
+  scroll overflow-hidden transition-all duration-500 rounded-t-xl sm:rounded-t-2xl z-[100]
   `,
   {
     variants: {
@@ -134,7 +134,7 @@ const BottomSheet: BottomSheetType = ({
       <div
         className={`${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}
         fixed bottom-0 left-0 w-dvw md:w-full transition-all duration-300 z-[100]
-        ${dimm ? 'top-0 h-dvh bg-gray-1000 bg-opacity-65' : ''} `}
+        ${dimm ? 'top-0 h-dvh bg-gray-1000/[0.65]' : ''} `}
       >
         <div
           ref={layerRef}

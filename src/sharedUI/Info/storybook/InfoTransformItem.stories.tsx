@@ -1,15 +1,12 @@
-import { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 import { InfoTransformItem } from '../InfoTransformItem';
 import { InfoTransformFrame } from '../InfoTransformFrame';
 
-const meta: Meta<typeof InfoTransformItem> = {
+export default {
   title: 'UI/InfoTransform/InfoTransformItem',
   component: InfoTransformItem,
   tags: ['autodocs'],
 };
-
-export default meta;
-type Story = StoryObj<typeof InfoTransformItem>;
 
 const dummyItems = [
   {
@@ -56,74 +53,65 @@ const dummyItems = [
   },
 ];
 
-export const Default: Story = {
-  render: () => (
-    <div className="p-6 bg-gray-50">
-      <InfoTransformFrame type="rec">
-        {dummyItems.map((item, index) => (
-          <InfoTransformItem
-            key={index}
-            {...item}
-            index={index}
-            lastIndex={index === dummyItems.length - 1}
-          />
-        ))}
-      </InfoTransformFrame>
-    </div>
-  ),
-};
+export const Default = () => (
+  <div className="p-6 bg-gray-50">
+    <InfoTransformFrame type="rec">
+      {dummyItems.map((item, index) => (
+        <InfoTransformItem
+          key={index}
+          {...item}
+          index={index}
+          lastIndex={index === dummyItems.length - 1}
+        />
+      ))}
+    </InfoTransformFrame>
+  </div>
+);
 
-export const Rec1: Story = {
-  render: () => (
-    <div className="p-6 bg-gray-50">
-      <InfoTransformFrame type="rec1">
-        {dummyItems.map((item, index) => (
-          <InfoTransformItem
-            key={index}
-            {...item}
-            index={index}
-            lastIndex={index === dummyItems.length - 1}
-          />
-        ))}
-      </InfoTransformFrame>
-    </div>
-  ),
-};
+export const Rec1 = () => (
+  <div className="p-6 bg-gray-50">
+    <InfoTransformFrame type="rec1">
+      {dummyItems.map((item, index) => (
+        <InfoTransformItem
+          key={index}
+          {...item}
+          index={index}
+          lastIndex={index === dummyItems.length - 1}
+        />
+      ))}
+    </InfoTransformFrame>
+  </div>
+);
 
-export const RecBg: Story = {
-  render: () => (
-    <div className="p-6 bg-gray-100">
-      <InfoTransformFrame type="recBg">
-        {dummyItems.map((item, index) => (
-          <InfoTransformItem
-            key={index}
-            {...item}
-            index={index}
-            lastIndex={index === dummyItems.length - 1}
-          />
-        ))}
-      </InfoTransformFrame>
-    </div>
-  ),
-};
+export const RecBg = () => (
+  <div className="p-6 bg-gray-100">
+    <InfoTransformFrame type="recBg">
+      {dummyItems.map((item, index) => (
+        <InfoTransformItem
+          key={index}
+          {...item}
+          index={index}
+          lastIndex={index === dummyItems.length - 1}
+        />
+      ))}
+    </InfoTransformFrame>
+  </div>
+);
 
-export const TooltipByIndex: Story = {
-  render: () => (
-    <div className="p-6 bg-gray-50">
-      <InfoTransformFrame type="rec">
-        {dummyItems.map((item, index) => (
-          <InfoTransformItem
-            key={index}
-            {...item}
-            index={index}
-            tooltip={{
-              ...item.tooltip,
-              show: index === 1, // 수학만 tooltip 노출
-            }}
-          />
-        ))}
-      </InfoTransformFrame>
-    </div>
-  ),
-};
-
+export const TooltipByIndex = () => (
+  <div className="p-6 bg-gray-50">
+    <InfoTransformFrame type="rec">
+      {dummyItems.map((item, index) => (
+        <InfoTransformItem
+          key={index}
+          {...item}
+          index={index}
+          tooltip={{
+            ...item.tooltip,
+            show: index === 1, // 수학만 tooltip
+          }}
+        />
+      ))}
+    </InfoTransformFrame>
+  </div>
+);
