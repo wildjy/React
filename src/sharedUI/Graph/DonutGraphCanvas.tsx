@@ -59,7 +59,7 @@ interface DonutGraphCanvasProps {
 export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
   activeLine = { show: false, label: false },
   half = false,
-  tick = { show: false, length: 4, label: false, fontSize: '.6rem' },
+  tick = { show: false, length: 4, label: false },
   mark = false,
   size = { size: 100, depth: 10, p: 0 },
   min = 0,
@@ -74,7 +74,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
     label: [],
     maxLabel: false,
     center: false,
-    fontSize: '.6rem',
+    fontSize: '.7rem',
     color,
     round: false,
     legend: false,
@@ -352,7 +352,7 @@ export const DonutGraphCanvas: React.FC<DonutGraphCanvasProps> = ({
         const labelY = centerY + Math.sin(angle) * adjustedTextRadius;
         if (tick.label) {
           ctx.fillStyle = '#888';
-          ctx.font = `${tick.fontSize ?? '.6rem'} sans-serif`;
+          ctx.font = `${tick.fontSize ?? '.75rem'} sans-serif`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(`${tickLabel}`, labelX, labelY);

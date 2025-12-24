@@ -223,6 +223,7 @@ LegendScore.args = {
       addClass: '',
     },
     center: false,
+    fontSize: '.7rem',
     addClass: 'text-left bg-blue-50',
   },
   myscore: {
