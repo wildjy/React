@@ -10,7 +10,7 @@ import Link from 'next/link';
 const StepItems = cva(
   `
   md:flex-1 flex justify-start md:justify-center items-center text-center
-  w-full md:w-auto
+  w-full md:w-[9rem] lg:w-[11rem] xl:w-[13rem]
   md:relative after:content-[""] after:block
   after:bg-gray-300`,
   {
@@ -69,9 +69,10 @@ export interface JStep {
   label: string | { label: string; userName: string };
   result?: {
     active: boolean;
-    value: string | number;
+    value: string | number | undefined;
     activeUrl?: string;
     message?: string;
+    alertMsg?: string;
     disabled?: boolean;
   };
   url?: string;
@@ -139,27 +140,29 @@ export const JStepBar: FC<JStepBarProps> = ({
 
     if (isActive) {
       if (item.id === 3) return item.result?.value + '/20개';
-      if (item.id === 5) return item.result?.value + '개 완료';
+      if (item.id === 5) return item.result?.value;
       return item.result?.value;
     }
 
     if (item.result?.disabled) return item.result?.message || '오픈예정..';
 
-    return isMobile
-      ? !item.result?.disabled
-        ? disabledPCTxt[item.id - 1]?.label
-        : disabledTxt[item.id - 1]?.label
-      : disabledPCTxt[item.id - 1]?.label;
+    return item.result?.value;
   };
 
   // getHref
   const getHref = (item: JStep, isActive: boolean) => {
-    if (isMobile && disabled) {
-      return disabledUrl || '';
-    } else if (item.id === 4) {
+    // 개별 아이템이 disabled면 빈 문자열 반환
+    if (!item.result?.active && item.result?.disabled) {
+      return '';
+    }
+
+    // id가 4인 경우 activeUrl 사용
+    if (item.id === 4) {
       return isActive ? item.result?.activeUrl || '' : item.url || '';
     }
-    return !item.result?.active && item.result?.disabled ? '' : item.url || '';
+
+    // 기본적으로 item.url 반환
+    return item.url || '';
   };
 
   const openStepLayer = () => {
@@ -246,7 +249,7 @@ export const JStepBar: FC<JStepBarProps> = ({
   return (
     <div
       className={`${cn(
-        'mb-5 md:bg-white md:border md:border-grayBlue-200 rounded-lg',
+        'mb-5 flex justify-center items-center s md:bg-white md:border md:border-grayBlue-200 rounded-lg',
         addClass
       )}`}
     >
@@ -261,7 +264,7 @@ export const JStepBar: FC<JStepBarProps> = ({
             `,
             ],
             isOpen || isOpenLayer
-              ? 'h-dvh bg-gray-1000 bg-opacity-65 md:bg-transparent md:bg-opacity-1'
+              ? 'h-dvh bg-gray-1000/[0.65] md:bg-transparent md:bg-opacity-1'
               : 'md:bg-transparent md:bg-opacity-1 transition-all duration-300'
           )}`}
       >
@@ -296,14 +299,13 @@ export const JStepBar: FC<JStepBarProps> = ({
           <div className="relative">
             <div
               className={`
-                md:py-3 md:px-6 lg:px-[4.375rem]
+                md:py-3
                 gap-y-4 md:gap-y-0
                 flex flex-col md:flex-row items-center justify-start md:justify-between
                 relative
                 after:block after:absolute
                 after:top-[1.375rem] after:bottom-[1.375rem] after:w-[1px]
-                after:left-[0.6rem]
-                md:after:inset-x-[12%] lg:after:inset-x-[15%]
+                after:left-[0.6rem] md:after:left-[4.5rem] md:after:right-[4.5rem] lg:after:left-[6rem] lg:after:right-[6rem]
                 md:after:w-auto md:after:h-[1px] after:bg-[#CBDDF4]
               `}
             >
@@ -341,7 +343,7 @@ export const JStepBar: FC<JStepBarProps> = ({
                       onClick={(e) => {
                         if (!item.result?.active && item.result?.disabled) {
                           e.preventDefault();
-                          alert(item.result?.message);
+                          alert(item.result?.alertMsg || '오픈예정입니다.');
                         }
                       }}
                       className={`
