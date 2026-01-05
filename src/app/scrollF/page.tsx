@@ -298,13 +298,13 @@ function ScrollPageContents() {
       <div className="flex w-full h-full flex-col">
 
         <ScrollFixed top={`top-0`} fixHeight={'h-[75px]'}>
-          <div className="flex justify-center items-center w-full h-[75px]">
-            header {isFixed ? 'fix' : 'not fix'}
+          <div className="flex justify-center items-center w-full h-[75px] bg-gray-50">
+            header target h-75 {isFixed ? 'fix' : 'not fix'}
           </div>
         </ScrollFixed>
 
-        <div className="flex justify-center items-center w-full h-[75px]">
-          header {isFixed ? 'fix' : 'not fix'}
+        <div className="flex justify-center items-center w-full h-[75px] bg-gray-200">
+          header h-75 {isFixed ? 'fix' : 'not fix'}
         </div>
 
         <div className="absolute top-[9.375rem] left-0 w-[10px] h-[1px] bg-red-600 z-50"></div>

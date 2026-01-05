@@ -9,6 +9,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Autoplay, FreeMode, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperProps } from 'swiper/react';
+import { SwiperController } from './SwiperController';
 
 interface swiperProps {
   active?: number;
@@ -16,7 +17,10 @@ interface swiperProps {
   loop?: boolean;
   autoplay?: boolean;
   delay?: number;
+  centeredSlides?: boolean;
   slidesPerView?: number | 'auto';
+  slideWidth?: string; // storybook용 슬라이드 너비 설정
+  slideHeight?: string; // storybook용 슬라이드 높이 설정
   spaceBetween?: number;
   children?: React.ReactNode;
   addClass?: string;
@@ -31,15 +35,17 @@ interface swiperProps {
 }
 
 export const SwiperSlider: React.FC<swiperProps> = ({
+  active = 1,
   freeMode = true,
   loop = false,
-  autoplay,
+  autoplay = false,
   delay = 2500,
+  centeredSlides = false,
   slidesPerView = 'auto',
   spaceBetween = 0,
   children,
   addClass,
-  id,
+  id = 'swiper-default',
   arrow = true,
   allowTouchMove = true,
   pager,
@@ -48,20 +54,21 @@ export const SwiperSlider: React.FC<swiperProps> = ({
   const [contentWidth, setContentWidth] = useState<number>(0);
   const swiperRef = useRef<SwiperClass | null>(null);
   const paginationRef = useRef(null);
+
   const pagination = {
     el: paginationRef.current,
     clickable: true,
-    renderBullet: function (index: number) {
+    renderBullet: function (index: number, className?: string) {
       return `
       <span class="
       ${cn(
-        `!w-[0.375rem] !h-[0.375rem] md:!w-[0.625rem] md:!h-[0.625rem]
+        `${className} flex !w-[0.375rem] !h-[0.375rem] md:!w-[0.625rem] md:!h-[0.625rem]
         !opacity-100 !bg-gray-400 [&.swiper-pagination-bullet-active]:!bg-gray-800
       `,
         typeof pager === 'object' && pager.pagerClass
       )}
       ">
-        <span class="sr-only">' + (index + 1) + '</span>
+        <span class="sr-only">${index + 1}</span>
       </span>`;
     },
   };
@@ -106,22 +113,35 @@ export const SwiperSlider: React.FC<swiperProps> = ({
   }, [contentWidth, autoplay, loop]);
 
   // active slide
-  useLayoutEffect(() => {
-    const activeSlide = () => {
-      const swiperWrap = document.querySelector(`.swipers-${id}`);
-      if (swiperWrap) {
-        const slides = swiperWrap.querySelectorAll(
-          '.swiper-slide a, .swiper-slide button, .swiper-slide div'
-        );
-        slides.forEach((slide, index) => {
-          if (slide.classList.contains('active')) {
-            swiperRef.current?.slideTo(index, 100, false);
-          }
-        });
-      }
-    };
-    activeSlide();
-  }, []);
+  // useLayoutEffect(() => {
+  //   const activeSlide = () => {
+  //     const swiperWrap = document.querySelector(`.swipers-${id}`);
+  //     if (swiperWrap) {
+  //       const slides = swiperWrap.querySelectorAll(
+  //         '.swiper-slide a, .swiper-slide button, .swiper-slide div'
+  //       );
+  //       slides.forEach((slide, index) => {
+  //         if (slide.classList.contains('active')) {
+  //           swiperRef.current?.slideTo(index, 100, false);
+  //         }
+  //       });
+  //     }
+  //   };
+  //   activeSlide();
+  // }, []);
+
+  useEffect(() => {
+    const swiper = swiperRef.current;
+    if (!swiper || typeof active !== 'number') return;
+
+    // loop 대응
+    if (swiper.params.loop) {
+      console.log('loop slideToLoop', active - 1);
+      swiper.slideToLoop(active - 1, 0, false);
+    } else {
+      swiper.slideTo(active - 1, 0, false);
+    }
+  }, [active]);
 
   const multiOnSlideChange = (swiper: SwiperClass) => {
     if (onSlideChange) {
@@ -130,15 +150,20 @@ export const SwiperSlider: React.FC<swiperProps> = ({
   };
 
   const swiperOption: SwiperProps = {
-    freeMode: freeMode,
+    initialSlide: active ?? 0,
+    freeMode: centeredSlides ? false : freeMode,
     autoplay: {
       delay: delay,
       disableOnInteraction: false,
     },
-    centeredSlides: false,
+    centeredSlides: centeredSlides,
     loop: loop,
     spaceBetween: spaceBetween,
     slidesPerView: slidesPerView,
+    keyboard: {
+      enabled: true,
+      // onlyInViewport: true,
+    },
     className: 'visible !important', //  !overflow-visible
     allowTouchMove: allowTouchMove, // (false-스와이핑안됨)버튼으로만 슬라이드 조작이 가능
     watchOverflow: true, // 슬라이드가 1개 일 때 pager, button 숨김 여부 설정
@@ -169,78 +194,18 @@ export const SwiperSlider: React.FC<swiperProps> = ({
   return (
     <div className={`${cn(`swipers-${id} relative`, addClass)}`}>
       <Swiper
-        modules={[FreeMode, Navigation, Pagination, Autoplay]}
         {...swiperOption}
+        modules={[FreeMode, Navigation, Pagination, Autoplay]}
       >
         {children}
       </Swiper>
 
-      <div className={`controller`}>
-        <button
-          className={`${cn(
-            `
-            disabled:opacity-35 disabled:cursor-default
-            swiper-${id}-prev absolute top-[50%] transform -translate-y-1/2 left-3 z-10 bg-white rounded-full`,
-            typeof arrow === 'object' && arrow.leftAddClass
-          )}
-          ${
-            arrow === true ||
-            (arrow &&
-              typeof arrow === 'object' &&
-              'show' in arrow &&
-              arrow.show)
-              ? ''
-              : 'hidden'
-          }`}
-        >
-          <img
-            src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg"
-            className="rotate-180 w-7 md:w-8 lg:w-10"
-            alt=""
-          />
-        </button>
-        <div
-          className={`${
-            pager === true ||
-            (pager &&
-              typeof pager === 'object' &&
-              'show' in pager &&
-              pager.show)
-              ? ''
-              : 'hidden'
-          }`}
-        >
-          <div
-            ref={paginationRef}
-            className={`${cn(
-              'swiper-pagination !-bottom-6 md:!-bottom-9 !z-0',
-              typeof pager === 'object' && pager.addClass && pager.addClass
-            )}`}
-          ></div>
-        </div>
-        <button
-          className={`${cn(
-            `
-            disabled:opacity-35 disabled:cursor-default
-            swiper-${id}-next absolute top-[50%] transform -translate-y-1/2 right-3 z-10 bg-white rounded-full`,
-            typeof arrow === 'object' && arrow.rightAddClass
-          )} ${
-            arrow === true ||
-            (arrow &&
-              typeof arrow === 'object' &&
-              'show' in arrow &&
-              arrow.show)
-              ? ''
-              : 'hidden'
-          }`}
-        >
-          <img
-            src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg"
-            className="w-7 md:w-8 lg:w-10"
-            alt=""
-          />
-        </button>
-      </div>
+      <SwiperController
+        ref={paginationRef}
+        id={id}
+        pager={pager}
+        arrow={arrow}
+      />
 
       {/* <p>swiper-slide-active index: {swiperIndex}</p> */}
       {/* <p>a Active index: {activeIndex}</p> */}

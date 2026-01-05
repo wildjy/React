@@ -193,7 +193,7 @@ export const CheckBox: FC<InputProps> = ({
       <div
         className={cn(className, addClass, {
           // disabled setting
-          'text-disabled-text bg-disabled-bg border-disabled-line peer-checked:border-disabled-line after:bg-gray-300 peer-checked:after:bg-gray-300 cursor-default':
+          'text-disabled-text bg-disabled-bg border-disabled-line peer-checked:border-disabled-line after:bg-gray-300 peer-checked:after:bg-gray-300 cursor-not-allowed':
             disabled,
           'opacity-75 bg-[10%_center] peer-checked:bg-[10%_center] ':
             disabled && atIcon,

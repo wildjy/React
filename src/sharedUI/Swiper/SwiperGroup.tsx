@@ -7,26 +7,43 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Autoplay, FreeMode, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperProps } from 'swiper/react';
+import { SwiperController } from './SwiperController';
 
 interface swiperProps {
+  active?: number;
   freeMode?: boolean;
-  slidesPerView?: string | number;
+  loop?: boolean;
+  autoplay?: boolean;
+  delay?: number;
+  slidesPerView?: number | 'auto';
+  slideWidth?: string; // storybook용 슬라이드 너비 설정
+  slideHeight?: string; // storybook용 슬라이드 높이 설정
+  spaceBetween?: number;
   children?: React.ReactNode;
   addClass?: string;
-  id?: number;
+  id?: number | string;
   image?: boolean;
-  arrow?: boolean;
-  pager?: boolean;
+  arrow?:
+    | boolean
+    | { show: boolean; leftAddClass?: string; rightAddClass?: string };
+  allowTouchMove?: boolean;
+  pager?: boolean | { show: boolean; addClass?: string; pagerClass?: string };
   onSlideChange?: (swiper: SwiperClass) => void;
 }
 
 export const SwiperGroup: React.FC<swiperProps> = ({
+  active,
   freeMode = true,
+  loop = false,
+  autoplay,
+  delay = 2500,
   slidesPerView = 'auto',
+  spaceBetween = 0,
   children,
   addClass,
-  id,
+  id = 'swiper-default',
   arrow = true,
+  allowTouchMove = true,
   pager,
   onSlideChange,
 }) => {
@@ -45,9 +62,17 @@ export const SwiperGroup: React.FC<swiperProps> = ({
   };
 
   useEffect(() => {
+    const swiper = swiperRef.current;
+
     const timer = setTimeout(() => {
       swiperRef.current?.update();
     }, 50);
+
+    if (!swiper || !swiper.autoplay) return;
+
+    if (swiper.autoplay) {
+      autoplay ? swiper.autoplay.start() : swiper.autoplay.stop();
+    }
 
     const handleResize = () => {
       if (swiperRef.current) {
@@ -65,23 +90,19 @@ export const SwiperGroup: React.FC<swiperProps> = ({
       window.removeEventListener('resize', handleResize);
       clearTimeout(timer);
     };
-  }, [contentWidth]);
+  }, [contentWidth, autoplay, loop]);
 
-  // active slide
-  useLayoutEffect(() => {
-    const activeSlide = () => {
-      const swiperWrap = document.querySelector(`.swipers-${id}`);
-      if (swiperWrap) {
-        const slides = swiperWrap.querySelectorAll('.swiper-slide a');
-        slides.forEach((slide, index) => {
-          if (slide.classList.contains('active')) {
-            swiperRef.current?.slideTo(index, 100, false);
-          }
-        });
-      }
-    };
-    activeSlide();
-  }, []);
+  useEffect(() => {
+    const swiper = swiperRef.current;
+    if (!swiper || typeof active !== 'number') return;
+
+    // loop 대응
+    if (swiper.params.loop) {
+      swiper.slideToLoop(active - 1, 0, false);
+    } else {
+      swiper.slideTo(active - 1, 0, false);
+    }
+  }, [active]);
 
   const multiOnSlideChange = (swiper: SwiperClass) => {
     if (onSlideChange) {
@@ -90,14 +111,21 @@ export const SwiperGroup: React.FC<swiperProps> = ({
   };
 
   const swiperOption: SwiperProps = {
+    initialSlide: active ?? 0,
     freeMode: freeMode,
-    autoplay: false, // { delay: 2500 }
+    autoplay: {
+      delay: delay,
+      disableOnInteraction: false,
+    },
     centeredSlides: false,
-    loop: false,
-    spaceBetween: 0,
+    loop: loop,
+    spaceBetween: spaceBetween,
     slidesPerView: slidesPerView,
-    className: 'visible !important',
-    watchOverflow: true,
+    className: 'visible !important', //  !overflow-visible
+    allowTouchMove: allowTouchMove, // (false-스와이핑안됨)버튼으로만 슬라이드 조작이 가능
+    watchOverflow: true, // 슬라이드가 1개 일 때 pager, button 숨김 여부 설정
+    observer: true,
+    observeParents: true,
     navigation: {
       nextEl: `.swiper-${id}-next`,
       prevEl: `.swiper-${id}-prev`,
@@ -107,6 +135,22 @@ export const SwiperGroup: React.FC<swiperProps> = ({
       // console.log(swiper)
       swiperRef.current = swiper;
       // handleSwiperInit(swiper);
+      // ⭐ navigation 다시 연결
+      if (
+        swiper.params.navigation &&
+        typeof swiper.params.navigation !== 'boolean'
+      ) {
+        swiper.params.navigation.nextEl = `.swiper-${id}-next`;
+        swiper.params.navigation.prevEl = `.swiper-${id}-prev`;
+      }
+
+      // ⭐ 재초기화
+      swiper.navigation.destroy();
+      swiper.navigation.init();
+      swiper.navigation.update();
+
+      // ⭐ 무조건 첫 슬라이드로 이동
+      swiper.slideTo(0, 0);
     },
     onActiveIndexChange: (swiper: SwiperClass) => {
       // console.log(swiper);
@@ -121,22 +165,20 @@ export const SwiperGroup: React.FC<swiperProps> = ({
   };
 
   return (
-    <div className={`${cn(`swipers-${id} relative`, addClass)}`}>
-      <Swiper modules={[FreeMode, Navigation, Pagination, Autoplay]} {...swiperOption}>
+    <div className={` ${cn(`swipers-${id} relative`, addClass)}`}>
+      <Swiper
+        modules={[FreeMode, Navigation, Pagination, Autoplay]}
+        {...swiperOption}
+      >
         {children}
       </Swiper>
 
-      <div className={`controller`}>
-        <button className={`swiper-${id}-prev absolute y_center -left-4 lg:-left-5 z-10 bg-white rounded-full  ${arrow ? '' : 'hidden'}`}>
-          <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg" className="rotate-180  w-8 md:w-9 lg:w-11" alt="" />
-        </button>
-        <div className={`${pager ? '' : 'hidden'}`}>
-          <div ref={paginationRef} className={`swiper-pagination !relative !mt-2 !md:mt-5 !top-auto !bottom-auto`}></div>
-        </div>
-        <button className={`swiper-${id}-next absolute y_center -right-4 lg:-right-5 z-10 bg-white rounded-full ${arrow ? '' : 'hidden'}`}>
-          <img src="https://image.jinhak.com/jinhakImages/react/icon/arrow_on.svg" className="w-8 md:w-9 lg:w-11" alt="" />
-        </button>
-      </div>
+      <SwiperController
+        ref={paginationRef}
+        id={id}
+        pager={pager}
+        arrow={arrow}
+      />
     </div>
   );
 };
