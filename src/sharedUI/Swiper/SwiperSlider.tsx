@@ -4,52 +4,92 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { cn } from "../common/cn";
 import { Swiper as SwiperClass } from 'swiper';
+import { Swiper as SwiperType } from 'swiper';
+import 'swiper/css/effect-fade';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { Autoplay, FreeMode, Navigation, Pagination } from 'swiper/modules';
+import {
+  EffectFade,
+  Autoplay,
+  FreeMode,
+  Navigation,
+  Pagination,
+  Scrollbar,
+} from 'swiper/modules';
 import { Swiper, SwiperProps } from 'swiper/react';
 import { SwiperController } from './SwiperController';
 
+type slideType = 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
+type pagerType = 'bullets' | 'fraction' | 'progressbar' | 'custom';
+
+export type SwiperArrowOption =
+  | boolean
+  | {
+      show: boolean;
+      leftAddClass?: string;
+      rightAddClass?: string;
+    };
+
+export type SwiperPagerOption =
+  | boolean
+  | {
+      show: boolean;
+      type?: pagerType;
+      addClass?: string;
+      pagerClass?: string;
+    };
+export type SwiperScrollbarOption = {
+  show: boolean;
+  hide?: boolean;
+  draggable?: boolean;
+  sizeClass?: string;
+  addClass?: string;
+};
+
 interface swiperProps {
+  id?: number | string;
+  slideType?: slideType;
   active?: number;
   freeMode?: boolean;
   loop?: boolean;
-  autoplay?: boolean;
-  delay?: number;
+  autoplay?: { auto: boolean; delay?: number };
   centeredSlides?: boolean;
   slidesPerView?: number | 'auto';
-  slideWidth?: string; // storybook용 슬라이드 너비 설정
-  slideHeight?: string; // storybook용 슬라이드 높이 설정
   spaceBetween?: number;
   children?: React.ReactNode;
   addClass?: string;
-  id?: number | string;
   image?: boolean;
-  arrow?:
-    | boolean
-    | { show: boolean; leftAddClass?: string; rightAddClass?: string };
   allowTouchMove?: boolean;
-  pager?: boolean | { show: boolean; addClass?: string; pagerClass?: string };
+  arrow?: SwiperArrowOption;
+  pager?: SwiperPagerOption;
+  scrollbar?: SwiperScrollbarOption;
+  breakpoints?: Record<number, SwiperProps>;
   onSlideChange?: (swiper: SwiperClass) => void;
+  onSwiper?: (swiper: SwiperType) => void;
+  slideWidth?: string; // storybook용 슬라이드 너비 설정
+  slideHeight?: string; // storybook용 슬라이드 높이 설정
 }
 
 export const SwiperSlider: React.FC<swiperProps> = ({
+  id = 'swiper-default',
+  slideType = 'slide',
   active = 1,
   freeMode = true,
   loop = false,
-  autoplay = false,
-  delay = 2500,
+  autoplay = { auto: false, delay: 2500 },
   centeredSlides = false,
   slidesPerView = 'auto',
   spaceBetween = 0,
   children,
   addClass,
-  id = 'swiper-default',
-  arrow = true,
   allowTouchMove = true,
-  pager,
+  arrow = { show: false },
+  pager = { show: false },
+  scrollbar = { show: false },
+  breakpoints,
   onSlideChange,
+  onSwiper,
 }) => {
   const [contentWidth, setContentWidth] = useState<number>(0);
   const swiperRef = useRef<SwiperClass | null>(null);
@@ -57,6 +97,7 @@ export const SwiperSlider: React.FC<swiperProps> = ({
 
   const pagination = {
     el: paginationRef.current,
+    type: (typeof pager === 'object' && pager?.type) || 'bullets',
     clickable: true,
     renderBullet: function (index: number, className?: string) {
       return `
@@ -73,6 +114,12 @@ export const SwiperSlider: React.FC<swiperProps> = ({
     },
   };
 
+  const scrollbarOption = {
+    el: `.swiper-${id}-scrollbar`,
+    hide: scrollbar?.hide ?? false,
+    draggable: scrollbar?.draggable ?? true,
+  };
+
   useEffect(() => {
     const swiper = swiperRef.current;
 
@@ -83,7 +130,11 @@ export const SwiperSlider: React.FC<swiperProps> = ({
     if (!swiper || !swiper.autoplay) return;
 
     if (swiper.autoplay) {
-      autoplay ? swiper.autoplay.start() : swiper.autoplay.stop();
+      if (typeof autoplay === 'object' && autoplay.auto) {
+        swiper.autoplay.start();
+      } else {
+        swiper.autoplay.stop();
+      }
     }
 
     if (swiper.pagination && typeof swiper.pagination.update === 'function') {
@@ -150,12 +201,17 @@ export const SwiperSlider: React.FC<swiperProps> = ({
   };
 
   const swiperOption: SwiperProps = {
-    initialSlide: active ?? 0,
+    effect: slideType,
+    fadeEffect: { crossFade: slideType === 'fade' ? true : false },
+    initialSlide: (active ?? 1) - 1,
     freeMode: centeredSlides ? false : freeMode,
-    autoplay: {
-      delay: delay,
-      disableOnInteraction: false,
-    },
+    autoplay:
+      autoplay && typeof autoplay === 'object' && autoplay.auto
+        ? {
+            delay: autoplay?.delay,
+            disableOnInteraction: false,
+          }
+        : undefined,
     centeredSlides: centeredSlides,
     loop: loop,
     spaceBetween: spaceBetween,
@@ -173,7 +229,9 @@ export const SwiperSlider: React.FC<swiperProps> = ({
       nextEl: `.swiper-${id}-next`,
       prevEl: `.swiper-${id}-prev`,
     },
+    scrollbar: scrollbarOption,
     pagination: pagination, // {{type: 'fraction', clickable: true }}
+    breakpoints: breakpoints,
     onSwiper: (swiper: SwiperClass) => {
       // console.log(swiper);
       swiperRef.current = swiper;
@@ -195,7 +253,15 @@ export const SwiperSlider: React.FC<swiperProps> = ({
     <div className={`${cn(`swipers-${id} relative`, addClass)}`}>
       <Swiper
         {...swiperOption}
-        modules={[FreeMode, Navigation, Pagination, Autoplay]}
+        modules={[
+          EffectFade,
+          FreeMode,
+          Navigation,
+          Pagination,
+          Autoplay,
+          Scrollbar,
+        ]}
+        onSwiper={onSwiper}
       >
         {children}
       </Swiper>
@@ -205,6 +271,7 @@ export const SwiperSlider: React.FC<swiperProps> = ({
         id={id}
         pager={pager}
         arrow={arrow}
+        scrollbar={scrollbar}
       />
 
       {/* <p>swiper-slide-active index: {swiperIndex}</p> */}

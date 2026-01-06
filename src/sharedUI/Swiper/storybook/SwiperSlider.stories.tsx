@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { cn } from "../../common/cn";
 import { Meta, StoryFn } from '@storybook/react';
 import { SwiperSlider } from '../SwiperSlider';
 import { SwiperSlide } from 'swiper/react';
-import { cn } from "../../common/cn";
+import { useRef } from 'react';
+import type { Swiper as SwiperType } from 'swiper';
 
 // Storybook 메타 설정
 export default {
@@ -158,7 +160,27 @@ Default.args = {
   id: 'default',
   active: 1,
   freeMode: false,
-  autoplay: false,
+  slideWidth: '100%',
+  slideHeight: 'h-[150px]',
+  loop: false,
+  arrow: {
+    show: true,
+    leftAddClass: 'custom-left-arrow',
+    rightAddClass: 'custom-right-arrow',
+  },
+  pager: {
+    show: true,
+    addClass: 'custom-pagination',
+    pagerClass: 'custom-bullet',
+  },
+};
+
+export const Fade = Template.bind({});
+Fade.args = {
+  id: 'fade',
+  active: 1,
+  slideType: 'fade',
+  freeMode: false,
   slideWidth: '100%',
   slideHeight: 'h-[150px]',
   loop: false,
@@ -180,7 +202,6 @@ ActiveSlide.args = {
   id: 'activeSlide',
   active: 6,
   freeMode: false,
-  autoplay: false,
   slideWidth: '100%',
   slideHeight: 'h-[150px]',
   loop: false,
@@ -192,6 +213,7 @@ slidesPerView.args = {
   id: 'slidesPerView',
   active: 1,
   slidesPerView: 3,
+  freeMode: false,
 };
 
 export const MenuStyle = Template.bind({});
@@ -199,8 +221,6 @@ MenuStyle.args = {
   id: 'swiper-1',
   active: 1,
   freeMode: false,
-  autoplay: false,
-  delay: 2500,
   loop: false,
   pager: {
     show: true,
@@ -214,7 +234,7 @@ export const Loop = Template.bind({});
 Loop.args = {
   id: 'loop',
   active: 9,
-  freeMode: true,
+  freeMode: false,
   loop: true,
 };
 
@@ -223,7 +243,7 @@ export const CenteredSlides = Template.bind({});
 CenteredSlides.args = {
   id: 'centeredSlides',
   active: 1,
-  // freeMode: false,
+  freeMode: false,
   centeredSlides: true,
 };
 
@@ -232,9 +252,8 @@ export const AutoPlay = Template.bind({});
 AutoPlay.args = {
   id: 'autoPlay',
   active: 1,
-  autoplay: true,
-  delay: 1000,
-  freeMode: true,
+  freeMode: false,
+  autoplay: { auto: true, delay: 1500 },
   loop: true,
 };
 
@@ -277,7 +296,6 @@ Pagination.args = {
   active: 1,
   loop: false,
   freeMode: false,
-  arrow: false,
   pager: {
     show: true,
   },
@@ -297,4 +315,94 @@ PaginationCustom.args = {
     pagerClass:
       'custom-bullet !bg-green-500 [&.swiper-pagination-bullet-active]:!bg-blue-800',
   },
+};
+
+// 페이지네이션 Number 스토리
+export const Paginationfraction = Template.bind({});
+Paginationfraction.args = {
+  id: 'paginationFraction',
+  active: 1,
+  slidesPerView: 2,
+  freeMode: false,
+  pager: {
+    show: true,
+    type: 'fraction',
+  },
+};
+
+// Scrollbar 커스텀 스토리
+export const Scrollbar = Template.bind({});
+Scrollbar.args = {
+  id: 'Scrollbar',
+  loop: false,
+  freeMode: false,
+  scrollbar: { show: true, sizeClass: 'w-1/4', addClass: '!-bottom-5' },
+};
+
+// Responsive 커스텀 스토리
+export const Responsive = Template.bind({});
+Responsive.args = {
+  id: 'responsive',
+  loop: false,
+  slideWidth: '100%',
+  slideHeight: 'h-[150px]',
+  breakpoints: {
+    640: {
+      slidesPerView: 2,
+      // spaceBetween: 20,
+    },
+    768: {
+      slidesPerView: 4,
+      // spaceBetween: 40,
+    },
+    1024: {
+      slidesPerView: 6,
+      // spaceBetween: 50,
+    },
+  },
+};
+
+// 버튼 1개로 슬라이드 이동
+export const OneButtonMove = () => {
+  const swiperRef = useRef<SwiperType | null>(null);
+  const [current, setCurrent] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  return (
+    <div className="w-full max-w-[360px]">
+      <SwiperSlider
+        id="oneButtonMove"
+        slideType="slide"
+        slidesPerView={1}
+        freeMode={false}
+        loop={true}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
+          setTotal(swiper.slides.length);
+          setCurrent(swiper.realIndex + 1);
+        }}
+        onSlideChange={(swiper) => {
+          setCurrent(swiper.realIndex + 1);
+        }}
+      >
+        {Array.from({ length: 10 }).map((_, index) => (
+          <SwiperSlide key={index} className="flex items-center justify-center">
+            <div className="flex h-[150px] w-full items-center justify-center border">
+              Slide {index + 1}
+            </div>
+          </SwiperSlide>
+        ))}
+      </SwiperSlider>
+
+      <button
+        className="w-full py-2 mt-8 text-white bg-black rounded"
+        onClick={() => swiperRef.current?.slideNext()}
+      >
+        다음 슬라이드
+        <span className="ml-2 text-sm opacity-80">
+          {current} / {total}
+        </span>
+      </button>
+    </div>
+  );
 };

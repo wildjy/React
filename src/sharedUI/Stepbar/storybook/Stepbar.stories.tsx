@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { StepBar } from '../StepBar';
+import { StepBar } from '../Stepbar';
 
 const meta: Meta<typeof StepBar> = {
-  title: 'UI/StepBar/StepBar',
+  title: 'UI/StepBar/Stepbar',
   component: StepBar,
   tags: ['autodocs'],
 };

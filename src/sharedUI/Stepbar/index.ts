@@ -1,2 +1,2 @@
-export * from './StepBar';
+export * from './Stepbar';
 export * from './JStepBar';
