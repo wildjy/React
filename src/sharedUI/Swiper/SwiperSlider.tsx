@@ -23,6 +23,12 @@ import { SwiperController } from './SwiperController';
 type slideType = 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
 type pagerType = 'bullets' | 'fraction' | 'progressbar' | 'custom';
 
+export type SwiperControllerOption = {
+  show: boolean;
+  type: 'default' | 'fraction';
+  addClass?: string;
+};
+
 export type SwiperArrowOption =
   | boolean
   | {
@@ -63,6 +69,7 @@ interface swiperProps {
   allowTouchMove?: boolean;
   arrow?: SwiperArrowOption;
   pager?: SwiperPagerOption;
+  controller?: SwiperControllerOption;
   scrollbar?: SwiperScrollbarOption;
   breakpoints?: Record<number, SwiperProps>;
   onSlideChange?: (swiper: SwiperClass) => void;
@@ -86,6 +93,7 @@ export const SwiperSlider: React.FC<swiperProps> = ({
   allowTouchMove = true,
   arrow = { show: false },
   pager = { show: false },
+  controller = { show: true, type: 'default' },
   scrollbar = { show: false },
   breakpoints,
   onSlideChange,
@@ -96,7 +104,7 @@ export const SwiperSlider: React.FC<swiperProps> = ({
   const paginationRef = useRef(null);
 
   const pagination = {
-    el: paginationRef.current,
+    el: `.swiper-${id}-pagination`,
     type: (typeof pager === 'object' && pager?.type) || 'bullets',
     clickable: true,
     renderBullet: function (index: number, className?: string) {
@@ -269,6 +277,7 @@ export const SwiperSlider: React.FC<swiperProps> = ({
       <SwiperController
         ref={paginationRef}
         id={id}
+        controller={controller}
         pager={pager}
         arrow={arrow}
         scrollbar={scrollbar}

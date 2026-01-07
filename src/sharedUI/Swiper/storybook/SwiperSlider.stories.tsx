@@ -91,11 +91,11 @@ const Template: StoryFn<typeof SwiperSlider> = (args) => {
           <SwiperSlide
             key={index}
             style={{ width: args.slideWidth || 'auto' }}
-            className={`${slide.active} swiper-slide flex items-center justify-center w-auto px-1 md:px-2`}
+            className={`swiper-slide ${slide.active} [&.swiper-slide-active]:bg-blue-50 flex items-center justify-center w-auto`}
           >
             <div
               className={`${slide.active} ${cn(
-                'flex items-center justify-center px-7 py-2 border',
+                'flex items-center justify-center px-7 py-2 border ',
                 (args.active ?? 0) - 1 === index
                   ? ' border-blue-800 text-blue-800'
                   : '',
@@ -162,6 +162,7 @@ Default.args = {
   freeMode: false,
   slideWidth: '100%',
   slideHeight: 'h-[150px]',
+  spaceBetween: 10,
   loop: false,
   arrow: {
     show: true,
@@ -172,6 +173,31 @@ Default.args = {
     show: true,
     addClass: 'custom-pagination',
     pagerClass: 'custom-bullet',
+  },
+};
+
+export const Controller = Template.bind({});
+Controller.args = {
+  id: 'controller',
+  active: 1,
+  freeMode: false,
+  slideWidth: '100%',
+  slideHeight: 'h-[150px]',
+  spaceBetween: 10,
+  loop: false,
+  controller: {
+    show: true,
+    type: 'fraction',
+    // addClass: 'absolute top-0 right-0',
+  },
+  arrow: {
+    show: true,
+    leftAddClass: 'custom-left-arrow',
+    rightAddClass: 'custom-right-arrow',
+  },
+  pager: {
+    show: true,
+    type: 'fraction',
   },
 };
 
@@ -214,6 +240,7 @@ slidesPerView.args = {
   active: 1,
   slidesPerView: 3,
   freeMode: false,
+  spaceBetween: 10,
 };
 
 export const MenuStyle = Template.bind({});
@@ -221,6 +248,7 @@ MenuStyle.args = {
   id: 'swiper-1',
   active: 1,
   freeMode: false,
+  spaceBetween: 10,
   loop: false,
   pager: {
     show: true,
@@ -244,6 +272,7 @@ CenteredSlides.args = {
   id: 'centeredSlides',
   active: 1,
   freeMode: false,
+  spaceBetween: 10,
   centeredSlides: true,
 };
 
@@ -253,6 +282,7 @@ AutoPlay.args = {
   id: 'autoPlay',
   active: 1,
   freeMode: false,
+  spaceBetween: 10,
   autoplay: { auto: true, delay: 1500 },
   loop: true,
 };
@@ -263,6 +293,7 @@ FreeMode.args = {
   id: 'freeMode',
   active: 1,
   freeMode: true,
+  spaceBetween: 10,
 };
 
 // 화살표 스토리
@@ -271,6 +302,7 @@ Arrows.args = {
   id: 'arrows',
   active: 3,
   freeMode: false,
+  spaceBetween: 10,
   arrow: {
     show: true,
   },
@@ -282,6 +314,7 @@ ArrowsCustom.args = {
   id: 'arrowsCustom',
   active: 1,
   freeMode: false,
+  spaceBetween: 10,
   arrow: {
     show: true,
     leftAddClass: 'custom-left-arrow bg-red-500',
@@ -296,6 +329,7 @@ Pagination.args = {
   active: 1,
   loop: false,
   freeMode: false,
+  spaceBetween: 10,
   pager: {
     show: true,
   },
@@ -308,6 +342,7 @@ PaginationCustom.args = {
   active: 1,
   loop: false,
   freeMode: false,
+  spaceBetween: 10,
   arrow: false,
   pager: {
     show: true,
@@ -322,8 +357,10 @@ export const Paginationfraction = Template.bind({});
 Paginationfraction.args = {
   id: 'paginationFraction',
   active: 1,
-  slidesPerView: 2,
+  slideType: 'fade',
+  slidesPerView: 1,
   freeMode: false,
+  spaceBetween: 10,
   pager: {
     show: true,
     type: 'fraction',
@@ -336,6 +373,7 @@ Scrollbar.args = {
   id: 'Scrollbar',
   loop: false,
   freeMode: false,
+  spaceBetween: 10,
   scrollbar: { show: true, sizeClass: 'w-1/4', addClass: '!-bottom-5' },
 };
 
@@ -346,6 +384,7 @@ Responsive.args = {
   loop: false,
   slideWidth: '100%',
   slideHeight: 'h-[150px]',
+  spaceBetween: 10,
   breakpoints: {
     640: {
       slidesPerView: 2,
@@ -376,6 +415,7 @@ export const OneButtonMove = () => {
         slidesPerView={1}
         freeMode={false}
         loop={true}
+        pager={{ show: true, type: 'fraction' }}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
           setTotal(swiper.slides.length);
