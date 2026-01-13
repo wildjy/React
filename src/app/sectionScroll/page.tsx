@@ -65,7 +65,7 @@ export default function SectionScrollPage() {
             [Mobile] 메인 퀵 메뉴 영역
           </div> */}
           <div ref={quickNavRef} className="h-[2.25rem]">
-            <div className={`${isFixed ? 'fixed left-0 z-[100]' : ''} `} style={{ top: headerHeight }}>
+            <div className={`${isFixed ? 'fixed left-0 w-full z-[100]' : ''} `} style={{ top: headerHeight }}>
               <SwiperSlider
                 id="quick-swiper-1"
                 active={1}
