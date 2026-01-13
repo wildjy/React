@@ -171,24 +171,6 @@ export const SwiperSlider: React.FC<swiperProps> = ({
     };
   }, [contentWidth, autoplay, loop]);
 
-  // active slide
-  // useLayoutEffect(() => {
-  //   const activeSlide = () => {
-  //     const swiperWrap = document.querySelector(`.swipers-${id}`);
-  //     if (swiperWrap) {
-  //       const slides = swiperWrap.querySelectorAll(
-  //         '.swiper-slide a, .swiper-slide button, .swiper-slide div'
-  //       );
-  //       slides.forEach((slide, index) => {
-  //         if (slide.classList.contains('active')) {
-  //           swiperRef.current?.slideTo(index, 100, false);
-  //         }
-  //       });
-  //     }
-  //   };
-  //   activeSlide();
-  // }, []);
-
   useEffect(() => {
     const swiper = swiperRef.current;
     if (!swiper || typeof active !== 'number') return;
@@ -245,12 +227,12 @@ export const SwiperSlider: React.FC<swiperProps> = ({
       swiperRef.current = swiper;
       // handleSwiperInit(swiper);
     },
-    onActiveIndexChange: (swiper: SwiperClass) => {
-      // console.log(swiper);
-    },
-    onBeforeInit: (swiper: SwiperClass) => {
-      // console.log(swiper);
-    },
+    // onActiveIndexChange: (swiper: SwiperClass) => {
+    //   console.log(swiper);
+    // },
+    // onBeforeInit: (swiper: SwiperClass) => {
+    //   console.log(swiper);
+    // },
     onSlideChange: multiOnSlideChange,
     onResize: (swiper: SwiperClass) => {
       swiper.update();
