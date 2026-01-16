@@ -46,8 +46,8 @@ export default function SectionScrollPage() {
     headerHeight,
     navRef: quickNavRef,
     threshold: isMobile ? [0, 0.25] : 0,
-    rootMargin: isMobile ? `-${headerHeight}px 0px -40% 0px` : `-98% 0px 0px 0px`,
-    // rootMargin: isMobile ?  `-${headerHeight + window.innerHeight * 0.4}px 0px -40% 0px` : `-98% 0px 0px 0px`,
+    // rootMargin: isMobile ? `-0px 0px -20% 0px` : `-98% 0px 0px 0px`,
+    rootMargin: isMobile ?  `-${headerHeight + window.innerHeight * 0.4}px 0px -40% 0px` : `-98% 0px 0px 0px`,
     //disabled: isMinTablet, // 모바일 비활성화
   });
 
@@ -84,7 +84,7 @@ export default function SectionScrollPage() {
                       }}
                       className={`swiper-slide
                         ${isActive
-                          ? 'bg-[#000000] text-white '
+                          ? 'bg-black text-white '
                           : ''
                         }
                         flex items-center justify-center w-auto
