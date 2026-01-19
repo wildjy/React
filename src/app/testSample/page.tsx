@@ -10,7 +10,7 @@ import { Button } from "../../sharedUI/Button/Button";
 import StepBars from "../../sharedUI/StepBar/Step";
 import { StepBar } from "../../sharedUI/StepBar/Stepbar";
 import { ToastPopup } from "../../sharedUI/ToastPopup/ToastPopup";
-import StepBarClick from "../../sharedUI/StepBar/StepbarClick";
+import StepBarClick from "../../sharedUI/StepBar/StepBarClick";
 import Title from "../../sharedUI/Title/TitleDemo";
 import dynamic from 'next/dynamic';
 
