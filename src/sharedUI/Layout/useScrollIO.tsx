@@ -1,4 +1,4 @@
-// useScrollSpySection >>> 개량버전
+// useScrollSpySectionFinal >>> 개량버전
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import type { Swiper as SwiperClass } from "swiper";
@@ -23,7 +23,7 @@ interface UseScrollSpySwiperReturn {
   moveToSection: (id: string, force?: boolean) => void;
 }
 
-export function useScrollSpySectionFinal({
+export function useScrollIO({
   slides,
   swiperRef,
   headerHeight = 0,
@@ -106,25 +106,25 @@ export function useScrollSpySectionFinal({
       clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = null;
     }
-  }, [isMobile]);
+  }, [!isMobile]);
 
 
   // 초기 활성화 섹션 설정
-  // useEffect(() => {
-  //   if (!swiperRef?.current) return;
-  //   if (!slides.length) return;
+  useEffect(() => {
+    if (!swiperRef?.current) return;
+    if (!slides.length) return;
 
     // 아직 스크롤 안 했으면
-    // if (!hasScrolledRef.current) {
-    //   const firstId = slides[0].id;
+    if (!hasScrolledRef.current) {
+      const firstId = slides[0].id;
 
-      // activeIdRef.current = firstId;
-      // setActiveId(firstId);
+      activeIdRef.current = firstId;
+      setActiveId(firstId);
 
       // Swiper는 무조건 첫 슬라이드
-      // swiperRef.current.slideTo(0, 0);
-  //   }
-  // }, [slides, swiperRef]);
+      swiperRef.current.slideTo(0, 0);
+    }
+  }, [slides, swiperRef]);
 
   const sectionProps = (id: string, enabled: boolean) => {
     return enabled ? { id, ref: registerSection(id) } : {};
@@ -179,10 +179,11 @@ export function useScrollSpySectionFinal({
     const navHeight = navRef?.current?.offsetHeight ?? 0;
     const rect = el.getBoundingClientRect();
     const isSmallSection = rect.height < window.innerHeight * 0.6;
-
     const CLICK_OFFSET =  isSmallSection
-    ? window.innerHeight * 0.1
-    : window.innerHeight * 0.25;
+    ? window.innerHeight * 0.25
+    : -50;
+    console.log(el.getBoundingClientRect(), 'rect');
+    console.log(rect.height, 'rect');
     console.log(navHeight, 'navHeight');
 
     // const PC_OFFSET = headerHeight + navHeight + CLICK_OFFSET;
@@ -192,27 +193,27 @@ export function useScrollSpySectionFinal({
     //   el.getBoundingClientRect().top + window.scrollY - (isMobile ? MOBILE_OFFSET : PC_OFFSET);
 
     // window.scrollTo({ top: targetTop, behavior: "smooth" });
-const PC_OFFSET = headerHeight + navHeight + CLICK_OFFSET;
-const MOBILE_OFFSET = navHeight;
+    const PC_OFFSET = headerHeight + CLICK_OFFSET;
+    const MOBILE_OFFSET = navHeight;
 
-const offset = isMobile ? MOBILE_OFFSET : PC_OFFSET;
+    const offset = isMobile ? MOBILE_OFFSET : PC_OFFSET;
 
-// 원래 계산값
-const targetTopRaw =
-  el.getBoundingClientRect().top +
-  window.scrollY -
-  offset;
+    // 원래 계산값
+    const targetTopRaw =
+      el.getBoundingClientRect().top +
+      window.scrollY -
+      offset;
 
-// ✅ PC에서 마지막 섹션 대비 max scroll 보정
-const maxScroll =
-  document.documentElement.scrollHeight - window.innerHeight;
+    // ✅ PC에서 마지막 섹션 대비 max scroll 보정
+    const maxScroll =
+      document.documentElement.scrollHeight - window.innerHeight;
 
-const targetTop = Math.min(targetTopRaw, maxScroll);
+    const targetTop = Math.min(targetTopRaw, maxScroll);
 
-window.scrollTo({
-  top: targetTop,
-  behavior: 'smooth',
-});
+    window.scrollTo({
+      top: targetTop,
+      behavior: 'smooth',
+    });
 
     const RELEASE_DISTANCE = 40;
 
@@ -257,10 +258,6 @@ window.scrollTo({
           return;
         }
 
-        // if (isProgrammatic.current) {
-        //   const entry = entries.find(e => e.target.id === activeIdRef.current);
-        //   if (!entry rksaks
-
         const visible = isMobile
         ? entries
             .filter(e => e.isIntersecting)
@@ -299,7 +296,6 @@ window.scrollTo({
     const handleScroll = () => {
       if (!navRef?.current) return;
       const targetRect = navRef.current.getBoundingClientRect();
-      // console.log('targetRect.top', targetRect.top);
 
       if (targetRect.top - headerHeight < 0) {
         setIsFixed(true);
@@ -362,7 +358,7 @@ window.scrollTo({
     });
 
     return () => sentinelObserver.disconnect();
-  }, [disabled, rootMargin, swiperRef, isMobile]);
+  }, [disabled, rootMargin, swiperRef, !isMobile]);
 
   return {
     activeId,

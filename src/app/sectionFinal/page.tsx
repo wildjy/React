@@ -1,12 +1,12 @@
 "use client";
 import { cn } from "@/sharedUI/common/cn";
 // import { useScrollSpySection } from "@/sharedUI/Layout/useScrollSpySection";
-import { useScrollSpySectionFinal } from "@/sharedUI/Layout/useScrollSpySectionFinal";
 import { useEffect, useRef, useState } from "react";
 import { SwiperClass, SwiperSlide } from "swiper/react";
 import { A1_BANNER_REPORT_BOTTOM_1003_PC, pcSection, QuicSwiperSlides } from "./mockData";
 import { throttle } from "lodash";
 import { SwiperSlider } from "@/sharedUI/Swiper/SwiperSlider";
+import { useScrollFinal } from "@/sharedUI/Layout/useScrollFinal";
 
 export default function SectionScrollPage() {
   const headerHeight = 0;
@@ -40,13 +40,12 @@ export default function SectionScrollPage() {
     isScroll,
     sectionProps,
     moveToSection,
-  } = useScrollSpySectionFinal({
+  } = useScrollFinal({
     slides: QuicSwiperSlides,
     swiperRef,
     headerHeight,
     navRef: quickNavRef,
-    threshold: isMobile ? [0, 0.25] : 0,
-    rootMargin: isMobile ? `-${headerHeight}px 0px -40% 0px` : `-98% 0px 0px 0px`,
+    activeAnchor: isMobile ? 'top' : 'center', // 🔥 기본 추천
   });
 
   return (
@@ -82,7 +81,7 @@ export default function SectionScrollPage() {
                       }}
                       className={`swiper-slide
                         ${isActive
-                          ? 'bg-[#000000] text-white '
+                          ? 'bg-black text-white '
                           : ''
                         }
                         flex items-center justify-center w-auto
@@ -142,7 +141,7 @@ export default function SectionScrollPage() {
         Section 1
         <p>맞춤정보</p>
         <div className="md:flex">
-          <div className="grow min-h-[700px] odd:bg-gray-100 even:bg-gray-400">BOX 1</div>
+          <div className="grow min-h-[300px] odd:bg-gray-100 even:bg-gray-400">BOX 1</div>
         </div>
         <div className="sentinel w-full h-[1px] bg-red-400" data-section-id="section1"> </div>
       </MainContWrapper>
@@ -170,7 +169,7 @@ export default function SectionScrollPage() {
 
       <MainContWrapper {...sectionProps('section3', true)} type="bg">
 
-        <div className="min-h-[700px] bg-red-400">
+        <div className="min-h-[250px] bg-red-400">
           Section 3
           <p>대입정보</p>
         </div>
