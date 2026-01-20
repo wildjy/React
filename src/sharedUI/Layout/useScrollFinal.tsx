@@ -218,7 +218,7 @@ export function useScrollFinal({
     if (activeIdRef.current) {
       syncSwiper(activeIdRef.current);
     }
-  }, [isMobile]);
+  }, [disabled, recomputeActive, syncSwiper]);
 
   /* =======================
    * Scroll Detect
