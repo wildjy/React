@@ -17,12 +17,17 @@ interface UseScrollSpySwiperParams {
 
 interface UseScrollSpySwiperReturn {
   activeId: string;
+  fixedBannerId: string | null;
+  navHeight?: number;
   isFixed: boolean;
   isScroll: boolean;
   sectionProps: (
     id: string,
     enabled: boolean
   ) => { id?: string; ref?: (el: HTMLDivElement | null) => void };
+  bannerProps: (
+    id: string
+  ) => { ref: (el: HTMLDivElement | null) => void };
   moveToSection: (id: string, force?: boolean) => void;
 }
 
@@ -74,16 +79,19 @@ export function useScrollFinal({
   const isProgrammatic = useRef(false);
   const hasScrolledRef = useRef(false);
   const scrollTimeoutRef = useRef<number | null>(null);
+  const bannerRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   /* =======================
    * State
    ======================= */
   const [activeId, setActiveId] = useState<string>(slides[0]?.id);
+  const [fixedBannerId, setFixedBannerId] = useState<string | null>(null);
   const [isFixed, setIsFixed] = useState(false);
   const [isScroll, setIsScroll] = useState(false);
+  const [navHeight, setNavHeight] = useState(0);
 
   /* =======================
-   * Section Register
+   * Section & Banner Register
    ======================= */
   const registerSection = useCallback(
     (id: string) => (el: HTMLDivElement | null) => {
@@ -92,8 +100,23 @@ export function useScrollFinal({
     []
   );
 
+  const registerBanner = useCallback(
+    (id: string) => (el: HTMLDivElement | null) => {
+      bannerRefs.current[id] = el;
+    },
+    []
+  );
+
   const sectionProps = (id: string, enabled: boolean) =>
     enabled ? { id, ref: registerSection(id) } : {};
+
+  const bannerProps = (id: string) => ({
+    ref: registerBanner(id),
+  });
+
+  const sections = Object.values(sectionRefs.current).filter(
+    Boolean
+  ) as HTMLDivElement[];
 
   /* =======================
    * Swiper Sync
@@ -113,10 +136,6 @@ export function useScrollFinal({
    ======================= */
   const recomputeActive = useCallback(() => {
     if (disabled || isProgrammatic.current) return;
-
-    const sections = Object.values(sectionRefs.current).filter(
-      Boolean
-    ) as HTMLDivElement[];
 
     if (!sections.length) return;
 
@@ -140,6 +159,49 @@ export function useScrollFinal({
       syncSwiper(candidate.id);
     }
   }, [activeAnchor, disabled, syncSwiper]);
+
+  /* =======================
+   * Fixed Banner 계산 (⭐ 핵심)
+   ======================= */
+  const recomputeFixedBanner = useCallback(() => {
+    if(!isMobile) return;
+    if (!isFixed) {
+      setFixedBannerId(null);
+      return;
+    }
+
+    const anchorY = headerHeight + (navRef?.current?.offsetHeight ?? 0);
+
+    let current: string | null = null;
+
+    for (let i = 0; i < slides.length; i++) {
+      const slide = slides[i];
+
+      const section = sectionRefs.current[slide.id];
+      if (!section) continue;
+
+      const rect = section.getBoundingClientRect();
+
+      console.log(slide)
+      const nextSlide = slides[i + 1];
+      const nextBanner = nextSlide
+        ? bannerRefs.current[nextSlide.id]
+        : null;
+      const nextRect = nextBanner?.getBoundingClientRect();
+
+      const isCurrent =
+        rect.top <= anchorY &&
+        (!nextRect || nextRect.top > anchorY);
+
+      if (isCurrent) {
+        current = slide.id;
+        break; // ⭐ 중요
+      }
+    }
+
+    setFixedBannerId(current);
+
+  }, [headerHeight, isFixed, isMobile, navRef, slides]);
 
   /* =======================
    * Scroll Detect
@@ -177,6 +239,7 @@ export function useScrollFinal({
       }, 1200);
 
       recomputeActive();
+      recomputeFixedBanner();
     }, 100);
 
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -184,7 +247,7 @@ export function useScrollFinal({
       window.removeEventListener('scroll', onScroll);
       onScroll.cancel();
     };
-  }, [disabled, recomputeActive]);
+  }, [disabled, recomputeActive, recomputeFixedBanner]);
 
   /* =======================
    * Mobile Reset
@@ -242,6 +305,7 @@ export function useScrollFinal({
           isProgrammatic.current = false;
           window.removeEventListener('scroll', checkEnd);
           recomputeActive();
+          recomputeFixedBanner();
         }
       };
 
@@ -258,6 +322,7 @@ export function useScrollFinal({
       if (!navRef?.current) return;
       const rect = navRef.current.getBoundingClientRect();
       setIsFixed(rect.top - headerHeight < 0);
+      setNavHeight(rect.height);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -279,9 +344,12 @@ export function useScrollFinal({
 
   return {
     activeId,
+    fixedBannerId,
+    navHeight,
     isFixed,
     isScroll,
     sectionProps,
+    bannerProps,
     moveToSection,
   };
 }

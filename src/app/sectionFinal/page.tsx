@@ -13,6 +13,8 @@ export default function SectionScrollPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [isDeskTop, setIsDeskTop] = useState(false);
+  const swiperRef = useRef<SwiperClass | null>(null);
+  const quickNavRef = useRef<(HTMLDivElement | null)>(null);
 
   useEffect(() => {
     const handleResize = throttle(() => {
@@ -31,14 +33,15 @@ export default function SectionScrollPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobile, isTablet]);
 
-  const swiperRef = useRef<SwiperClass | null>(null);
-  const quickNavRef = useRef<(HTMLDivElement | null)>(null);
 
   const {
     activeId,
+    navHeight = 0,
+    fixedBannerId,
     isFixed,
     isScroll,
     sectionProps,
+    bannerProps,
     moveToSection,
   } = useScrollFinal({
     slides: QuicSwiperSlides,
@@ -138,6 +141,20 @@ export default function SectionScrollPage() {
       </MainContWrapper>
 
       <MainContWrapper {...sectionProps('section1', true)}>
+        <div
+        {...bannerProps('section1')}
+        >
+          <div
+            className={cn(
+              'transition-transform',
+              fixedBannerId === 'section1' ? 'fixed left-0 right-0 z-[100]' : ''
+            )}
+            style={{ top: navHeight + 30 + 'px'}}
+          >
+            section1 배너
+          </div>
+        </div>
+
         Section 1
         <p>맞춤정보</p>
         <div className="md:flex">
@@ -151,6 +168,19 @@ export default function SectionScrollPage() {
       </MainContWrapper>
 
       <MainContWrapper {...sectionProps('section2', true)}>
+        <div
+        {...bannerProps('section2')}
+        >
+          <div
+            className={cn(
+              'transition-transform',
+              fixedBannerId === 'section2' ? 'fixed left-0 right-0 z-[100]' : ''
+            )}
+            style={{ top: navHeight + 30 + 'px'}}
+          >
+            section2 배너
+          </div>
+        </div>
 
         <div className="min-h-[700px] bg-green-400">
           Section 2
@@ -168,6 +198,19 @@ export default function SectionScrollPage() {
       )}
 
       <MainContWrapper {...sectionProps('section3', true)} type="bg">
+        <div
+        {...bannerProps('section3')}
+        >
+          <div
+            className={cn(
+              'transition-transform',
+              fixedBannerId === 'section3' ? 'fixed left-0 right-0 z-[100]' : ''
+            )}
+            style={{ top: navHeight + 30 + 'px'}}
+          >
+            section3 배너
+          </div>
+        </div>
 
         <div className="min-h-[250px] bg-red-400">
           Section 3
@@ -177,6 +220,20 @@ export default function SectionScrollPage() {
       </MainContWrapper>
 
       <MainContWrapper {...sectionProps('section4', true)}>
+        <div
+        {...bannerProps('section4')}
+        >
+          <div
+            className={cn(
+              'transition-transform',
+              fixedBannerId === 'section4' ? 'fixed left-0 right-0 z-[100]' : ''
+            )}
+            style={{ top: navHeight + 30 + 'px'}}
+          >
+            section4 배너
+          </div>
+        </div>
+
         <div className="min-h-[850px] bg-purple-400">
           Section 4
           <p>Shorts</p>
@@ -185,6 +242,19 @@ export default function SectionScrollPage() {
       </MainContWrapper>
 
       <MainContWrapper {...sectionProps('section5', true)}>
+        <div
+        {...bannerProps('section5')}
+        >
+          <div
+            className={cn(
+              'transition-transform',
+              fixedBannerId === 'section5' ? 'fixed left-0 right-0 z-[100]' : ''
+            )}
+            style={{ top: navHeight + 30 + 'px'}}
+          >
+            section5 배너
+          </div>
+        </div>
 
         <div className="min-h-[600px] bg-orange-400">
           Section 5
