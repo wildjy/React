@@ -1,22 +1,30 @@
 // useScrollSpySectionFinal >>> useScrollIO >>> 개량버전
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, use } from 'react';
 import type { Swiper as SwiperClass } from 'swiper';
 import { ScrollSpySectionType } from './model/main.type';
 import { throttle } from 'lodash';
+import { cn } from '../common/cn';
 
 type ScrollActiveAnchor = 'top' | 'center' | 'bottom';
+
+export type bannerPropsType = (
+    id: string
+  ) => { ref: (el: HTMLDivElement | null) => void };
 interface UseScrollSpySwiperParams {
   slides: ScrollSpySectionType;
   swiperRef?: React.MutableRefObject<SwiperClass | null>;
   headerHeight?: number;
   navRef?: React.RefObject<HTMLElement | null>;
-  activeAnchor?: 'top' | 'center' | 'bottom';
+  hideDelay?: number;
+  activeAnchor?: ScrollActiveAnchor;
   disabled?: boolean;
+  debug?: boolean;
 }
 
 interface UseScrollSpySwiperReturn {
   activeId: string;
+  checkAnchor?: ScrollActiveAnchor;
   fixedBannerId: string | null;
   navHeight?: number;
   isFixed: boolean;
@@ -25,9 +33,7 @@ interface UseScrollSpySwiperReturn {
     id: string,
     enabled: boolean
   ) => { id?: string; ref?: (el: HTMLDivElement | null) => void };
-  bannerProps: (
-    id: string
-  ) => { ref: (el: HTMLDivElement | null) => void };
+  bannerProps: bannerPropsType;
   moveToSection: (id: string, force?: boolean) => void;
 }
 
@@ -47,8 +53,10 @@ export function useScrollFinal({
   swiperRef,
   headerHeight = 0,
   navRef,
+  hideDelay = 1500,
   disabled,
-  activeAnchor = 'center',
+  activeAnchor = 'top',
+  debug = false,
 }: UseScrollSpySwiperParams): UseScrollSpySwiperReturn {
 
   const [isMobile, setIsMobile] = useState(false);
@@ -96,27 +104,25 @@ export function useScrollFinal({
   const registerSection = useCallback(
     (id: string) => (el: HTMLDivElement | null) => {
       sectionRefs.current[id] = el;
-    },
-    []
-  );
+    }, []);
 
   const registerBanner = useCallback(
     (id: string) => (el: HTMLDivElement | null) => {
       bannerRefs.current[id] = el;
-    },
-    []
-  );
+    }, []);
 
   const sectionProps = (id: string, enabled: boolean) =>
-    enabled ? { id, ref: registerSection(id) } : {};
+    enabled ? { id, ref: registerSection(id), activeClass: cn(id, activeId === id && 'active') } : {};
 
   const bannerProps = (id: string) => ({
     ref: registerBanner(id),
   });
 
-  const sections = Object.values(sectionRefs.current).filter(
-    Boolean
-  ) as HTMLDivElement[];
+  const getSections = useCallback(() => {
+    return Object.values(sectionRefs.current).filter(
+      Boolean
+    ) as HTMLDivElement[];
+  }, []);
 
   /* =======================
    * Swiper Sync
@@ -130,23 +136,29 @@ export function useScrollFinal({
     [slides, swiperRef]
   );
 
-
   /* =======================
    * Active Recompute (CORE)
    ======================= */
   const recomputeActive = useCallback(() => {
     if (disabled || isProgrammatic.current) return;
 
+    const sections = getSections();
     if (!sections.length) return;
 
     const anchorY = getAnchorY(activeAnchor);
+
+    /* 초기, top기준 오류많음 */
+    // const candidate = sections.find(
+    //   (el) => el.getBoundingClientRect().top >= anchorY
+    // );
 
     const candidate = sections
       .map((el) => {
         const rect = el.getBoundingClientRect();
         return {
           id: el.id,
-          distance: Math.abs(rect.top - anchorY),
+          distance: Math.abs(rect.top - anchorY), // ** “가장 가까운 section 하나만 고르는 방식” **
+          // distance: Math.abs((rect.top + rect.height / 2) - anchorY),
         };
       })
       .sort((a, b) => a.distance - b.distance)[0];
@@ -170,7 +182,7 @@ export function useScrollFinal({
       return;
     }
 
-    const anchorY = headerHeight + (navRef?.current?.offsetHeight ?? 0);
+    const anchorY = navRef?.current?.offsetHeight ?? 0;
 
     let current: string | null = null;
 
@@ -182,7 +194,6 @@ export function useScrollFinal({
 
       const rect = section.getBoundingClientRect();
 
-      console.log(slide)
       const nextSlide = slides[i + 1];
       const nextBanner = nextSlide
         ? bannerRefs.current[nextSlide.id]
@@ -200,25 +211,28 @@ export function useScrollFinal({
     }
 
     setFixedBannerId(current);
+  }, [isFixed, navRef, slides, isMobile]);
 
-  }, [headerHeight, isFixed, isMobile, navRef, slides]);
 
   /* =======================
-   * Scroll Detect
+   * resize Detect
    ======================= */
   useEffect(() => {
     if (disabled) return;
 
     // 디바이스 변경 시 현재 위치 기준 재계산
     requestAnimationFrame(() => {
+      // fixeQuickNav();
       recomputeActive();
+      recomputeFixedBanner();
     });
 
     // activeId 기준 swiper 강제 동기화
     if (activeIdRef.current) {
       syncSwiper(activeIdRef.current);
     }
-  }, [disabled, recomputeActive, syncSwiper]);
+  }, [isMobile]);
+
 
   /* =======================
    * Scroll Detect
@@ -250,6 +264,15 @@ export function useScrollFinal({
   }, [disabled, recomputeActive, recomputeFixedBanner]);
 
   /* =======================
+   * PC Reset
+   ======================= */
+  useEffect(() => {
+    if (!isMobile) {
+      setFixedBannerId(null);
+    }
+  }, [isMobile]);
+
+  /* =======================
    * Mobile Reset
    ======================= */
   useEffect(() => {
@@ -279,10 +302,11 @@ export function useScrollFinal({
 
       const CLICK_OFFSET = isSmallSection
         ? window.innerHeight * 0.25
-        : -50;
+        : 50;
 
       const offset = !isMobile
-        ? headerHeight + CLICK_OFFSET
+        // ? headerHeight + CLICK_OFFSET
+        ? CLICK_OFFSET
         : navHeight;
 
       const targetTopRaw =
@@ -344,6 +368,7 @@ export function useScrollFinal({
 
   return {
     activeId,
+    checkAnchor: debug  ? activeAnchor : undefined,
     fixedBannerId,
     navHeight,
     isFixed,

@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/sharedUI/common/cn";
 // import { useScrollSpySection } from "@/sharedUI/Layout/useScrollSpySection";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { SwiperClass, SwiperSlide } from "swiper/react";
 import { A1_BANNER_REPORT_BOTTOM_1003_PC, pcSection, QuicSwiperSlides } from "./mockData";
 import { throttle } from "lodash";
@@ -36,6 +36,7 @@ export default function SectionScrollPage() {
 
   const {
     activeId,
+    checkAnchor,
     navHeight = 0,
     fixedBannerId,
     isFixed,
@@ -49,10 +50,34 @@ export default function SectionScrollPage() {
     headerHeight,
     navRef: quickNavRef,
     activeAnchor: isMobile ? 'top' : 'center', // 🔥 기본 추천
+    debug: true,
   });
 
   return (
     <div className="relative">
+
+      {/* 확인용 */}
+      {checkAnchor && (
+        <div
+          className="fixed w-full left-0 h-[2px] bg-red-500 z-[9999]"
+          style={{
+            top:
+              checkAnchor === 'top'
+                ? 0
+                : checkAnchor === 'center'
+                ? '50%'
+                : 'calc(100% - 2px)',
+            transform:
+              checkAnchor === 'center'
+                ? 'translateY(-50%)'
+                : 'translateY(0)',
+          }}
+        >
+          <span className="absolute top-1/2 w-full text-center -translate-y-1/2">{checkAnchor}</span>
+        </div>
+      )}
+      <p className="fixed top-1/2 left-0 -translate-y-1/2 text-white bg-black z-[1000]">{isMobile ? `isMobile ${activeId}` : `isPc ${activeId}`}</p>
+      {/* 확인용 */}
 
       <div className="min-h-[500px] bg-gray-600">
         <p className="fixed top-10 left-0 text-white bg-black">{isMobile ? `isMobile ${activeId}` : `isPc ${activeId}`}</p>
@@ -270,15 +295,21 @@ export default function SectionScrollPage() {
   );
 }
 
+// MainContWrapper 컴포넌트
 export type MainContWrapperProps = {
   id?: string;
   ref?: React.Ref<HTMLDivElement>;
   type?: 'onlyPc' | 'onlyMobile' | 'bg' | 'notice';
+  activeClass?: string;
   addClass?: string;
   children?: React.ReactNode;
 };
 
-export const MainContWrapper = ({ id, ref, type, addClass, children }: MainContWrapperProps) => {
+export const MainContWrapper = forwardRef<
+  HTMLDivElement,
+  MainContWrapperProps
+>((props, ref) => {
+  const { id, type, activeClass, addClass, children, ...rest } = props;
   return (
     <div className={
       cn('contents-body ',
@@ -287,9 +318,13 @@ export const MainContWrapper = ({ id, ref, type, addClass, children }: MainContW
       type === 'bg' && 'bg-white lg:bg-gray-50',
       type === 'notice' && 'border-t border-gray-50',
     )}>
-      <div id={id} ref={ref} className={cn('content-padding mx-auto max-w-screen-xl py-0', addClass)}>
+      <div
+      id={id}
+      ref={ref}
+      {...rest}
+      className={cn('content-padding mx-auto max-w-screen-xl py-0', activeClass, addClass)}>
         {children}
       </div>
     </div>
   )
-}
+})
