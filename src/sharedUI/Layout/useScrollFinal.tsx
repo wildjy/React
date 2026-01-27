@@ -7,12 +7,14 @@ import { throttle } from 'lodash';
 import { cn } from '../common/cn';
 
 type ScrollActiveAnchor = 'top' | 'center' | 'bottom';
+type useDevices = 'mobile' | 'tablet';
 
 export type bannerPropsType = (
     id: string
   ) => { ref: (el: HTMLDivElement | null) => void };
 interface UseScrollSpySwiperParams {
   slides: ScrollSpySectionType;
+  useDevices?: useDevices;
   swiperRef?: React.MutableRefObject<SwiperClass | null>;
   headerHeight?: number;
   navRef?: React.RefObject<HTMLElement | null>;
@@ -24,6 +26,8 @@ interface UseScrollSpySwiperParams {
 
 interface UseScrollSpySwiperReturn {
   activeId: string;
+  device: string;
+  checkDevice: boolean;
   checkAnchor?: ScrollActiveAnchor;
   fixedBannerId: string | null;
   navHeight?: number;
@@ -51,6 +55,7 @@ const getAnchorY = (type: ScrollActiveAnchor) => {
 export function useScrollFinal({
   slides,
   swiperRef,
+  useDevices = 'tablet',
   headerHeight = 0,
   navRef,
   hideDelay = 1500,
@@ -62,6 +67,9 @@ export function useScrollFinal({
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [isDeskTop, setIsDeskTop] = useState(false);
+
+  const isDevice =  useDevices === 'tablet' ? isTablet : useDevices === 'mobile' ? isMobile : false;
+  const device = useDevices;
 
   useEffect(() => {
     const handleResize = throttle(() => {
@@ -111,18 +119,22 @@ export function useScrollFinal({
       bannerRefs.current[id] = el;
     }, []);
 
-  const sectionProps = (id: string, enabled: boolean) =>
-    enabled ? { id, ref: registerSection(id), activeClass: cn(id, activeId === id && 'active') } : {};
-
-  const bannerProps = (id: string) => ({
-    ref: registerBanner(id),
-  });
-
   const getSections = useCallback(() => {
     return Object.values(sectionRefs.current).filter(
       Boolean
     ) as HTMLDivElement[];
   }, []);
+
+  const sectionProps = (id: string, enabled: boolean) =>
+    enabled ? {
+      id,
+      ref: registerSection(id),
+      activeClass: cn(id, activeId === id && 'active'), // section Active 스타일링 용도
+    } : {};
+
+  const bannerProps = (id: string) => ({
+    ref: registerBanner(id),
+  });
 
   /* =======================
    * Swiper Sync
@@ -301,12 +313,12 @@ export function useScrollFinal({
       const isSmallSection = rect.height < window.innerHeight * 0.6;
 
       const CLICK_OFFSET = isSmallSection
-        ? window.innerHeight * 0.25
-        : 50;
+        ? window.innerHeight * 0.25 // 작은 섹션일 땐 좀 더 내려서 보여주기
+        : navHeight - 10; // 일반 섹션일 땐 네비게이션 높이만큼 빼기
 
-      const offset = !isMobile
+      const offset = isDevice
         // ? headerHeight + CLICK_OFFSET
-        ? CLICK_OFFSET
+        ? CLICK_OFFSET // pc 기준 헤더 높이 제외
         : navHeight;
 
       const targetTopRaw =
@@ -368,6 +380,8 @@ export function useScrollFinal({
 
   return {
     activeId,
+    device,
+    checkDevice: isDevice,
     checkAnchor: debug  ? activeAnchor : undefined,
     fixedBannerId,
     navHeight,

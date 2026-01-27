@@ -36,6 +36,8 @@ export default function SectionScrollPage() {
 
   const {
     activeId,
+    device,
+    checkDevice,
     checkAnchor,
     navHeight = 0,
     fixedBannerId,
@@ -45,13 +47,16 @@ export default function SectionScrollPage() {
     bannerProps,
     moveToSection,
   } = useScrollFinal({
+    useDevices: 'tablet', // 'mobile' | 'tablet'
     slides: QuicSwiperSlides,
     swiperRef,
     headerHeight,
     navRef: quickNavRef,
-    activeAnchor: isMobile ? 'top' : 'center', // 🔥 기본 추천
+    activeAnchor: isTablet ? 'top' : 'center', // 🔥 기본 추천
     debug: true,
   });
+
+  console.log('■ SectionScrollPage : ', { device, checkDevice, activeId, fixedBannerId });
 
   return (
     <div className="relative">
@@ -76,15 +81,18 @@ export default function SectionScrollPage() {
           <span className="absolute top-1/2 w-full text-center -translate-y-1/2">{checkAnchor}</span>
         </div>
       )}
-      <p className="fixed top-1/2 left-0 -translate-y-1/2 text-white bg-black z-[1000]">{isMobile ? `isMobile ${activeId}` : `isPc ${activeId}`}</p>
+      <p className="fixed top-1/2 left-0 -translate-y-1/2 text-white bg-black z-[1000]">{checkDevice ? `${device} ${activeId}` : `isPc ${activeId}`}</p>
       {/* 확인용 */}
 
       <div className="min-h-[500px] bg-gray-600">
-        <p className="fixed top-10 left-0 text-white bg-black">{isMobile ? `isMobile ${activeId}` : `isPc ${activeId}`}</p>
+        <p className="fixed top-10 left-0 text-white bg-black">{checkDevice ? `${device} ${activeId}` : `isPc ${activeId}`}</p>
       </div>
 
-      {isMobile && (
-        <MainContWrapper type='onlyMobile' addClass="pt-6 pb-3 ">
+      {checkDevice && (
+        <MainContWrapper type={
+        device === 'tablet' ? 'onlyTablet'
+        : device === 'mobile' ? 'onlyMobile'
+        : null} addClass="pt-6 pb-3 ">
           {/* <div className="bg-green-100">
             [Mobile] 메인 퀵 메뉴 영역
           </div> */}
@@ -135,7 +143,7 @@ export default function SectionScrollPage() {
 
       <MainContWrapper addClass="pt-5 pb-[3.125rem] bg-transparent lg:bg-gray-50">
         메인 퀵 메뉴 영역
-        {!isMobile && (
+        {!checkDevice && (
           <div className="fixed bottom-0 w-1/2 right-0 z-[1000]">
             {activeId}
             {QuicSwiperSlides.map((slide) => {
@@ -214,10 +222,10 @@ export default function SectionScrollPage() {
         <div className="sentinel w-full h-[1px] bg-red-400" data-section-id="section2"> </div>
       </MainContWrapper>
 
-      {isTablet && (
+      {!checkDevice && (
         <MainContWrapper>
           <div className="border border-gray-300">
-            1024이상일때만 노출 A1 배너 영역
+            {device === 'tablet' ? '1024': device === 'mobile' ? '768' : ''} 이상일때만 노출 A1 배너 영역
           </div>
         </MainContWrapper>
       )}
@@ -299,7 +307,7 @@ export default function SectionScrollPage() {
 export type MainContWrapperProps = {
   id?: string;
   ref?: React.Ref<HTMLDivElement>;
-  type?: 'onlyPc' | 'onlyMobile' | 'bg' | 'notice';
+  type?: 'onlyPc' | 'onlyMobile' | 'onlyTablet' | 'bg' | 'notice' | null;
   activeClass?: string;
   addClass?: string;
   children?: React.ReactNode;
@@ -313,10 +321,11 @@ export const MainContWrapper = forwardRef<
   return (
     <div className={
       cn('contents-body ',
-      type === 'onlyPc' && 'hidden lg:block',
-      type === 'onlyMobile' && 'block md:hidden ',
-      type === 'bg' && 'bg-white lg:bg-gray-50',
-      type === 'notice' && 'border-t border-gray-50',
+        type === 'onlyPc' && 'hidden lg:block',
+        type === 'onlyMobile' && 'block md:hidden md:py-[2.625rem]',
+        type === 'onlyTablet' && 'block lg:hidden lg:py-[2.625rem]',
+        type === 'bg' && 'bg-transparent lg:bg-grayBlue-50',
+        type === 'notice' && 'border-t border-gray-50'
     )}>
       <div
       id={id}
