@@ -68,7 +68,7 @@ export function useScrollFinal({
   const [isTablet, setIsTablet] = useState(false);
   const [isDeskTop, setIsDeskTop] = useState(false);
 
-  const isDevice =  useDevices === 'tablet' ? isTablet : useDevices === 'mobile' ? isMobile : false;
+  const isDevice =  useDevices === 'tablet' ? isTablet || isMobile : useDevices === 'mobile' ? isMobile : false;
   const device = useDevices;
 
   useEffect(() => {
@@ -316,10 +316,11 @@ export function useScrollFinal({
         ? window.innerHeight * 0.25 // 작은 섹션일 땐 좀 더 내려서 보여주기
         : navHeight - 10; // 일반 섹션일 땐 네비게이션 높이만큼 빼기
 
+
       const offset = isDevice
         // ? headerHeight + CLICK_OFFSET
-        ? CLICK_OFFSET // pc 기준 헤더 높이 제외
-        : navHeight;
+        ? CLICK_OFFSET // isDevice 기준 헤더 높이 제외
+        : isTablet ? 80 : headerHeight; // pc 기준 헤더 높이 제외
 
       const targetTopRaw =
         rect.top + window.scrollY - offset;
@@ -335,13 +336,19 @@ export function useScrollFinal({
       });
 
       const RELEASE_DISTANCE = 40;
+      let timeoutId: number | null = null;
+
+      const release = () => {
+        isProgrammatic.current = false;
+        window.removeEventListener('scroll', checkEnd);
+        if (timeoutId) clearTimeout(timeoutId);
+        recomputeActive();
+        recomputeFixedBanner();
+      };
 
       const checkEnd = () => {
         if (Math.abs(window.scrollY - targetTop) < RELEASE_DISTANCE) {
-          isProgrammatic.current = false;
-          window.removeEventListener('scroll', checkEnd);
-          recomputeActive();
-          recomputeFixedBanner();
+          release();
         }
       };
 

@@ -52,7 +52,7 @@ export default function SectionScrollPage() {
     swiperRef,
     headerHeight,
     navRef: quickNavRef,
-    activeAnchor: isTablet ? 'top' : 'center', // 🔥 기본 추천
+    activeAnchor: isTablet || isMobile ? 'top' : 'center', // 🔥 기본 추천
     debug: true,
   });
 
