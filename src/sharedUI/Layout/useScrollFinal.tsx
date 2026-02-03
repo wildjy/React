@@ -68,9 +68,6 @@ export function useScrollFinal({
   const [isTablet, setIsTablet] = useState(false);
   const [isDeskTop, setIsDeskTop] = useState(false);
 
-  const isDevice =  useDevices === 'tablet' ? isTablet || isMobile : useDevices === 'mobile' ? isMobile : false;
-  const device = useDevices;
-
   useEffect(() => {
     const handleResize = throttle(() => {
       const w = window.innerWidth;
@@ -86,6 +83,11 @@ export function useScrollFinal({
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  const isDevice =  useDevices === 'tablet' ? isTablet || isMobile : useDevices === 'mobile' ? isMobile : false;
+  const device = useDevices;
+
+  // console.log(isTablet, 'isTablet in useScrollFinal', isDevice, 'isDevice');
 
   /* =======================
    * Refs
@@ -314,13 +316,14 @@ export function useScrollFinal({
 
       const CLICK_OFFSET = isSmallSection
         ? window.innerHeight * 0.25 // 작은 섹션일 땐 좀 더 내려서 보여주기
-        : navHeight - 10; // 일반 섹션일 땐 네비게이션 높이만큼 빼기
-
+        : isDevice ? /* mobile */ navHeight - 10 : 0; // 일반 섹션일 땐 네비게이션 높이만큼 빼기
 
       const offset = isDevice
-        // ? headerHeight + CLICK_OFFSET
-        ? CLICK_OFFSET // isDevice 기준 헤더 높이 제외
-        : isTablet ? 80 : headerHeight; // pc 기준 헤더 높이 제외
+        ? /* mobile */  CLICK_OFFSET // isDevice 기준 PC, Tablet 이상일때, 헤더 높이 제외
+        : isDeskTop ? 0: headerHeight; // pc 기준 헤더 높이 제외
+        isDevice ? console.log('1. check tablet') : console.log('check pc');
+
+        console.log('check Deivce', isTablet, 'isDevice:', isDevice, 'CLICK_OFFSET:',  CLICK_OFFSET, 'offset', offset, 'headerHeight', headerHeight, 'navHeight', navHeight);
 
       const targetTopRaw =
         rect.top + window.scrollY - offset;
@@ -354,7 +357,7 @@ export function useScrollFinal({
 
       window.addEventListener('scroll', checkEnd);
     },
-    [headerHeight, isMobile, navRef, recomputeActive, syncSwiper]
+    [headerHeight, isMobile, isTablet, isDevice, navRef, recomputeActive, syncSwiper]
   );
 
   /* =======================

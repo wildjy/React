@@ -180,7 +180,7 @@ export default function SectionScrollPage() {
           <div
             className={cn(
               'transition-transform',
-              fixedBannerId === 'section1' ? 'fixed left-0 right-0 z-[100]' : ''
+              fixedBannerId === 'section1' ? 'fixed left-0 right-0 z-[100] text-white bg-black/30' : ''
             )}
             style={{ top: navHeight + 30 + 'px'}}
           >
@@ -191,7 +191,7 @@ export default function SectionScrollPage() {
         Section 1
         <p>맞춤정보</p>
         <div className="md:flex">
-          <div className="grow min-h-[300px] odd:bg-gray-100 even:bg-gray-400">BOX 1</div>
+          <div className="grow min-h-[700px] odd:bg-gray-100 even:bg-gray-400">BOX 1</div>
         </div>
         <div className="sentinel w-full h-[1px] bg-red-400" data-section-id="section1"> </div>
       </MainContWrapper>
@@ -207,7 +207,7 @@ export default function SectionScrollPage() {
           <div
             className={cn(
               'transition-transform',
-              fixedBannerId === 'section2' ? 'fixed left-0 right-0 z-[100]' : ''
+              fixedBannerId === 'section2' ? 'fixed left-0 right-0 z-[100] text-white bg-black/30' : ''
             )}
             style={{ top: navHeight + 30 + 'px'}}
           >
@@ -237,7 +237,7 @@ export default function SectionScrollPage() {
           <div
             className={cn(
               'transition-transform',
-              fixedBannerId === 'section3' ? 'fixed left-0 right-0 z-[100]' : ''
+              fixedBannerId === 'section3' ? 'fixed left-0 right-0 z-[100] text-white bg-black/30' : ''
             )}
             style={{ top: navHeight + 30 + 'px'}}
           >
@@ -259,7 +259,7 @@ export default function SectionScrollPage() {
           <div
             className={cn(
               'transition-transform',
-              fixedBannerId === 'section4' ? 'fixed left-0 right-0 z-[100]' : ''
+              fixedBannerId === 'section4' ? 'fixed left-0 right-0 z-[100] text-white bg-black/30' : ''
             )}
             style={{ top: navHeight + 30 + 'px'}}
           >
@@ -267,7 +267,7 @@ export default function SectionScrollPage() {
           </div>
         </div>
 
-        <div className="min-h-[850px] bg-purple-400">
+        <div className="min-h-[700px] bg-purple-400">
           Section 4
           <p>Shorts</p>
         </div>
@@ -281,7 +281,7 @@ export default function SectionScrollPage() {
           <div
             className={cn(
               'transition-transform',
-              fixedBannerId === 'section5' ? 'fixed left-0 right-0 z-[100]' : ''
+              fixedBannerId === 'section5' ? 'fixed left-0 right-0 z-[100] text-white bg-black/30' : ''
             )}
             style={{ top: navHeight + 30 + 'px'}}
           >
@@ -289,7 +289,7 @@ export default function SectionScrollPage() {
           </div>
         </div>
 
-        <div className="min-h-[600px] bg-orange-400">
+        <div className="min-h-[700px] bg-orange-400">
           Section 5
           <p>TOP트렌드</p>
         </div>
