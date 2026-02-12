@@ -175,7 +175,7 @@ export default function SectionScrollPage() {
 
       <MainContWrapper {...sectionProps('section1', true)}>
         <div
-        {...bannerProps('section1')}
+          {...bannerProps('section1')}
         >
           <div
             className={cn(

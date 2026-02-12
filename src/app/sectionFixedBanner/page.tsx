@@ -138,7 +138,7 @@ window.addEventListener('scroll', () => {
       <AnchorCheck />
       {/* 기준점 표시용 */}
 
-      <div className="flex items-center justify-center h-[50rem]">기준점 <b className="px-2 text-3xl">'{posText}'</b> 일때 </div>
+      <div className="fixed -mt-5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center h-[50rem]">기준점 <b className="px-2 text-3xl">'{posText}'</b> 일때 </div>
       <SectionWrapper
         id="section-1"
         addClass={`${activeId === 'section-1' ? activeClass : ''} h-[15rem] bg-blue-100`}

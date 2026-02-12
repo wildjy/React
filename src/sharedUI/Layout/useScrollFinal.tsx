@@ -11,7 +11,9 @@ type useDevices = 'mobile' | 'tablet';
 
 export type bannerPropsType = (
     id: string
-  ) => { ref: (el: HTMLDivElement | null) => void };
+  ) => {
+    className: string; id?: string; ref: (el: HTMLDivElement | null) => void
+  };
 interface UseScrollSpySwiperParams {
   slides: ScrollSpySectionType;
   useDevices?: useDevices;
@@ -136,6 +138,7 @@ export function useScrollFinal({
 
   const bannerProps = (id: string) => ({
     ref: registerBanner(id),
+    className: cn(id, activeId === id && 'active'), // banner Active 스타일링 용도
   });
 
   /* =======================
@@ -196,7 +199,7 @@ export function useScrollFinal({
       return;
     }
 
-    const anchorY = navRef?.current?.offsetHeight ?? 0;
+    const anchorY = (navRef?.current?.offsetHeight ?? 0) - 0; // 네비게이션 바 아래 약간 여유 공간
 
     let current: string | null = null;
 
@@ -236,7 +239,7 @@ export function useScrollFinal({
 
     // 디바이스 변경 시 현재 위치 기준 재계산
     requestAnimationFrame(() => {
-      // fixeQuickNav();
+      fixeQuickNav();
       recomputeActive();
       recomputeFixedBanner();
     });
@@ -363,18 +366,34 @@ export function useScrollFinal({
   /* =======================
    * QuickNav Fixed
    ======================= */
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (!navRef?.current) return;
+  //     const rect = navRef.current.getBoundingClientRect();
+  //     setIsFixed(rect.top - headerHeight < 0);
+  //     setNavHeight(rect.height);
+  //   };
+
+  //   window.addEventListener('scroll', handleScroll, { passive: true });
+  //   return () => window.removeEventListener('scroll', handleScroll);
+  // }, [headerHeight, navRef]);
+
+  const fixeQuickNav = throttle(() => {
+    if (!navRef?.current) return;
+
+    const navRect = navRef.current.getBoundingClientRect();
+    const fixed = navRect.top < 0
+    setIsFixed(fixed);
+    setNavHeight(navRect.height);
+  }, 100);
+
   useEffect(() => {
-    const handleScroll = () => {
-      if (!navRef?.current) return;
-      const rect = navRef.current.getBoundingClientRect();
-      setIsFixed(rect.top - headerHeight < 0);
-      setNavHeight(rect.height);
+    window.addEventListener('scroll', fixeQuickNav, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', fixeQuickNav);
+      fixeQuickNav.cancel();
     };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [headerHeight, navRef]);
-
+  }, [fixeQuickNav]);
   /* =======================
    * Init Active
    ======================= */
