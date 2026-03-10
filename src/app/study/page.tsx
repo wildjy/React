@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, useRef, ChangeEvent } from "react";
+import { useState, useEffect, useCallback, useRef, ChangeEvent, ReactNode } from "react";
 import UseStatePage from './useState';
 import UseEffectPage from './useEffect';
 import { Itemtype, UseItem } from './UseItem';
@@ -7,7 +7,13 @@ import Conditional from './Conditional';
 import throttle from 'lodash/throttle';
 import debounce from 'lodash/debounce';
 
-function AlertBtn ({ message, onCheck, children }) {
+interface ActionButtonProps {
+  message?: string;
+  onCheck: () => void;
+  children?: ReactNode;
+}
+
+function AlertBtn ({ message, onCheck, children }: ActionButtonProps) {
   const [ newMessage, setNewMessage ]= useState(false);
 
   return (
@@ -20,7 +26,7 @@ function AlertBtn ({ message, onCheck, children }) {
   )
 }
 
-function Button ({ onCheck, children }) {
+function Button ({ onCheck, children }: ActionButtonProps) {
   return (
     <div>
       <button onClick={onCheck}>
@@ -55,7 +61,7 @@ export default function Page() {
     age: '10',
   })
 
-  const handleControl = (newUsers) => {
+  const handleControl = (newUsers: string) => {
     // setUsers((prevUsers) => ({
     //   ...prevUsers,
     //   name: newUsers
@@ -188,7 +194,7 @@ export default function Page() {
   const [query, setQuery] = useState<string>('');
 
   const handleDebounce = useCallback(
-    debounce((newQuery) => {
+    debounce((newQuery: string) => {
       console.log('debounce for', newQuery)
     }, 500),
     []

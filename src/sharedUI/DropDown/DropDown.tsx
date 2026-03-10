@@ -140,6 +140,7 @@ const DropDownVariants = cva(
 
 // Report Common DropDown
 interface DropDownProps extends VariantProps<typeof DropDownVariants> {
+  children?: React.ReactNode;
   type?: typeMode;
   align?: alignMode;
   icon?: iconMode;

@@ -304,7 +304,7 @@ export default function SectionScrollPage() {
 }
 
 // MainContWrapper 컴포넌트
-export type MainContWrapperProps = {
+type MainContWrapperProps = {
   id?: string;
   ref?: React.Ref<HTMLDivElement>;
   type?: 'onlyPc' | 'onlyMobile' | 'onlyTablet' | 'bg' | 'notice' | null;
@@ -313,7 +313,7 @@ export type MainContWrapperProps = {
   children?: React.ReactNode;
 };
 
-export const MainContWrapper = forwardRef<
+const MainContWrapper = forwardRef<
   HTMLDivElement,
   MainContWrapperProps
 >((props, ref) => {

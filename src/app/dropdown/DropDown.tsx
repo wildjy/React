@@ -1,4 +1,4 @@
-import { cn } from "../common/cn";
+import { cn } from "@/sharedUI/common/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { useState, useRef, useEffect } from 'react';
 

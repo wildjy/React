@@ -20,8 +20,9 @@ export const ScoreAnalysis: React.FC<ScoreAnalysisProps> = ({ gapScore, gapValue
           <li key={index} className="px-[3rem] md:px-0 w-full md:w-auto flex flex-wrap justify-between md:gap-x-[5rem] md:first:mr-[7rem]">
             <span className="flex items-center w-1/2 md:w-auto">{item.label}</span>
             <span className="flex items-center justify-end w-1/2 gap-2 md:w-auto md:justify-start">
-              약 <Arrow type={item.score?.[1]} />
-              {item.score?.[0]} 점
+              약{' '}
+              <Arrow type={Array.isArray(item.score) ? item.score[1] : false} />
+              {Array.isArray(item.score) ? item.score[0] : item.score} 점
             </span>
           </li>
         ))}

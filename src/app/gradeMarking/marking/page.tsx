@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import dynamic from "next/dynamic";
 import { pageData  } from "../../../sharedUI/PageData/PageData";
 import { Container } from "../../../sharedUI/Layout/Container";
@@ -17,7 +17,7 @@ import { Title } from "../../../sharedUI/Title/Title";
 
 import Table from "../../../sharedUI/Table/Table";
 import { TextInput } from '../../../sharedUI/Input/TextInput';
-import { DropDown } from '../../../sharedUI/DropDown/DropDown';
+import { DropDown, DropDownOptionType } from '../../../sharedUI/DropDown/DropDown';
 
 import { ButtonBox } from "../../../sharedUI/Button/ButtonBox";
 import { ButtonLink } from "../../../sharedUI/Button/Link";
@@ -76,12 +76,7 @@ const gradeMarkingPage = () => {
     ],
   };
 
-  interface OptionType {
-    value: string;
-    label: string;
-  }
-
-  const [selectedOption, setSelectedOption] = useState<{ [key: string]: OptionType | null }>({
+  const [selectedOption, setSelectedOption] = useState<{ [key: string]: DropDownOptionType | null }>({
     drop1: {
       value: 'a',
       label: '화법과 작문',
@@ -96,7 +91,7 @@ const gradeMarkingPage = () => {
     },
   });
 
-  const handleChange = (key: string, option: OptionType) => {
+  const handleChange = (key: string, option: DropDownOptionType) => {
     console.log('Selected Option:', option);
     setSelectedOption((prevState) => ({
       ...prevState,
@@ -238,7 +233,7 @@ const gradeMarkingPage = () => {
               options={dropOptions.dropOption2}
               layer
               min="min-w-[9rem]"
-              value={selectedOption.drop1}
+              value={selectedOption.drop1?.value}
               onChange={(option) => handleChange('drop1', option)}
               label="선택 layer"
             />

@@ -37,6 +37,14 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "src/stories/**",
+    "**/*_bak.ts",
+    "**/*_bak.tsx",
+    "**/page_.ts",
+    "**/page_.tsx",
+    "**/bak/**"
   ]
 }

@@ -39,7 +39,7 @@ function ScrollPageContents() {
 
   const targetRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth < 1024);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
   const [isMobile, setIsMobile] = useState(false);
 
   const [isOpenPopup, setIsOpenPopup] = useState<{ [key: string]: boolean }>({
@@ -102,14 +102,14 @@ function ScrollPageContents() {
   ];
 
 
-  const Analysis = [
+  const Analysis: { label: string; score: string | [string, boolean] }[] = [
     { label: '내 모평 점수', score: '999.99' },
     { label: '수능예측 점수', score: '999.99' },
     { label: '지원가능 점수', score: '999.99' },
     { label: '점수 차이', score: ['999.99', true] },
   ];
 
-  const ScoreAnalysisData = [
+  const ScoreAnalysisData: { label: string; score: [string, boolean] }[] = [
     { label: '💯 원점수', score: ['5', true] },
     { label: '✏️ 문항수', score: ['2.5', true] },
   ];
@@ -310,7 +310,7 @@ function ScrollPageContents() {
             <div>
               <p className="reportTitle">내 합격예측 분석 결과</p>
 
-              <AnalysisResult name="진학사" myScore="876.72" type="type6" Analysis={Analysis} />
+              <AnalysisResult name="진학사" myScore="876.72" type="type5" Analysis={Analysis} />
 
               <ReportTableTypeRow
                 datas={[

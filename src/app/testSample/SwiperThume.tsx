@@ -27,7 +27,7 @@ const SwiperThumeSlider: React.FC<SwiperSliderProps> = ({
   auto,
   space,
   delay = 400,
-  speed = '500'
+  speed = 500
 }) => {
   const [swiperIndex, setSwiperIndex] = useState(0); //
   const [swiperTotalIndex, setSwiperTotalIndex] = useState(0); // -> 페이지네이션용
@@ -111,7 +111,7 @@ const SwiperThumeSlider: React.FC<SwiperSliderProps> = ({
   const swiperOption: SwiperProps = {
     freeMode: freeMode,
     slidesPerView: "auto",
-    spaceBetween: "0",
+    spaceBetween: 0,
     autoplay: auto ? { delay: delay, disableOnInteraction: false, } : false,
     speed: speed,
     loop: loop,

@@ -34,3 +34,20 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Deploy To GitHub Pages
+
+This project is configured for GitHub Pages with:
+
+- `output: "export"` in `next.config.mjs`
+- `basePath` and `assetPrefix` set to `/React`
+- `deploy` script publishing the `out` directory
+
+Use these commands:
+
+```bash
+npm install
+npm run deploy
+```
+
+Then in GitHub repository settings, set Pages source to `gh-pages` branch.

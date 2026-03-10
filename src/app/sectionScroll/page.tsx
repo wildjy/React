@@ -182,7 +182,7 @@ export default function SectionScrollPage() {
   );
 }
 
-export type MainContWrapperProps = {
+type MainContWrapperProps = {
   id?: string;
   ref?: React.Ref<HTMLDivElement>;
   type?: 'onlyPc' | 'onlyMobile' | 'bg' | 'notice';
@@ -190,7 +190,7 @@ export type MainContWrapperProps = {
   children?: React.ReactNode;
 };
 
-export const MainContWrapper = ({ id, ref, type, addClass, children }: MainContWrapperProps) => {
+const MainContWrapper = ({ id, ref, type, addClass, children }: MainContWrapperProps) => {
   return (
     <div className={
       cn('contents-body ',

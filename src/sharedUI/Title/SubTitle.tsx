@@ -3,7 +3,7 @@ import React, { } from "react";
 import { cn } from "../common/cn";
 
 interface TitleProps {
-  tag?: keyof JSX.IntrinsicElements;
+  tag?: keyof React.JSX.IntrinsicElements;
   children?: React.ReactNode;
   addClass?: string;
   setColor?: string;

@@ -171,7 +171,7 @@ const SwiperPage: React.FC = () => {
 
           <div>
             <div className="mb-10">
-              <SwiperSlider id={11} autoplay pager={{show:true}} arrow={{show:true}} freeMode loop delay={2000}>
+              <SwiperSlider id={11} autoplay={{ auto: true, delay: 2000 }} pager={{show:true}} arrow={{show:true}} freeMode loop>
                 {slides_img.map((slide, index) => (
                   <SwiperSlide
                     key={index}
@@ -194,7 +194,7 @@ const SwiperPage: React.FC = () => {
             </div>
 
             <div className="mb-10">
-              <SwiperSlider id={1200} pager={{show:true}} arrow={{show:true}} freeMode delay={1800}>
+              <SwiperSlider id={1200} autoplay={{ auto: true, delay: 1800 }} pager={{show:true}} arrow={{show:true}} freeMode>
                 {slidesItems.map((slide, index) => (
                   <SwiperSlide
                     key={index}
@@ -219,7 +219,7 @@ const SwiperPage: React.FC = () => {
             </div>
 
             <div className="mb-10">
-              <SwiperSlider id={221} pager={{show: true}} arrow={{show: true, leftAddClass: 'bg-red-400'}} freeMode delay={1800}>
+              <SwiperSlider id={221} autoplay={{ auto: true, delay: 1800 }} pager={{show: true}} arrow={{show: true, leftAddClass: 'bg-red-400'}} freeMode>
                 <SwiperSlide
                   style={{width: '100%'}}
                   className="pr-5 last:pr-0 flex justify-center items-center w-auto "

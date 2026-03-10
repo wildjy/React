@@ -4,7 +4,7 @@ import { cn } from "../common/cn";
 
 interface TitleProps {
   child?: boolean;
-  tag?: keyof JSX.IntrinsicElements;
+    tag?: keyof React.JSX.IntrinsicElements;
   type?: 'default' | 'report';
   children?: React.ReactNode;
   align?: string;

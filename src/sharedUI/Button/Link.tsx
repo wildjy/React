@@ -1,7 +1,7 @@
 'use client';
 import { VariantProps } from 'class-variance-authority';
 import Link from 'next/link';
-import { AnchorHTMLAttributes } from 'react';
+import type { AnchorHTMLAttributes, ElementType, JSX, ReactNode } from 'react';
 import { cn } from '../common/cn';
 import { ButtonVariants } from './ButtonVariants';
 
@@ -10,14 +10,14 @@ type modeType = 'primary' | 'secondary' | 'tertiary' | 'text';
 type roundType = 'rec' | 'sm' | 'full';
 
 interface LinkButtonProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'type'>, VariantProps<typeof ButtonVariants> {
-  tag?: keyof JSX.IntrinsicElements | React.ElementType;
-  children?: React.ReactNode;
+  tag?: keyof JSX.IntrinsicElements | ElementType;
+  children?: ReactNode;
   blank?: boolean;
   addClass?: string;
   href?: string;
   value?: string;
-  startIcon?: React.ReactNode[];
-  endIcon?: React.ReactNode[];
+  startIcon?: ReactNode[];
+  endIcon?: ReactNode[];
   disabled?: boolean;
 }
 

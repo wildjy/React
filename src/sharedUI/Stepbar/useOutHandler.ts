@@ -1,7 +1,7 @@
 import { useEffect, useState, RefObject  } from "react";
 
 interface UseOutHandlerProps {
-  refs: RefObject<HTMLElement>[];
+  refs: RefObject<HTMLElement | null>[];
 }
 
 export function  useOutHandler ({ refs }: UseOutHandlerProps) {
@@ -9,7 +9,7 @@ export function  useOutHandler ({ refs }: UseOutHandlerProps) {
 
   const isOutSide = (target: EventTarget | null) => {
     return refs.every((ref) => {
-      return ref.current && !ref.current.contains(target as Node);
+      return !ref.current || !ref.current.contains(target as Node);
     })
   }
 

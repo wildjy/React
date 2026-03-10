@@ -1,14 +1,14 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 'use client';
-import { InfoTextBox, Arrow } from '@hijinhak-front/ui';
-import { AnalysisItem } from './report-page.type';
+import { InfoTextBox } from '../../sharedUI/Info/InfoTextBox';
+import { Arrow } from '../../sharedUI/Flag/Arrow';
 import React, { forwardRef } from 'react';
 
 interface AnalysisResultProps {
   Analysis: { label?: string; score?: string | [string, boolean] }[];
   name?: string;
   myScore?: string;
-  type?: 'type1' | 'type2' | 'type3' | 'type4';
+  type?: 'type1' | 'type2' | 'type3' | 'type4' | 'type5';
   score?: string;
 }
 
@@ -73,11 +73,11 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ Analysis, name, 
                     index === 0 ? 'justify-start' : index === Analysis.length - 1 ? 'justify-end' : 'justify-center'
                   } flex md:w-full`}
                 >
-                  {index === Analysis.length - 1 ? (
+                  {index === Analysis.length - 1 && Array.isArray(item.score) ? (
                     <>
                       <b className="flex items-center gap-1">
-                        <Arrow type={item.score?.[1]} />
-                        {item.score?.[0]}
+                        <Arrow type={item.score[1]} />
+                        {item.score[0]}
                       </b>
                       점
                     </>

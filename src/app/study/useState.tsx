@@ -58,7 +58,7 @@ const UseStatePage: React.FC = () => {
     { id: 3, num: 0, label: 'cc'},
   ]);
 
-  function handleUpCounter (index) {
+  function handleUpCounter (index: number) {
     const upCounter = counter.map((c, i) =>
       // i === index ? c + 1 : c
       {if(i === index) {

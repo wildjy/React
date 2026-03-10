@@ -59,7 +59,7 @@ export const RecomGroupSwiper: React.FC<RecomGroupSwiperProps> = ({ items, isSel
   };
 
   const [disableNav, setDisableNav] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
 
   const groupImages = (arr: Slide[], size: number, isMobile: boolean): Slide[][] => {
     return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) => {

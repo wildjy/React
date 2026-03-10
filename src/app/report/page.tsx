@@ -34,7 +34,7 @@ function ScrollPageContents() {
 
   const targetRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth < 1024);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
   const [isMobile, setIsMobile] = useState(false);
 
   const [isOpenPopup, setIsOpenPopup] = useState<{ [key: string]: boolean }>({

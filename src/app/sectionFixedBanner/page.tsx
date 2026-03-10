@@ -178,7 +178,7 @@ window.addEventListener('scroll', () => {
   );
 }
 
-export const AnchorCheck = () => {
+const AnchorCheck = () => {
   return (
     <>
       <div className="fixed top-0 w-full h-[1px] text-red-800 bg-red-800">
@@ -193,6 +193,6 @@ export const AnchorCheck = () => {
     </>
   )
 }
-export const SectionWrapper = ({id, addClass, children}: {id?: string, addClass?: string, children: React.ReactNode}) => {
+const SectionWrapper = ({id, addClass, children}: {id?: string, addClass?: string, children: React.ReactNode}) => {
   return <section  id={id} className={cn("flex items-center justify-center w-full h-[30rem]", addClass)}>{children}</section>;
 }

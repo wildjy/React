@@ -281,25 +281,25 @@ export default function TongLayoutTestPage() {
               color={['#84DCCA', '#ddd']}
               min={0}
               max={100}
-              average={85}
-              myscore={99}
+              value={85}
+              score={99}
             />
             <BarGraph
               size={30}
               color={['#FEDA62', '#ddd']}
               min={350}
               max={900}
-              average={800}
-              myscore={10}
+              value={800}
+              score={10}
             />
             <BarGraph
-              size={40} min={200} max={850} average={7} myscore={650} />
+              size={40} min={200} max={850} value={7} score={650} />
             <BarGraph
               color={['purple', '#ddd']}
               min={200}
               max={850}
-              average={700}
-              myscore={650}
+              value={700}
+              score={650}
               addClass="h-[3rem] text-sm text-white"
             />
           </div>

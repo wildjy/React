@@ -1,7 +1,10 @@
 
 interface TabProps {
-  active?: string;
-  title?: string;
+  slide: {
+    url: string;
+    active?: string;
+    title?: string;
+  };
 }
 
 const TabSlide: React.FC<TabProps> = ({ slide }) => {

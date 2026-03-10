@@ -67,7 +67,7 @@ const typeColors: Record<CommonCodeKeys['REGULAR_PASS_SCORE_RANGE_CODES'], strin
 interface ResultFlagProps
   extends HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof ResultFlagVariants> {
-  tag?: keyof JSX.IntrinsicElements;
+  tag?: keyof React.JSX.IntrinsicElements;
   addClass?: string;
   label?: string;
   summary?: boolean;

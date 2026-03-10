@@ -88,7 +88,7 @@ const AccordionOneTop: React.FC<accordionOneTopProps> = ({ children, id }) => {
 
   return (
     <>
-      <div className={`accdOne-top ${openId === id ? 'active' : ''}`} onClick={() => openEvent(id)}>
+      <div className={`accdOne-top ${openId === id ? 'active' : ''}`} onClick={() => id && openEvent(id)}>
         { children }
       </div>
     </>

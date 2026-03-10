@@ -4,7 +4,7 @@ import React, { JSX } from "react";
 import { cn } from "../common/cn";
 
 interface GradeFlagProps {
-  tag?: keyof JSX.IntrinsicElements;
+  tag?: keyof React.JSX.IntrinsicElements;
   addClass?: string;
   label?: string;
   type?: string;

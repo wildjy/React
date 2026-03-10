@@ -665,7 +665,7 @@ const HighSchoolPage: React.FC = () => {
             */}
 
             <div className="border-b border-gray-300">
-              <SwiperSlider id={1} arrow pager={false} slides={[]}>
+              <SwiperSlider id={1} arrow pager={false}>
                 {slides.map((slide, index) => (
                   <SwiperSlide
                     key={index}
@@ -688,7 +688,7 @@ const HighSchoolPage: React.FC = () => {
               </SwiperSlider>
             </div>
 
-            <SwiperSlider id={2} arrow pager slides={[]}>
+            <SwiperSlider id={2} arrow pager>
               {slides_img.map((slide, index) => (
                 <SwiperSlide
                   key={index}
