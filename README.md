@@ -51,3 +51,33 @@ npm run deploy
 ```
 
 Then in GitHub repository settings, set Pages source to `gh-pages` branch.
+
+## FSD Structure
+
+This project is being migrated to Feature-Sliced Design incrementally.
+
+Current target layers:
+
+- `src/app`: Next.js App Router entries only
+- `src/page-modules`: page-level FSD modules used by `src/app`
+- `src/widgets`: large UI blocks composed from features/entities/shared
+- `src/features`: user actions and interaction logic
+- `src/entities`: domain entities and their UI/model
+- `src/shared`: reusable UI, libs, config, api, types
+
+Path aliases:
+
+- `@app/*`
+- `@pages/*`
+- `@widgets/*`
+- `@features/*`
+- `@entities/*`
+- `@shared/*`
+
+Migration rule:
+
+- Keep route files in `src/app/**/page.tsx` thin
+- Move page implementation into `src/page-modules/<page-name>/ui/*`
+- Expose page modules through `src/page-modules/<page-name>/index.ts`
+- In Next.js App Router projects, avoid `src/pages` as an FSD folder name because Next treats it as the Pages Router
+- Migrate old `src/sharedUI` modules into `src/shared` gradually instead of moving everything at once

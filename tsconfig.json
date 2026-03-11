@@ -22,6 +22,24 @@
       }
     ],
     "paths": {
+      "@app/*": [
+        "./src/app/*"
+      ],
+      "@pages/*": [
+        "./src/page-modules/*"
+      ],
+      "@widgets/*": [
+        "./src/widgets/*"
+      ],
+      "@features/*": [
+        "./src/features/*"
+      ],
+      "@entities/*": [
+        "./src/entities/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
+      ],
       "@/*": [
         "./src/*"
       ]
