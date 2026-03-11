@@ -39,29 +39,6 @@ export default function LottiePage() {
         <button onClick={() => lottieOneRef.current?.goToAndStop(0, true)}>Reset</button>
       </div>
 
-      <div className="w-5 h-5">
-        {/*
-
-        3️⃣ map + ref 제어 (최후의 수단)
-          const refs = useRef<any[]>([]);
-
-          ✔ 가능은 함
-          ❌ 타입/유지보수 지옥
-          ❌ 실무에선 거의 안 씀
-        */}
-      {lottieIcon.map((data, index) => {
-        console.log("animationData:", data);
-        return (
-          <div key={index} className="mb-8">
-            <Lottie
-              animationData={data} // Lottie JSON 데이터 전달
-              loop
-              autoplay
-            />
-          </div>
-        );
-      })}
-      </div>
     </div>
   );
 }
