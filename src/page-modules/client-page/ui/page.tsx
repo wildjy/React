@@ -85,7 +85,7 @@ export const NewClientPage = () => {
       </div>
       <div className="flex">
         {banners.map((slide, index) => (
-          <div key={index} className="m-2 flex flex-col items-center justify-center">
+          <div key={index} className="flex relative gap-2">
             <a href={slide.badge.clickUrl ?? '#/'}>
               <div>
                 <Image
@@ -96,6 +96,13 @@ export const NewClientPage = () => {
                 />
               </div>
             </a>
+
+            <div className="relative rounded-[32px] bg-[#dfeaf4]">
+              <div className="absolute left-0 -bottom-[0px] z-10 flex h-[40px] w-[100px] items-center justify-center  rounded-tr-[32px] bg-white">
+                <span className="absolute -left-[0px] top-[-48px] h-[48px] w-[48px] rounded-bl-[1.5rem] shadow-[0_1.5rem_0_0_#fff]"></span>
+                <span className="absolute -right-[45px] bottom-[0px] h-[48px] w-[48px] rounded-bl-[1.5rem] shadow-[0_1.5rem_0_0_#fff]"></span>
+              </div>
+            </div>
           </div>
         ))}
       </div>
