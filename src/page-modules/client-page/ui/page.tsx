@@ -6,9 +6,27 @@ import { slides } from "@entities/banner/config/banner-urls";
 import { BannerType, SlideType } from "@entities/banner/model";
 import { BannerItemType } from "@entities/banner/model/banner.types";
 import { useEffect, useState } from "react";
+import {
+  getUserDevice,
+  isDesktop,
+} from "@shared/lib/device-checker";
+import { useViewportDevice } from "@shared/lib/hooks/useViewportDevice";
 
 
 export const NewClientPage = () => {
+  const userAgent = typeof window !== "undefined" ? navigator.userAgent : "";
+  console.log("userAgent", userAgent);
+  const device = getUserDevice(userAgent);
+  console.log("device", device);
+  console.log("isDesktop", isDesktop(userAgent));
+
+  const viewportDevice = useViewportDevice();
+
+  console.log("isSmallMobile", viewportDevice.isSmallMobile);
+  console.log("isMobile", viewportDevice.isMobile);
+  console.log("isTablet", viewportDevice.isTablet);
+  console.log("isPC", viewportDevice.isPC);
+
 
   // 테스트용 더미 데이터 - 실제로는 fetchA1BannerData로 가져온 데이터를 사용해야 합니다.
   const bannerList: BannerType[] = [
