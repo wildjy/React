@@ -15,10 +15,10 @@ import { useViewportDevice } from "@shared/lib/hooks/useViewportDevice";
 
 export const NewClientPage = () => {
   const userAgent = typeof window !== "undefined" ? navigator.userAgent : "";
-  console.log("userAgent", userAgent);
+  // console.log("userAgent", userAgent);
   const device = getUserDevice(userAgent);
-  console.log("device", device);
-  console.log("isDesktop", isDesktop(userAgent));
+  // console.log("device", device);
+  // console.log("isDesktop", isDesktop(userAgent));
 
   const viewportDevice = useViewportDevice();
 
@@ -26,6 +26,7 @@ export const NewClientPage = () => {
   console.log("isMobile", viewportDevice.isMobile);
   console.log("isTablet", viewportDevice.isTablet);
   console.log("isPC", viewportDevice.isPC);
+  console.log("isLargePC", viewportDevice.isLargePC);
 
 
   // 테스트용 더미 데이터 - 실제로는 fetchA1BannerData로 가져온 데이터를 사용해야 합니다.
@@ -81,17 +82,34 @@ export const NewClientPage = () => {
       .filter((v): v is string => Boolean(v))
   );
 
-  console.log("bannerMap", bannerMap);
-  console.log("slidesWithBanner", slidesWithBanner);
-  console.log("slidesWithBannerOnly", slidesWithBannerOnly);
-  console.log("bannerIds", bannerIds);
-  console.log("bannerLists", banners);
+  // console.log("bannerMap", bannerMap);
+  // console.log("slidesWithBanner", slidesWithBanner);
+  // console.log("slidesWithBannerOnly", slidesWithBannerOnly);
+  // console.log("bannerIds", bannerIds);
+  // console.log("bannerLists", banners);
 
   return (
     <div className="container flex min-h-screen flex-col items-center py-2">
       <h1 className="mb-4 text-2xl font-bold text-center">
         <b className="block text-blue-500">[Client 컴포넌트]</b>slide의 a1_banner 값과 배너 ID 연결
       </h1>
+
+      <div>
+        <p>
+          {device} - {isDesktop(userAgent) === 'desktop' ? "데스크탑" : "모바일/태블릿"}
+        </p>
+        <p>
+          {
+            viewportDevice.isLargePC ?
+            "현재 뷰포트: 라지 데스크탑" :
+            viewportDevice.isPC ?
+            "현재 뷰포트: 데스크탑" :
+            viewportDevice.isTablet ? "현재 뷰포트: 태블릿" :
+            viewportDevice.isMobile ? "현재 뷰포트: 모바일" :
+            "현재 뷰포트: 작은 모바일"
+          }
+        </p>
+      </div>
       <div className="flex">
         {slides.map((slide, index) => (
           <div key={index} className="m-2 flex flex-col items-center justify-center rounded border p-4">

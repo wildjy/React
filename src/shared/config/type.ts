@@ -1,3 +1,5 @@
+import { min } from "lodash";
+
 export type DeviceType = 'desktop' | 'mobile' | 'tablet';
 
 export type ViewportDeviceState = {
@@ -5,10 +7,12 @@ export type ViewportDeviceState = {
   isMobile: boolean;
   isTablet: boolean;
   isPC: boolean;
+  isLargePC?: boolean;
 };
 
 export const VIEWPORT_BREAKPOINTS = {
-  smallMobileMax: 480,
-  mobileMax: 768,
-  tabletMax: 1024,
+  minSmallMobile: 480,
+  minMobile: 768,
+  minTablet: 1024,
+  minPc: 1280,
 };

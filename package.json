@@ -22,6 +22,7 @@
     "next": "15.2.8",
     "react": "^19.1.4",
     "react-dom": "^19.1.4",
+    "react-responsive": "^10.0.1",
     "react-syntax-highlighter": "^16.1.0",
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.4.0",

@@ -41,14 +41,15 @@ export const isDesktop = (userAgent: string) => {
 
 export const getViewportDeviceState = (width: number): ViewportDeviceState => {
   return {
-    isSmallMobile: width < VIEWPORT_BREAKPOINTS.smallMobileMax,
+    isSmallMobile: width < VIEWPORT_BREAKPOINTS.minSmallMobile,
     isMobile:
-      width >= VIEWPORT_BREAKPOINTS.smallMobileMax &&
-      width < VIEWPORT_BREAKPOINTS.mobileMax,
+      width >= VIEWPORT_BREAKPOINTS.minSmallMobile &&
+      width < VIEWPORT_BREAKPOINTS.minMobile,
     isTablet:
-      width >= VIEWPORT_BREAKPOINTS.mobileMax &&
-      width < VIEWPORT_BREAKPOINTS.tabletMax,
-    isPC: width >= VIEWPORT_BREAKPOINTS.tabletMax,
+      width >= VIEWPORT_BREAKPOINTS.minMobile &&
+      width < VIEWPORT_BREAKPOINTS.minTablet,
+    isPC: width >= VIEWPORT_BREAKPOINTS.minTablet,
+    isLargePC: width >= VIEWPORT_BREAKPOINTS.minPc,
   };
 };
 
@@ -59,6 +60,7 @@ export const getCurrentViewportDeviceState = (): ViewportDeviceState => {
       isMobile: false,
       isTablet: false,
       isPC: true,
+      isLargePC: true,
     };
   }
 
