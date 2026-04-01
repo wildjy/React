@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "talk-to-figma": {
+      "type": "stdio",
+      "command": "pnpm",
+      "args": ["exec", "cursor-talk-to-figma-mcp"]
+    }
+  }
+}

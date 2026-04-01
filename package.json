@@ -11,7 +11,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d out"
+    "deploy": "gh-pages -d out",
+    "socket": "cursor-talk-to-figma-mcp"
   },
   "dependencies": {
     "@tailwindcss/line-clamp": "^0.4.4",
@@ -43,6 +44,7 @@
     "@storybook/react": "^8.6.14",
     "@storybook/react-webpack5": "8.6.14",
     "@storybook/test": "^8.6.14",
+    "@types/bun": "latest",
     "@types/lodash": "^4.17.21",
     "@types/node": "^25.0.3",
     "@types/react": "^19.1.4",
@@ -52,6 +54,7 @@
     "autoprefixer": "^10.4.23",
     "babel-loader": "^10.0.0",
     "css-loader": "^7.1.2",
+    "cursor-talk-to-figma-mcp": "^0.3.5",
     "eslint": "^9.39.2",
     "eslint-config-next": "15.2.8",
     "gh-pages": "^6.3.0",
