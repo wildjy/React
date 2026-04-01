@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx cursor-talk-to-figma-mcp:*)"
+      "Bash(npx cursor-talk-to-figma-mcp:*)",
+      "Bash(npx tsc:*)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "talk-to-figma"
+  ]
 }
