@@ -6,7 +6,7 @@ import { Container } from "../../sharedUI/Layout/Container";
 import { ContFull  } from "../../sharedUI/Layout/ContFull";
 import { SubTop } from "../../sharedUI/Layout/SubTop";
 
-import { StepBar } from "../../sharedUI/Stepbar/Stepbar";
+import { StepBar } from "../../sharedUI/StepBar/Stepbar";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });
