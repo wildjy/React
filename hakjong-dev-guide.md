@@ -434,7 +434,376 @@ import { DropDown, DropDownOptionType } from '@libs/ui/DropDown';
 
 ---
 
-## 3. FSD 아키텍처 기반 파일 구조
+## Phase 4: 서버로 데이터 전송하기 (POST 요청)
+
+### 개요: 데이터 전송 전체 흐름
+
+```
+[사용자 입력]
+  Dropdown 선택 + TextInput 작성
+           ↓
+[유효성 검사]
+  handleSubmit() — 미선택/미입력 시 alert 후 중단
+           ↓
+[useMutation 호출]
+  submitApply(requestData)
+           ↓
+[API 함수 실행]
+  POST /hakjong/apply  ← HTTP 요청 (JSON body)
+           ↓
+[서버 응답 수신]
+  { applyId: 'HAKJONG-2026-001' }
+           ↓
+[확인 페이지 이동]
+  router.push('/hakjong/apply/confirm?applyId=...&...')
+```
+
+---
+
+### Step 14: 타입 정의 — 서버에 보낼 데이터 형태 설계
+
+API 연동 전, 서버와 주고받을 데이터 구조를 TypeScript interface로 먼저 정의합니다.
+
+```
+apps/early/src/entities/hakjong/model/hakjong.types.ts
+```
+
+```typescript
+// 서버로 보낼 요청 데이터 형태
+export interface HakjongApplyRequest {
+  universityId: string; // 대학 ID (예: "101")
+  universityName: string; // 대학명 (예: "서울대학교")
+  majorType: string; // 계열 코드 (예: "인문")
+  majorTypeName: string; // 계열명 (예: "인문계")
+  minorMajorCategoryCode: string; // 학과 코드 (예: "C12")
+  minorMajorCategoryName: string; // 학과명 (예: "경영학과")
+  selfIntroduction: string; // 자기소개서
+  activityReport: string; // 활동보고서
+}
+
+// 서버에서 받을 응답 데이터 형태
+export interface HakjongApplyResponse {
+  applyId: string; // 서버가 발급한 신청 번호 (예: "HAKJONG-2026-001")
+}
+```
+
+> **왜 타입을 먼저 정의하나요?**
+> 서버와 협의한 API 스펙(Swagger)이 있다면, 그 스펙을 TypeScript interface로 먼저 옮겨둡니다.
+> 이후 API 함수, mutation 훅, 컴포넌트를 만들 때 타입이 잘못 연결되면 개발 단계에서 에러로 알려줍니다.
+
+---
+
+### Step 15: API 함수 — HTTP 요청 작성
+
+```
+apps/early/src/entities/hakjong/api/index.ts
+```
+
+```typescript
+import apiClient from '@/shared/api';
+import { HakjongApplyRequest, HakjongApplyResponse } from '../model/hakjong.types';
+
+export const submitHakjongApply = async (requestData: HakjongApplyRequest): Promise<HakjongApplyResponse> => {
+  const data = await apiClient()
+    .post('hakjong/apply', { json: requestData }) // ① POST 요청 + JSON body
+    .json<HakjongApplyResponse>(); // ② 응답을 JSON으로 파싱
+  return data;
+};
+```
+
+**각 줄 상세 설명:**
+
+| 코드                            | 의미                                                                                                        |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `apiClient()`                   | 프로젝트 공통 HTTP 클라이언트(ky) 인스턴스를 반환. 기본 URL, 인증 헤더가 자동 설정됨                        |
+| `.post('hakjong/apply', ...)`   | `POST {API_URL}/hakjong/apply` 요청 전송                                                                    |
+| `{ json: requestData }`         | requestData 객체를 JSON으로 직렬화하여 request body에 담음. `Content-Type: application/json` 헤더 자동 추가 |
+| `.json<HakjongApplyResponse>()` | 응답 body를 JSON으로 파싱하고 `HakjongApplyResponse` 타입으로 반환                                          |
+
+> **ky HTTP 클라이언트란?**
+> `fetch`를 기반으로 만들어진 경량 HTTP 라이브러리입니다. axios와 유사하지만 더 가볍습니다.
+> 프로젝트 내 `@libs/api`에서 `apiClientFor(url)`로 공통 클라이언트를 반환합니다. 환경(로컬/개발/운영)에 따라 baseURL이 자동 설정됩니다.
+
+**브라우저 Network 탭에서 보이는 실제 요청:**
+
+```
+POST https://api.jinhak.com/jh/high3/early/hakjong/apply
+Content-Type: application/json
+
+{
+  "universityId": "101",
+  "universityName": "서울대학교",
+  "majorType": "인문",
+  "majorTypeName": "인문계",
+  "minorMajorCategoryCode": "C12",
+  "minorMajorCategoryName": "경영학과",
+  "selfIntroduction": "...",
+  "activityReport": "..."
+}
+```
+
+---
+
+### Step 16: useMutation 훅 — 서버 요청의 생명주기 관리
+
+```
+apps/early/src/entities/hakjong/model/hakjong.queries.ts
+```
+
+```typescript
+import { useMutation } from '@tanstack/react-query';
+import { submitHakjongApply } from '../api';
+import { HakjongApplyRequest, HakjongApplyResponse } from './hakjong.types';
+
+export function useHakjongApplyMutation() {
+  return useMutation<HakjongApplyResponse, Error, HakjongApplyRequest>({
+    mutationFn: (requestData) => submitHakjongApply(requestData),
+    onError: (error) => {
+      console.error('학종 신청 실패:', error);
+      alert('신청에 실패했습니다. 다시 시도해주세요.');
+    },
+  });
+}
+```
+
+**useQuery vs useMutation 차이:**
+
+| 구분        | `useQuery`              | `useMutation`                                   |
+| ----------- | ----------------------- | ----------------------------------------------- |
+| HTTP 메서드 | GET (데이터 조회)       | POST / PUT / DELETE (데이터 변경)               |
+| 실행 시점   | 컴포넌트 마운트 시 자동 | 명시적으로 `mutate()` / `mutateAsync()` 호출 시 |
+| 자동 재실행 | 있음 (캐시 만료 시 등)  | 없음                                            |
+| 사용 예     | 목록 조회, 사용자 정보  | 저장, 수정, 삭제                                |
+
+**`useMutation`이 반환하는 주요 값들:**
+
+```typescript
+const {
+  mutateAsync, // 호출하면 API 요청 실행 (async/await 가능)
+  isPending, // 요청 진행 중이면 true (버튼 비활성화 등에 활용)
+  isSuccess, // 요청 성공 시 true
+  isError, // 요청 실패 시 true
+  data, // 성공 시 응답 데이터
+  error, // 실패 시 에러 객체
+} = useHakjongApplyMutation();
+```
+
+**`mutate` vs `mutateAsync` 선택 기준:**
+
+```typescript
+// mutate: 콜백 기반 (응답을 직접 사용하지 않을 때)
+mutate(data, {
+  onSuccess: (res) => router.push(`/confirm?id=${res.applyId}`),
+});
+
+// mutateAsync: 비동기 함수로 반환값 직접 사용 가능 (handleSubmit처럼 try/catch 패턴)
+const response = await mutateAsync(data);
+router.push(`/confirm?id=${response.applyId}`);
+```
+
+> 이 프로젝트에서는 `mutateAsync`를 사용해 응답 값(`applyId`)을 받아 확인 페이지 URL에 포함했습니다.
+
+---
+
+### Step 17: 컴포넌트에서 조립 — handleSubmit 작성
+
+`EarlyHakjong.tsx`에서 mutation 훅을 연결합니다.
+
+```typescript
+// 1. 훅 사용
+const { mutateAsync: submitApply, isPending } = useHakjongApplyMutation();
+
+// 2. TextInput 제어 컴포넌트화 (value + onChange 연결)
+const [selfIntroduction, setSelfIntroduction] = useState('');
+const [activityReport, setActivityReport] = useState('');
+
+// 3. 제출 핸들러
+const handleSubmit = async () => {
+  const { drop1, drop2, drop3 } = selectedOption;
+
+  // ① 유효성 검사 — 모든 항목이 선택/입력됐는지 확인
+  if (!drop1.value || !drop2.value || !drop3.value) {
+    alert('대학, 계열, 학과를 모두 선택해주세요.');
+    return;
+  }
+  if (!selfIntroduction.trim() || !activityReport.trim()) {
+    alert('모든 입력 항목을 작성해주세요.');
+    return;
+  }
+
+  // ② 서버로 데이터 전송
+  const response = await submitApply({
+    universityId: drop1.value,
+    universityName: drop1.label,
+    majorType: drop2.value,
+    majorTypeName: drop2.label,
+    minorMajorCategoryCode: drop3.value,
+    minorMajorCategoryName: drop3.label,
+    selfIntroduction,
+    activityReport,
+  });
+
+  // ③ 서버 응답값(applyId)과 선택 정보를 URL에 담아 확인 페이지로 이동
+  const params = new URLSearchParams({
+    applyId: response.applyId,
+    universityName: drop1.label,
+    majorTypeName: drop2.label,
+    minorMajorCategoryName: drop3.label,
+  });
+  router.push(`/hakjong/apply/confirm?${params.toString()}`);
+};
+```
+
+**`URLSearchParams`란?**
+
+URL의 쿼리스트링을 안전하게 만드는 내장 Web API입니다.
+
+```typescript
+const params = new URLSearchParams({
+  applyId: 'HAKJONG-2026-001',
+  universityName: '서울대학교',
+});
+params.toString();
+// → "applyId=HAKJONG-2026-001&universityName=%EC%84%9C%EC%9A%B8%EB%8C%80%ED%95%99%EA%B5%90"
+// 한글 등 특수문자가 자동으로 URL 인코딩됨
+```
+
+**TextInput 제어 컴포넌트:**
+
+```tsx
+// 비제어 컴포넌트 (before) — 값을 직접 읽을 수 없음
+<TextInput addId="intro" label="자기소개서" />
+
+// 제어 컴포넌트 (after) — value와 onChange로 React가 값을 추적
+<TextInput
+  addId="intro"
+  label="자기소개서"
+  value={selfIntroduction}
+  onChange={(e) => setSelfIntroduction(e.target.value)}
+/>
+```
+
+> **제어 컴포넌트(Controlled Component)**: `value` prop으로 현재 값을 React state에서 가져오고, `onChange`로 state를 업데이트합니다. React가 항상 최신 값을 알고 있어 `handleSubmit` 시 state를 그대로 읽으면 됩니다.
+
+---
+
+### Step 18: 확인 페이지 — URL 파라미터로 데이터 전달
+
+```
+apps/early/app/(early)/hakjong/apply/confirm/page.tsx
+apps/early/src/window/hakjong/EarlyHakjongConfirm.tsx
+```
+
+확인 페이지는 서버 재요청 없이, URL 쿼리스트링에서 값을 읽어 표시합니다.
+
+```typescript
+// EarlyHakjongConfirm.tsx
+'use client';
+import { useSearchParams } from 'next/navigation';
+
+const searchParams = useSearchParams();
+const applyId = searchParams.get('applyId') ?? '';
+const universityName = searchParams.get('universityName') ?? '';
+```
+
+> **`useSearchParams()`**: 현재 URL의 `?key=value` 쿼리스트링을 읽는 Next.js 훅입니다. `searchParams.get('key')`로 특정 파라미터 값을 가져옵니다.
+
+---
+
+### Step 19: MSW로 로컬 임시 목 API 만들기
+
+Swagger(실제 API)가 준비되기 전, **MSW(Mock Service Worker)**를 사용해 브라우저가 실제 서버 없이도 `POST /hakjong/apply`를 처리하게 만듭니다.
+
+**MSW 동작 원리:**
+
+```
+[브라우저]
+  fetch POST /hakjong/apply
+        ↓
+[Service Worker가 가로챔] ← msw가 브라우저에 등록한 워커
+        ↓
+[handlers.ts 에서 매칭되는 핸들러 실행]
+  http.post(/\/hakjong\/apply/, () => HttpResponse.json(...))
+        ↓
+[목 응답 반환] → 실제 서버로는 요청이 나가지 않음
+```
+
+**① 목데이터 추가** (`apps/mock/specs/mocks/mockdata.ts`)
+
+```typescript
+export const hakjongApplyResponse = {
+  applyId: 'HAKJONG-2026-001',
+};
+```
+
+**② 핸들러 추가** (`apps/mock/specs/mocks/handlers.ts`)
+
+```typescript
+import { hakjongApplyResponse } from './mockdata';
+
+export const handlers = [
+  // ...기존 핸들러들...
+
+  // 학종 신청 제출
+  http.post(/.*\/hakjong\/apply/, () => {
+    return HttpResponse.json(hakjongApplyResponse);
+  }),
+];
+```
+
+**③ early 앱에서 MSW 활성화되는 경로:**
+
+```
+apps/early/app/layout.tsx
+  → MockProviders (apps/mock/src/app/providers/MockProviders.tsx)
+    → process.env.NEXT_PUBLIC_API_MOCKING === 'enabled' 일 때만 MSW 시작
+      → specs/mocks/client.ts (브라우저) / server.ts (SSR)
+        → handlers.ts (핸들러 목록)
+```
+
+**실제 API 연동 시 교체 포인트:**
+
+MSW 핸들러를 제거하거나 주석 처리하면 자동으로 실제 서버에 요청합니다. API 함수(`submitHakjongApply`)는 변경할 필요가 없습니다.
+
+```typescript
+// 추후 실제 API 연동 시: 핸들러만 주석 처리
+// http.post(/.*\/hakjong\/apply/, () => {
+//   return HttpResponse.json(hakjongApplyResponse);
+// }),
+```
+
+---
+
+### Phase 4 정리: 서버 데이터 전송 레이어 구조
+
+```
+[컴포넌트] EarlyHakjong.tsx
+  → useState로 입력값 관리
+  → handleSubmit에서 유효성 검사 후 mutateAsync 호출
+
+[Mutation 훅] entities/hakjong/model/hakjong.queries.ts
+  → useMutation 래핑
+  → isPending, onError 등 생명주기 제공
+
+[API 함수] entities/hakjong/api/index.ts
+  → ky HTTP 클라이언트로 POST 요청
+  → 타입 안전한 요청/응답 처리
+
+[MSW 핸들러] apps/mock/specs/mocks/handlers.ts  ← 로컬 개발 시에만 동작
+  → 실제 서버 없이 목 응답 반환
+
+[실제 서버]  ← 운영/개발 서버 배포 이후 자동으로 연결됨
+```
+
+| 새로 배운 핵심 개념 | 설명                                                            |
+| ------------------- | --------------------------------------------------------------- |
+| `useMutation`       | POST/PUT/DELETE 요청의 생명주기(pending, success, error)를 관리 |
+| `mutateAsync`       | async/await로 응답값을 직접 사용할 때                           |
+| `isPending`         | 요청 중 버튼 비활성화 등 UX 처리에 활용                         |
+| 제어 컴포넌트       | `value` + `onChange`로 React가 입력값 추적                      |
+| `URLSearchParams`   | 한글 포함 데이터를 URL 쿼리스트링으로 안전하게 인코딩           |
+| `useSearchParams`   | URL 쿼리스트링 값을 읽는 Next.js 훅                             |
+| MSW handler         | `http.post(정규식, handler)` 패턴으로 API 목업 등록             |
 
 ```
 apps/early/src/window/hakjong/
@@ -522,3 +891,847 @@ API 서버 → React Query 훅 → useMemo 변환 → 컴포넌트 props → UI 
 5. **리스트 렌더링 시 `key` 필수**
    - `.map()`으로 리스트를 렌더링할 때 반드시 고유 `key` 속성 지정
    - 배열 인덱스(`index`)보다 실제 고유 ID를 사용하는 것이 좋음
+
+6. **`useSearchParams()`는 반드시 `Suspense` 안에서 사용**
+   - `useSearchParams()`를 사용하는 컴포넌트를 `Suspense` 없이 렌더링하면 빌드/런타임 오류 발생
+   - page.tsx에서 `<Suspense>`로 감싸는 것이 기본 패턴
+
+---
+
+## Phase 5: 수정하기 — 페이지 간 데이터 전달 (두 가지 방식 비교)
+
+### 개요: 왜 페이지 간 데이터 전달이 필요한가?
+
+신청 페이지 → 확인 페이지 → 다시 신청 페이지(수정하기)로 이동할 때, **이전에 입력했던 값을 유지**해야 합니다. 하지만 페이지를 이동하면 컴포넌트가 언마운트되고 `useState`의 값이 사라집니다.
+
+```
+[신청 페이지] EarlyHakjong.tsx
+  useState: universityId, selfIntroduction, ...
+           ↓ 페이지 이동
+           ↓ 컴포넌트 언마운트 → useState 값 사라짐 ❌
+           ↓
+[확인 페이지] EarlyHakjongConfirm.tsx
+  새로운 컴포넌트 마운트
+```
+
+이를 해결하는 방법은 크게 두 가지입니다:
+
+| 방법                       | 저장 위치       | 특징                                         |
+| -------------------------- | --------------- | -------------------------------------------- |
+| **방법 1: URL 쿼리스트링** | URL (주소창)    | 간단, 링크 공유 가능, 데이터 노출            |
+| **방법 2: sessionStorage** | 브라우저 저장소 | 데이터 은닉, 길이 제한 없음, 탭 간 공유 불가 |
+
+---
+
+## 방법 1: URL 쿼리스트링 방식
+
+### 개요: URL 쿼리스트링을 사용한 전체 흐름
+
+```
+[신청 페이지] EarlyHakjong.tsx
+  사용자 입력 (Dropdown 3개 + TextInput 2개)
+           ↓ "입력완료" 클릭
+  handleSubmit() → 서버 전송 성공
+           ↓
+  URLSearchParams에 전체 입력값 + applyId 담아서 이동
+  → /hakjong/apply/confirm?applyId=...&universityId=...&selfIntroduction=...
+           ↓
+[확인 페이지] EarlyHakjongConfirm.tsx
+  useSearchParams()로 URL에서 모든 값 읽기 → 화면 표시
+           ↓ "수정하기" 클릭
+  기존 입력값을 다시 URLSearchParams로 만들어
+  /hakjong/apply?universityId=...&selfIntroduction=... 로 이동
+           ↓
+[신청 페이지] EarlyHakjong.tsx
+  useSearchParams()로 URL 파라미터 읽기
+  → useState 초기값으로 복원 → 이전 입력값 그대로 표시됨
+```
+
+---
+
+### Step 20-A: 확인 페이지로 전체 입력값 전달 (URLSearchParams)
+
+`handleSubmit`에서 서버 전송 성공 후, `URLSearchParams`에 모든 값을 넣어 확인 페이지로 이동합니다.
+
+```typescript
+const response = await submitApply({ ... });
+
+// 화면 표시용 + 수정하기 복원용 전체 데이터를 URL에 포함
+const params = new URLSearchParams({
+  applyId: response.applyId,
+  universityId: drop1.value,           // Dropdown 복원용 value
+  universityName: drop1.label,         // 화면 표시용 label
+  majorType: drop2.value,
+  majorTypeName: drop2.label,
+  minorMajorCategoryCode: drop3.value,
+  minorMajorCategoryName: drop3.label,
+  selfIntroduction,
+  activityReport,
+});
+router.push(`/hakjong/apply/confirm?${params.toString()}`);
+```
+
+**실제 브라우저 주소창:**
+
+```
+/hakjong/apply/confirm?applyId=HAKJONG-001&universityId=101&universityName=%EC%84%9C%EC%9A%B8%EB%8C%80%ED%95%99%EA%B5%90&selfIntroduction=%EC%A0%80%EB%8A%94...
+```
+
+> **왜 `label`뿐 아니라 `value`도 전달하나요?**
+>
+> Dropdown의 표시 텍스트(`label`)만으로는 화면 표시는 가능하지만, Dropdown의 **선택 상태를 복원**하려면 `value`가 필요합니다.
+> 예: `<DropDown value="101" />`처럼 `value`를 prop으로 넘겨야 선택된 상태로 렌더링됩니다.
+
+**`URLSearchParams`란?**
+
+URL 쿼리스트링을 안전하게 만드는 내장 Web API입니다. 한글, 특수문자를 자동으로 URL 인코딩합니다.
+
+```typescript
+const params = new URLSearchParams({
+  applyId: 'HAKJONG-001',
+  universityName: '서울대학교', // 한글 자동 인코딩
+});
+params.toString();
+// → "applyId=HAKJONG-001&universityName=%EC%84%9C%EC%9A%B8%EB%8C%80%ED%95%99%EA%B5%90"
+```
+
+---
+
+### Step 21-A: 확인 페이지에서 URL 파라미터 읽기
+
+```
+apps/early/src/window/hakjong/EarlyHakjongConfirm.tsx
+```
+
+`useSearchParams()`로 URL에서 모든 값을 읽어 화면에 표시하고, 수정하기 href를 구성합니다.
+
+```typescript
+'use client';
+import { useSearchParams } from 'next/navigation';
+
+const searchParams = useSearchParams();
+
+// URL에서 모든 값 읽기
+const applyId = searchParams.get('applyId') ?? '';
+const universityId = searchParams.get('universityId') ?? '';
+const universityName = searchParams.get('universityName') ?? '';
+const majorType = searchParams.get('majorType') ?? '';
+const majorTypeName = searchParams.get('majorTypeName') ?? '';
+const minorMajorCategoryCode = searchParams.get('minorMajorCategoryCode') ?? '';
+const minorMajorCategoryName = searchParams.get('minorMajorCategoryName') ?? '';
+const selfIntroduction = searchParams.get('selfIntroduction') ?? '';
+const activityReport = searchParams.get('activityReport') ?? '';
+
+// 수정하기: 신청 페이지로 복원용 데이터 전달
+const editParams = new URLSearchParams({
+  universityId,
+  universityName,
+  majorType,
+  majorTypeName,
+  minorMajorCategoryCode,
+  minorMajorCategoryName,
+  selfIntroduction,
+  activityReport,
+  // applyId는 포함하지 않음: 수정 후 재신청 시 새 applyId가 발급됨
+});
+```
+
+> **`searchParams.get()`의 반환 타입**: 파라미터가 있으면 `string`, 없으면 `null`을 반환합니다. `?? ''`로 `null` 대비 빈 문자열 기본값을 지정합니다. 이렇게 해야 타입이 `string | null`이 아닌 `string`이 되어 타입 오류 없이 사용할 수 있습니다.
+
+**수정하기 버튼:**
+
+```tsx
+<ButtonLink mode="secondary" href={`/jh/high3/early/hakjong/apply?${editParams.toString()}`}>
+  수정하기
+</ButtonLink>
+```
+
+---
+
+### Step 22-A: 신청 페이지에서 이전 입력값 복원
+
+```
+apps/early/src/window/hakjong/EarlyHakjong.tsx
+```
+
+`useSearchParams()`로 URL 파라미터를 읽어 `useState`의 **초기값**으로 설정합니다.
+
+```typescript
+import { useSearchParams } from 'next/navigation';
+
+const searchParams = useSearchParams();
+
+// Dropdown 3개: URL 파라미터 있으면 복원, 없으면 빈 값(첫 진입)
+const [selectedOption, setSelectedOption] = useState<SelectedOptions>({
+  drop1: {
+    value: searchParams.get('universityId') ?? '',
+    label: searchParams.get('universityName') ?? '',
+  },
+  drop2: {
+    value: searchParams.get('majorType') ?? '',
+    label: searchParams.get('majorTypeName') ?? '',
+  },
+  drop3: {
+    value: searchParams.get('minorMajorCategoryCode') ?? '',
+    label: searchParams.get('minorMajorCategoryName') ?? '',
+  },
+});
+
+// TextInput 2개: URL 파라미터 있으면 복원
+const [selfIntroduction, setSelfIntroduction] = useState(searchParams.get('selfIntroduction') ?? '');
+const [activityReport, setActivityReport] = useState(searchParams.get('activityReport') ?? '');
+```
+
+**동작 원리:**
+
+| 진입 경로                                             | URL 상태      | 초기 state           |
+| ----------------------------------------------------- | ------------- | -------------------- |
+| 첫 방문 (`/hakjong/apply`)                            | 파라미터 없음 | 모두 빈 값           |
+| 수정하기 클릭 (`/hakjong/apply?universityId=101&...`) | 파라미터 있음 | 이전 입력값으로 복원 |
+
+> **`useState`의 초기값은 최초 렌더링 시 한 번만 사용됩니다.** `searchParams`가 나중에 바뀌어도 state는 자동으로 업데이트되지 않습니다. 이 패턴은 "페이지 진입 시 초기값 복원"에 적합합니다.
+
+---
+
+### Step 23-A: `useSearchParams()`와 Suspense 필수 규칙
+
+`useSearchParams()`를 사용하는 컴포넌트는 **반드시 `<Suspense>`로 감싸야** 합니다. 그렇지 않으면 다음 오류가 발생합니다:
+
+```
+Error: useSearchParams() should be wrapped in a suspense boundary
+at page "/hakjong/apply"
+```
+
+**원인:** Next.js 14+에서 `useSearchParams()`는 동적 렌더링을 유발합니다. 서버가 빌드 타임에 URL 파라미터 값을 알 수 없으므로, React에게 "이 컴포넌트는 클라이언트 준비 후 렌더링해라"고 알리는 Suspense가 필요합니다.
+
+**해결: page.tsx에서 `<Suspense>`로 감싸기:**
+
+```tsx
+// app/(early)/hakjong/apply/page.tsx
+import { EarlyHakjong } from '@/window/hakjong/EarlyHakjong';
+import { Suspense } from 'react';
+
+export default async function HakjongApplyPage() {
+  return (
+    <Suspense>
+      <EarlyHakjong />
+    </Suspense>
+  );
+}
+```
+
+```tsx
+// app/(early)/hakjong/apply/confirm/page.tsx
+import { EarlyHakjongConfirm } from '@/window/hakjong/EarlyHakjongConfirm';
+import { Suspense } from 'react';
+
+export default function HakjongApplyConfirmPage() {
+  return (
+    <Suspense>
+      <EarlyHakjongConfirm />
+    </Suspense>
+  );
+}
+```
+
+**언제 `Suspense`가 필요한가:**
+
+| 훅/기능                 | Suspense 필요 여부      |
+| ----------------------- | ----------------------- |
+| `useSearchParams()`     | ✅ 필요                 |
+| `usePathname()`         | ❌ 불필요               |
+| `useRouter()`           | ❌ 불필요               |
+| `useState`, `useEffect` | ❌ 불필요               |
+| React Query `useQuery`  | 선택적 (로딩 UX 개선용) |
+
+---
+
+### 방법 1 정리
+
+```
+[입력완료 클릭]
+  handleSubmit() → 서버 전송
+  → URLSearchParams에 전체 8개 값 → 확인 페이지 이동
+
+[확인 페이지]
+  useSearchParams()로 URL에서 값 읽기 → 화면 표시
+  editParams에 전체 값 → 수정하기 href에 연결
+
+[수정하기 클릭]
+  /hakjong/apply?universityId=...&selfIntroduction=... 이동
+
+[신청 페이지 재진입]
+  useSearchParams()로 URL 파라미터 읽기 → useState 초기값 복원
+```
+
+| 개념                   | 설명                                                          |
+| ---------------------- | ------------------------------------------------------------- |
+| `URLSearchParams`      | 한글 포함 데이터를 URL 쿼리스트링으로 안전하게 인코딩         |
+| `useSearchParams()`    | URL 쿼리스트링 값을 읽는 Next.js 훅                           |
+| `useState` 초기값 복원 | `useState(searchParams.get(...) ?? '')` 패턴으로 초기화       |
+| `Suspense` 필수        | `useSearchParams()` 사용 컴포넌트는 반드시 Suspense로 감쌀 것 |
+| `?? ''`                | `searchParams.get()`의 `null` 반환값에 빈 문자열 기본값 지정  |
+
+---
+
+## 방법 2: sessionStorage 방식
+
+### 배경: URL 쿼리스트링 방식의 한계
+
+방법 1의 URL 쿼리스트링 방식은 구현이 간단하지만, 다음 상황에서는 적합하지 않습니다:
+
+| 문제              | 설명                                                                        |
+| ----------------- | --------------------------------------------------------------------------- |
+| **보안/개인정보** | 자기소개서, 활동보고서 등 민감한 내용이 브라우저 주소창에 노출됨            |
+| **URL 길이 제한** | 브라우저마다 URL 최대 길이 제한(약 2,048자)이 있어 긴 텍스트는 잘릴 수 있음 |
+| **가독성**        | URL이 지저분해져 공유 시 혼란 야기                                          |
+| **히스토리 오염** | 브라우저 뒤로가기 시 민감 데이터가 담긴 URL이 히스토리에 남음               |
+
+**해결책: `sessionStorage`로 데이터를 저장하고, URL에는 아무것도 노출하지 않습니다.**
+
+### 개요: sessionStorage를 사용한 전체 흐름
+
+```
+[신청 페이지] EarlyHakjong.tsx
+  사용자 입력 (Dropdown 3개 + TextInput 2개)
+           ↓ "입력완료" 클릭
+  handleSubmit() → submitApply() → 서버 전송
+           ↓ 성공
+  sessionStorage에 전체 입력값 + applyId 저장
+           ↓
+  router.push('/hakjong/apply/confirm')  ← URL에 아무것도 없음
+           ↓
+[확인 페이지] EarlyHakjongConfirm.tsx
+  sessionStorage에서 모든 값 읽기 → 화면 표시
+           ↓ "수정하기" 클릭
+  /hakjong/apply 로 단순 이동 (쿼리 없음)
+           ↓
+[신청 페이지] EarlyHakjong.tsx
+  sessionStorage에서 이전 입력값 읽기
+  → useState 초기값으로 복원 → 이전 입력값 그대로 표시됨
+```
+
+---
+
+### 핵심 개념: sessionStorage란?
+
+`sessionStorage`는 브라우저가 제공하는 **클라이언트 측 임시 저장소**입니다.
+
+```
+[브라우저 저장소 종류]
+
+localStorage       → 브라우저 탭 닫아도 영구 보존
+sessionStorage     → 탭/브라우저 닫으면 자동 삭제
+cookie             → 서버와 함께 사용, 만료 시간 설정 가능
+```
+
+**sessionStorage의 특징:**
+
+| 특징               | 설명                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **탭 단위 격리**   | 같은 사이트라도 탭이 다르면 별도 저장 공간 사용                                |
+| **탭 닫으면 삭제** | 브라우저 탭을 닫거나 세션이 끝나면 자동 삭제됨                                 |
+| **문자열만 저장**  | 객체/배열은 `JSON.stringify()`로 직렬화 후 저장, 읽을 때 `JSON.parse()`로 복원 |
+| **동기 API**       | `localStorage`와 동일하게 동기 방식(await 불필요)                              |
+| **브라우저 전용**  | 서버(Node.js)에는 `window`/`sessionStorage`가 없음 → SSR 안전 처리 필요        |
+
+**기본 사용법:**
+
+```typescript
+// 저장 (객체는 JSON으로 직렬화)
+sessionStorage.setItem('key', JSON.stringify({ name: '서울대', id: '101' }));
+
+// 읽기 (JSON으로 파싱)
+const raw = sessionStorage.getItem('key'); // 없으면 null 반환
+const data = JSON.parse(raw ?? '{}'); // null 대비 빈 객체 기본값
+
+// 삭제
+sessionStorage.removeItem('key');
+
+// 전체 삭제
+sessionStorage.clear();
+```
+
+---
+
+### Step 20: sessionStorage에 입력값 저장 후 확인 페이지 이동
+
+```
+apps/early/src/window/hakjong/EarlyHakjong.tsx
+```
+
+`handleSubmit`의 서버 전송 성공 후, URL 파라미터 대신 `sessionStorage`에 저장합니다.
+
+**변경 전 (URL 쿼리스트링 방식):**
+
+```typescript
+const params = new URLSearchParams({
+  applyId: response.applyId,
+  universityId: drop1.value,
+  universityName: drop1.label,
+  // ... (8개 모두 URL에 노출)
+  selfIntroduction,
+  activityReport,
+});
+router.push(`/hakjong/apply/confirm?${params.toString()}`);
+```
+
+**변경 후 (sessionStorage 방식):**
+
+```typescript
+// ① 모든 데이터를 sessionStorage에 저장
+sessionStorage.setItem(
+  'hakjong_apply_form',
+  JSON.stringify({
+    applyId: response.applyId, // 서버가 발급한 신청 번호
+    universityId: drop1.value,
+    universityName: drop1.label,
+    majorType: drop2.value,
+    majorTypeName: drop2.label,
+    minorMajorCategoryCode: drop3.value,
+    minorMajorCategoryName: drop3.label,
+    selfIntroduction,
+    activityReport,
+  }),
+);
+
+// ② URL에 아무것도 없이 단순 이동
+router.push('/hakjong/apply/confirm');
+```
+
+**`JSON.stringify()` 가 필요한 이유:**
+
+`sessionStorage`는 문자열만 저장할 수 있습니다. 객체를 그대로 저장하면 `[object Object]`라는 문자열로 변환되어 의미를 잃습니다.
+
+```typescript
+// 잘못된 방식
+sessionStorage.setItem('data', { name: '서울대' });
+sessionStorage.getItem('data'); // → "[object Object]" ❌
+
+// 올바른 방식
+sessionStorage.setItem('data', JSON.stringify({ name: '서울대' }));
+sessionStorage.getItem('data'); // → '{"name":"서울대"}' ✅
+JSON.parse(sessionStorage.getItem('data')!); // → { name: '서울대' } ✅
+```
+
+---
+
+### Step 21: 신청 페이지에서 이전 입력값 복원 (sessionStorage 읽기)
+
+```
+apps/early/src/window/hakjong/EarlyHakjong.tsx
+```
+
+`useSearchParams()` 대신 `sessionStorage`에서 초기값을 읽습니다. 하지만 이 과정에서 **Hydration mismatch** 오류를 만나게 됩니다. 실제로 3가지 방법을 시도한 과정을 순서대로 설명합니다.
+
+---
+
+#### ❌ 시도 1: 렌더링 중 `typeof window` 분기 (Hydration 오류 발생)
+
+```typescript
+// 렌더링 중에 직접 계산
+const saved = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('hakjong_apply_form') ?? '{}') : {};
+
+const [selectedOption, setSelectedOption] = useState<SelectedOptions>({
+  drop1: {
+    value: saved.universityId ?? '', // 서버: '' / 브라우저: '1019'
+    label: saved.universityName ?? '', // 서버: '' / 브라우저: '가천대'
+  },
+  // ...
+});
+```
+
+**오류 발생:**
+
+```
+Uncaught Error: Hydration failed because the server rendered text didn't match the client.
+```
+
+에러 트리에서 불일치가 명확히 보입니다:
+
+```diff
+<button
+-  data-value={null}      ← 서버 렌더링 결과
++  data-value="1019"      ← 클라이언트 렌더링 결과
+>
+<strong>
+-                          ← 서버: 빈 문자열
++  가천대                  ← 클라이언트: sessionStorage 값
+```
+
+**왜 안 되나?**
+
+`typeof window !== 'undefined'`는 렌더링 중에 실행되는 **서버/클라이언트 분기(branch)**입니다. React의 Hydration 과정에서 서버와 클라이언트의 렌더링 결과가 반드시 동일해야 하는데, 이 분기는 서로 다른 결과를 만듭니다.
+
+```
+서버 렌더링:  typeof window → 'undefined' → saved = {}     → value = ''
+클라이언트:   typeof window → 'object'    → saved = 실제값  → value = '1019'
+                                                              ↑ 불일치 발생!
+```
+
+**Hydration이란?**
+
+Next.js가 서버에서 HTML을 생성(SSR) → 브라우저가 이 HTML을 받아서 화면에 표시 → React가 이 HTML에 이벤트 핸들러 등을 '연결(attach)'하는 과정입니다. 이 연결 과정에서 React는 서버 HTML과 클라이언트의 첫 렌더링 결과를 **비교**합니다. 내용이 다르면 오류가 발생합니다.
+
+```
+[서버]
+  컴포넌트 실행 → HTML 생성: <button data-value="">...</button>
+                                    ↓ HTML을 브라우저로 전송
+[브라우저]
+  HTML 화면에 표시 (아직 React 없이 정적 HTML)
+                                    ↓ React JS 로드 완료
+[Hydration]
+  React가 같은 컴포넌트를 브라우저에서 다시 실행
+  → <button data-value="1019">가천대</button>
+  → 서버 HTML과 비교 → 다르다! → ❌ Hydration mismatch 에러
+```
+
+---
+
+#### ❌ 시도 2: `useState` lazy initializer (여전히 Hydration 오류)
+
+"렌더링 중 직접 계산이 문제라면, `useState`의 초기화 함수로 넘기면 브라우저에서만 실행되지 않을까?" → **아닙니다.**
+
+```typescript
+const [selectedOption, setSelectedOption] = useState<SelectedOptions>(() => {
+  const s = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('hakjong_apply_form') ?? '{}') : {};
+  return {
+    drop1: { value: s.universityId ?? '', label: s.universityName ?? '' },
+    // ...
+  };
+});
+```
+
+**왜 안 되나?**
+
+`useState(() => ...)`의 초기화 함수(lazy initializer)는 **SSR에서도 실행됩니다.** React는 서버에서 컴포넌트를 렌더링할 때 `useState`의 초기값을 결정해야 하기 때문에, 함수든 값이든 무조건 실행합니다.
+
+```
+[서버] useState(() => { typeof window → 'undefined' → return { value: '' } })
+[브라우저] useState(() => { typeof window → 'object' → return { value: '1019' } })
+                                                         ↑ 역시 불일치!
+```
+
+> **오해하기 쉬운 포인트**: `useState(() => ...)` 형태의 "lazy init"이 "지연 실행"이라고 해서 브라우저에서만 실행된다고 착각할 수 있습니다. 실제로는 "매 렌더링마다 재실행되지 않고, 최초 1회만 실행된다"는 의미의 lazy입니다. SSR에서의 그 "최초 1회"도 포함됩니다.
+
+---
+
+#### ✅ 시도 3 (최종): `useEffect`로 마운트 후 복원 (Hydration 안전)
+
+`useEffect`는 **브라우저에서만, Hydration이 완료된 후에만** 실행됩니다. SSR에서는 절대 실행되지 않습니다.
+
+```typescript
+import { useEffect, useState } from 'react';
+
+// ① 초기값은 빈 값 (서버와 클라이언트 모두 동일)
+const [selectedOption, setSelectedOption] = useState<SelectedOptions>({
+  drop1: { value: '', label: '' },
+  drop2: { value: '', label: '' },
+  drop3: { value: '', label: '' },
+});
+const [selfIntroduction, setSelfIntroduction] = useState('');
+const [activityReport, setActivityReport] = useState('');
+
+// ② 마운트 후 sessionStorage에서 복원 (브라우저에서만 실행)
+useEffect(() => {
+  const raw = sessionStorage.getItem('hakjong_apply_form');
+  if (!raw) return; // 저장된 값이 없으면 (첫 방문) 아무것도 안 함
+  const saved = JSON.parse(raw) as Partial<{
+    universityId: string;
+    universityName: string;
+    majorType: string;
+    majorTypeName: string;
+    minorMajorCategoryCode: string;
+    minorMajorCategoryName: string;
+    selfIntroduction: string;
+    activityReport: string;
+  }>;
+  setSelectedOption({
+    drop1: { value: saved.universityId ?? '', label: saved.universityName ?? '' },
+    drop2: { value: saved.majorType ?? '', label: saved.majorTypeName ?? '' },
+    drop3: {
+      value: saved.minorMajorCategoryCode ?? '',
+      label: saved.minorMajorCategoryName ?? '',
+    },
+  });
+  setSelfIntroduction(saved.selfIntroduction ?? '');
+  setActivityReport(saved.activityReport ?? '');
+}, []); // 빈 배열 = 마운트 시 1회만 실행
+```
+
+**이것이 작동하는 이유:**
+
+```
+[서버 렌더링]
+  useState('') → 빈 값으로 HTML 생성
+  useEffect → 실행 안 됨 (서버에는 useEffect 없음)
+  결과: <button data-value="">...</button>
+
+[브라우저 Hydration]
+  useState('') → 빈 값 (서버와 동일 ✅ 불일치 없음)
+  useEffect → 아직 실행 안 됨
+
+[Hydration 완료 후]
+  useEffect 실행 → sessionStorage 읽기 → setState
+  → React가 정상적으로 리렌더링 → 값 채워짐
+```
+
+서버와 클라이언트가 모두 "빈 값"으로 동일한 HTML을 만들기 때문에 Hydration mismatch가 발생하지 않습니다. 값은 Hydration 완료 후 `useEffect`에서 안전하게 채워집니다.
+
+---
+
+#### 3가지 방법 비교 정리
+
+| 방법                            | SSR에서 실행?     | Hydration 안전?              | 설명                                |
+| ------------------------------- | ----------------- | ---------------------------- | ----------------------------------- |
+| 렌더링 중 `typeof window` 분기  | ✅ 실행           | ❌ 서버/클라이언트 결과 다름 | 가장 직관적이지만 Hydration 깨짐    |
+| `useState(() => ...)` lazy init | ✅ 실행           | ❌ 동일 문제                 | "lazy"는 "브라우저 전용"이 아님     |
+| **`useEffect(() => ...)`**      | **❌ 실행 안 됨** | **✅ 안전**                  | 브라우저에서만 실행되는 유일한 방법 |
+
+> **핵심 규칙**: 브라우저 전용 API(`sessionStorage`, `localStorage`, `window.innerWidth` 등)를 읽어서 **렌더링 결과에 영향을 주려면** 반드시 `useEffect` 안에서 `setState`를 통해 업데이트해야 합니다. 렌더링 중에 직접 분기하면 Hydration mismatch가 발생합니다.
+
+#### `useEffect`의 실행 시점과 `[]` (의존성 배열)
+
+```typescript
+useEffect(() => {
+  // 이 코드는 언제 실행되는가?
+  console.log('마운트 완료!');
+}, []); // ← 빈 배열
+```
+
+| 의존성 배열    | 실행 시점               | 비유                           |
+| -------------- | ----------------------- | ------------------------------ |
+| `[]` (빈 배열) | 마운트 시 1번만         | jQuery의 `$(document).ready()` |
+| `[value]`      | `value`가 변경될 때마다 | jQuery의 `.on('change', ...)`  |
+| 생략           | 매 렌더링마다           | (거의 사용 안 함)              |
+
+이 프로젝트에서는 `[]`를 사용합니다. 페이지 진입 시 **한 번만** sessionStorage를 읽으면 되기 때문입니다.
+
+#### `Partial<T>` 타입이란?
+
+`JSON.parse()`의 반환 타입은 `any`입니다. 빈 객체 `{}`를 파싱하면 아무 키도 없는데, 타입스크립트가 모든 필드가 있다고 믿으면 런타임 오류가 날 수 있습니다.
+
+`Partial<T>`는 인터페이스 `T`의 모든 필드를 **선택적(optional)**으로 만듭니다:
+
+```typescript
+interface FormData {
+  universityId: string; // 필수
+  universityName: string; // 필수
+}
+
+Partial<FormData>; // → { universityId?: string; universityName?: string; }
+```
+
+이렇게 하면 `saved.universityId`가 없을 수 있음을 타입 수준에서 명시하고, `?? ''`로 안전하게 처리할 수 있습니다.
+
+**동작 원리:**
+
+| 진입 경로                        | sessionStorage 상태   | 초기 state | useEffect 후             |
+| -------------------------------- | --------------------- | ---------- | ------------------------ |
+| 첫 방문 (`/hakjong/apply`)       | 없음                  | 모두 빈 값 | 변화 없음 (early return) |
+| 수정하기 클릭 (`/hakjong/apply`) | 이전에 저장된 값 있음 | 모두 빈 값 | 이전 입력값으로 복원     |
+
+---
+
+### Step 22: 확인 페이지에서 sessionStorage 읽기
+
+```
+apps/early/src/window/hakjong/EarlyHakjongConfirm.tsx
+```
+
+확인 페이지도 동일한 `useEffect` 패턴을 적용합니다. `useSearchParams()`를 완전히 제거하고, 마운트 후 sessionStorage에서 읽습니다.
+
+**변경 전 (URL 방식):**
+
+```typescript
+import { useSearchParams } from 'next/navigation';
+
+const searchParams = useSearchParams();
+const applyId = searchParams.get('applyId') ?? '';
+const universityName = searchParams.get('universityName') ?? '';
+// ... URL에서 값 읽기
+```
+
+**변경 후 (useEffect + sessionStorage):**
+
+```typescript
+import { useEffect, useState } from 'react';
+
+// ① 초기값: 모두 빈 문자열 (SSR과 동일 = Hydration 안전)
+const [applyId, setApplyId] = useState('');
+const [universityName, setUniversityName] = useState('');
+const [majorTypeName, setMajorTypeName] = useState('');
+const [minorMajorCategoryName, setMinorMajorCategoryName] = useState('');
+const [selfIntroduction, setSelfIntroduction] = useState('');
+const [activityReport, setActivityReport] = useState('');
+
+// ② Hydration 완료 후 sessionStorage에서 값 채우기
+useEffect(() => {
+  const raw = sessionStorage.getItem('hakjong_apply_form');
+  if (!raw) return;
+  const saved = JSON.parse(raw) as Partial<{
+    applyId: string;
+    universityName: string;
+    majorTypeName: string;
+    minorMajorCategoryName: string;
+    selfIntroduction: string;
+    activityReport: string;
+  }>;
+  setApplyId(saved.applyId ?? '');
+  setUniversityName(saved.universityName ?? '');
+  setMajorTypeName(saved.majorTypeName ?? '');
+  setMinorMajorCategoryName(saved.minorMajorCategoryName ?? '');
+  setSelfIntroduction(saved.selfIntroduction ?? '');
+  setActivityReport(saved.activityReport ?? '');
+}, []);
+```
+
+> **이전 Step 21과 동일한 패턴입니다.** 확인 페이지에서도 "초기에는 빈 값 → useEffect에서 실제 값 채우기"로 Hydration mismatch를 방지합니다.
+
+---
+
+### Step 23: 수정하기 버튼 — 쿼리 없이 단순 이동
+
+확인 페이지의 "수정하기" 버튼이 이전에는 URL에 모든 입력값을 실어 보냈지만, 이제는 `sessionStorage`에 값이 이미 있으므로 단순 URL 이동만 하면 됩니다.
+
+**변경 전:**
+
+```typescript
+// 입력값을 다시 URL에 담아야 했음
+const editParams = new URLSearchParams({
+  universityId,
+  universityName,
+  // ... 8개
+  selfIntroduction,
+  activityReport,
+});
+
+<ButtonLink href={`/hakjong/apply?${editParams.toString()}`}>
+  수정하기
+</ButtonLink>
+```
+
+**변경 후:**
+
+```tsx
+// sessionStorage에 이미 값이 있으므로 단순 이동
+<ButtonLink mode="secondary" href="/jh/high3/early/hakjong/apply">
+  수정하기
+</ButtonLink>
+```
+
+신청 페이지(`EarlyHakjong.tsx`)는 마운트 시 항상 sessionStorage를 읽어 초기값을 복원하므로, URL에 쿼리스트링 없이 이동해도 이전 입력값이 그대로 표시됩니다.
+
+---
+
+### Step 24: `useSearchParams()` 제거와 Suspense
+
+`useSearchParams()`를 사용하는 컴포넌트는 반드시 `<Suspense>`로 감싸야 합니다. 이번 변경으로 두 컴포넌트 모두 `useSearchParams()`를 제거했지만, page.tsx의 `<Suspense>`는 그대로 유지합니다.
+
+> **왜 Suspense를 제거하지 않나요?**
+> `useSearchParams()`가 없더라도 `<Suspense>`는 다른 비동기 작업(React Query, lazy 컴포넌트 등)의 로딩 경계로 활용될 수 있습니다. 불필요하게 제거하는 것보다 유지하는 것이 안전합니다.
+
+`EarlyHakjongConfirm` 컴포넌트는 이제 `useSearchParams()`를 사용하지 않으므로 Suspense 의무 대상에서 벗어났습니다. 하지만 page.tsx의 Suspense는 그대로 둡니다:
+
+```tsx
+// app/(early)/hakjong/apply/confirm/page.tsx
+export default function HakjongApplyConfirmPage() {
+  return (
+    <Suspense>
+      <EarlyHakjongConfirm />
+    </Suspense>
+  );
+}
+```
+
+---
+
+### 방법 2 정리
+
+#### 변경된 파일 요약
+
+| 파일                      | 변경 내용                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------ |
+| `EarlyHakjong.tsx`        | `useSearchParams` 제거, `sessionStorage`에서 초기값 복원, `handleSubmit`에서 sessionStorage 저장 |
+| `EarlyHakjongConfirm.tsx` | `useSearchParams` 완전 제거, sessionStorage에서 모든 값 읽기, 수정하기 버튼 단순 href로 변경     |
+
+#### 전체 동작 흐름
+
+```
+[신청 페이지] /hakjong/apply
+  ① sessionStorage('hakjong_apply_form') 읽어 초기값 복원
+     └─ 첫 방문: 빈 값 / 수정하기로 재진입: 이전 입력값 복원
+  ② 사용자 입력 (Dropdown 3개 + TextInput 2개)
+  ③ "입력완료" 클릭 → 유효성 검사 → 서버 전송
+  ④ 서버 응답 성공 → sessionStorage에 전체 데이터 저장
+  ⑤ router.push('/hakjong/apply/confirm')  ← 쿼리 없음
+
+[확인 페이지] /hakjong/apply/confirm
+  ① sessionStorage('hakjong_apply_form') 읽어 화면 표시
+  ② "수정하기" 클릭 → /hakjong/apply 로 단순 이동
+
+[신청 페이지 재진입] /hakjong/apply
+  ① sessionStorage에 저장된 값 읽어 이전 입력값 복원
+```
+
+#### 핵심 개념 정리
+
+| 개념                         | 설명                                                                                         |
+| ---------------------------- | -------------------------------------------------------------------------------------------- |
+| `sessionStorage`             | 탭 닫으면 삭제되는 브라우저 저장소. 페이지 간 임시 데이터 전달에 적합                        |
+| `JSON.stringify()`           | 객체 → 문자열 변환. sessionStorage에 저장 전 필수                                            |
+| `JSON.parse()`               | 문자열 → 객체 변환. sessionStorage에서 읽은 후 필수                                          |
+| `useEffect`                  | 브라우저에서만, Hydration 이후에만 실행. sessionStorage 읽기를 여기서 해야 Hydration 안전    |
+| **Hydration mismatch**       | 서버 HTML과 클라이언트 첫 렌더링이 다를 때 발생하는 React 오류                               |
+| `useState` lazy init         | `useState(() => ...)` — "최초 1회만 실행"이지 "브라우저에서만 실행"이 아님. SSR에서도 실행됨 |
+| `Partial<T>`                 | 인터페이스의 모든 필드를 선택적으로 만드는 TypeScript 유틸리티 타입                          |
+| `?? ''` (Nullish Coalescing) | `null`/`undefined`일 때 기본값 지정                                                          |
+
+#### URL 쿼리스트링 vs sessionStorage 비교
+
+| 항목        | URL 쿼리스트링                    | sessionStorage                   |
+| ----------- | --------------------------------- | -------------------------------- |
+| 데이터 노출 | 브라우저 주소창에 노출            | 노출 없음                        |
+| 길이 제한   | ~2,048자 (브라우저마다 다름)      | ~5MB                             |
+| 탭 공유     | 링크 복사로 공유 가능             | 탭 간 공유 불가                  |
+| 새로고침    | URL 그대로라 데이터 유지          | 탭 닫으면 삭제                   |
+| 적합한 용도 | 페이지 공유, 필터/검색 조건       | 민감 데이터, 긴 텍스트 임시 전달 |
+| SSR 처리    | 불필요 (URL은 서버에서 읽기 가능) | `typeof window` 체크 필요        |
+
+---
+
+## Phase 5 종합 비교 — 어떤 방법을 언제 써야 하나?
+
+### 두 방법의 전체 구현 차이
+
+| 구현 포인트       | 방법 1: URL 쿼리스트링                   | 방법 2: sessionStorage                                        |
+| ----------------- | ---------------------------------------- | ------------------------------------------------------------- |
+| **데이터 저장**   | `new URLSearchParams({...})`             | `sessionStorage.setItem(key, JSON.stringify(...))`            |
+| **페이지 이동**   | `router.push('/confirm?' + params)`      | `router.push('/confirm')`                                     |
+| **데이터 읽기**   | `useSearchParams()` + `.get('key')`      | `useEffect` 내에서 `sessionStorage.getItem(key)` → `setState` |
+| **복원 초기값**   | `useState(searchParams.get(...) ?? '')`  | `useState('')` + `useEffect`에서 복원                         |
+| **수정하기 버튼** | `href={'/apply?' + editParams}`          | `href="/apply"` (그대로 이동)                                 |
+| **Suspense 필요** | ✅ 필요 (`useSearchParams` 때문)         | ❌ 불필요                                                     |
+| **SSR 안전 처리** | ❌ 불필요                                | ✅ `useEffect` 사용 필수 (Hydration 안전)                     |
+| **추가 import**   | `useSearchParams` from `next/navigation` | `useEffect` from `react`                                      |
+
+### 상황별 선택 기준
+
+```
+페이지 공유 링크가 필요한가? (ex. 필터, 검색 조건)
+  → YES → 방법 1: URL 쿼리스트링
+
+민감한 데이터인가? (ex. 자기소개서, 개인정보)
+  → YES → 방법 2: sessionStorage
+
+데이터 길이가 긴가? (수백 자 이상 텍스트)
+  → YES → 방법 2: sessionStorage
+
+단순 숫자/코드값만 전달하는가? (ex. id, 페이지 번호)
+  → YES → 방법 1: URL 쿼리스트링
+```
+
+### 이 프로젝트의 선택
+
+- **초기 구현**: 방법 1 (URL 쿼리스트링) — 빠르게 동작 확인
+- **최종 구현**: 방법 2 (sessionStorage) — 자기소개서/활동보고서가 민감 데이터이고 길이가 길어 URL 방식의 한계에 부딪혀 전환
