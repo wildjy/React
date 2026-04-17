@@ -8,7 +8,6 @@ import { ContFull  } from "../../../sharedUI/Layout/ContFull";
 import { DownLoadTable } from "..//DownLoadTable";
 import { SubTop } from "../../../sharedUI/Layout/SubTop";
 
-import { StepBar } from "../../../sharedUI/StepBar/Stepbar";
 const SwiperSlider = dynamic(() => import("../../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });
@@ -22,6 +21,7 @@ import { DropDown, DropDownOptionType } from '../../../sharedUI/DropDown/DropDow
 import { ButtonBox } from "../../../sharedUI/Button/ButtonBox";
 import { ButtonLink } from "../../../sharedUI/Button/Link";
 import LayerPopup from "../../../sharedUI/LayerPopup/LayerPopup";
+import { StepBar } from "@/sharedUI/Stepbar";
 
 const gradeMarkingPage = () => {
 

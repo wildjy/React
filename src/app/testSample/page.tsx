@@ -7,16 +7,15 @@ import { Radio } from "../../sharedUI/Input/Radio";
 import Select from "../../sharedUI/Input/Select";
 import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
 import { Button } from "../../sharedUI/Button/Button";
-import StepBars from "../../sharedUI/StepBar/Step";
-import { StepBar } from "../../sharedUI/StepBar/Stepbar";
+import { StepBar } from "@/sharedUI/Stepbar";
 import { ToastPopup } from "../../sharedUI/ToastPopup/ToastPopup";
-import StepBarClick from "../../sharedUI/StepBar/StepBarClick";
 import Title from "../../sharedUI/Title/TitleDemo";
 import dynamic from 'next/dynamic';
 
 import { SwiperSlide } from 'swiper/react';
 import { SwiperSlider } from '../../sharedUI/Swiper/SwiperSlider';
 import { lastIndexOf } from "lodash";
+import StepBarClick from "@/sharedUI/Stepbar/StepBarClick";
 // const SwiperSlider = dynamic(() => import('../../sharedUI/Swiper/Swiper'), {
 //   ssr: false
 // });

@@ -4,8 +4,6 @@ import throttle from 'lodash/throttle';
 import { ScrollProvider, useScroll } from "../../sharedUI/Layout/Provider/ScrollProvider";
 import { ScrollFixed } from "../../sharedUI/Layout/ScrollFixed";
 import { ScrollBottom } from "../../sharedUI/Layout/ScrollBottom";
-import { JStepBar } from "../../sharedUI/StepBar/JStepBar";
-import { JungsiStepBar } from "../../sharedUI/StepBar/JungsiStepBar";
 import { ScrollFloating } from "../../sharedUI/Layout/ScrollFloating";
 import { BatteryFlag } from '../../sharedUI/Flag/BatteryFlag';
 import { InfoTransform, InfoTransformItemType } from '../../sharedUI/Info/InfoTransform';
@@ -15,6 +13,8 @@ import { InfoTransformText } from '../../sharedUI/Info/InfoTransformText';
 import { BeforePassResultTable } from './BeforePassResultTable';
 import { code } from '@/sharedUI/common/common-code-definitions';
 import { ToolTip } from '@/sharedUI/ToolTip/ToolTip';
+import { JungsiStepBar } from '@/sharedUI/Stepbar/JungsiStepBar';
+import { JStepBar } from '@/sharedUI/Stepbar';
 
 export default function MarkingPage() {
   return (

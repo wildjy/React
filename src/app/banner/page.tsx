@@ -10,7 +10,6 @@ import { SideADRolling } from "../../sharedUI/Banner/SideADRolling";
 import { BottomJson } from "../../sharedUI/Banner/BottomJson";
 import { BottomRolling } from "../../sharedUI/Banner/BottomRolling";
 
-import { StepBar } from "../../sharedUI/StepBar/Stepbar";
 const SwiperSlider = dynamic(() => import("../../sharedUI/Swiper/SwiperTab"), {
   ssr: false
 });
@@ -21,6 +20,7 @@ import CustomRadio from "../../sharedUI/Input/CustomRadio";
 import Table from "../../sharedUI/Table/Table";
 import { ButtonBox } from "../../sharedUI/Button/ButtonBox";
 import { ButtonLink } from "../../sharedUI/Button/Link";
+import { StepBar } from "@/sharedUI/Stepbar";
 
 const gradeInsertPage = () => {
 
