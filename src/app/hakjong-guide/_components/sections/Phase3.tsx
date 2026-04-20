@@ -59,6 +59,29 @@ const { data: univMajorData } = useUnivMajorListAndMajorTheme()`}
           이 훅들은 내부적으로 <strong>React Query</strong>를 사용합니다.
           자동으로 로딩/에러 상태를 관리하고, 캐싱 및 재요청을 처리합니다.
         </Callout>
+        <Callout variant="info">
+          <strong>초보자용 비유:</strong> <IC>useQuery</IC>는 도서관에서 책을 꺼내 읽는 것과 같습니다.
+          같은 책을 다시 찾으면 이미 빌려둔 책(캐시)을 먼저 보여주고,
+          오래된 정보라고 판단되면 다시 빌려와 최신 내용을 확인합니다.
+        </Callout>
+        <p>
+          즉 React Query는 단순한 API 호출 도구가 아니라, <strong>서버에서 읽어온 데이터를 화면에서 어떻게 보관하고 다시 가져올지 관리하는 도구</strong>라고 이해하면 됩니다.
+        </p>
+        <CodeBlock
+          lang="tsx"
+          code={`const {
+  data,
+  isLoading,
+  error,
+} = useQuery({
+  queryKey: ['hakjong', 'univ-major-list'],
+  queryFn: fetchUnivMajorList,
+})`}
+        />
+        <Callout variant="tip">
+          이 프로젝트에서는 이 로직을 직접 쓰지 않고 커스텀 훅으로 감싸서
+          <IC>useUnivMajorListAndMajorTheme()</IC>처럼 더 읽기 쉬운 형태로 사용합니다.
+        </Callout>
       </StepCard>
 
       {/* Step 10 */}

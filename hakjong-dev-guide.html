@@ -1149,6 +1149,35 @@
             이 훅들은 내부적으로 <strong>React Query</strong>를 사용합니다. 자동으로 로딩/에러 상태를 관리하고, 캐싱 및 재요청을 처리합니다.
           </div>
         </div>
+
+        <div class="callout info">
+          <div class="callout-icon">📚</div>
+          <div class="callout-body">
+            <strong>초보자용 비유:</strong> <code>useQuery</code>는 도서관에서 책을 꺼내 읽는 것과 같습니다.
+            같은 책을 다시 찾으면 이미 빌려둔 책(캐시)을 먼저 보여주고, 오래된 정보라고 판단되면 다시 빌려와 최신 내용을 확인합니다.
+          </div>
+        </div>
+
+        <p>즉 React Query는 단순한 API 호출 도구가 아니라, <strong>서버에서 읽어온 데이터를 화면에서 어떻게 보관하고 다시 가져올지 관리하는 도구</strong>라고 이해하면 됩니다.</p>
+
+        <div class="code-block">
+          <div class="code-lang">tsx</div>
+          <pre><span class="kw">const</span> {
+  data,
+  isLoading,
+  error,
+} = <span class="fn">useQuery</span>({
+  queryKey: [<span class="str">'hakjong'</span>, <span class="str">'univ-major-list'</span>],
+  queryFn: fetchUnivMajorList,
+})</pre>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            실제 프로젝트에서는 이 로직을 직접 쓰지 않고 커스텀 훅으로 감싸서 <code>useUnivMajorListAndMajorTheme()</code>처럼 더 읽기 쉬운 형태로 사용합니다.
+          </div>
+        </div>
       </div>
 
       <!-- Step 10 -->
@@ -1352,6 +1381,14 @@
 [확인 페이지 이동]
   router.push('/hakjong/apply/confirm?applyId=...&...')</pre>
         </div>
+
+        <div class="callout info">
+          <div class="callout-icon">🔄</div>
+          <div class="callout-body">
+            <strong>React Query 전체 흐름으로 다시 보면:</strong> 조회는 <code>useQuery</code>로 읽고 캐시에 저장하고,
+            변경은 <code>useMutation</code>으로 처리한 뒤 필요한 경우 <code>invalidateQueries()</code>로 관련 조회를 다시 불러와 화면을 최신 상태로 맞춥니다.
+          </div>
+        </div>
       </div>
 
       <!-- Step 14 -->
@@ -1464,6 +1501,45 @@
             </tbody>
           </table>
         </div>
+
+        <div class="callout key">
+          <div class="callout-icon">🔑</div>
+          <div class="callout-body">
+            <strong>한 줄 정리:</strong> <code>useQuery</code>는 서버 상태를 읽는 훅이고, <code>useMutation</code>은 서버 상태를 바꾸는 훅입니다.
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>항목</th><th>useQuery</th><th>useMutation</th></tr></thead>
+            <tbody>
+              <tr><td>캐시 재사용</td><td>같은 queryKey면 캐시 재사용</td><td>직접 캐시 갱신 필요</td></tr>
+              <tr><td>queryKey</td><td>필수</td><td>없음</td></tr>
+              <tr><td>SSR/초기 데이터</td><td>잘 맞음</td><td>거의 사용하지 않음</td></tr>
+              <tr><td>잘 어울리는 트리거</td><td>페이지 진입, 탭 진입</td><td>버튼 클릭, 폼 제출, 삭제 액션</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warn">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            <strong>실무 포인트:</strong> mutation이 성공한 뒤 관련 목록이나 상세 화면이 이미 <code>useQuery</code>로 렌더링되고 있다면,
+            <code>invalidateQueries()</code>를 호출해 다시 조회시켜야 화면이 최신 상태로 바뀝니다.
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">typescript</div>
+          <pre><span class="kw">const</span> queryClient = <span class="fn">useQueryClient</span>()
+
+<span class="kw">const</span> deleteMutation = <span class="fn">useMutation</span>({
+  mutationFn: deleteItem,
+  onSuccess: () => {
+    queryClient.<span class="fn">invalidateQueries</span>({ queryKey: [<span class="str">'items'</span>] })
+  },
+})</pre>
+        </div>
       </div>
 
       <!-- Step 17 -->
@@ -1515,6 +1591,44 @@
           <div class="callout-icon">💡</div>
           <div class="callout-body">
             <strong>URLSearchParams</strong>: URL의 쿼리스트링을 안전하게 만드는 내장 Web API입니다. 한글 등 특수문자가 자동으로 URL 인코딩됩니다.
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>항목</th><th>mutate</th><th>mutateAsync</th></tr></thead>
+            <tbody>
+              <tr><td>반환값</td><td>없음 (void)</td><td>Promise 반환</td></tr>
+              <tr><td>결과 처리</td><td>onSuccess / onError 콜백</td><td>await / try-catch</td></tr>
+              <tr><td>어울리는 상황</td><td>토스트 표시, 단순 후처리</td><td>페이지 이동, 후속 API 호출, 조건 분기</td></tr>
+              <tr><td>코드 흐름</td><td>콜백 중심</td><td>위에서 아래로 순차적</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout info">
+          <div class="callout-icon">🧭</div>
+          <div class="callout-body">
+            <strong>비유하면:</strong> <code>mutate</code>는 저장 버튼만 누르고 결과를 콜백으로 받는 방식이고,
+            <code>mutateAsync</code>는 저장이 끝날 때까지 기다렸다가 응답값을 손에 들고 다음 행동으로 넘어가는 방식입니다.
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">typescript</div>
+          <pre><span class="kw">try</span> {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">mutateAsync</span>(formData)
+  <span class="fn">alert</span>(<span class="str">'저장 완료'</span>)
+  router.<span class="fn">push</span>(<span class="str">`/confirm?id=</span>${response.applyId}<span class="str">`</span>)
+} <span class="kw">catch</span> (error) {
+  <span class="fn">alert</span>(<span class="str">'저장 실패'</span>)
+}</pre>
+        </div>
+
+        <div class="callout key">
+          <div class="callout-icon">✅</div>
+          <div class="callout-body">
+            이 프로젝트에서 <code>mutateAsync</code>를 쓴 이유는 신청 성공 후 받은 <code>applyId</code>를 바로 URL에 담아 다음 화면으로 이동해야 했기 때문입니다.
           </div>
         </div>
       </div>
