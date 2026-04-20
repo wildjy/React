@@ -152,6 +152,19 @@ import { ConfirmModal } from '@libs/ui/Modal'`}
           <IC>isPending</IC>를 연결하면 네트워크가 느릴 때 중복 클릭을 막고,
           사용자에게 "지금 처리 중"이라는 피드백을 줄 수 있습니다.
         </Callout>
+        <Callout variant="warn">
+          <strong>⚠️ API 클라이언트 사용 기준:</strong>{' '}
+          Step 15의 <IC>apiClient()</IC>가 프로젝트 표준이고,
+          이 Step의 <IC>ky.post(basePath + ...)</IC>는 <strong>로컬 개발 한정 임시 코드</strong>입니다.
+          실제 배포 시에는 반드시 <IC>apiClient()</IC>로 통일하세요.
+        </Callout>
+        <DataTable
+          headers={['상황', '사용할 클라이언트', '이유']}
+          rows={[
+            ['로컬 Mock (Route Handler)', 'ky.post(basePath + \'/api/...\')', 'Next.js 자체 /api 경로를 직접 호출'],
+            ['실제 서버 연동', 'apiClient().post(\'endpoint\', ...)', '공통 baseURL, 인증 헤더 자동 설정'],
+          ]}
+        />
       </StepCard>
     </section>
   )

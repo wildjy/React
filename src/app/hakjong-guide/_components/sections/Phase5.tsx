@@ -91,6 +91,22 @@ const [selectedOption, setSelectedOption] = useState({
           자기소개서와 활동보고서처럼 길고 민감한 내용을 URL에 담는 것은 한계가 있습니다.
           그래서 최종 구현은 <IC>sessionStorage</IC> 기반으로 바뀝니다.
         </p>
+        <Callout variant="tip">
+          <strong>💡 실무 팁 — 키를 상수로 추출하세요:</strong>{' '}
+          <IC>{"'hakjong_apply_form'"}</IC> 문자열이 여러 파일에서 반복됩니다.
+          오타 방지를 위해 상수로 추출하는 것을 권장합니다.
+        </Callout>
+        <CodeBlock
+          lang="typescript"
+          path="entities/hakjong/model/hakjong.constants.ts"
+          code={`export const HAKJONG_STORAGE_KEY = 'hakjong_apply_form' as const
+
+// 사용처:
+import { HAKJONG_STORAGE_KEY } from '@/entities/hakjong/model/hakjong.constants'
+sessionStorage.setItem(HAKJONG_STORAGE_KEY, JSON.stringify(data))
+sessionStorage.getItem(HAKJONG_STORAGE_KEY)
+sessionStorage.removeItem(HAKJONG_STORAGE_KEY)`}
+        />
         <CompareGrid
           beforeLabel="방법 1 — URL 쿼리스트링"
           afterLabel="방법 2 — sessionStorage"
@@ -191,6 +207,13 @@ useEffect(() => {
         <Callout variant="key">
           이 프로젝트는 초기에는 URL 방식으로 빠르게 검증했고,
           최종적으로는 긴 텍스트와 민감 데이터를 다루기 위해 <IC>sessionStorage</IC> 방식으로 전환했습니다.
+        </Callout>
+        <Callout variant="info">
+          <strong>useSearchParams 제거 후에도 Suspense를 유지하는 이유:</strong>{' '}
+          ① React Query의 <IC>suspense: true</IC> 옵션 사용 시 필요,{' '}
+          ② <IC>React.lazy()</IC> 코드 스플리팅 시 필요,{' '}
+          ③ <IC>loading.tsx</IC> 대체 로딩 UI로 활용 가능,{' '}
+          ④ 성능 오버헤드가 거의 없어 제거보다 유지가 합리적입니다.
         </Callout>
       </StepCard>
     </section>

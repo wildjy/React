@@ -47,8 +47,8 @@ export function Phase4() {
 export interface HakjongApplyRequest {
   universityId:           string  // "101"
   universityName:         string  // "서울대학교"
-  majorType:              string  // "인문"
-  majorTypeName:          string  // "인문계"
+  majorType:              string  // "HUM" (계열 코드)
+  majorTypeName:          string  // "인문" (계열명)
   minorMajorCategoryCode: string  // "C12"
   minorMajorCategoryName: string  // "경영학과"
   selfIntroduction:       string  // 자기소개서
@@ -180,16 +180,23 @@ const handleSubmit = async () => {
     return
   }
 
-  const response = await submitApply({
-    universityId: drop1.value,
-    universityName: drop1.label,
-    majorType: drop2.value,
-    majorTypeName: drop2.label,
-    minorMajorCategoryCode: drop3.value,
-    minorMajorCategoryName: drop3.label,
-    selfIntroduction,
-    activityReport,
-  })
+  // 에러 발생 시 이후 코드(페이지 이동) 실행을 방지
+  let response
+  try {
+    response = await submitApply({
+      universityId: drop1.value,
+      universityName: drop1.label,
+      majorType: drop2.value,
+      majorTypeName: drop2.label,
+      minorMajorCategoryCode: drop3.value,
+      minorMajorCategoryName: drop3.label,
+      selfIntroduction,
+      activityReport,
+    })
+  } catch {
+    // onError 콜백에서 alert 처리됨. 여기서는 이후 로직 실행만 막음
+    return
+  }
 
   const params = new URLSearchParams({
     applyId: response.applyId,
@@ -280,6 +287,27 @@ export const handlers = [
 // 실제 API 연동 시: 핸들러만 주석 처리하면 자동으로 실제 서버에 요청됨
 // http.post(/.*\\/hakjong\\/apply/, () => { ... }),`}
         />
+      </StepCard>
+
+      <StepCard phase={4} num="19-1" title="MSW와 Next.js Route Handler — 두 가지 Mock 방식의 차이">
+        <p>
+          이 프로젝트에서는 MSW(Step 19)와 Next.js Route Handler(Step 28)를 <strong>상황에 따라 선택적으로</strong> 사용합니다.
+          혼동하기 쉬우므로 차이를 정리합니다.
+        </p>
+        <DataTable
+          headers={['항목', 'MSW (Mock Service Worker)', 'Next.js Route Handler']}
+          rows={[
+            ['동작 위치', '브라우저 Service Worker가 요청 가로챔', 'Next.js 서버(Node.js)에서 실행'],
+            ['설정 방법', 'handlers.ts에 정규식 패턴 등록', 'app/api/.../route.ts 파일 생성'],
+            ['적합한 상황', '팀 전체 공유 Mock, Swagger 스펙 기반', '개인 로컬 테스트, 빠른 프로토타이핑'],
+            ['실제 서버 전환', '핸들러 주석/제거 → 자동 연결', 'API 함수의 URL을 apiClient()로 교체'],
+            ['SSR 지원', 'O (server.ts 핸들러 제공)', 'O (서버에서 직접 실행)'],
+          ]}
+        />
+        <Callout variant="key">
+          <strong>선택 기준 한 줄 정리:</strong> API 스펙이 확정되어 팀 전체가 사용할 Mock → <strong>MSW</strong>,
+          아직 스펙이 불확실하고 혼자 빠르게 테스트 → <strong>Route Handler</strong>
+        </Callout>
       </StepCard>
     </section>
   )

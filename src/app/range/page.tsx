@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { RecommendRange } from "./RecommendRange";
 import { RangeSlider } from "./RangeSlider";
 import { DualRangeSlider } from "../../sharedUI/Range/DualRangeSlider";
-import { from } from '../../../postcss.config.cjs';
 
 const App = () => {
 

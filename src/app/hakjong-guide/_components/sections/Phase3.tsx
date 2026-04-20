@@ -148,6 +148,11 @@ useQuery({
             ['퍼블리셔 관점 비유', '현재 화면 메모장', '서버에서 가져온 공용 문서'],
           ]}
         />
+        <Callout variant="tip">
+          <strong>📝 참고:</strong> 위 <IC>useQuery</IC> / <IC>queryKey</IC> 상세 설명은 분량이 길어
+          별도 부록으로 분리하는 것도 고려해 보세요. 본문에서는 핵심 한 문장과 이 프로젝트 기준 예시만 남기고,
+          비교표·오용 사례 등은 &quot;부록 A: useQuery 심화&quot;로 옮기면 Phase 3의 흐름이 더 간결해집니다.
+        </Callout>
       </StepCard>
 
       {/* Step 10 */}
@@ -181,7 +186,7 @@ import { code, codeName } from '@libs/common'
 
 const majorTypeOptions: StringDropDownOption[] = [
   {
-    label: codeName('MAJOR_TYPE_CODES', 'HUMANITIES'),      // "인문계"
+    label: codeName('MAJOR_TYPE_CODES', 'HUMANITIES'),      // "인문"
     value: code('MAJOR_TYPE_CODES', 'HUMANITIES'),          // "HUM"
   },
   {

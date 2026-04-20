@@ -732,6 +732,7 @@
       <a class="nav-item p4" href="#step17"><span class="step-badge">17</span>handleSubmit 조립</a>
       <a class="nav-item p4" href="#step18"><span class="step-badge">18</span>확인 페이지</a>
       <a class="nav-item p4" href="#step19"><span class="step-badge">19</span>MSW 목 API</a>
+      <a class="nav-item p4" href="#step19-1"><span class="step-badge">19-1</span>MSW vs Route Handler</a>
     </div>
     <div class="nav-section">
       <div class="nav-phase-label">Phase 5 — 수정하기</div>
@@ -1288,6 +1289,10 @@
             </tbody>
           </table>
         </div>
+
+        <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-body">
+          <strong>📝 참고:</strong> 위 <code>useQuery</code> / <code>queryKey</code> 상세 설명은 분량이 길어 별도 부록으로 분리하는 것도 고려해 보세요. 본문에서는 핵심 한 문장과 이 프로젝트 기준 예시만 남기고, 비교표·오용 사례 등은 "부록 A: useQuery 심화"로 옮기면 Phase 3의 흐름이 더 간결해집니다.
+        </div></div>
       </div>
 
       <!-- Step 10 -->
@@ -1515,8 +1520,8 @@
 <span class="kw">export interface</span> <span class="type">HakjongApplyRequest</span> {
   universityId:            <span class="type">string</span>  <span class="cm">// "101"</span>
   universityName:          <span class="type">string</span>  <span class="cm">// "서울대학교"</span>
-  majorType:               <span class="type">string</span>  <span class="cm">// "인문"</span>
-  majorTypeName:           <span class="type">string</span>  <span class="cm">// "인문계"</span>
+  majorType:               <span class="type">string</span>  <span class="cm">// "HUM" (계열 코드)</span>
+  majorTypeName:           <span class="type">string</span>  <span class="cm">// "인문" (계열명)</span>
   minorMajorCategoryCode:  <span class="type">string</span>  <span class="cm">// "C12"</span>
   minorMajorCategoryName:  <span class="type">string</span>  <span class="cm">// "경영학과"</span>
   selfIntroduction:        <span class="type">string</span>  <span class="cm">// 자기소개서</span>
@@ -1678,13 +1683,19 @@
     <span class="kw">return</span>
   }
 
-  <span class="cm">// ② 서버로 데이터 전송</span>
-  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">submitApply</span>({
-    universityId: drop1.value, universityName: drop1.label,
-    majorType: drop2.value,    majorTypeName: drop2.label,
-    minorMajorCategoryCode: drop3.value, minorMajorCategoryName: drop3.label,
-    selfIntroduction, activityReport,
-  })
+  <span class="cm">// ② 서버로 데이터 전송 (에러 시 이후 코드 실행 방지)</span>
+  <span class="kw">let</span> response
+  <span class="kw">try</span> {
+    response = <span class="kw">await</span> <span class="fn">submitApply</span>({
+      universityId: drop1.value, universityName: drop1.label,
+      majorType: drop2.value,    majorTypeName: drop2.label,
+      minorMajorCategoryCode: drop3.value, minorMajorCategoryName: drop3.label,
+      selfIntroduction, activityReport,
+    })
+  } <span class="kw">catch</span> {
+    <span class="cm">// onError 콜백에서 alert 처리됨. 여기서는 이후 로직(페이지 이동) 실행만 막음</span>
+    <span class="kw">return</span>
+  }
 
   <span class="cm">// ③ 확인 페이지로 이동 (applyId + 선택 정보 URL에 포함)</span>
   <span class="kw">const</span> params = <span class="kw">new</span> <span class="fn">URLSearchParams</span>({
@@ -1811,6 +1822,19 @@
 // http.post(/.*\/hakjong\/apply/, () => { ... }),</span></pre>
         </div>
       </div>
+
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">19-1</div><h4>MSW와 Next.js Route Handler — 두 가지 Mock 방식의 차이</h4></div>
+        <p>이 프로젝트에서는 MSW(Step 19)와 Next.js Route Handler(Step 28)를 <strong>상황에 따라 선택적으로</strong> 사용합니다. 혼동하기 쉬우므로 차이를 정리합니다.</p>
+        <div class="table-wrap"><table><thead><tr><th>항목</th><th>MSW (Mock Service Worker)</th><th>Next.js Route Handler</th></tr></thead><tbody>
+          <tr><td>동작 위치</td><td>브라우저 Service Worker가 요청 가로챔</td><td>Next.js 서버(Node.js)에서 실행</td></tr>
+          <tr><td>설정 방법</td><td>handlers.ts에 정규식 패턴 등록</td><td>app/api/.../route.ts 파일 생성</td></tr>
+          <tr><td>적합한 상황</td><td>팀 전체 공유 Mock, Swagger 스펙 기반</td><td>개인 로컬 테스트, 빠른 프로토타이핑</td></tr>
+          <tr><td>실제 서버 전환</td><td>핸들러 주석/제거 → 자동 연결</td><td>API 함수의 URL을 apiClient()로 교체</td></tr>
+          <tr><td>SSR 지원</td><td>O (server.ts 핸들러 제공)</td><td>O (서버에서 직접 실행)</td></tr>
+        </tbody></table></div>
+        <div class="callout key"><div class="callout-icon">🔑</div><div class="callout-body"><strong>선택 기준 한 줄 정리:</strong> API 스펙이 확정되어 팀 전체가 사용할 Mock → <strong>MSW</strong>, 아직 스펙이 불확실하고 혼자 빠르게 테스트 → <strong>Route Handler</strong></div></div>
+      </div>
     </div>
 
     <!-- ══ Phase 5 ══ -->
@@ -1888,6 +1912,12 @@ router.<span class="fn">push</span>(<span class="str">'/hakjong/apply/confirm?'<
       <div class="step-card">
         <div class="step-title"><div class="step-num">22</div><h4>방법 2 — sessionStorage로 전환한 이유</h4></div>
         <p>자기소개서, 활동보고서처럼 길고 민감한 내용을 URL에 담는 것은 적합하지 않아 최종 구현은 <code>sessionStorage</code> 방식으로 바뀝니다.</p>
+        <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-body">
+          <strong>실무 팁 — 키를 상수로 추출하세요:</strong> <code>'hakjong_apply_form'</code> 문자열이 여러 파일에서 반복됩니다. 오타 방지를 위해 상수로 추출하세요:<br><br>
+          <code>// entities/hakjong/model/hakjong.constants.ts</code><br>
+          <code>export const HAKJONG_STORAGE_KEY = 'hakjong_apply_form' as const</code><br><br>
+          이후 각 파일에서 <code>import { HAKJONG_STORAGE_KEY }</code>로 사용하면 키 이름 변경 시에도 한 곳만 수정하면 됩니다.
+        </div></div>
         <div class="compare-grid">
           <div class="compare-box before"><h5>방법 1 — URL 쿼리스트링</h5><div class="table-wrap" style="margin:0"><table><thead><tr><th>항목</th><th>설명</th></tr></thead><tbody>
             <tr><td>데이터 노출</td><td>주소창과 히스토리에 노출</td></tr>
@@ -1957,6 +1987,13 @@ router.<span class="fn">push</span>(<span class="str">'/hakjong/apply/confirm'</
           <tr><td>SSR 처리</td><td>간단함</td><td>Hydration 안전 처리 필요</td></tr>
         </tbody></table></div>
         <div class="callout key"><div class="callout-icon">🔑</div><div class="callout-body">이 프로젝트는 초기에는 URL 방식으로 빠르게 검증했고, 최종적으로는 긴 텍스트와 민감 데이터를 다루기 위해 <code>sessionStorage</code> 방식으로 전환했습니다.</div></div>
+        <div class="callout info"><div class="callout-icon">🧭</div><div class="callout-body">
+          <strong>useSearchParams 제거 후에도 Suspense를 유지하는 이유:</strong>
+          ① React Query의 <code>suspense: true</code> 옵션 사용 시 필요,
+          ② <code>React.lazy()</code> 코드 스플리팅 시 필요,
+          ③ <code>loading.tsx</code> 대체 로딩 UI로 활용 가능,
+          ④ 성능 오버헤드가 거의 없어 제거보다 유지가 합리적입니다.
+        </div></div>
       </div>
     </div>
 
@@ -2070,6 +2107,13 @@ router.<span class="fn">push</span>(<span class="str">'/hakjong/apply/confirm'</
   }}
 /&gt;</pre></div>
         <div class="callout key"><div class="callout-icon">🔑</div><div class="callout-body"><code>isPending</code>를 연결하면 네트워크가 느릴 때 중복 클릭을 막고 사용자에게 "처리 중"이라는 피드백을 줄 수 있습니다.</div></div>
+        <div class="callout warn"><div class="callout-icon">⚠️</div><div class="callout-body">
+          <strong>API 클라이언트 사용 기준:</strong> Step 15의 <code>apiClient()</code>가 프로젝트 표준이고, 이 Step의 <code>ky.post(basePath + ...)</code>는 <strong>로컬 개발 한정 임시 코드</strong>입니다. 실제 배포 시에는 반드시 <code>apiClient()</code>로 통일하세요.
+        </div></div>
+        <div class="table-wrap"><table><thead><tr><th>상황</th><th>사용할 클라이언트</th><th>이유</th></tr></thead><tbody>
+          <tr><td>로컬 Mock (Route Handler)</td><td><code>ky.post(basePath + '/api/...')</code></td><td>Next.js 자체 /api 경로를 직접 호출</td></tr>
+          <tr><td>실제 서버 연동</td><td><code>apiClient().post('endpoint', ...)</code></td><td>공통 baseURL, 인증 헤더 자동 설정</td></tr>
+        </tbody></table></div>
       </div>
     </div>
 
