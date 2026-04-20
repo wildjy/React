@@ -95,6 +95,26 @@ export const submitHakjongApply = async (
           <strong>ky HTTP 클라이언트란?</strong> <IC>fetch</IC>를 기반으로 만들어진 경량 HTTP 라이브러리입니다.
           axios와 유사하지만 더 가볍고, 환경에 따라 baseURL이 자동 설정됩니다.
         </Callout>
+        <CodeBlock
+          lang="http"
+          code={`POST https://api.jinhak.com/jh/high3/early/hakjong/apply
+Content-Type: application/json
+
+{
+  "universityId": "101",
+  "universityName": "서울대학교",
+  "majorType": "인문",
+  "majorTypeName": "인문계",
+  "minorMajorCategoryCode": "C12",
+  "minorMajorCategoryName": "경영학과",
+  "selfIntroduction": "...",
+  "activityReport": "..."
+}`}
+        />
+        <Callout variant="info">
+          브라우저 Network 탭에서는 위와 같은 형태로 실제 POST 요청이 보입니다.
+          즉 이 단계는 단순 함수 호출이 아니라, 서버에 JSON body를 실어 보내는 HTTP 통신입니다.
+        </Callout>
       </StepCard>
 
       <StepCard phase={4} num={16} title="useMutation 훅 — 서버 요청의 생명주기 관리">
@@ -135,9 +155,15 @@ const {
         <Callout variant="key">
           <strong>한 줄 정리:</strong> <IC>useQuery</IC>는 서버 상태를 읽는 훅이고, <IC>useMutation</IC>은 서버 상태를 바꾸는 훅입니다.
         </Callout>
+        <Callout variant="info">
+          퍼블리셔 관점에서 비유하면 <IC>useQuery</IC>는 화면에 보여줄 데이터를 읽어오는 단계이고,
+          <IC>useMutation</IC>은 사용자의 클릭을 서버 저장 요청으로 바꾸는 단계입니다.
+        </Callout>
         <DataTable
           headers={['항목', 'useQuery', 'useMutation']}
           rows={[
+            ['목적', '서버 데이터 조회', '서버 데이터 변경'],
+            ['자동 실행', '있음', '없음'],
             ['캐시 재사용', '같은 queryKey면 캐시 재사용', '직접 캐시 갱신 필요'],
             ['queryKey', '필수', '없음'],
             ['SSR/초기 데이터', '잘 맞음', '거의 사용하지 않음'],
@@ -158,6 +184,21 @@ const deleteMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['items'] })
   },
 })`}
+        />
+        <Callout variant="warn">
+          <strong>흔한 실수:</strong> 조회 API를 <IC>useMutation</IC>으로 감싸거나, 저장 API를 <IC>useQuery</IC>로 자동 실행시키거나,
+          mutation 성공 후 관련 query를 갱신하지 않는 경우입니다.
+        </Callout>
+        <DataTable
+          headers={['반환값', '설명']}
+          rows={[
+            ['mutateAsync', '호출하면 API 요청 실행. async/await 가능'],
+            ['isPending', '요청 진행 중 여부. 버튼 비활성화와 중복 클릭 방지에 활용'],
+            ['isSuccess', '요청 성공 시 true'],
+            ['isError', '요청 실패 시 true'],
+            ['data', '성공 시 응답 데이터'],
+            ['error', '실패 시 에러 객체'],
+          ]}
         />
       </StepCard>
 
@@ -234,8 +275,39 @@ const handleSubmit = async () => {
           <strong>URLSearchParams:</strong> URL의 쿼리스트링을 안전하게 만드는 내장 Web API입니다.
           한글 등 특수문자가 자동으로 URL 인코딩됩니다.
         </Callout>
+        <CodeBlock
+          lang="typescript"
+          code={`const params = new URLSearchParams({
+  applyId: 'HAKJONG-2026-001',
+  universityName: '서울대학교',
+})
+
+params.toString()
+// applyId=HAKJONG-2026-001&universityName=%EC%84%9C%EC%9A%B8%EB%8C%80%ED%95%99%EA%B5%90`}
+        />
+        <CodeBlock
+          lang="tsx"
+          code={`// 비제어 컴포넌트 (before)
+<TextInput addId="intro" label="자기소개서" />
+
+// 제어 컴포넌트 (after)
+<TextInput
+  addId="intro"
+  label="자기소개서"
+  value={selfIntroduction}
+  onChange={(e) => setSelfIntroduction(e.target.value)}
+/>`}
+        />
+        <Callout variant="tip">
+          <strong>제어 컴포넌트:</strong> <IC>value</IC>와 <IC>onChange</IC>를 연결해 React state가 항상 최신 입력값을 추적하는 패턴입니다.
+          그래서 <IC>handleSubmit</IC>에서 DOM을 다시 읽지 않고 state만 바로 사용하면 됩니다.
+        </Callout>
         <Callout variant="key">
           이 프로젝트에서 <IC>mutateAsync</IC>를 쓴 이유는 신청 성공 후 받은 <IC>applyId</IC>를 바로 URL에 담아 다음 화면으로 이동해야 했기 때문입니다.
+        </Callout>
+        <Callout variant="info">
+          <strong>isPending 활용:</strong> 제출 버튼이나 확인 버튼에 로딩 상태를 연결하면 네트워크가 느릴 때 중복 클릭을 막고
+          사용자에게 지금 처리 중이라는 피드백을 줄 수 있습니다.
         </Callout>
       </StepCard>
 

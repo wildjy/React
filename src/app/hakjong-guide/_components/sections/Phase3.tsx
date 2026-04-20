@@ -148,11 +148,121 @@ useQuery({
             ['퍼블리셔 관점 비유', '현재 화면 메모장', '서버에서 가져온 공용 문서'],
           ]}
         />
-        <Callout variant="tip">
-          <strong>📝 참고:</strong> 위 <IC>useQuery</IC> / <IC>queryKey</IC> 상세 설명은 분량이 길어
-          별도 부록으로 분리하는 것도 고려해 보세요. 본문에서는 핵심 한 문장과 이 프로젝트 기준 예시만 남기고,
-          비교표·오용 사례 등은 &quot;부록 A: useQuery 심화&quot;로 옮기면 Phase 3의 흐름이 더 간결해집니다.
+        <div className="mt-8 mb-3">
+          <h5 className="text-[14px] font-bold text-gray-900">Step 9-1. 커스텀 훅에서 useQuery 직접 호출로 전환</h5>
+          <p className="mt-2 text-[14px] text-gray-600 leading-7">
+            학습 목적으로는 커스텀 훅을 바로 쓰기보다, 내부에서 실제로 어떤 <IC>queryKey</IC>와 옵션이
+            동작하는지 직접 드러내는 편이 이해에 더 도움이 됩니다.
+          </p>
+        </div>
+        <CodeBlock
+          lang="tsx"
+          code={`// 변경 전: 커스텀 훅 사용
+import { useUnivMajorListAndMajorTheme } from '@libs/entities/university-major-search'
+
+const { data: univMajorData } = useUnivMajorListAndMajorTheme()
+
+// 변경 후: useQuery 직접 호출
+import { fetchUnivMajorListAndMajorTheme } from '@libs/entities/university-major-search/api'
+import type { UnivMajorList } from '@libs/entities/university-major-search'
+import { useQuery } from '@tanstack/react-query'
+
+const {
+  data: univMajorData,
+  isLoading,
+  error,
+} = useQuery<UnivMajorList>({
+  queryKey: ['hakjong', 'univ-major-list'],
+  queryFn: fetchUnivMajorListAndMajorTheme,
+  staleTime: 1000 * 60 * 60,
+  refetchOnWindowFocus: false,
+})`}
+        />
+        <Callout variant="key">
+          <strong>핵심:</strong> 커스텀 훅은 대부분 <IC>useQuery</IC>를 한 번 감싼 wrapper입니다.
+          결과는 같고, 차이는 <IC>queryKey</IC>, <IC>staleTime</IC> 같은 설정을 어디서 관리하느냐입니다.
         </Callout>
+        <CodeBlock
+          lang="tsx"
+          code={`export const useUnivMajorListAndMajorTheme = () => {
+  return useQuery<UnivMajorList>({
+    ...queryOptions.getUnivMajorListAndMajorTheme(),
+  })
+}`}
+        />
+        <Callout variant="tip">
+          <strong>커스텀 훅을 까보는 습관:</strong> 프론트 학습 단계에서는 훅 이름만 보지 말고 내부 구현도 열어보세요.
+          대부분은 <IC>useQuery</IC> 또는 <IC>useMutation</IC>을 감싼 구조입니다.
+        </Callout>
+        <DataTable
+          headers={['import 대상', '경로', '이유']}
+          rows={[
+            ['fetchUnivMajorListAndMajorTheme', '@libs/.../api', 'barrel export에 등록되지 않아 직접 경로 필요'],
+            ['UnivMajorList', '@libs/entities/university-major-search', 'barrel export에 등록된 타입이라 루트 경로 사용 가능'],
+          ]}
+        />
+        <Callout variant="info">
+          <strong>barrel export:</strong> <IC>index.ts</IC>에서 여러 export를 한 번에 모아 내보내는 패턴입니다.
+          필요한 항목이 거기에 없으면 해당 파일 경로로 직접 import해야 합니다.
+        </Callout>
+        <CodeBlock
+          lang="tsx"
+          code={`import { fetchUnivMajorListAndMajorTheme } from '@libs/entities/university-major-search/api'
+import type { UnivMajorList } from '@libs/entities/university-major-search'`}
+        />
+        <Callout variant="tip">
+          <strong>import type:</strong> 타입 정보만 가져오고 런타임 번들에는 포함하지 않겠다는 뜻입니다.
+          <IC>interface</IC>, <IC>type</IC>에는 <IC>import type</IC>를 붙이는 습관이 좋습니다.
+        </Callout>
+        <CodeBlock
+          lang="tsx"
+          code={`useQuery<UnivMajorList>({
+  queryKey: ['hakjong', 'univ-major-list'],
+  queryFn: fetchUnivMajorListAndMajorTheme,
+  staleTime: 1000 * 60 * 60,
+  refetchOnWindowFocus: false,
+})`}
+        />
+        <DataTable
+          headers={['옵션', '설명', '이 프로젝트 의미']}
+          rows={[
+            ['queryKey', '캐시 식별자', '학종 대학/계열/학과 목록 조회를 구분하는 주소'],
+            ['queryFn', '데이터를 가져오는 함수', 'GET /university-search/category-list 호출'],
+            ['staleTime', 'fresh 상태 유지 시간', '1시간 동안은 캐시를 우선 신뢰'],
+            ['refetchOnWindowFocus', '탭 복귀 시 재호출 여부', '목록이 자주 안 바뀌므로 false'],
+          ]}
+        />
+        <Callout variant="warn">
+          같은 앱에서 기존 커스텀 훅과 새 <IC>useQuery</IC>를 동시에 쓰는데 <IC>queryKey</IC>가 다르면,
+          같은 API라도 별도 캐시로 관리되어 중복 요청이 생길 수 있습니다.
+        </Callout>
+        <DataTable
+          headers={['반환값', '설명']}
+          rows={[
+            ['data', '성공 시 응답 데이터. 첫 로딩에는 undefined일 수 있음'],
+            ['isLoading', '캐시가 없고 첫 요청이 진행 중일 때 true'],
+            ['isFetching', '백그라운드 포함 모든 요청 중일 때 true'],
+            ['error', '에러 발생 시 Error 객체'],
+            ['isSuccess', '데이터를 정상적으로 받았을 때 true'],
+          ]}
+        />
+        <Callout variant="info">
+          <strong>isLoading vs isFetching:</strong> 첫 화면에 아무 데이터가 없을 때의 로딩은 <IC>isLoading</IC>,
+          이미 보이는 데이터를 둔 채 백그라운드로 다시 받는 상태까지 포함하면 <IC>isFetching</IC>입니다.
+        </Callout>
+        <Callout variant="key">
+          <strong>제네릭 &lt;UnivMajorList&gt;:</strong> 이것 덕분에 <IC>data</IC>가
+          <IC>UnivMajorList | undefined</IC>로 추론되어 잘못된 필드 접근을 타입 에러로 바로 잡을 수 있습니다.
+        </Callout>
+        <DataTable
+          headers={['항목', '커스텀 훅', 'useQuery 직접 호출']}
+          rows={[
+            ['코드 양', '짧고 간결함', '조금 더 길다'],
+            ['설정 투명성', '내부에 숨겨짐', 'queryKey, staleTime을 직접 확인 가능'],
+            ['학습 가치', '동작 원리가 덜 보임', 'React Query 구조를 그대로 학습 가능'],
+            ['재사용성', '여러 화면에서 공통 설정 공유에 유리', '한 화면에서 세밀한 제어에 유리'],
+          ]}
+        />
       </StepCard>
 
       {/* Step 10 */}

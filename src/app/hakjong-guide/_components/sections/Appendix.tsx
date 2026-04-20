@@ -21,10 +21,15 @@ export function Libraries() {
           [<IC key="j">useState()</IC>,                               '컴포넌트 내부 상태 관리',                         'P3'],
           [<IC key="k">useMemo()</IC>,                                '계산 결과 메모이제이션 (성능 최적화)',             'P3'],
           [<IC key="l">useMutation()</IC>,                            'POST/PUT/DELETE 요청 생명주기 관리',              'P4'],
-          [<IC key="m">useSearchParams()</IC>,                        'URL 쿼리스트링 값 읽기',                          'P4'],
-          [<IC key="n">sessionStorage</IC>,                           '페이지 간 임시 데이터 저장 및 복원',               'P5'],
-          [<IC key="o">useEffect()</IC>,                              'Hydration 이후 브라우저 저장소 값을 안전하게 복원', 'P5'],
-          [<IC key="p">ConfirmModal</IC>,                             '최종 제출 전 사용자 재확인 모달',                  'P6'],
+          [<IC key="m">URLSearchParams</IC>,                          '객체를 안전하게 URL 쿼리스트링으로 인코딩',        'P4'],
+          [<IC key="n">useSearchParams()</IC>,                        'URL 쿼리스트링 값 읽기',                          'P4'],
+          [<IC key="o">isPending</IC>,                                'mutation 진행 중 로딩 상태로 UX 처리',             'P4'],
+          [<IC key="p">MSW handler</IC>,                              '실제 서버 없이 POST API를 로컬에서 목업',          'P4'],
+          [<IC key="q">sessionStorage</IC>,                           '페이지 간 임시 데이터 저장 및 복원',               'P5'],
+          [<IC key="r">useEffect()</IC>,                              'Hydration 이후 브라우저 저장소 값을 안전하게 복원', 'P5'],
+          [<IC key="s">ConfirmModal</IC>,                             '최종 제출 전 사용자 재확인 모달',                  'P6'],
+          [<IC key="t">onBeforeChange</IC>,                           '탭 전환 전 조건을 검사하는 가드 지점',             'P7'],
+          [<IC key="u">guard clause</IC>,                             '조건 불충족 시 빠르게 return false로 탈출',        'P7'],
         ]}
       />
     </section>
@@ -79,6 +84,10 @@ export function Concepts() {
         <Callout variant="tip">
           Phase 5부터는 여기에 <IC>sessionStorage</IC>와 <IC>useEffect</IC>가 추가됩니다.
           즉, 서버 데이터 흐름뿐 아니라 "페이지를 오가며 임시 입력값을 안전하게 복원하는 흐름"도 함께 설계해야 합니다.
+        </Callout>
+        <Callout variant="info">
+          Phase 7에서는 여기서 한 단계 더 나아가 <IC>sessionStorage</IC>를 렌더링용 state가 아니라
+          <strong>탭 접근 제어를 위한 외부 저장소</strong>로 읽습니다. 이 경우에는 이벤트 핸들러 시점에 최신 값을 다시 확인하는 것이 중요합니다.
         </Callout>
       </div>
 
@@ -197,6 +206,17 @@ const cautions = [
       <>
         새로운 API가 생기면 <strong>타입 → API 함수 → mutation 훅 → 컴포넌트</strong> 순서로 붙이세요.
         Phase 4의 신청 API와 Phase 6의 확정 API가 같은 패턴입니다.
+      </>
+    ),
+  },
+  {
+    icon: '⚠️',
+    iconBg: 'bg-amber-100 text-amber-700',
+    title: 'sessionStorage는 핸들러 안에서 읽어야 최신 값 보장',
+    desc: (
+      <>
+        <IC>sessionStorage</IC>는 React state가 아니므로 값이 바뀌어도 리렌더링되지 않습니다.
+        탭 접근 제어처럼 클릭 시점의 최신 값이 중요할 때는 컴포넌트 최상위가 아니라 <IC>handleBeforeReport</IC> 안에서 읽으세요.
       </>
     ),
   },

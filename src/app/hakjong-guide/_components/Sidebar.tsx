@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | null
   items: NavItem[]
 }
 
@@ -94,6 +94,18 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase7',
+    label: 'Phase 7 — 탭 접근 제어',
+    phase: 7,
+    items: [
+      { id: 'step29', label: '탭 내비게이션 구조',           num: 29 },
+      { id: 'step30', label: '제출 시 저장, 탭 클릭 시 읽기', num: 30 },
+      { id: 'step31', label: 'sessionStorage 선택 이유',      num: 31 },
+      { id: 'step32', label: '핸들러 안에서 읽어야 하는 이유', num: 32 },
+      { id: 'step33', label: 'API 연동 후 구조',             num: 33 },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -111,6 +123,7 @@ const phaseBadgeColors: Record<number, string> = {
   4: 'bg-rose-100 text-rose-700',
   5: 'bg-fuchsia-100 text-fuchsia-700',
   6: 'bg-cyan-100 text-cyan-700',
+  7: 'bg-violet-100 text-violet-700',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */

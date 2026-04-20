@@ -138,6 +138,7 @@
     .nav-item.p4 .step-badge { background: #FECACA; color: #991B1B; }
     .nav-item.p5 .step-badge { background: #F5D0FE; color: #A21CAF; }
     .nav-item.p6 .step-badge { background: #CFFAFE; color: #0E7490; }
+    .nav-item.p7 .step-badge { background: #DDD6FE; color: #5B21B6; }
 
     /* ── 메인 콘텐츠 ── */
     .main {
@@ -291,6 +292,10 @@
     .phase6 .phase-number { background: #06B6D4; color: white; }
     .phase6 .phase-header h3 { color: #0E7490; }
 
+    .phase7 .phase-header { background: #F5F3FF; border: 1px solid #DDD6FE; }
+    .phase7 .phase-number { background: #8B5CF6; color: white; }
+    .phase7 .phase-header h3 { color: #5B21B6; }
+
     /* ── Step 카드 ── */
     .step-card {
       background: white;
@@ -324,6 +329,7 @@
     .phase4 .step-num { background: var(--phase4); color: white; }
     .phase5 .step-num { background: #D946EF; color: white; }
     .phase6 .step-num { background: #06B6D4; color: white; }
+    .phase7 .step-num { background: #8B5CF6; color: white; }
 
     .step-title h4 {
       font-size: 15px;
@@ -750,6 +756,14 @@
       <a class="nav-item p6" href="#step28"><span class="step-badge">28</span>확정 API 연동 패턴</a>
     </div>
     <div class="nav-section">
+      <div class="nav-phase-label">Phase 7 — 탭 접근 제어</div>
+      <a class="nav-item p7" href="#step29"><span class="step-badge">29</span>탭 내비게이션 구조</a>
+      <a class="nav-item p7" href="#step30"><span class="step-badge">30</span>제출 시 저장, 탭 클릭 시 읽기</a>
+      <a class="nav-item p7" href="#step31"><span class="step-badge">31</span>sessionStorage 선택 이유</a>
+      <a class="nav-item p7" href="#step32"><span class="step-badge">32</span>핸들러 안에서 읽기</a>
+      <a class="nav-item p7" href="#step33"><span class="step-badge">33</span>API 연동 후 구조</a>
+    </div>
+    <div class="nav-section">
       <div class="nav-phase-label">정리</div>
       <a class="nav-item" href="#concepts">💡 핵심 개념 정리</a>
       <a class="nav-item" href="#cautions">⚠️ 주의사항</a>
@@ -772,6 +786,7 @@
       <div class="phase-pill"><div class="dot" style="background:#F87171"></div>Phase 4 · 서버 전송 (6 steps)</div>
       <div class="phase-pill"><div class="dot" style="background:#E879F9"></div>Phase 5 · 수정하기 (5 steps)</div>
       <div class="phase-pill"><div class="dot" style="background:#22D3EE"></div>Phase 6 · 최종 제출 (4 steps)</div>
+      <div class="phase-pill"><div class="dot" style="background:#A78BFA"></div>Phase 7 · 탭 접근 제어 (5 steps)</div>
     </div>
   </div>
 
@@ -779,7 +794,7 @@
     <div class="breadcrumb">
       <span>학종 개발 가이드</span>
       <span>›</span>
-      <span>총 28 Steps · 6 Phases</span>
+      <span>총 33 Steps · 7 Phases</span>
     </div>
     <div class="steps-indicator">apps/early · Next.js App Router</div>
   </div>
@@ -1290,9 +1305,155 @@
           </table>
         </div>
 
-        <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-body">
-          <strong>📝 참고:</strong> 위 <code>useQuery</code> / <code>queryKey</code> 상세 설명은 분량이 길어 별도 부록으로 분리하는 것도 고려해 보세요. 본문에서는 핵심 한 문장과 이 프로젝트 기준 예시만 남기고, 비교표·오용 사례 등은 "부록 A: useQuery 심화"로 옮기면 Phase 3의 흐름이 더 간결해집니다.
-        </div></div>
+        <div style="margin-top:28px;margin-bottom:12px">
+          <h5 style="font-size:14px;font-weight:700;color:var(--gray-900)">Step 9-1. 커스텀 훅에서 useQuery 직접 호출로 전환</h5>
+          <p style="margin-top:8px">학습 목적으로는 커스텀 훅을 바로 쓰기보다, 내부에서 실제로 어떤 <code>queryKey</code>와 옵션이 동작하는지 직접 드러내는 편이 이해에 더 도움이 됩니다.</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">tsx</div>
+          <pre><span class="cm">// 변경 전: 커스텀 훅 사용</span>
+<span class="kw">import</span> { useUnivMajorListAndMajorTheme } <span class="kw">from</span> <span class="str">'@libs/entities/university-major-search'</span>
+
+<span class="kw">const</span> { data: univMajorData } = <span class="fn">useUnivMajorListAndMajorTheme</span>()
+
+<span class="cm">// 변경 후: useQuery 직접 호출</span>
+<span class="kw">import</span> { fetchUnivMajorListAndMajorTheme } <span class="kw">from</span> <span class="str">'@libs/entities/university-major-search/api'</span>
+<span class="kw">import type</span> { UnivMajorList } <span class="kw">from</span> <span class="str">'@libs/entities/university-major-search'</span>
+<span class="kw">import</span> { useQuery } <span class="kw">from</span> <span class="str">'@tanstack/react-query'</span>
+
+<span class="kw">const</span> {
+  data: univMajorData,
+  isLoading,
+  error,
+} = <span class="fn">useQuery</span>&lt;<span class="type">UnivMajorList</span>&gt;({
+  queryKey: [<span class="str">'hakjong'</span>, <span class="str">'univ-major-list'</span>],
+  queryFn: fetchUnivMajorListAndMajorTheme,
+  staleTime: <span class="num">1000</span> * <span class="num">60</span> * <span class="num">60</span>,
+  refetchOnWindowFocus: <span class="kw">false</span>,
+})</pre>
+        </div>
+
+        <div class="callout key">
+          <div class="callout-icon">🔑</div>
+          <div class="callout-body">
+            <strong>핵심:</strong> 커스텀 훅은 대부분 <code>useQuery</code>를 한 번 감싼 wrapper입니다. 결과는 같고, 차이는 <code>queryKey</code>, <code>staleTime</code> 같은 설정을 어디서 관리하느냐입니다.
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">tsx</div>
+          <pre><span class="kw">export const</span> useUnivMajorListAndMajorTheme = () =&gt; {
+  <span class="kw">return</span> <span class="fn">useQuery</span>&lt;<span class="type">UnivMajorList</span>&gt;({
+    ...queryOptions.<span class="fn">getUnivMajorListAndMajorTheme</span>(),
+  })
+}</pre>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>커스텀 훅을 까보는 습관:</strong> 프론트 학습 단계에서는 훅 이름만 보지 말고 내부 구현도 열어보세요. 대부분은 <code>useQuery</code> 또는 <code>useMutation</code>을 감싼 구조입니다.
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>import 대상</th><th>경로</th><th>이유</th></tr></thead>
+            <tbody>
+              <tr><td>fetchUnivMajorListAndMajorTheme</td><td>@libs/.../api</td><td>barrel export에 등록되지 않아 직접 경로 필요</td></tr>
+              <tr><td>UnivMajorList</td><td>@libs/entities/university-major-search</td><td>barrel export에 등록된 타입이라 루트 경로 사용 가능</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout info">
+          <div class="callout-icon">📌</div>
+          <div class="callout-body">
+            <strong>barrel export:</strong> <code>index.ts</code>에서 여러 export를 한 번에 모아 내보내는 패턴입니다. 필요한 항목이 거기에 없으면 해당 파일 경로로 직접 import해야 합니다.
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">tsx</div>
+          <pre><span class="kw">import</span> { fetchUnivMajorListAndMajorTheme } <span class="kw">from</span> <span class="str">'@libs/entities/university-major-search/api'</span>
+<span class="kw">import type</span> { UnivMajorList } <span class="kw">from</span> <span class="str">'@libs/entities/university-major-search'</span></pre>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>import type:</strong> 타입 정보만 가져오고 런타임 번들에는 포함하지 않겠다는 뜻입니다. <code>interface</code>, <code>type</code>에는 <code>import type</code>를 붙이는 습관이 좋습니다.
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">tsx</div>
+          <pre><span class="fn">useQuery</span>&lt;<span class="type">UnivMajorList</span>&gt;({
+  queryKey: [<span class="str">'hakjong'</span>, <span class="str">'univ-major-list'</span>],
+  queryFn: fetchUnivMajorListAndMajorTheme,
+  staleTime: <span class="num">1000</span> * <span class="num">60</span> * <span class="num">60</span>,
+  refetchOnWindowFocus: <span class="kw">false</span>,
+})</pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>옵션</th><th>설명</th><th>이 프로젝트 의미</th></tr></thead>
+            <tbody>
+              <tr><td>queryKey</td><td>캐시 식별자</td><td>학종 대학/계열/학과 목록 조회를 구분하는 주소</td></tr>
+              <tr><td>queryFn</td><td>데이터를 가져오는 함수</td><td>GET /university-search/category-list 호출</td></tr>
+              <tr><td>staleTime</td><td>fresh 상태 유지 시간</td><td>1시간 동안은 캐시를 우선 신뢰</td></tr>
+              <tr><td>refetchOnWindowFocus</td><td>탭 복귀 시 재호출 여부</td><td>목록이 자주 안 바뀌므로 false</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warn">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            같은 앱에서 기존 커스텀 훅과 새 <code>useQuery</code>를 동시에 쓰는데 <code>queryKey</code>가 다르면, 같은 API라도 별도 캐시로 관리되어 중복 요청이 생길 수 있습니다.
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>반환값</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td>data</td><td>성공 시 응답 데이터. 첫 로딩에는 undefined일 수 있음</td></tr>
+              <tr><td>isLoading</td><td>캐시가 없고 첫 요청이 진행 중일 때 true</td></tr>
+              <tr><td>isFetching</td><td>백그라운드 포함 모든 요청 중일 때 true</td></tr>
+              <tr><td>error</td><td>에러 발생 시 Error 객체</td></tr>
+              <tr><td>isSuccess</td><td>데이터를 정상적으로 받았을 때 true</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout info">
+          <div class="callout-icon">📌</div>
+          <div class="callout-body">
+            <strong>isLoading vs isFetching:</strong> 첫 화면에 아무 데이터가 없을 때의 로딩은 <code>isLoading</code>, 이미 보이는 데이터를 둔 채 백그라운드로 다시 받는 상태까지 포함하면 <code>isFetching</code>입니다.
+          </div>
+        </div>
+
+        <div class="callout key">
+          <div class="callout-icon">🔑</div>
+          <div class="callout-body">
+            <strong>제네릭 &lt;UnivMajorList&gt;:</strong> 이것 덕분에 <code>data</code>가 <code>UnivMajorList | undefined</code>로 추론되어 잘못된 필드 접근을 타입 에러로 바로 잡을 수 있습니다.
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>항목</th><th>커스텀 훅</th><th>useQuery 직접 호출</th></tr></thead>
+            <tbody>
+              <tr><td>코드 양</td><td>짧고 간결함</td><td>조금 더 길다</td></tr>
+              <tr><td>설정 투명성</td><td>내부에 숨겨짐</td><td>queryKey, staleTime을 직접 확인 가능</td></tr>
+              <tr><td>학습 가치</td><td>동작 원리가 덜 보임</td><td>React Query 구조를 그대로 학습 가능</td></tr>
+              <tr><td>재사용성</td><td>여러 화면에서 공통 설정 공유에 유리</td><td>한 화면에서 세밀한 제어에 유리</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Step 10 -->
@@ -1569,6 +1730,37 @@
             </tbody>
           </table>
         </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>ky HTTP 클라이언트란?</strong> <code>fetch</code>를 기반으로 만들어진 경량 HTTP 라이브러리입니다. axios와 유사하지만 더 가볍고, 프로젝트 공통 설정으로 baseURL과 인증 정보를 재사용합니다.
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">http</div>
+          <pre>POST https://api.jinhak.com/jh/high3/early/hakjong/apply
+Content-Type: application/json
+
+{
+  "universityId": "101",
+  "universityName": "서울대학교",
+  "majorType": "인문",
+  "majorTypeName": "인문계",
+  "minorMajorCategoryCode": "C12",
+  "minorMajorCategoryName": "경영학과",
+  "selfIntroduction": "...",
+  "activityReport": "..."
+}</pre>
+        </div>
+
+        <div class="callout info">
+          <div class="callout-icon">📌</div>
+          <div class="callout-body">
+            브라우저 Network 탭에서는 위와 같은 형태로 실제 POST 요청이 보입니다. 즉 이 단계는 단순 함수 호출이 아니라, 서버에 JSON body를 실어 보내는 HTTP 통신입니다.
+          </div>
+        </div>
       </div>
 
       <!-- Step 16 -->
@@ -1624,10 +1816,19 @@
           </div>
         </div>
 
+        <div class="callout info">
+          <div class="callout-icon">📌</div>
+          <div class="callout-body">
+            퍼블리셔 관점에서 비유하면 <code>useQuery</code>는 화면에 보여줄 데이터를 읽어오는 단계이고, <code>useMutation</code>은 사용자의 클릭을 서버 저장 요청으로 바꾸는 단계입니다.
+          </div>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead><tr><th>항목</th><th>useQuery</th><th>useMutation</th></tr></thead>
             <tbody>
+              <tr><td>목적</td><td>서버 데이터 조회</td><td>서버 데이터 변경</td></tr>
+              <tr><td>자동 실행</td><td>있음</td><td>없음</td></tr>
               <tr><td>캐시 재사용</td><td>같은 queryKey면 캐시 재사용</td><td>직접 캐시 갱신 필요</td></tr>
               <tr><td>queryKey</td><td>필수</td><td>없음</td></tr>
               <tr><td>SSR/초기 데이터</td><td>잘 맞음</td><td>거의 사용하지 않음</td></tr>
@@ -1654,6 +1855,27 @@
     queryClient.<span class="fn">invalidateQueries</span>({ queryKey: [<span class="str">'items'</span>] })
   },
 })</pre>
+        </div>
+
+        <div class="callout warn">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            <strong>흔한 실수:</strong> 조회 API를 <code>useMutation</code>으로 감싸거나, 저장 API를 <code>useQuery</code>로 자동 실행시키거나, mutation 성공 후 관련 query를 갱신하지 않는 경우입니다.
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>반환값</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td>mutateAsync</td><td>호출하면 API 요청 실행. async/await 가능</td></tr>
+              <tr><td>isPending</td><td>요청 진행 중 여부. 버튼 비활성화와 중복 클릭 방지에 활용</td></tr>
+              <tr><td>isSuccess</td><td>요청 성공 시 true</td></tr>
+              <tr><td>isError</td><td>요청 실패 시 true</td></tr>
+              <tr><td>data</td><td>성공 시 응답 데이터</td></tr>
+              <tr><td>error</td><td>실패 시 에러 객체</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -1715,6 +1937,38 @@
           </div>
         </div>
 
+        <div class="code-block">
+          <div class="code-lang">typescript</div>
+          <pre><span class="kw">const</span> params = <span class="kw">new</span> <span class="fn">URLSearchParams</span>({
+  applyId: <span class="str">'HAKJONG-2026-001'</span>,
+  universityName: <span class="str">'서울대학교'</span>,
+})
+
+params.<span class="fn">toString</span>()
+<span class="cm">// applyId=HAKJONG-2026-001&universityName=%EC%84%9C%EC%9A%B8%EB%8C%80%ED%95%99%EA%B5%90</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">tsx</div>
+          <pre><span class="cm">// 비제어 컴포넌트 (before)</span>
+&lt;<span class="type">TextInput</span> addId=<span class="str">"intro"</span> label=<span class="str">"자기소개서"</span> /&gt;
+
+<span class="cm">// 제어 컴포넌트 (after)</span>
+&lt;<span class="type">TextInput</span>
+  addId=<span class="str">"intro"</span>
+  label=<span class="str">"자기소개서"</span>
+  value={selfIntroduction}
+  onChange={(e) =&gt; <span class="fn">setSelfIntroduction</span>(e.target.value)}
+/&gt;</pre>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>제어 컴포넌트:</strong> <code>value</code>와 <code>onChange</code>를 연결해 React state가 항상 최신 입력값을 추적하는 패턴입니다. 그래서 <code>handleSubmit</code>에서 DOM을 다시 읽지 않고 state만 바로 사용하면 됩니다.
+          </div>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead><tr><th>항목</th><th>mutate</th><th>mutateAsync</th></tr></thead>
@@ -1750,6 +2004,13 @@
           <div class="callout-icon">✅</div>
           <div class="callout-body">
             이 프로젝트에서 <code>mutateAsync</code>를 쓴 이유는 신청 성공 후 받은 <code>applyId</code>를 바로 URL에 담아 다음 화면으로 이동해야 했기 때문입니다.
+          </div>
+        </div>
+
+        <div class="callout info">
+          <div class="callout-icon">📌</div>
+          <div class="callout-body">
+            <strong>isPending 활용:</strong> 제출 버튼이나 확인 버튼에 로딩 상태를 연결하면 네트워크가 느릴 때 중복 클릭을 막고 사용자에게 지금 처리 중이라는 피드백을 줄 수 있습니다.
           </div>
         </div>
       </div>
@@ -2117,6 +2378,175 @@ router.<span class="fn">push</span>(<span class="str">'/hakjong/apply/confirm'</
       </div>
     </div>
 
+    <!-- ══ Phase 7 ══ -->
+    <div class="section phase7">
+      <div class="phase-header">
+        <div class="phase-number">P7</div>
+        <div><h3>Phase 7 — 탭 접근 제어와 완료 상태 관리</h3></div>
+      </div>
+
+      <div class="step-card" style="margin-bottom:16px">
+        <div class="step-title">
+          <div class="step-num" style="background:#6B7280">◎</div>
+          <h4>왜 Phase 7이 필요한가?</h4>
+        </div>
+        <div class="flow-diagram"><pre>[서비스 안내] ─ [평가 신청하기] ─ [평가 리포트]
+     탭 0             탭 1             탭 2
+
+문제:
+  신청 완료 후 report 페이지로 이동했는데
+  이후 탭을 직접 클릭하면 "신청을 먼저 완료해주세요" 경고 발생
+
+원인:
+  Navigator의 isApplyCompleted가 항상 false였음
+
+해결:
+  제출 시 sessionStorage에 완료 상태 저장
+  → 리포트 탭 클릭 시 handleBeforeReport에서 최신 값 확인</pre></div>
+        <div class="callout key"><div class="callout-icon">🔑</div><div class="callout-body">핵심은 <code>탭 접근 제어</code>도 결국 상태 관리 문제라는 점입니다. 지금은 API가 없으므로 <code>sessionStorage</code>를 임시 상태 저장소로 사용합니다.</div></div>
+      </div>
+
+      <span class="anchor" id="step29"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">29</div><h4>전체 흐름 이해 — 탭 내비게이션 구조</h4></div>
+        <div class="flow-diagram"><pre>apps/early/app/(early)/hakjong/
+├── layout.tsx          → EarlyHakjongNavigator
+├── page.tsx            → EarlyHakjongIntro
+├── apply/
+│   ├── page.tsx        → EarlyHakjong
+│   └── confirm/
+│       └── page.tsx    → EarlyHakjongConfirm
+└── report/
+    └── page.tsx        → EarlyHakjongReport</pre></div>
+        <p><code>layout.tsx</code>에 <code>EarlyHakjongNavigator</code>가 있기 때문에 hakjong 하위의 모든 페이지에서 탭이 공통으로 표시됩니다. 사용자가 리포트 탭을 누르면 <code>Tab.Button</code>의 <code>onBeforeChange</code>가 먼저 실행되고, 여기서 로그인 여부, 신청 완료 여부, 결제 여부를 순서대로 검사합니다.</p>
+        <div class="flow-diagram"><pre>사용자가 "평가 리포트" 탭 클릭
+  └→ Tab.Button의 onBeforeChange 호출
+      └→ handleBeforeReport() 실행
+          ├→ 로그인 체크
+          ├→ 신청 완료 체크
+          ├→ 결제 체크
+          └→ 모두 통과 시 router.push('/hakjong/report')</pre></div>
+        <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-body"><code>onBeforeChange</code>는 탭 전환 직전의 가드 지점입니다. 여기서 <code>false</code>를 반환하면 탭 이동이 차단됩니다.</div></div>
+      </div>
+
+      <span class="anchor" id="step30"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">30</div><h4>변경 내용 — 제출 시 저장, 탭 클릭 시 읽기</h4></div>
+        <div class="compare-grid">
+          <div class="compare-box before"><h5>변경 전</h5><div class="code-block" style="margin:0"><div class="code-lang">typescript</div><pre>onClick={() =&gt; {
+  setIsConfirmOpen(false)
+  sessionStorage.removeItem('hakjong_apply_form')
+  router.push('/hakjong/report')
+}}</pre></div></div>
+          <div class="compare-box after"><h5>변경 후</h5><div class="code-block" style="margin:0"><div class="code-lang">typescript</div><pre>onClick={() =&gt; {
+  setIsConfirmOpen(false)
+  sessionStorage.removeItem('hakjong_apply_form')
+  sessionStorage.setItem('hakjong_apply_completed', 'true')
+  router.push('/hakjong/report')
+}}</pre></div></div>
+        </div>
+        <p>제출 시점에 <code>hakjong_apply_completed</code>를 저장해 두면, 같은 브라우저 탭 안에서는 이후 페이지 이동이 일어나도 "신청이 완료됐다"는 상태를 다시 확인할 수 있습니다.</p>
+        <div class="code-block"><div class="code-lang">typescript</div><pre><span class="kw">const</span> isPaid = <span class="kw">true</span>
+
+<span class="kw">const</span> handleBeforeReport = () =&gt; {
+  <span class="kw">if</span> (!currentUser.userId) {
+    alert(<span class="str">'로그인이 필요한 서비스입니다.'</span>)
+    <span class="kw">return</span> <span class="kw">false</span>
+  }
+
+  <span class="kw">const</span> isApplyCompleted =
+    sessionStorage.getItem(<span class="str">'hakjong_apply_completed'</span>) === <span class="str">'true'</span>
+
+  <span class="kw">if</span> (!isApplyCompleted) {
+    alert(<span class="str">'평가 신청을 먼저 완료해주세요.'</span>)
+    <span class="kw">return</span> <span class="kw">false</span>
+  }
+  <span class="kw">if</span> (!isPaid) {
+    alert(<span class="str">'서비스 결제가 필요한 서비스입니다.'</span>)
+    <span class="kw">return</span> <span class="kw">false</span>
+  }
+  router.push(<span class="str">'/hakjong/report'</span>)
+  <span class="kw">return</span> <span class="kw">true</span>
+}</pre></div>
+        <div class="callout info"><div class="callout-icon">📌</div><div class="callout-body">현재는 결제 플로우가 없으므로 <code>isPaid</code>를 <code>true</code>로 고정해 불필요한 차단을 막습니다.</div></div>
+      </div>
+
+      <span class="anchor" id="step31"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">31</div><h4>왜 sessionStorage를 선택했는가</h4></div>
+        <div class="table-wrap"><table><thead><tr><th>방법</th><th>장점</th><th>단점</th><th>적합 여부</th></tr></thead><tbody>
+          <tr><td>sessionStorage</td><td>같은 탭 내 페이지 이동 후에도 유지</td><td>탭을 닫으면 사라짐</td><td>현재 최적</td></tr>
+          <tr><td>useState</td><td>가장 단순함</td><td>라우트 이동 시 상태가 사라짐</td><td>부적합</td></tr>
+          <tr><td>localStorage</td><td>브라우저를 닫아도 유지</td><td>수동 삭제 필요, 다른 탭에도 영향</td><td>과도함</td></tr>
+          <tr><td>Redux store</td><td>전역에서 접근 가능</td><td>설정이 복잡하고 새로고침에 약함</td><td>과도함</td></tr>
+          <tr><td>서버 API</td><td>가장 신뢰할 수 있음</td><td>API 구현 필요</td><td>최종 목표</td></tr>
+        </tbody></table></div>
+        <div class="callout key"><div class="callout-icon">🔑</div><div class="callout-body">지금 단계의 목표는 완전한 영속 저장이 아니라, <strong>같은 탭 안에서 신청 완료 후 리포트 탭이 정상 동작하게 만드는 것</strong>입니다. 그래서 <code>sessionStorage</code>가 가장 실용적입니다.</div></div>
+      </div>
+
+      <span class="anchor" id="step32"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">32</div><h4>sessionStorage를 핸들러 안에서 읽어야 하는 이유</h4></div>
+        <div class="compare-grid">
+          <div class="compare-box before"><h5>잘못된 위치</h5><div class="code-block" style="margin:0"><div class="code-lang">typescript</div><pre><span class="kw">const</span> isApplyCompleted =
+  sessionStorage.getItem(<span class="str">'hakjong_apply_completed'</span>) === <span class="str">'true'</span>
+
+<span class="kw">const</span> handleBeforeReport = () =&gt; {
+  <span class="kw">if</span> (!isApplyCompleted) {
+    <span class="kw">return</span> <span class="kw">false</span>
+  }
+}</pre></div></div>
+          <div class="compare-box after"><h5>올바른 위치</h5><div class="code-block" style="margin:0"><div class="code-lang">typescript</div><pre><span class="kw">const</span> handleBeforeReport = () =&gt; {
+  <span class="kw">const</span> isApplyCompleted =
+    sessionStorage.getItem(<span class="str">'hakjong_apply_completed'</span>) === <span class="str">'true'</span>
+
+  <span class="kw">if</span> (!isApplyCompleted) {
+    <span class="kw">return</span> <span class="kw">false</span>
+  }
+}</pre></div></div>
+        </div>
+        <p><code>sessionStorage</code>는 React state가 아니므로 값이 바뀌어도 리렌더링을 일으키지 않습니다. 컴포넌트 최상위에서 한 번만 읽으면 마운트 시점의 값이 고정되고, 이벤트가 일어나는 나중 시점의 최신 값은 반영되지 않을 수 있습니다.</p>
+        <div class="flow-diagram"><pre>[컴포넌트 마운트 시점]
+  sessionStorage 값 없음
+  → 최상위에서 읽으면 false로 고정
+
+[사용자 신청 완료 후]
+  sessionStorage = 'true'
+  → 최상위 값은 그대로 false
+  → 핸들러 안에서 읽어야 클릭 시점의 최신 값 확인 가능</pre></div>
+        <div class="callout warn"><div class="callout-icon">⚠️</div><div class="callout-body">핵심 규칙은 간단합니다. <strong>React 상태가 아닌 외부 저장소 값은 이벤트 시점에 다시 읽어라</strong>입니다.</div></div>
+      </div>
+
+      <span class="anchor" id="step33"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">33</div><h4>API 연동 시 바뀌는 구조와 최종 방향</h4></div>
+        <p>지금 구현은 임시 단계입니다. API가 생기면 신청 완료 상태와 결제 상태를 모두 <code>useQuery</code>로 서버에서 조회하는 구조로 바뀝니다.</p>
+        <div class="code-block"><div class="code-lang">typescript</div><pre><span class="kw">const</span> { data: applyStatus } = <span class="fn">useQuery</span>({
+  queryKey: [<span class="str">'hakjong'</span>, <span class="str">'apply'</span>, <span class="str">'status'</span>],
+  queryFn: () =&gt; <span class="fn">fetchHakjongApplyStatus</span>(),
+  enabled: !!currentUser.userId,
+})
+
+<span class="kw">const</span> { data: paymentStatus } = <span class="fn">useQuery</span>({
+  queryKey: [<span class="str">'hakjong'</span>, <span class="str">'payment'</span>, <span class="str">'status'</span>],
+  queryFn: () =&gt; <span class="fn">fetchHakjongPaymentStatus</span>(),
+  enabled: !!currentUser.userId,
+})
+
+<span class="kw">const</span> isApplyCompleted = applyStatus?.isApplyCompleted ?? <span class="kw">false</span>
+<span class="kw">const</span> isPaid = paymentStatus?.isPaid ?? <span class="kw">false</span></pre></div>
+        <div class="table-wrap"><table><thead><tr><th>순서</th><th>파일</th><th>현재 임시 방식</th><th>API 연동 후</th></tr></thead><tbody>
+          <tr><td>1</td><td>EarlyHakjongConfirm.tsx</td><td>sessionStorage.setItem(...) 저장</td><td>해당 줄 삭제</td></tr>
+          <tr><td>2</td><td>EarlyHakjongNavigator.tsx</td><td>sessionStorage.getItem(...) 읽기</td><td>useQuery로 서버 조회</td></tr>
+          <tr><td>3</td><td>EarlyHakjongNavigator.tsx</td><td>const isPaid = true</td><td>useQuery로 결제 상태 조회</td></tr>
+          <tr><td>4</td><td>hakjong.types.ts</td><td>없음</td><td>상태 조회 응답 타입 추가</td></tr>
+          <tr><td>5</td><td>api/index.ts</td><td>없음</td><td>상태 조회 API 함수 추가</td></tr>
+        </tbody></table></div>
+        <div class="callout key"><div class="callout-icon">🔑</div><div class="callout-body"><strong>임시 구현 → API 전환 패턴:</strong> 먼저 하드코딩이나 <code>sessionStorage</code>로 흐름을 검증하고, 이후 API가 확정되면 <code>useQuery</code> 기반의 서버 상태 관리로 교체합니다.</div></div>
+        <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-body">이 단계에서 다시 보이는 핵심은 <code>가드 절(guard clause)</code>입니다. 로그인 → 신청 완료 → 결제 여부 순서로 빠르게 탈출하면 조건 검사가 읽기 쉬워집니다.</div></div>
+      </div>
+    </div>
+
     <!-- ══ 주요 라이브러리 ══ -->
     <div class="section">
       <span class="anchor" id="libraries"></span>
@@ -2143,10 +2573,15 @@ router.<span class="fn">push</span>(<span class="str">'/hakjong/apply/confirm'</
             <tr><td><code>useState()</code></td><td>컴포넌트 내부 상태 관리</td><td>P3</td></tr>
             <tr><td><code>useMemo()</code></td><td>계산 결과 메모이제이션 (성능 최적화)</td><td>P3</td></tr>
             <tr><td><code>useMutation()</code></td><td>POST/PUT/DELETE 요청 생명주기 관리</td><td>P4</td></tr>
+            <tr><td><code>URLSearchParams</code></td><td>객체를 안전하게 URL 쿼리스트링으로 인코딩</td><td>P4</td></tr>
             <tr><td><code>useSearchParams()</code></td><td>URL 쿼리스트링 값 읽기</td><td>P4</td></tr>
+            <tr><td><code>isPending</code></td><td>mutation 진행 중 로딩 상태로 UX 처리</td><td>P4</td></tr>
+            <tr><td><code>MSW handler</code></td><td>실제 서버 없이 POST API를 로컬에서 목업</td><td>P4</td></tr>
             <tr><td><code>sessionStorage</code></td><td>페이지 간 임시 데이터 저장 및 복원</td><td>P5</td></tr>
             <tr><td><code>useEffect()</code></td><td>Hydration 이후 브라우저 저장소 값을 안전하게 복원</td><td>P5</td></tr>
             <tr><td><code>ConfirmModal</code></td><td>최종 제출 전 사용자 재확인 모달</td><td>P6</td></tr>
+            <tr><td><code>onBeforeChange</code></td><td>탭 전환 전 조건을 검사하는 가드 지점</td><td>P7</td></tr>
+            <tr><td><code>guard clause</code></td><td>조건 불충족 시 빠르게 return false로 탈출</td><td>P7</td></tr>
           </tbody>
         </table>
       </div>
@@ -2208,6 +2643,13 @@ router.<span class="fn">push</span>(<span class="str">'/hakjong/apply/confirm'</
           <div class="callout-body">
             Phase 5부터는 여기에 <code>sessionStorage</code>와 <code>useEffect</code>가 추가됩니다.
             즉, 서버 데이터 흐름뿐 아니라 페이지를 오가며 임시 입력값을 안전하게 복원하는 흐름도 같이 설계해야 합니다.
+          </div>
+        </div>
+
+        <div class="callout info">
+          <div class="callout-icon">📌</div>
+          <div class="callout-body">
+            Phase 7에서는 여기서 한 단계 더 나아가 <code>sessionStorage</code>를 렌더링용 state가 아니라 <strong>탭 접근 제어를 위한 외부 저장소</strong>로 읽습니다. 이 경우에는 이벤트 핸들러 시점에 최신 값을 다시 확인하는 것이 중요합니다.
           </div>
         </div>
       </div>
@@ -2304,6 +2746,13 @@ router.<span class="fn">push</span>(<span class="str">'/hakjong/apply/confirm'</
           <div>
             <strong>새 API는 4단계 패턴으로 연동</strong><br>
             <span style="color:var(--gray-600);font-size:13px">새로운 API가 생기면 <strong>타입 → API 함수 → mutation 훅 → 컴포넌트</strong> 순서로 붙이기. Phase 4의 신청 API와 Phase 6의 확정 API가 같은 패턴</span>
+          </div>
+        </li>
+        <li>
+          <div class="warn-icon">!</div>
+          <div>
+            <strong>sessionStorage는 핸들러 안에서 읽어야 최신 값 보장</strong><br>
+            <span style="color:var(--gray-600);font-size:13px"><code>sessionStorage</code>는 React state가 아니므로 값이 바뀌어도 리렌더링되지 않음. 탭 접근 제어처럼 클릭 시점의 최신 값이 중요할 때는 컴포넌트 최상위가 아니라 <code>handleBeforeReport</code> 안에서 읽기</span>
           </div>
         </li>
       </ul>

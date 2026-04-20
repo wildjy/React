@@ -12,7 +12,7 @@ export function DataTable({ headers, rows }: DataTableProps) {
             {headers.map((h, i) => (
               <th
                 key={i}
-                className="px-4 py-2.5 text-left text-xs font-bold text-gray-700 border-b border-gray-200 whitespace-nowrap"
+                className="px-4 py-2.5 text-center text-xs font-bold text-gray-700 border-b border-gray-200 whitespace-nowrap"
               >
                 {h}
               </th>
