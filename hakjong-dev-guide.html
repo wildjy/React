@@ -1178,6 +1178,87 @@
             실제 프로젝트에서는 이 로직을 직접 쓰지 않고 커스텀 훅으로 감싸서 <code>useUnivMajorListAndMajorTheme()</code>처럼 더 읽기 쉬운 형태로 사용합니다.
           </div>
         </div>
+
+        <div class="callout info">
+          <div class="callout-icon">🧠</div>
+          <div class="callout-body">
+            <strong>프론트 학습 관점 핵심:</strong> <code>useQuery</code>는 서버에서 읽어온 데이터도 상태처럼 관리하자는 도구입니다.
+            <code>useState</code>가 브라우저 안의 로컬 상태를 관리한다면, <code>useQuery</code>는 서버에서 온 상태를 관리합니다.
+          </div>
+        </div>
+
+        <p>퍼블리셔에서 프론트로 넘어올 때는 "어떤 API를 호출하나"보다 먼저, <strong>이 화면이 어떤 서버 데이터에 의존하는가</strong>를 먼저 생각하는 습관이 중요합니다.</p>
+
+        <div class="callout key">
+          <div class="callout-icon">🏷️</div>
+          <div class="callout-body">
+            <strong>queryKey는 캐시의 주소입니다.</strong> 같은 <code>queryKey</code>면 같은 조회로, 다른 <code>queryKey</code>면 다른 조회로 판단합니다.
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">tsx</div>
+          <pre><span class="fn">useQuery</span>({
+  queryKey: [<span class="str">'user'</span>, <span class="num">1</span>],
+  queryFn: () => fetchUser(<span class="num">1</span>),
+})
+
+<span class="fn">useQuery</span>({
+  queryKey: [<span class="str">'user'</span>, <span class="num">2</span>],
+  queryFn: () => fetchUser(<span class="num">2</span>),
+})</pre>
+        </div>
+
+        <p>위 두 query는 key가 다르기 때문에 서로 다른 캐시로 저장됩니다. 반대로 다른 데이터를 조회하면서도 key를 똑같이 쓰면 캐시가 꼬일 수 있습니다.</p>
+
+        <div class="code-block">
+          <div class="code-lang">tsx</div>
+          <pre><span class="cm">// 좋지 않은 예: 다른 사용자 조회인데 key가 같음</span>
+<span class="fn">useQuery</span>({
+  queryKey: [<span class="str">'user'</span>],
+  queryFn: () => fetchUser(userId),
+})</pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>좋은 queryKey 기준</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td>도메인 이름부터 시작</td><td>예: hakjong, user, post</td></tr>
+              <tr><td>리소스 종류를 포함</td><td>예: list, detail, status</td></tr>
+              <tr><td>결과를 바꾸는 조건 포함</td><td>예: userId, page, category</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-lang">tsx</div>
+          <pre><span class="kw">const</span> { data } = <span class="fn">useQuery</span>({
+  queryKey: [<span class="str">'hakjong'</span>, <span class="str">'apply'</span>, <span class="str">'status'</span>, currentUser.userId],
+  queryFn: fetchApplyStatus,
+  enabled: !!currentUser.userId,
+})</pre>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <strong>enabled:</strong> 지금 이 query를 실행해도 되는가를 제어하는 스위치입니다. 로그인 정보처럼 선행 조건이 준비된 뒤에만 조회를 시작할 때 자주 사용합니다.
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>항목</th><th>useState</th><th>useQuery</th></tr></thead>
+            <tbody>
+              <tr><td>관리 대상</td><td>브라우저 안의 로컬 상태</td><td>서버에서 읽어온 상태</td></tr>
+              <tr><td>데이터 출처</td><td>사용자 입력, UI 내부 값</td><td>API 응답 데이터</td></tr>
+              <tr><td>로딩/에러 관리</td><td>직접 만들어야 함</td><td>기본 제공</td></tr>
+              <tr><td>캐시 재사용</td><td>직접 구현해야 함</td><td>queryKey 기준 자동 처리</td></tr>
+              <tr><td>퍼블리셔 관점 비유</td><td>현재 화면 메모장</td><td>서버에서 가져온 공용 문서</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Step 10 -->

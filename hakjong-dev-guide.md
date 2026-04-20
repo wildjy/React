@@ -278,6 +278,162 @@ const {
 
 > 실제 프로젝트에서는 이 로직을 커스텀 훅으로 감싸 두었기 때문에, 컴포넌트에서는 `useUnivMajorListAndMajorTheme()`처럼 더 읽기 쉬운 형태로 사용합니다.
 
+**`useQuery`를 프론트 학습 관점에서 이해하면:**
+
+- `useQuery`는 "서버에서 읽어온 데이터도 상태처럼 관리하자"는 도구입니다.
+- `useState`가 브라우저 안의 로컬 상태를 관리한다면, `useQuery`는 서버에서 온 상태를 관리합니다.
+- 그래서 단순히 `fetch()` 한 번 호출하는 것이 아니라, 로딩 상태, 에러 상태, 캐시, 재요청 시점까지 같이 다룹니다.
+
+퍼블리셔에서 프론트로 넘어올 때 가장 크게 체감해야 하는 차이는 이것입니다.
+
+- 퍼블리싱: HTML을 그리고 이벤트를 붙인다.
+- 프론트: "이 화면이 어떤 서버 데이터에 의존하는가"를 먼저 정의한다.
+
+즉, `useQuery`를 볼 때는 "어떤 API를 호출하나?"보다 먼저 "이 컴포넌트는 어떤 서버 상태를 읽고 있나?"를 생각하는 습관이 중요합니다.
+
+**`queryKey`는 왜 필요한가?**
+
+`queryKey`는 React Query가 각 조회를 구분하는 **고유 이름표**입니다. 더 쉬운 말로 하면, 캐시에 붙이는 **주소**입니다.
+
+- 같은 `queryKey`면 React Query는 "같은 데이터 조회"라고 판단합니다.
+- 다른 `queryKey`면 React Query는 "다른 데이터 조회"라고 판단합니다.
+- 그래서 캐시 재사용, 재요청, 무효화(invalidate) 여부가 모두 `queryKey`를 기준으로 동작합니다.
+
+예를 들어:
+
+```tsx
+useQuery({
+  queryKey: ['user', 1],
+  queryFn: () => fetchUser(1),
+});
+
+useQuery({
+  queryKey: ['user', 2],
+  queryFn: () => fetchUser(2),
+});
+```
+
+- `['user', 1]`과 `['user', 2]`는 다른 key이므로 서로 다른 캐시로 저장됩니다.
+- 그래서 사용자 1 상세와 사용자 2 상세가 섞이지 않습니다.
+
+반대로 아래처럼 key를 너무 단순하게 잡으면 문제가 생길 수 있습니다.
+
+```tsx
+// 좋지 않은 예: 다른 사용자 조회인데 key가 같음
+useQuery({
+  queryKey: ['user'],
+  queryFn: () => fetchUser(userId),
+});
+```
+
+이 경우 React Query 입장에서는 모두 `['user']`라는 같은 조회처럼 보이기 때문에, 캐시가 꼬이거나 이전 데이터가 재사용될 수 있습니다.
+
+**`queryKey`를 어떻게 지어야 하나요?**
+
+실무에서는 보통 아래 원칙으로 잡습니다.
+
+1. 가장 앞에는 도메인 이름을 둡니다.
+2. 뒤에는 리소스 종류를 둡니다.
+3. 마지막에는 조회 결과를 바꾸는 조건값을 넣습니다.
+
+예시:
+
+```tsx
+['hakjong', 'apply', 'status']
+['hakjong', 'report', userId]
+['university', 'detail', universityId]
+['post', 'list', category, page]
+```
+
+이렇게 하면 key만 보고도 "무슨 데이터인지"와 "무엇이 바뀌면 다른 조회인지"를 파악할 수 있습니다.
+
+**좋은 `queryKey`의 기준:**
+
+- 사람이 읽어도 의미가 분명하다.
+- 서버 응답을 바꾸는 값이 빠지지 않는다.
+- 너무 넓지도, 너무 잘게 쪼개지도 않는다.
+
+**`queryKey`에 어떤 값을 넣어야 하나요?**
+
+- API 결과를 바꾸는 값은 넣어야 합니다.
+- API 결과를 바꾸지 않는 값은 굳이 넣지 않아도 됩니다.
+
+예를 들어 상세 API가 `userId`에 따라 달라진다면:
+
+```tsx
+useQuery({
+  queryKey: ['user', userId],
+  queryFn: () => fetchUser(userId),
+});
+```
+
+목록 API가 `page`, `sort`, `category`에 따라 달라진다면:
+
+```tsx
+useQuery({
+  queryKey: ['posts', page, sort, category],
+  queryFn: () => fetchPosts({ page, sort, category }),
+});
+```
+
+즉, **서버 응답이 달라질 조건은 `queryKey`에도 같이 들어가야 한다**고 기억하면 됩니다.
+
+**이 프로젝트 기준으로 보면:**
+
+- `['hakjong', 'apply', 'status']` → 학종 신청 완료 상태 조회
+- `['hakjong', 'univ-major-list']` → 대학/계열/학과 목록 조회
+
+둘 다 `hakjong` 도메인 아래 있지만, 조회 대상이 다르기 때문에 key를 분리합니다.
+
+**`queryKey`를 잘못 잡으면 생기는 대표 문제:**
+
+- 다른 데이터를 같은 캐시로 취급해서 화면이 꼬인다.
+- invalidate할 때 너무 많은 조회가 다시 실행된다.
+- 반대로 invalidate를 했는데 원하는 화면이 갱신되지 않는다.
+
+그래서 React Query를 배울 때는 `useQuery` 문법보다도, **"이 조회를 어떤 key로 식별할 것인가"를 설계하는 감각**이 더 중요합니다.
+
+**처음 학습할 때 기억할 핵심 한 문장:**
+
+> `useQuery`는 서버 데이터를 읽는 훅이고, `queryKey`는 그 데이터를 캐시에 저장할 주소입니다.
+
+**`useQuery`와 `useState`는 어떻게 다른가요?**
+
+퍼블리셔에서 프론트로 넘어올 때 이 둘을 헷갈리기 쉽습니다. 하지만 관리 대상이 다릅니다.
+
+| 항목 | `useState` | `useQuery` |
+| ---- | ---------- | ---------- |
+| 관리 대상 | 브라우저 안의 로컬 상태 | 서버에서 읽어온 상태 |
+| 데이터 출처 | 사용자 입력, 탭 열림 여부, 모달 상태 | API 응답 데이터 |
+| 로딩/에러 관리 | 직접 만들어야 함 | 기본 제공 |
+| 캐시 재사용 | 직접 구현해야 함 | `queryKey` 기준 자동 처리 |
+| 퍼블리셔 관점 비유 | 현재 화면 메모장 | 서버에서 가져온 공용 문서 |
+
+예를 들어:
+
+- 드롭다운이 열렸는지 닫혔는지 → `useState`
+- 현재 입력창에 적힌 문자열 → `useState`
+- 사용자 정보, 목록 데이터, 상세 데이터 → `useQuery`
+
+즉, 화면 내부에서만 잠깐 쓰는 값은 `useState`, 서버에서 읽어와 여러 화면에서 다시 쓸 수 있는 값은 `useQuery`라고 구분하면 이해가 빨라집니다.
+
+**함께 보면 좋은 옵션 1개: `enabled`**
+
+`useQuery`는 기본적으로 바로 실행되지만, 어떤 값이 준비된 뒤에만 실행하고 싶을 때 `enabled`를 사용합니다.
+
+```tsx
+const { data } = useQuery({
+  queryKey: ['hakjong', 'apply', 'status', currentUser.userId],
+  queryFn: fetchApplyStatus,
+  enabled: !!currentUser.userId,
+});
+```
+
+- `currentUser.userId`가 없으면 실행하지 않음
+- 로그인 정보가 준비된 뒤에만 조회 시작
+
+즉, `enabled`는 "이 query를 지금 실행해도 되는가"를 제어하는 스위치입니다.
+
 #### Step 10: API 데이터 → 드롭다운 옵션으로 변환 (useMemo)
 
 서버에서 받은 데이터를 드롭다운 컴포넌트가 이해하는 `{ label, value }` 형태로 변환합니다. `useMemo`로 감싸서 불필요한 재계산을 방지합니다.

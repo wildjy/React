@@ -82,6 +82,72 @@ const { data: univMajorData } = useUnivMajorListAndMajorTheme()`}
           이 프로젝트에서는 이 로직을 직접 쓰지 않고 커스텀 훅으로 감싸서
           <IC>useUnivMajorListAndMajorTheme()</IC>처럼 더 읽기 쉬운 형태로 사용합니다.
         </Callout>
+        <Callout variant="info">
+          <strong>프론트 학습 관점 핵심:</strong> <IC>useQuery</IC>는 서버에서 읽어온 데이터도 상태처럼 관리하자는 도구입니다.
+          <IC>useState</IC>가 브라우저 안의 로컬 상태를 관리한다면, <IC>useQuery</IC>는 서버에서 온 상태를 관리합니다.
+        </Callout>
+        <p>
+          퍼블리셔에서 프론트로 넘어올 때는 "어떤 API를 호출하나"보다 먼저,
+          <strong>이 화면이 어떤 서버 데이터에 의존하는가</strong>를 먼저 생각하는 습관이 중요합니다.
+        </p>
+        <Callout variant="key">
+          <strong>queryKey는 캐시의 주소입니다.</strong> 같은 <IC>queryKey</IC>면 같은 조회로,
+          다른 <IC>queryKey</IC>면 다른 조회로 판단합니다.
+        </Callout>
+        <CodeBlock
+          lang="tsx"
+          code={`useQuery({
+  queryKey: ['user', 1],
+  queryFn: () => fetchUser(1),
+})
+
+useQuery({
+  queryKey: ['user', 2],
+  queryFn: () => fetchUser(2),
+})`}
+        />
+        <p>
+          위 두 query는 key가 다르기 때문에 서로 다른 캐시로 저장됩니다.
+          반대로 다른 데이터를 조회하면서도 key를 똑같이 쓰면 캐시가 꼬일 수 있습니다.
+        </p>
+        <CodeBlock
+          lang="tsx"
+          code={`// 좋지 않은 예: 다른 사용자 조회인데 key가 같음
+useQuery({
+  queryKey: ['user'],
+  queryFn: () => fetchUser(userId),
+})`}
+        />
+        <DataTable
+          headers={['좋은 queryKey 기준', '설명']}
+          rows={[
+            ['도메인 이름부터 시작', '예: hakjong, user, post'],
+            ['리소스 종류를 포함', '예: list, detail, status'],
+            ['결과를 바꾸는 조건 포함', '예: userId, page, category'],
+          ]}
+        />
+        <CodeBlock
+          lang="tsx"
+          code={`const { data } = useQuery({
+  queryKey: ['hakjong', 'apply', 'status', currentUser.userId],
+  queryFn: fetchApplyStatus,
+  enabled: !!currentUser.userId,
+})`}
+        />
+        <Callout variant="tip">
+          <strong>enabled:</strong> 지금 이 query를 실행해도 되는가를 제어하는 스위치입니다.
+          로그인 정보처럼 선행 조건이 준비된 뒤에만 조회를 시작할 때 자주 사용합니다.
+        </Callout>
+        <DataTable
+          headers={['항목', 'useState', 'useQuery']}
+          rows={[
+            ['관리 대상', '브라우저 안의 로컬 상태', '서버에서 읽어온 상태'],
+            ['데이터 출처', '사용자 입력, UI 내부 값', 'API 응답 데이터'],
+            ['로딩/에러 관리', '직접 만들어야 함', '기본 제공'],
+            ['캐시 재사용', '직접 구현해야 함', 'queryKey 기준 자동 처리'],
+            ['퍼블리셔 관점 비유', '현재 화면 메모장', '서버에서 가져온 공용 문서'],
+          ]}
+        />
       </StepCard>
 
       {/* Step 10 */}
