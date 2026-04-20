@@ -6,6 +6,8 @@ const phaseStepBg: Record<number, string> = {
   2: 'bg-emerald-500',
   3: 'bg-amber-500',
   4: 'bg-rose-500',
+  5: 'bg-fuchsia-500',
+  6: 'bg-cyan-500',
 }
 
 const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; label: string }> = {
@@ -13,20 +15,23 @@ const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; 
   2: { wrap: 'bg-emerald-50 border-emerald-200', num: 'bg-emerald-500', text: 'text-emerald-800', label: '접근 제어 (가드) 구현' },
   3: { wrap: 'bg-amber-50 border-amber-200',   num: 'bg-amber-500',   text: 'text-amber-800',   label: '신청하기 페이지 기능 구현' },
   4: { wrap: 'bg-rose-50 border-rose-200',     num: 'bg-rose-500',    text: 'text-rose-800',    label: '서버로 데이터 전송하기' },
+  5: { wrap: 'bg-fuchsia-50 border-fuchsia-200', num: 'bg-fuchsia-500', text: 'text-fuchsia-800', label: '수정하기와 페이지 간 데이터 전달' },
+  6: { wrap: 'bg-cyan-50 border-cyan-200',     num: 'bg-cyan-500',    text: 'text-cyan-800',    label: '확인 페이지와 최종 제출' },
 }
 
 /* ── StepCard ─────────────────────────────────── */
 interface StepCardProps {
-  phase: 1 | 2 | 3 | 4
-  num: number
+  phase: 1 | 2 | 3 | 4 | 5 | 6
+  num: number | string
+  id?: string
   title: string
   children: React.ReactNode
 }
 
-export function StepCard({ phase, num, title, children }: StepCardProps) {
+export function StepCard({ phase, num, id, title, children }: StepCardProps) {
   return (
     <div
-      id={`step${num}`}
+      id={id ?? `step${num}`}
       className="bg-white border border-gray-200 rounded-xl p-5 md:p-6 mb-4 scroll-mt-20"
     >
       <div className="flex items-center gap-2.5 mb-4">
@@ -46,7 +51,7 @@ export function StepCard({ phase, num, title, children }: StepCardProps) {
 }
 
 /* ── PhaseHeader ──────────────────────────────── */
-export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 }) {
+export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 }) {
   const s = phaseHeaderMap[phase]
   return (
     <div className={cn('flex items-center gap-3 rounded-xl px-5 py-4 border mb-4', s.wrap)}>

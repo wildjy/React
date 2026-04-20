@@ -136,6 +136,8 @@
     .nav-item.p2 .step-badge { background: #A7F3D0; color: #047857; }
     .nav-item.p3 .step-badge { background: #FDE68A; color: #92400E; }
     .nav-item.p4 .step-badge { background: #FECACA; color: #991B1B; }
+    .nav-item.p5 .step-badge { background: #F5D0FE; color: #A21CAF; }
+    .nav-item.p6 .step-badge { background: #CFFAFE; color: #0E7490; }
 
     /* ── 메인 콘텐츠 ── */
     .main {
@@ -281,6 +283,14 @@
     .phase4 .phase-number { background: var(--phase4); color: white; }
     .phase4 .phase-header h3 { color: #991B1B; }
 
+    .phase5 .phase-header { background: #FDF4FF; border: 1px solid #F5D0FE; }
+    .phase5 .phase-number { background: #D946EF; color: white; }
+    .phase5 .phase-header h3 { color: #A21CAF; }
+
+    .phase6 .phase-header { background: #ECFEFF; border: 1px solid #A5F3FC; }
+    .phase6 .phase-number { background: #06B6D4; color: white; }
+    .phase6 .phase-header h3 { color: #0E7490; }
+
     /* ── Step 카드 ── */
     .step-card {
       background: white;
@@ -312,6 +322,8 @@
     .phase2 .step-num { background: var(--phase2); color: white; }
     .phase3 .step-num { background: var(--phase3); color: white; }
     .phase4 .step-num { background: var(--phase4); color: white; }
+    .phase5 .step-num { background: #D946EF; color: white; }
+    .phase6 .step-num { background: #06B6D4; color: white; }
 
     .step-title h4 {
       font-size: 15px;
@@ -722,6 +734,21 @@
       <a class="nav-item p4" href="#step19"><span class="step-badge">19</span>MSW 목 API</a>
     </div>
     <div class="nav-section">
+      <div class="nav-phase-label">Phase 5 — 수정하기</div>
+      <a class="nav-item p5" href="#step20"><span class="step-badge">20</span>URLSearchParams 방식</a>
+      <a class="nav-item p5" href="#step21"><span class="step-badge">21</span>URL 읽기와 값 복원</a>
+      <a class="nav-item p5" href="#step22"><span class="step-badge">22</span>sessionStorage 전환</a>
+      <a class="nav-item p5" href="#step23"><span class="step-badge">23</span>Hydration 안전 복원</a>
+      <a class="nav-item p5" href="#step24"><span class="step-badge">24</span>두 방식 비교</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-phase-label">Phase 6 — 최종 제출</div>
+      <a class="nav-item p6" href="#step25"><span class="step-badge">25</span>ConfirmModal 사용</a>
+      <a class="nav-item p6" href="#step26"><span class="step-badge">26</span>모달 상태 관리</a>
+      <a class="nav-item p6" href="#step27"><span class="step-badge">27</span>현재 제출 흐름</a>
+      <a class="nav-item p6" href="#step28"><span class="step-badge">28</span>확정 API 연동 패턴</a>
+    </div>
+    <div class="nav-section">
       <div class="nav-phase-label">정리</div>
       <a class="nav-item" href="#concepts">💡 핵심 개념 정리</a>
       <a class="nav-item" href="#cautions">⚠️ 주의사항</a>
@@ -742,6 +769,8 @@
       <div class="phase-pill"><div class="dot" style="background:#34D399"></div>Phase 2 · 접근 제어 (2 steps)</div>
       <div class="phase-pill"><div class="dot" style="background:#FBBF24"></div>Phase 3 · 신청 기능 (6 steps)</div>
       <div class="phase-pill"><div class="dot" style="background:#F87171"></div>Phase 4 · 서버 전송 (6 steps)</div>
+      <div class="phase-pill"><div class="dot" style="background:#E879F9"></div>Phase 5 · 수정하기 (5 steps)</div>
+      <div class="phase-pill"><div class="dot" style="background:#22D3EE"></div>Phase 6 · 최종 제출 (4 steps)</div>
     </div>
   </div>
 
@@ -749,7 +778,7 @@
     <div class="breadcrumb">
       <span>학종 개발 가이드</span>
       <span>›</span>
-      <span>총 19 Steps · 4 Phases</span>
+      <span>총 28 Steps · 6 Phases</span>
     </div>
     <div class="steps-indicator">apps/early · Next.js App Router</div>
   </div>
@@ -1784,6 +1813,266 @@
       </div>
     </div>
 
+    <!-- ══ Phase 5 ══ -->
+    <div class="section phase5">
+      <div class="phase-header">
+        <div class="phase-number">P5</div>
+        <div><h3>Phase 5 — 수정하기와 페이지 간 데이터 전달</h3></div>
+      </div>
+
+      <div class="step-card" style="margin-bottom:16px">
+        <div class="step-title">
+          <div class="step-num" style="background:#6B7280">◎</div>
+          <h4>수정하기 기능의 전체 흐름</h4>
+        </div>
+        <div class="flow-diagram">
+          <pre>방법 1: URLSearchParams
+  신청 페이지 → 확인 페이지로 전체 값 전달
+           ↓
+  수정하기 클릭 → 다시 URL로 값 전달
+           ↓
+  신청 페이지에서 useSearchParams로 복원
+
+방법 2: sessionStorage
+  신청 페이지 → sessionStorage에 임시 저장
+           ↓
+  확인 페이지에서 sessionStorage 읽기
+           ↓
+  수정하기 클릭 → 단순 이동
+           ↓
+  신청 페이지에서 useEffect로 복원</pre>
+        </div>
+      </div>
+
+      <span class="anchor" id="step20"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">20</div><h4>방법 1 — URLSearchParams로 전체 입력값 전달</h4></div>
+        <p>초기 구현은 URL 쿼리스트링 기반이었습니다. 화면 표시용 값과 수정 복원용 값을 모두 URL에 실어 확인 페이지로 넘깁니다.</p>
+        <div class="code-block"><div class="code-lang">typescript</div><pre><span class="kw">const</span> params = <span class="kw">new</span> <span class="fn">URLSearchParams</span>({
+  applyId: response.applyId,
+  universityId: drop1.value,
+  universityName: drop1.label,
+  majorType: drop2.value,
+  majorTypeName: drop2.label,
+  minorMajorCategoryCode: drop3.value,
+  minorMajorCategoryName: drop3.label,
+  selfIntroduction,
+  activityReport,
+})
+router.<span class="fn">push</span>(<span class="str">'/hakjong/apply/confirm?'</span> + params.<span class="fn">toString</span>())</pre></div>
+        <div class="callout key"><div class="callout-icon">🔑</div><div class="callout-body"><strong>포인트:</strong> 드롭다운의 실제 선택 상태를 복원하려면 화면 표시용 <code>label</code>뿐 아니라 실제 값인 <code>value</code>도 같이 전달해야 합니다.</div></div>
+      </div>
+
+      <span class="anchor" id="step21"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">21</div><h4>확인 페이지에서 URL 읽기와 신청 페이지 복원</h4></div>
+        <p>확인 페이지는 <code>useSearchParams()</code>로 URL 값을 읽고, 신청 페이지는 그 값을 <code>useState</code> 초기값으로 복원합니다.</p>
+        <div class="code-block"><div class="code-lang">typescript</div><pre><span class="kw">const</span> searchParams = <span class="fn">useSearchParams</span>()
+<span class="kw">const</span> universityId = searchParams.<span class="fn">get</span>(<span class="str">'universityId'</span>) ?? <span class="str">''</span>
+<span class="kw">const</span> universityName = searchParams.<span class="fn">get</span>(<span class="str">'universityName'</span>) ?? <span class="str">''</span>
+
+<span class="kw">const</span> [selectedOption, setSelectedOption] = <span class="fn">useState</span>({
+  drop1: {
+    value: searchParams.<span class="fn">get</span>(<span class="str">'universityId'</span>) ?? <span class="str">''</span>,
+    label: searchParams.<span class="fn">get</span>(<span class="str">'universityName'</span>) ?? <span class="str">''</span>,
+  },
+})</pre></div>
+        <div class="table-wrap"><table><thead><tr><th>개념</th><th>설명</th></tr></thead><tbody>
+          <tr><td><code>useSearchParams()</code></td><td>URL 쿼리스트링 값을 읽는 Next.js 훅</td></tr>
+          <tr><td><code>useState</code> 초기값 복원</td><td>페이지 진입 시 한 번만 이전 값을 주입</td></tr>
+          <tr><td>Suspense 필요</td><td><code>useSearchParams</code>를 쓰는 컴포넌트는 Suspense 경계가 필요</td></tr>
+        </tbody></table></div>
+      </div>
+
+      <span class="anchor" id="step22"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">22</div><h4>방법 2 — sessionStorage로 전환한 이유</h4></div>
+        <p>자기소개서, 활동보고서처럼 길고 민감한 내용을 URL에 담는 것은 적합하지 않아 최종 구현은 <code>sessionStorage</code> 방식으로 바뀝니다.</p>
+        <div class="compare-grid">
+          <div class="compare-box before"><h5>방법 1 — URL 쿼리스트링</h5><div class="table-wrap" style="margin:0"><table><thead><tr><th>항목</th><th>설명</th></tr></thead><tbody>
+            <tr><td>데이터 노출</td><td>주소창과 히스토리에 노출</td></tr>
+            <tr><td>길이 제한</td><td>브라우저별 URL 길이 제한 존재</td></tr>
+            <tr><td>적합한 데이터</td><td>필터/검색 조건 같은 짧은 값</td></tr>
+          </tbody></table></div></div>
+          <div class="compare-box after"><h5>방법 2 — sessionStorage</h5><div class="table-wrap" style="margin:0"><table><thead><tr><th>항목</th><th>설명</th></tr></thead><tbody>
+            <tr><td>데이터 노출</td><td>주소창에 노출되지 않음</td></tr>
+            <tr><td>길이 제한</td><td>텍스트 저장에 상대적으로 유리</td></tr>
+            <tr><td>적합한 데이터</td><td>임시 작성 내용, 민감한 텍스트</td></tr>
+          </tbody></table></div></div>
+        </div>
+        <div class="code-block"><div class="code-lang">typescript</div><pre>sessionStorage.<span class="fn">setItem</span>(
+  <span class="str">'hakjong_apply_form'</span>,
+  <span class="fn">JSON.stringify</span>({
+    applyId: response.applyId,
+    universityId: drop1.value,
+    universityName: drop1.label,
+    selfIntroduction,
+    activityReport,
+  }),
+)
+
+router.<span class="fn">push</span>(<span class="str">'/hakjong/apply/confirm'</span>)</pre></div>
+        <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-body"><code>sessionStorage</code>는 문자열만 저장하므로 객체를 넣기 전에 반드시 <code>JSON.stringify()</code>가 필요합니다.</div></div>
+      </div>
+
+      <span class="anchor" id="step23"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">23</div><h4>Hydration mismatch와 useEffect 복원 패턴</h4></div>
+        <p>브라우저 저장소를 렌더링 중에 직접 읽으면 SSR 결과와 클라이언트 첫 렌더링 결과가 달라져 Hydration mismatch가 발생할 수 있습니다. 최종 해법은 <code>useEffect</code>에서 마운트 후 복원하는 것입니다.</p>
+        <div class="code-block"><div class="code-lang">typescript</div><pre><span class="kw">const</span> [selectedOption, setSelectedOption] = <span class="fn">useState</span>({
+  drop1: { value: <span class="str">''</span>, label: <span class="str">''</span> },
+  drop2: { value: <span class="str">''</span>, label: <span class="str">''</span> },
+  drop3: { value: <span class="str">''</span>, label: <span class="str">''</span> },
+})
+
+<span class="fn">useEffect</span>(() => {
+  <span class="kw">const</span> raw = sessionStorage.<span class="fn">getItem</span>(<span class="str">'hakjong_apply_form'</span>)
+  <span class="kw">if</span> (!raw) <span class="kw">return</span>
+  <span class="kw">const</span> saved = <span class="fn">JSON.parse</span>(raw)
+
+  <span class="fn">setSelectedOption</span>({
+    drop1: { value: saved.universityId ?? <span class="str">''</span>, label: saved.universityName ?? <span class="str">''</span> },
+    drop2: { value: saved.majorType ?? <span class="str">''</span>, label: saved.majorTypeName ?? <span class="str">''</span> },
+    drop3: {
+      value: saved.minorMajorCategoryCode ?? <span class="str">''</span>,
+      label: saved.minorMajorCategoryName ?? <span class="str">''</span>,
+    },
+  })
+}, [])</pre></div>
+        <div class="table-wrap"><table><thead><tr><th>방법</th><th>Hydration 안전?</th><th>설명</th></tr></thead><tbody>
+          <tr><td>렌더링 중 typeof window 분기</td><td>아니오</td><td>서버/클라이언트 결과가 달라질 수 있음</td></tr>
+          <tr><td>useState lazy initializer</td><td>아니오</td><td>SSR에서도 실행되므로 동일 문제</td></tr>
+          <tr><td>useEffect로 마운트 후 복원</td><td>예</td><td>Hydration 완료 후 브라우저에서만 실행</td></tr>
+        </tbody></table></div>
+      </div>
+
+      <span class="anchor" id="step24"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">24</div><h4>두 방식의 최종 비교와 선택 기준</h4></div>
+        <div class="table-wrap"><table><thead><tr><th>항목</th><th>URL 쿼리스트링</th><th>sessionStorage</th></tr></thead><tbody>
+          <tr><td>데이터 노출</td><td>주소창에 노출</td><td>노출 없음</td></tr>
+          <tr><td>탭/링크 공유</td><td>가능</td><td>불가</td></tr>
+          <tr><td>긴 텍스트 전달</td><td>부적합</td><td>적합</td></tr>
+          <tr><td>민감 데이터</td><td>부적합</td><td>상대적으로 적합</td></tr>
+          <tr><td>SSR 처리</td><td>간단함</td><td>Hydration 안전 처리 필요</td></tr>
+        </tbody></table></div>
+        <div class="callout key"><div class="callout-icon">🔑</div><div class="callout-body">이 프로젝트는 초기에는 URL 방식으로 빠르게 검증했고, 최종적으로는 긴 텍스트와 민감 데이터를 다루기 위해 <code>sessionStorage</code> 방식으로 전환했습니다.</div></div>
+      </div>
+    </div>
+
+    <!-- ══ Phase 6 ══ -->
+    <div class="section phase6">
+      <div class="phase-header">
+        <div class="phase-number">P6</div>
+        <div><h3>Phase 6 — 확인 페이지와 최종 제출</h3></div>
+      </div>
+
+      <div class="step-card" style="margin-bottom:16px">
+        <div class="step-title">
+          <div class="step-num" style="background:#6B7280">◎</div>
+          <h4>최종 제출 흐름</h4>
+        </div>
+        <div class="flow-diagram">
+          <pre>[신청 페이지]
+  입력완료 → 임시 저장 성공
+           ↓
+[확인 페이지]
+  sessionStorage 값 표시
+  → 신청완료(제출) 클릭
+           ↓
+[ConfirmModal]
+  정말 제출할지 한 번 더 확인
+           ↓
+[현재]
+  sessionStorage 정리 후 report 페이지 이동
+
+[추후]
+  confirm API 호출
+  → 성공 시 report 페이지 이동</pre>
+        </div>
+      </div>
+
+      <span class="anchor" id="step25"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">25</div><h4>공통 ConfirmModal 컴포넌트 사용</h4></div>
+        <p>직접 모달을 만들지 않고 프로젝트의 공통 <code>ConfirmModal</code>을 사용합니다.</p>
+        <div class="code-block"><div class="code-lang">typescript</div><pre><span class="cm">// 올바른 import</span>
+<span class="kw">import</span> { ConfirmModal } <span class="kw">from</span> <span class="str">'@libs/ui/Modal/ConfirmModal'</span>
+
+<span class="cm">// 잘못된 import</span>
+<span class="kw">import</span> { ConfirmModal } <span class="kw">from</span> <span class="str">'@libs/ui/Modal'</span></pre></div>
+        <div class="callout warn"><div class="callout-icon">⚠️</div><div class="callout-body"><strong>barrel export 주의:</strong> barrel export에 등록되지 않은 공통 컴포넌트는 파일 경로를 직접 지정해서 import해야 합니다.</div></div>
+      </div>
+
+      <span class="anchor" id="step26"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">26</div><h4>모달 열기/닫기 상태 관리 패턴</h4></div>
+        <p>모달의 표시는 <code>useState&lt;boolean&gt;</code>으로 관리합니다.</p>
+        <div class="code-block"><div class="code-lang">typescript</div><pre><span class="kw">const</span> [isConfirmOpen, setIsConfirmOpen] = <span class="fn">useState</span>(<span class="kw">false</span>)
+
+&lt;<span class="type">Button</span> onClick={() =&gt; <span class="fn">setIsConfirmOpen</span>(<span class="kw">true</span>)}&gt;
+  신청완료 (제출)
+&lt;/<span class="type">Button</span>&gt;
+
+&lt;<span class="type">ConfirmModal</span>
+  isOpen={isConfirmOpen}
+  onClose={() =&gt; <span class="fn">setIsConfirmOpen</span>(<span class="kw">false</span>)}
+  onClick={() =&gt; {
+    <span class="fn">setIsConfirmOpen</span>(<span class="kw">false</span>)
+  }}
+/&gt;</pre></div>
+      </div>
+
+      <span class="anchor" id="step27"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">27</div><h4>현재 구현 — 제출 확인 후 바로 리포트 페이지 이동</h4></div>
+        <p>확정 API가 아직 없어서, 현재는 모달에서 신청을 누르면 sessionStorage를 정리하고 리포트 페이지로 이동합니다.</p>
+        <div class="code-block"><div class="code-lang">typescript</div><pre>&lt;<span class="type">ConfirmModal</span>
+  isOpen={isConfirmOpen}
+  message={
+    <span class="str">'입시전문가 평가를 신청하시겠습니까?\n상담신청을 완료하면 내용 변경이 불가하며,\n입시전문가가 분석을 시작합니다.'</span>
+  }
+  buttonText=<span class="str">"신청"</span>
+  cancelText=<span class="str">"취소"</span>
+  onClick={() =&gt; {
+    <span class="fn">setIsConfirmOpen</span>(<span class="kw">false</span>)
+    sessionStorage.<span class="fn">removeItem</span>(<span class="str">'hakjong_apply_form'</span>)
+    router.<span class="fn">push</span>(<span class="str">'/hakjong/report'</span>)
+  }}
+/&gt;</pre></div>
+      </div>
+
+      <span class="anchor" id="step28"></span>
+      <div class="step-card">
+        <div class="step-title"><div class="step-num">28</div><h4>추후 확정 API 연동 패턴</h4></div>
+        <p>확정 API가 준비되면 Phase 4와 동일하게 <strong>타입 → API 함수 → mutation 훅 → 컴포넌트</strong> 순서로 붙입니다.</p>
+        <div class="flow-diagram"><pre>1. hakjong.types.ts
+   ConfirmRequest / ConfirmResponse 타입 추가
+
+2. api/index.ts
+   confirmHakjongApply 함수 추가
+
+3. hakjong.queries.ts
+   useHakjongConfirmMutation 추가
+
+4. EarlyHakjongConfirm.tsx
+   mutateAsync 연결 + isPending 로딩 처리</pre></div>
+        <div class="code-block"><div class="code-lang">typescript</div><pre><span class="kw">const</span> { mutateAsync: confirmApply, isPending } = <span class="fn">useHakjongConfirmMutation</span>()
+
+&lt;<span class="type">ConfirmModal</span>
+  isOpen={isConfirmOpen}
+  isLoading={isPending}
+  onClick={async () =&gt; {
+    <span class="kw">await</span> <span class="fn">confirmApply</span>({ applyId })
+    <span class="fn">setIsConfirmOpen</span>(<span class="kw">false</span>)
+    sessionStorage.<span class="fn">removeItem</span>(<span class="str">'hakjong_apply_form'</span>)
+    router.<span class="fn">push</span>(<span class="str">'/hakjong/report'</span>)
+  }}
+/&gt;</pre></div>
+        <div class="callout key"><div class="callout-icon">🔑</div><div class="callout-body"><code>isPending</code>를 연결하면 네트워크가 느릴 때 중복 클릭을 막고 사용자에게 "처리 중"이라는 피드백을 줄 수 있습니다.</div></div>
+      </div>
+    </div>
+
     <!-- ══ 주요 라이브러리 ══ -->
     <div class="section">
       <span class="anchor" id="libraries"></span>
@@ -1811,6 +2100,9 @@
             <tr><td><code>useMemo()</code></td><td>계산 결과 메모이제이션 (성능 최적화)</td><td>P3</td></tr>
             <tr><td><code>useMutation()</code></td><td>POST/PUT/DELETE 요청 생명주기 관리</td><td>P4</td></tr>
             <tr><td><code>useSearchParams()</code></td><td>URL 쿼리스트링 값 읽기</td><td>P4</td></tr>
+            <tr><td><code>sessionStorage</code></td><td>페이지 간 임시 데이터 저장 및 복원</td><td>P5</td></tr>
+            <tr><td><code>useEffect()</code></td><td>Hydration 이후 브라우저 저장소 값을 안전하게 복원</td><td>P5</td></tr>
+            <tr><td><code>ConfirmModal</code></td><td>최종 제출 전 사용자 재확인 모달</td><td>P6</td></tr>
           </tbody>
         </table>
       </div>
@@ -1865,6 +2157,14 @@
                                    useState (사용자 입력)
                                               ↑
                                    이벤트 핸들러 (onClick, onChange)</pre>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            Phase 5부터는 여기에 <code>sessionStorage</code>와 <code>useEffect</code>가 추가됩니다.
+            즉, 서버 데이터 흐름뿐 아니라 페이지를 오가며 임시 입력값을 안전하게 복원하는 흐름도 같이 설계해야 합니다.
+          </div>
         </div>
       </div>
 
@@ -1939,6 +2239,27 @@
           <div>
             <strong>useSearchParams()는 반드시 Suspense 안에서 사용</strong><br>
             <span style="color:var(--gray-600);font-size:13px"><code>useSearchParams()</code>를 사용하는 컴포넌트를 <code>Suspense</code> 없이 렌더링하면 빌드/런타임 오류 발생. <code>page.tsx</code>에서 <code>&lt;Suspense&gt;</code>로 감싸는 것이 기본 패턴</span>
+          </div>
+        </li>
+        <li>
+          <div class="warn-icon">!</div>
+          <div>
+            <strong>sessionStorage는 렌더링 중 직접 읽지 말 것</strong><br>
+            <span style="color:var(--gray-600);font-size:13px"><code>typeof window</code> 분기나 <code>useState(() =&gt; ...)</code> 안에서 직접 읽으면 Hydration mismatch가 날 수 있음. 브라우저 저장소 복원은 <code>useEffect</code>에서 <code>setState</code>로 처리</span>
+          </div>
+        </li>
+        <li>
+          <div class="warn-icon">!</div>
+          <div>
+            <strong>barrel export가 없으면 직접 경로 import</strong><br>
+            <span style="color:var(--gray-600);font-size:13px"><code>ConfirmModal</code>처럼 <code>index.ts</code>에 등록되지 않은 공통 컴포넌트는 <code>@libs/ui/Modal/ConfirmModal</code>처럼 파일 경로를 직접 지정해 import</span>
+          </div>
+        </li>
+        <li>
+          <div class="check-icon">✓</div>
+          <div>
+            <strong>새 API는 4단계 패턴으로 연동</strong><br>
+            <span style="color:var(--gray-600);font-size:13px">새로운 API가 생기면 <strong>타입 → API 함수 → mutation 훅 → 컴포넌트</strong> 순서로 붙이기. Phase 4의 신청 API와 Phase 6의 확정 API가 같은 패턴</span>
           </div>
         </li>
       </ul>

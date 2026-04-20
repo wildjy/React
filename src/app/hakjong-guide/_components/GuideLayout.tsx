@@ -5,7 +5,7 @@ import { Sidebar } from './Sidebar'
 const SECTION_IDS = [
   'overview',
   'libraries',
-  ...Array.from({ length: 19 }, (_, i) => `step${i + 1}`),
+  ...Array.from({ length: 28 }, (_, i) => `step${i + 1}`),
   'concepts',
   'cautions',
 ]
@@ -80,7 +80,7 @@ export function GuideLayout({ children }: GuideLayoutProps) {
           <div className="flex items-center gap-2">
             <span>학종 프론트엔드 개발 가이드</span>
             <span>›</span>
-            <span>총 19 Steps · 4 Phases</span>
+            <span>총 28 Steps · 6 Phases</span>
           </div>
           <span className="font-semibold text-indigo-600">apps/early · Next.js App Router</span>
         </div>

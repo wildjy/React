@@ -3,6 +3,8 @@ const phases = [
   { color: 'bg-emerald-400', label: 'Phase 2 · 접근 제어',   steps: '2 steps' },
   { color: 'bg-amber-400',   label: 'Phase 3 · 신청 기능',   steps: '6 steps' },
   { color: 'bg-rose-400',    label: 'Phase 4 · 서버 전송',   steps: '6 steps' },
+  { color: 'bg-fuchsia-400', label: 'Phase 5 · 수정하기',   steps: '5 steps' },
+  { color: 'bg-cyan-400',    label: 'Phase 6 · 최종 제출', steps: '4 steps' },
 ]
 
 export function Hero() {
@@ -19,7 +21,7 @@ export function Hero() {
       </h1>
       <p className="text-[14px] text-indigo-100 max-w-xl leading-7 mb-6">
         HTML/CSS 마크업 이후, React + Next.js 기반으로 실제 동작하는 페이지를 만들기까지의
-        전체 흐름을 <strong>19 Steps · 4 Phases</strong>로 단계별 정리합니다.
+        전체 흐름을 <strong>28 Steps · 6 Phases</strong>로 단계별 정리합니다.
       </p>
 
       {/* Phase 뱃지 목록 */}

@@ -22,6 +22,9 @@ export function Libraries() {
           [<IC key="k">useMemo()</IC>,                                '계산 결과 메모이제이션 (성능 최적화)',             'P3'],
           [<IC key="l">useMutation()</IC>,                            'POST/PUT/DELETE 요청 생명주기 관리',              'P4'],
           [<IC key="m">useSearchParams()</IC>,                        'URL 쿼리스트링 값 읽기',                          'P4'],
+          [<IC key="n">sessionStorage</IC>,                           '페이지 간 임시 데이터 저장 및 복원',               'P5'],
+          [<IC key="o">useEffect()</IC>,                              'Hydration 이후 브라우저 저장소 값을 안전하게 복원', 'P5'],
+          [<IC key="p">ConfirmModal</IC>,                             '최종 제출 전 사용자 재확인 모달',                  'P6'],
         ]}
       />
     </section>
@@ -73,6 +76,10 @@ export function Concepts() {
                                    useState (사용자 입력)
                                               ↑
                                    이벤트 핸들러 (onClick, onChange)`}</FlowDiagram>
+        <Callout variant="tip">
+          Phase 5부터는 여기에 <IC>sessionStorage</IC>와 <IC>useEffect</IC>가 추가됩니다.
+          즉, 서버 데이터 흐름뿐 아니라 "페이지를 오가며 임시 입력값을 안전하게 복원하는 흐름"도 함께 설계해야 합니다.
+        </Callout>
       </div>
 
       {/* 상태 변경 = 화면 자동 업데이트 */}
@@ -157,6 +164,39 @@ const cautions = [
       <>
         <IC>useSearchParams()</IC>를 사용하는 컴포넌트를 <IC>Suspense</IC> 없이 렌더링하면
         빌드/런타임 오류 발생. <IC>page.tsx</IC>에서 <IC>{'<Suspense>'}</IC>로 감싸는 것이 기본 패턴.
+      </>
+    ),
+  },
+  {
+    icon: '⚠️',
+    iconBg: 'bg-amber-100 text-amber-700',
+    title: 'sessionStorage는 렌더링 중 직접 읽지 말 것',
+    desc: (
+      <>
+        <IC>typeof window</IC> 분기나 <IC>useState(() =&gt; ...)</IC> 안에서 직접 읽으면 Hydration mismatch가 날 수 있습니다.
+        브라우저 저장소 복원은 <IC>useEffect</IC>에서 <IC>setState</IC>로 처리하세요.
+      </>
+    ),
+  },
+  {
+    icon: '⚠️',
+    iconBg: 'bg-amber-100 text-amber-700',
+    title: 'barrel export가 없으면 직접 경로 import',
+    desc: (
+      <>
+        <IC>ConfirmModal</IC>처럼 <IC>index.ts</IC>에 등록되지 않은 공통 컴포넌트는
+        <IC>@libs/ui/Modal/ConfirmModal</IC>처럼 파일 경로를 직접 지정해 import해야 합니다.
+      </>
+    ),
+  },
+  {
+    icon: '✓',
+    iconBg: 'bg-green-100 text-green-700',
+    title: '새 API는 4단계 패턴으로 연동',
+    desc: (
+      <>
+        새로운 API가 생기면 <strong>타입 → API 함수 → mutation 훅 → 컴포넌트</strong> 순서로 붙이세요.
+        Phase 4의 신청 API와 Phase 6의 확정 API가 같은 패턴입니다.
       </>
     ),
   },

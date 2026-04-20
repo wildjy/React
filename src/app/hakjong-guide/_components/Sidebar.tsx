@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | null
   items: NavItem[]
 }
 
@@ -71,6 +71,29 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase5',
+    label: 'Phase 5 — 수정하기',
+    phase: 5,
+    items: [
+      { id: 'step20', label: 'URLSearchParams 방식',      num: 20 },
+      { id: 'step21', label: 'URL 읽기와 값 복원',        num: 21 },
+      { id: 'step22', label: 'sessionStorage 전환',       num: 22 },
+      { id: 'step23', label: 'Hydration 안전 복원',       num: 23 },
+      { id: 'step24', label: '두 방식 비교와 선택 기준',  num: 24 },
+    ],
+  },
+  {
+    id: 'phase6',
+    label: 'Phase 6 — 최종 제출',
+    phase: 6,
+    items: [
+      { id: 'step25', label: 'ConfirmModal 사용',      num: 25 },
+      { id: 'step26', label: '모달 상태 관리',         num: 26 },
+      { id: 'step27', label: '현재 제출 흐름',         num: 27 },
+      { id: 'step28', label: '확정 API 연동 패턴',     num: 28 },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -86,6 +109,8 @@ const phaseBadgeColors: Record<number, string> = {
   2: 'bg-emerald-100 text-emerald-700',
   3: 'bg-amber-100 text-amber-700',
   4: 'bg-rose-100 text-rose-700',
+  5: 'bg-fuchsia-100 text-fuchsia-700',
+  6: 'bg-cyan-100 text-cyan-700',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */
