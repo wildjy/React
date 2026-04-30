@@ -16,7 +16,7 @@ export function Phase4() {
           <h4 className="text-[15px] font-bold text-gray-900">데이터 전송 전체 흐름</h4>
         </div>
         <FlowDiagram>{`[사용자 입력]
-  Dropdown 선택 + TextInput 작성
+  Dropdown 선택 + Textarea(TextInput) 작성
            ↓
 [유효성 검사]
   handleSubmit() — 미선택/미입력 시 alert 후 중단

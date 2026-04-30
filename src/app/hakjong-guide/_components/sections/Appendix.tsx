@@ -60,7 +60,7 @@ export function Concepts() {
             ['사용 불가', 'useState, onClick 등',      '서버 전용 API (cookies, fs 등)'],
             ['파일 예시',
               <><IC key="a">layout.tsx</IC>, ', ', <IC key="b">page.tsx</IC></>,
-              <><IC key="c">EarlyHakjong.tsx</IC>, ', ', <IC key="d">EarlyHakjongNavigator.tsx</IC></>,
+              <><IC key="c">EarlyHakjongApply.tsx</IC>, ', ', <IC key="d">EarlyHakjongNavigator.tsx</IC></>,
             ],
           ]}
         />

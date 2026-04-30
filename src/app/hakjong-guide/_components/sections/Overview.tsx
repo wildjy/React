@@ -14,7 +14,7 @@ const tabs = [
     name: '평가 신청하기',
     path: '/hakjong/apply',
     guard: '🔒 로그인 필요',
-    comp: 'EarlyHakjong',
+    comp: 'EarlyHakjongApply',
   },
   {
     icon: '📊',

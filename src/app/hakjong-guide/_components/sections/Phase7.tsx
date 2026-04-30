@@ -39,7 +39,7 @@ export function Phase7() {
 ├── layout.tsx          → EarlyHakjongNavigator
 ├── page.tsx            → EarlyHakjongIntro
 ├── apply/
-│   ├── page.tsx        → EarlyHakjong
+│   ├── page.tsx        → EarlyHakjongApply
 │   └── confirm/
 │       └── page.tsx    → EarlyHakjongConfirm
 └── report/

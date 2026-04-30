@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | null
   items: NavItem[]
 }
 
@@ -106,6 +106,19 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase8',
+    label: 'Phase 8 — 커스텀 훅 분리',
+    phase: 8,
+    items: [
+      { id: 'step34', label: '분리 대상 식별',                num: 34 },
+      { id: 'step35', label: 'useApplyDropOptions',           num: 35 },
+      { id: 'step36', label: 'useHakjongNavigation',          num: 36 },
+      { id: 'step37', label: '분리의 장단점',                 num: 37 },
+      { id: 'step38', label: 'SSR × sessionStorage 함정',     num: 38 },
+      { id: 'step39', label: '향후 구조 개선 방향',           num: 39 },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -124,6 +137,7 @@ const phaseBadgeColors: Record<number, string> = {
   5: 'bg-fuchsia-100 text-fuchsia-700',
   6: 'bg-cyan-100 text-cyan-700',
   7: 'bg-violet-100 text-violet-700',
+  8: 'bg-orange-100 text-orange-700',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */

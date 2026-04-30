@@ -8,6 +8,7 @@ import { Phase4 }       from './_components/sections/Phase4'
 import { Phase5 }       from './_components/sections/Phase5'
 import { Phase6 }       from './_components/sections/Phase6'
 import { Phase7 }       from './_components/sections/Phase7'
+import { Phase8 }       from './_components/sections/Phase8'
 import { Libraries, Concepts, Cautions } from './_components/sections/Appendix'
 
 export default function HakjongGuidePage() {
@@ -23,6 +24,7 @@ export default function HakjongGuidePage() {
         <Phase5    />
         <Phase6    />
         <Phase7    />
+        <Phase8    />
         <Libraries />
         <Concepts  />
         <Cautions  />
