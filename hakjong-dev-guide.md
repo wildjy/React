@@ -3543,3 +3543,218 @@ apps/early/src/entities/hakjong/
 | `EarlyHakjongApply`       | `useApplyDropOptions` + `useHakjongHandler` (드롭다운/카드 상태) |
 | `EarlyHakjongConfirm`     | (페이지별 자체 로직)                                             |
 | 임시 구현 → API 전환 패턴        | 하드코딩/sessionStorage로 먼저 동작 확인 후, API 확정 시 `useQuery`로 교체  |
+
+---
+
+## Phase 9: 백엔드 미구현 엔드포인트 안전 호출 — `throwOnError` 우회 패턴
+
+### 배경: 왜 이 패턴이 필요한가?
+
+학종 서비스를 개발하다 보면, 프론트 코드는 먼저 작성되었지만 **서버 측 엔드포인트가 아직 구현되지 않은 시점**이 자주 발생합니다.
+
+예: stepbar의 사용자 진행 상태를 보여주는 `/user-status` 엔드포인트가 백엔드에서 아직 구현되지 않았다고 가정합시다. 프론트에서는 이미 `useUserStatusQuery`를 호출하고 있고, 그 결과로 stepbar 각 단계의 완료 여부를 표시하는 UI도 짜여 있습니다.
+
+이 상태에서 페이지를 열면 다음과 같은 에러가 발생하며 **stepbar뿐 아니라 페이지 전체가 깨집니다**:
+
+```
+Uncaught Error: Cannot GET /jh/api/high3/user-status
+    at throwOnError (ReactQueryProvider.tsx:29)
+    at useUserStatusQuery (user-status.queries.ts:13)
+    at useStepBar (useStepBar.ts:22)
+    at EarlyStepbar (EarlyStepbar.tsx:18)
+```
+
+API 한 개가 미구현인데, 왜 페이지 전체가 흰 화면이 되는지 — 그 원리와 정공법이 이번 Phase의 주제입니다.
+
+---
+
+### 핵심 개념 ①: 글로벌 `throwOnError` 정책
+
+이 프로젝트의 React Query는 [libs/app/provider/ReactQueryProvider.tsx](../libs/app/provider/ReactQueryProvider.tsx)에서 다음과 같이 설정되어 있습니다.
+
+```tsx
+// libs/app/provider/ReactQueryProvider.tsx
+new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 2500,
+      gcTime: 2500,
+      retry: 1,
+      throwOnError(error, query) {
+        // Next.js의 전역 `error.js`에서 감지하도록 던짐
+        throw new Error(APIError.message(error));
+      },
+    },
+  },
+});
+```
+
+**`throwOnError`의 동작:**
+
+- 기본 React Query: 쿼리가 실패하면 `useQuery({ data, error, isError })`에 `error`가 담겨 옵니다. 컴포넌트는 `if (isError) return <Fallback />` 같은 분기로 직접 처리합니다.
+- **이 프로젝트의 설정**: 쿼리 실패 시 **렌더링 도중에 `throw`** 합니다. 즉 에러가 React 트리를 타고 위로 올라가 가장 가까운 Error Boundary(`error.js`)에서 잡힙니다.
+
+이 설계의 의도는 "API 에러는 전역으로 일관되게 처리한다"입니다. 모든 컴포넌트가 일일이 에러 처리 코드를 쓰지 않아도 되니까요.
+
+**하지만 부작용:**
+
+- 한 쿼리가 실패하면, 그 쿼리를 부른 컴포넌트가 throw → 그 위 컴포넌트도 함께 unmount → 페이지 전체가 Error Boundary로 대체됩니다.
+- 따라서 **선택적으로 빠질 수 있는 데이터**(예: stepbar의 진행률 — 없어도 페이지가 동작해야 함)에도 이 정책이 적용되면, "있어도 좋고 없어도 되는" 데이터가 페이지를 통째로 무너뜨립니다.
+
+ReactQueryProvider 자체에 이미 안내 주석이 있습니다.
+
+```tsx
+/**
+ * @memo
+ * `throwOnError` 옵션을 사용하면, 쿼리에서 에러가 발생하면 해당 쿼리를 사용하는 컴포넌트에서 에러를 핸들링할 수 없음.
+ * 개별 컴포넌트에서 에러처리가 필요한 경우, useQuery 옵션에 throwOnError: false 설정하세요.
+ */
+```
+
+이 안내가 이번 Phase의 정답입니다.
+
+---
+
+### 핵심 개념 ②: 옵트아웃(opt-out)
+
+글로벌 정책을 **유지하면서**, 특정 쿼리만 정책에서 빠지게 만드는 방식을 옵트아웃이라고 합니다. React Query는 `useQuery`의 옵션에서 `throwOnError: false`를 지정하면 해당 쿼리만 글로벌 정책을 덮어씁니다.
+
+```tsx
+useQuery({
+  queryKey: [...],
+  queryFn: ...,
+  throwOnError: false, // ← 이 쿼리만 글로벌 정책에서 빠짐
+});
+```
+
+옵트아웃된 쿼리는 실패해도 throw하지 않고, `data`가 `undefined`인 상태로 컴포넌트에 전달됩니다. 즉 **호출부가 `undefined`를 안전하게 처리할 수만 있다면**, 백엔드 미구현 상태에서도 페이지가 정상 렌더됩니다.
+
+---
+
+### Step 40: 옵트아웃 적용 — `useUserStatusQuery` 예시
+
+**파일: [apps/early/src/entities/user-status/model/user-status.queries.ts](../apps/early/src/entities/user-status/model/user-status.queries.ts)**
+
+```tsx
+export function useUserStatusQuery(userId?: string, enabled = true) {
+  return useQuery({
+    queryKey: userStatusQueries.status(userId).queryKey,
+    queryFn: () => fetchUserStatus(userId),
+    enabled: !!userId && enabled,
+    // 서버 `/user-status` 엔드포인트 구현 완료 후 이 옵션 제거 — 호출부 fallback(`?? 0`, `?? false`)으로 안전하게 degrade
+    throwOnError: false,
+  });
+}
+```
+
+추가된 부분은 단 두 줄(주석 + 옵션)입니다. 이 한 줄로 stepbar가 더 이상 페이지를 깨뜨리지 않습니다.
+
+**왜 코멘트를 다는가?**
+
+이 코드를 처음 보는 사람은 "왜 이 쿼리만 글로벌 정책을 빠져나가지?"라는 의문을 가집니다. 의도를 명시해야 백엔드 구현 완료 시점에 누군가 이 옵션을 제거하는 것을 잊지 않습니다. 일반적으로 코드 코멘트는 최소화하지만, **글로벌 정책을 덮어쓰는 경우에는 그 이유를 적어두는 것이 옳습니다**.
+
+---
+
+### Step 41: 호출부 fallback 설계
+
+옵트아웃 자체는 단순합니다. 하지만 **그것만으로는 충분하지 않습니다**. 옵트아웃된 쿼리는 실패 시 `data`가 `undefined`로 전달되므로, 호출부가 그 `undefined`를 처리하지 못하면 다른 종류의 런타임 에러가 납니다.
+
+**나쁜 예 (호출부에 fallback 없음):**
+
+```tsx
+const { data: userStatus } = useUserStatusQuery(userId);
+const count = userStatus.mockApplicationCount; // ❌ TypeError: Cannot read property 'mockApplicationCount' of undefined
+```
+
+**좋은 예 ([useStepBar.ts](../apps/early/src/shared/model/hooks/useStepBar.ts)):**
+
+```tsx
+const { data: userStatus } = useUserStatusQuery(currentUser?.userId, !currentUser?.isLoading);
+
+const mockApplicationCount = userStatus?.mockApplicationCount ?? 0;   // ← Optional chaining + Nullish coalescing
+const scoreDisclosureCount = userStatus?.scoreDisclosureCount ?? 0;
+
+const step = [
+  // ...
+  {
+    id: 2,
+    label: '교과성적',
+    result: {
+      active: userStatus?.isNesinGradeInput ?? false,                  // ← undefined → false
+      value: userStatus?.isNesinGradeInput ? '입력완료' : '입력하기',
+    },
+  },
+  // ...
+];
+```
+
+**두 연산자의 조합 패턴:**
+
+| 연산자                              | 동작                                                 |
+| ----------------------------------- | ---------------------------------------------------- |
+| Optional chaining `?.`              | 왼쪽이 `undefined`/`null`이면 평가를 멈추고 `undefined` 반환 |
+| Nullish coalescing `??`             | 왼쪽이 `undefined`/`null`이면 오른쪽 값 사용                  |
+| 조합 `userStatus?.field ?? default` | `userStatus`가 없으면 → `undefined ?? default` → `default` |
+
+이 조합으로 모든 사용처에서 안전한 기본값(빈 상태, `false`, `0`)을 보장하면, 백엔드 미구현 상태에서도 stepbar는 "아무것도 완료되지 않은 초기 상태"로 자연스럽게 표시됩니다.
+
+---
+
+### Step 42: 옵트아웃을 써도 되는 쿼리 vs 쓰면 안 되는 쿼리
+
+모든 미구현 API에 `throwOnError: false`를 남발해서는 안 됩니다. 판단 기준:
+
+| 상황                                              | 적용 여부 | 이유                                                                                    |
+| ------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
+| stepbar 진행 상태 (`/user-status`)                | ✅ 적용    | 없어도 페이지의 핵심 기능은 동작. 그저 진행률이 초기값으로 보일 뿐                       |
+| 평가 신청 페이지의 사용자 정보 조회               | ❌ 부적합  | 사용자 정보 없이는 신청 자체가 불가능. 에러를 던져서 사용자에게 알리는 것이 맞음           |
+| 리포트 페이지의 평가 결과 데이터                  | ❌ 부적합  | 데이터 자체가 페이지의 존재 이유. 에러면 페이지를 닫는 것이 맞음                          |
+| 우상단 알림 뱃지 개수                             | ✅ 적용    | 부수적 정보. 실패 시 뱃지를 안 보이는 것이 페이지 전체를 막는 것보다 나음                |
+
+**판단 한 줄 요약**: 이 데이터가 없으면 페이지를 보여주는 의미가 사라지는가? **그렇다면 throw가 맞고, 아니면 옵트아웃이 맞습니다.**
+
+---
+
+### Step 43: 백엔드 구현 완료 후 제거 체크리스트
+
+`throwOnError: false`는 **임시 우회**입니다. 백엔드 엔드포인트가 준비되면 다음을 수행합니다.
+
+1. **쿼리 옵션 제거**
+
+   ```diff
+   useQuery({
+     queryKey: userStatusQueries.status(userId).queryKey,
+     queryFn: () => fetchUserStatus(userId),
+     enabled: !!userId && enabled,
+  -  // 서버 `/user-status` 엔드포인트 구현 완료 후 이 옵션 제거 — 호출부 fallback(`?? 0`, `?? false`)으로 안전하게 degrade
+  -  throwOnError: false,
+   });
+   ```
+
+2. **fallback은 그대로 유지**
+
+   호출부의 `?? 0`, `?? false`는 옵트아웃이 사라져도 그대로 둡니다. 이유:
+   - 쿼리는 항상 로딩 상태로 시작하므로 `data`가 `undefined`인 시점이 존재합니다.
+   - 네트워크 일시 장애나 인증 만료 등으로 일시적으로 `undefined`가 들어올 수 있습니다.
+   - fallback은 옵트아웃과 별개로, **모든 쿼리 호출부에 두는 것이 일반적인 좋은 습관**입니다.
+
+3. **실제 동작 확인**
+
+   - 정상 응답: 쿼리 성공 → stepbar에 실제 진행률이 표시되는지
+   - 의도적 실패: 백엔드에서 500을 반환했을 때 Error Boundary가 잡는지 (이때는 옵트아웃이 빠졌으니 throw 정책이 다시 적용됨)
+
+---
+
+### Phase 9 정리
+
+| 새로 배운 핵심 개념                | 설명                                                                                            |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **글로벌 `throwOnError` 정책**     | React Query 에러를 Error Boundary로 던지는 프로젝트 표준 동작. 일관된 에러 UX의 장점, 페이지 전체 차단의 단점 |
+| **옵트아웃 (`throwOnError: false`)** | 글로벌 정책을 유지한 채 특정 쿼리만 정책에서 빼는 방식                                            |
+| **Optional chaining + Nullish coalescing** | `data?.field ?? default` 패턴으로 `undefined` 안전 처리                                          |
+| **degrade 가능 vs 필수 데이터**    | 없어도 페이지가 의미 있는 데이터는 옵트아웃 대상, 페이지의 존재 이유가 되는 데이터는 throw 유지   |
+| **임시 우회의 정리 책임**          | 우회 코드에는 의도 코멘트를 남기고, 원인이 해소되면 제거. fallback은 그대로 유지                |
+
+**적용 판단 한 줄:**
+
+> 이 쿼리가 실패해도 페이지가 의미 있게 동작하는가? → 그렇다면 `throwOnError: false`, 아니면 글로벌 정책 그대로.

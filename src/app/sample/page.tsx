@@ -30,14 +30,25 @@ const SamplePage: React.FC = () => {
           <h1 className="text-base">High School Page</h1>
           <h1 className="text-base font-semi">High School Page</h1>
           <h1 className="text-base font-bold">High School Page</h1>
-          <h1 className="text-lg">High School Page</h1>
+          <h1 className="text-lg">High School Page<br />
+          High School PageHigh School PageHigh School Page<br />
+          High School PageHigh School PageHigh School Page<br />
+          High School PageHigh School PageHigh School Page<br />
+
+          </h1>
           <h1 className="text-xl">High School Page</h1>
           <h1 className="text-2xl">High School Page</h1>
           <h1 className="text-3xl">[24px] High School Page</h1>
           <h1 className="text-4xl">[26px] High School Page</h1>
-          <h1 className="text-5xl">High School Page</h1>
+          <h1 className="text-5xl">High School Page<br />
+          High School PageHigh School PageHigh School Page<br />
+          High School PageHigh School PageHigh School Page<br />
+          High School PageHigh School PageHigh School Page<br /></h1>
           <h1 className="text-6xl">High School Page</h1>
-          <h1 className="text-7xl">High School Page</h1>
+          <h1 className="text-7xl">High School Page<br />
+          High School PageHigh School PageHigh School Page<br />
+          High School PageHigh School PageHigh School Page<br />
+          High School PageHigh School PageHigh School Page<br /></h1>
           <h1 className="text-8xl">High School Page</h1>
           <h1 className="text-8xl font-thin">High School Page</h1>
           <h1 className="text-8xl font-light">High School Page</h1>

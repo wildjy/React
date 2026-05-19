@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | null
   items: NavItem[]
 }
 
@@ -119,6 +119,17 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase9',
+    label: 'Phase 9 — throwOnError 우회',
+    phase: 9,
+    items: [
+      { id: 'step40', label: '글로벌 정책과 문제',         num: 40 },
+      { id: 'step41', label: '호출부 fallback 설계',       num: 41 },
+      { id: 'step42', label: '옵트아웃 판단 기준',         num: 42 },
+      { id: 'step43', label: '백엔드 완료 후 제거 체크',   num: 43 },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -138,6 +149,7 @@ const phaseBadgeColors: Record<number, string> = {
   6: 'bg-cyan-100 text-cyan-700',
   7: 'bg-violet-100 text-violet-700',
   8: 'bg-orange-100 text-orange-700',
+  9: 'bg-teal-100 text-teal-700',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */

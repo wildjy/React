@@ -3,130 +3,96 @@
 작성일: 2026-04-01
 프로젝트: D:/React
 
-## Quick Start (4단계)
+본 문서는 Figma와 Claude 간 MCP(Model Context Protocol) 연동을 위한 설치/실행 절차를 기록한다.
 
-1. Figma에서 MCP/플러그인 실행
-2. 소켓 브리지 실행
-
-```powershell
-bunx cursor-talk-to-figma-socket
-```
-
-3. MCP 서버 실행
-
-```powershell
-pnpm run socket
-```
-
-4. Claude 실행 후 채널명 입력(채널 조인) -> Figma MCP 도구 사용
+연결 구조: `Figma 플러그인` ⇄ `소켓 브리지(WebSocket, 3055 포트)` ⇄ `MCP 서버` ⇄ `Claude`
 
 ## 1) pnpm 확인
 
-Windows에서 pnpm 사용 가능 여부 확인:
+MCP 패키지를 설치하기 위한 패키지 매니저로 pnpm을 사용한다. 설치 여부 및 버전을 확인한다.
 
 ```powershell
 pnpm -v
 ```
 
-확인 결과:
-- pnpm version: 9.15.3
+확인 기준:
+- 정상 출력 예: `9.15.3`
+- `command not found` 발생 시 pnpm 설치 필요: `npm i -g pnpm`
 
 ## 2) Talk to Figma MCP 패키지 설치
 
-프로젝트 루트(D:/React)에서 실행:
+프로젝트 루트(D:/React)에서 dev 의존성으로 설치한다. 이 패키지는 MCP 서버 실행 파일(`cursor-talk-to-figma-mcp`)을 제공하며, 소켓 브리지를 통해 Figma 플러그인과 통신한다.
 
 ```powershell
 pnpm add -D cursor-talk-to-figma-mcp
 ```
 
-설치 결과:
-- devDependencies에 cursor-talk-to-figma-mcp 추가됨
-
-## 3) VS Code MCP 설정
-
-파일: .vscode/mcp.json
+설치 후 확인:
+- `package.json`의 `devDependencies`에 `cursor-talk-to-figma-mcp`가 추가되었는지 확인
+- `package.json`의 `scripts`에 `"socket": "cursor-talk-to-figma-mcp"` 항목이 없으면 추가
+  - 없을 경우 3) 단계에서 `error: Script not found "socket"` 발생
 
 ```json
 {
-  "servers": {
-    "talk-to-figma": {
-      "type": "stdio",
-      "command": "pnpm",
-      "args": ["exec", "cursor-talk-to-figma-mcp"]
-    }
+  "scripts": {
+    "socket": "cursor-talk-to-figma-mcp"
   }
 }
 ```
 
-## 4) 실행 순서 및 연결 점검
+설치 확인 명령:
 
-권장 실행 순서:
+```powershell
+pnpm list --depth -1 | findstr cursor-talk-to-figma-mcp
+```
 
-1. Figma에서 MCP/플러그인 실행
-2. 소켓 브리지 실행
+## 3) 실행 순서 및 연결 점검
+
+> 실행 순서가 중요하다. **Figma 플러그인 → 소켓 브리지 → MCP 서버 → 채널 조인** 순으로 진행해야 정상 연결된다.
+
+### 3-1. Figma에서 MCP 플러그인 실행
+
+- Figma 데스크탑 또는 웹에서 대상 파일을 연다
+- 메뉴 → Plugins → `Cursor Talk To Figma MCP Plugin` 실행
+
+### 3-2. 소켓 브리지 실행
+
+새 PowerShell 창에서 실행한다. 3055 포트로 WebSocket 서버가 기동된다.
 
 ```powershell
 bunx cursor-talk-to-figma-socket
 ```
 
-3. MCP 서버 실행
-
-```powershell
-pnpm run socket
-```
-
-4. Claude 실행 후 채널명 입력(채널 조인)
-
-- MCP 서버 로그에 `Please join a channel to start chatting` 메시지가 보이면 채널 조인 필요 상태
-- Claude에서 채널명을 입력해 조인해야 Figma MCP 도구 호출이 가능함
-- 예: `design-system`, `figma-main`
-
-포트 리슨 확인(소켓 브리지 실행 후):
+포트 리슨 확인(다른 창에서):
 
 ```powershell
 Get-NetTCPConnection -LocalPort 3055 -State Listen
 ```
 
-정상 연결 로그 예시:
-- Connected to Figma socket server
-- Please join a channel to start chatting
-- Joined channel: <채널명>
+- 이미 3055 포트가 사용 중(`EADDRINUSE`)이면 브리지가 이미 떠 있는 것이므로 이 단계는 생략하고 3-3으로 진행
 
-## 5) 현재 상태
+### 3-3. MCP 서버 실행
 
-- pnpm 사용 환경: 완료
-- MCP 패키지 설치: 완료
-- VS Code MCP 설정: 완료
-- 소켓 연결(3055): 정상
-- 실사용 준비: 완료
+또 다른 PowerShell 창에서 실행한다. MCP 서버가 `ws://localhost:3055`로 접속한다.
 
-## 6) 자주 발생하는 이슈
+```powershell
+pnpm run socket
+```
 
-1. `error: Script not found "socket"`
-- 원인: package.json scripts에 socket 스크립트가 없음
-- 해결: package.json에 `"socket": "cursor-talk-to-figma-mcp"` 추가 후 `pnpm run socket` 실행
+정상 연결 로그:
+- `Connected to Figma socket server`
+- `Please join a channel to start chatting`
 
-2. `Socket error: AggregateError`
-- 원인: ws://localhost:3055 소켓 미기동
-- 해결: Figma에서 MCP 실행 -> `bunx cursor-talk-to-figma-socket` 실행 -> `pnpm run socket` 순서로 재실행
+`Socket error: AggregateError`가 발생하면 3-2의 소켓 브리지가 기동되지 않은 상태다. 3-2부터 다시 실행한다.
 
-3. `Failed to start server. Is port 3055 in use? (EADDRINUSE)`
-- 원인: 이미 소켓 브리지 또는 다른 프로세스가 3055 포트를 사용 중
-- 해결: 기존 3055 점유 프로세스를 종료하거나, 이미 브리지가 떠 있다면 `bunx cursor-talk-to-figma-socket` 단계는 생략하고 `pnpm run socket`만 실행
+### 3-4. Claude에서 채널 조인
 
-4. `Please join a channel to start chatting`
-- 원인: Claude에서 채널 조인을 하지 않음
-- 해결: Claude에서 채널명을 입력해 조인 후 MCP 도구 재호출
+Claude에서 다음과 같이 채널 조인을 요청한다. **조인하지 않으면 Figma MCP 도구를 호출할 수 없다.**
 
-## 7) 빠른 점검 체크리스트
+```
+talk-to-figma - join_channel(channel: "채널명")
+```
 
-- [ ] pnpm 버전 확인 (`pnpm -v`)
-- [ ] MCP 패키지 설치 확인 (`cursor-talk-to-figma-mcp`)
-  - 확인 1: `pnpm list --depth -1 | findstr cursor-talk-to-figma-mcp`
-  - 확인 2: `package.json`의 `devDependencies`에 `cursor-talk-to-figma-mcp` 존재 여부 확인
-- [ ] `.vscode/mcp.json` 설정 확인
-- [ ] Figma에서 MCP/플러그인 실행
-- [ ] `bunx cursor-talk-to-figma-socket` 실행 (이미 3055 사용 중이면 생략)
-- [ ] 포트 3055 리슨 확인
-- [ ] `pnpm run socket` 실행 및 연결 로그 확인
-- [ ] Claude 실행 후 채널명 입력(채널 조인) 완료
+- 채널명 예: `design-system`, `figma-main` (Figma 플러그인에서 표시되는 채널명과 일치해야 함)
+- 조인 성공 로그: `Joined channel: <채널명>`
+- 조인 후 사용 가능: `get_document_info`, `read_my_design`, `get_selection`, `set_text_content` 등

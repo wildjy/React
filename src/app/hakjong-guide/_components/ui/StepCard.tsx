@@ -10,6 +10,7 @@ const phaseStepBg: Record<number, string> = {
   6: 'bg-cyan-500',
   7: 'bg-violet-500',
   8: 'bg-orange-500',
+  9: 'bg-teal-500',
 }
 
 const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; label: string }> = {
@@ -21,11 +22,12 @@ const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; 
   6: { wrap: 'bg-cyan-50 border-cyan-200',     num: 'bg-cyan-500',    text: 'text-cyan-800',    label: '확인 페이지와 최종 제출' },
   7: { wrap: 'bg-violet-50 border-violet-200', num: 'bg-violet-500',  text: 'text-violet-800',  label: '탭 접근 제어와 완료 상태 관리' },
   8: { wrap: 'bg-orange-50 border-orange-200', num: 'bg-orange-500',  text: 'text-orange-800',  label: '컴포넌트 로직 정리 — 커스텀 훅으로 분리하기' },
+  9: { wrap: 'bg-teal-50 border-teal-200',   num: 'bg-teal-500',    text: 'text-teal-800',    label: '백엔드 미구현 엔드포인트 안전 호출 — throwOnError 우회 패턴' },
 }
 
 /* ── StepCard ─────────────────────────────────── */
 interface StepCardProps {
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
   num: number | string
   id?: string
   title: string
@@ -55,7 +57,7 @@ export function StepCard({ phase, num, id, title, children }: StepCardProps) {
 }
 
 /* ── PhaseHeader ──────────────────────────────── */
-export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 }) {
+export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 }) {
   const s = phaseHeaderMap[phase]
   return (
     <div className={cn('flex items-center gap-3 rounded-xl px-5 py-4 border mb-4', s.wrap)}>
