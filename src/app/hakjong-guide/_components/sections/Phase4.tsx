@@ -202,6 +202,102 @@ const deleteMutation = useMutation({
         />
       </StepCard>
 
+      <StepCard phase={4} num="16-1" title="useMutation 더 깊이 — 제네릭 3개, 콜백 순서, '조회인데 useMutation'">
+        <Callout variant="info">
+          Step 16의 훅을 한 단계 더 파고드는 보강 노트입니다. Step 9-1에서 <IC>useQuery</IC>를 직접 까봤던 것처럼,
+          여기서는 <IC>useMutation</IC>의 제네릭·콜백·예외적 용법까지 열어봅니다.
+        </Callout>
+
+        <h5 className="text-[14px] font-bold text-gray-900 mt-5 mb-2">① 제네릭 3개의 의미 — &lt;TData, TError, TVariables&gt;</h5>
+        <p><IC>useMutation</IC>은 꺾쇠(<IC>&lt;&gt;</IC>) 안에 타입 3개를 <strong>순서대로</strong> 받습니다. 이 순서가 곧 의미입니다.</p>
+        <CodeBlock
+          lang="typescript"
+          code={`useMutation<
+  HakjongApplyResponse,   // ① TData      - 성공 시 mutationFn이 resolve하는 값 → data
+  Error,                  // ② TError     - 실패 시 error 타입
+  HakjongApplyRequest     // ③ TVariables - mutate()에 넘길 인자 → mutationFn의 인자
+>({
+  mutationFn: (requestData) => submitHakjongApply(requestData),
+})`}
+        />
+        <DataTable
+          headers={['제네릭', '이름', '무엇을 정하나', '어디서 만나나']}
+          rows={[
+            ['①', <IC key="a">TData</IC>, '성공 응답 타입', <IC key="a2">const {'{ data }'}</IC>],
+            ['②', <IC key="b">TError</IC>, '실패 시 에러 타입', <IC key="b2">onError(error)</IC>],
+            ['③', <IC key="c">TVariables</IC>, 'mutate()에 넘기는 인자 타입', <IC key="c2">mutate(③) → mutationFn(③)</IC>],
+          ]}
+        />
+        <FlowDiagram>{`submitApply({ universityId, ... })   ← ③ TVariables 를 넘김
+        ↓
+mutationFn(requestData)              ← 그대로 mutationFn 인자로 전달
+        ↓
+ ┌ 성공 → response: ① TData (HakjongApplyResponse)
+ └ 실패 → error: ② TError (Error)`}</FlowDiagram>
+        <Callout variant="tip">
+          <IC>mutationFn</IC>은 <strong>Promise를 반환하는 함수 하나</strong>만 필수입니다. 나머지(<IC>onError</IC>, <IC>onSuccess</IC> 등)는 전부 옵션입니다.
+          제네릭을 생략하면 <IC>data</IC>/<IC>variables</IC> 타입 추론이 약해지므로 가능하면 3개를 명시하는 편이 안전합니다.
+        </Callout>
+
+        <h5 className="text-[14px] font-bold text-gray-900 mt-5 mb-2">② 콜백 옵션과 실행 순서</h5>
+        <p>mutation 한 번이 실행되면 콜백들이 <strong>정해진 순서</strong>로 호출됩니다. Step 16에서는 <IC>mutationFn</IC> + <IC>onError</IC>만 썼지만, 실무에서는 나머지도 자주 등장합니다.</p>
+        <CodeBlock
+          lang="typescript"
+          code={`useMutation({
+  mutationFn,                      // 1. 실제 비동기 작업 (POST 등)
+  onMutate,                        // 2. mutationFn 직전 (낙관적 업데이트 준비)
+  onSuccess: (data, vars) => {},   // 3a. 성공 시
+  onError:   (err, vars)  => {},   // 3b. 실패 시
+  onSettled: () => {},             // 4. 성공/실패 무관하게 마지막
+})`}
+        />
+        <FlowDiagram>{`mutate() 호출
+   ↓
+onMutate            (요청 직전 — 화면을 미리 바꾸는 낙관적 업데이트용)
+   ↓
+mutationFn          (서버 요청)
+   ↓
+ ┌ 성공 → onSuccess
+ └ 실패 → onError
+   ↓
+onSettled           (항상 마지막에 실행 — 로딩 정리 등)`}</FlowDiagram>
+        <Callout variant="info">
+          성공 후 관련 <IC>useQuery</IC> 캐시를 새로 고치는 작업은 보통 <IC>onSuccess</IC>에서 <IC>invalidateQueries()</IC>로 합니다 (Step 16의 invalidate 설명과 같은 맥락).
+          <IC>onMutate</IC>는 응답 전에 화면을 미리 바꿔두고 실패 시 되돌리는 낙관적 업데이트에 쓰이며, 처음에는 <IC>mutationFn</IC> + <IC>onSuccess</IC>/<IC>onError</IC>부터 익히면 충분합니다.
+        </Callout>
+
+        <h5 className="text-[14px] font-bold text-gray-900 mt-5 mb-2">③ 반전 포인트 — "조회(GET)인데 useMutation을 쓰는 경우"</h5>
+        <p>
+          <IC>useMutation</IC>은 꼭 데이터 변경(POST/PUT/DELETE)일 때만 쓰는 게 아닙니다.
+          <strong>사용자 액션에 의해 명시적으로 / 순서대로 실행하고 싶을 때</strong>도 선택지가 됩니다.
+          대표 사례가 <strong>대학 → 계열 → 학과로 이어지는 cascade(연쇄) 드롭다운</strong>입니다.
+        </p>
+        <CodeBlock
+          lang="typescript"
+          code={`useUniversityList     // useQuery    ← 페이지 진입 시 한 번 자동으로 받으면 됨
+useAiBdListMutation   // useMutation ← 대학을 "골랐을 때" 계열을 명령형으로 조회
+useMajorListMutation  // useMutation ← 계열을 "골랐을 때" 학과를 명령형으로 조회`}
+        />
+        <DataTable
+          headers={['조회 성격', '어울리는 훅', '이유']}
+          rows={[
+            ['페이지 진입 시 자동', <IC key="q">useQuery</IC>, '렌더되면 알아서 돈다 (선언적)'],
+            ['사용자가 고른 순간에만', <IC key="m">useMutation</IC>, 'mutate()를 부를 때 돈다 (명령형), 순서 제어가 쉬움'],
+          ]}
+        />
+        <Callout variant="info">
+          <IC>useQuery</IC>도 <IC>enabled</IC>로 조건 실행이 가능합니다(Step 9의 <IC>enabled</IC> 참고).
+          하지만 "대학 선택 → 계열 → 학과"처럼 상위 선택에 따라 단계적으로 트리거되는 흐름은,
+          <IC>queryKey</IC> 변경에 반응해 자동으로 도는 <IC>useQuery</IC>보다 "내가 부를 때 도는" <IC>useMutation</IC>이 더 직관적입니다.
+        </Callout>
+
+        <Callout variant="key">
+          <strong>한 줄 요약:</strong> <IC>useMutation</IC>은 렌더되면 자동으로 도는 <IC>useQuery</IC>와 달리,
+          내가 <IC>mutate()</IC>를 불러야 도는 함수 + 로딩(<IC>isPending</IC>)·에러 상태를 공짜로 얹어주는 도구입니다.
+          POST/PUT/DELETE뿐 아니라 <strong>"명령형으로 순서를 제어해야 하는 조회"</strong>에도 쓴다는 점까지 기억하면 활용 폭이 넓어집니다.
+        </Callout>
+      </StepCard>
+
       <StepCard phase={4} num={17} title="컴포넌트에서 조립 — handleSubmit 작성">
         <CodeBlock
           lang="typescript"

@@ -9,27 +9,67 @@
  *   1) IoC (제어의 역전) — 함수를 prop/return 값으로 주입해서 동작을 외부에서 결정
  *   2) Cascade (연쇄 의존) — 상위 선택값이 하위 옵션을 결정
  *   3) 상태 vs 캐시 — 화면에 그릴 옵션은 useState, 내부 계산용 데이터는 useRef
+ *
+ * 이 파일에는 "배워야 할 핵심" 만 둔다 → 타입 / Mock 데이터 / 가짜 서버 / hook / 조합.
+ * 화면을 꾸미는 코드(카드·로그뷰·코드뷰어 등)는 ./_learning 폴더로 분리했다.
+ *   → 이 파일을 위에서 아래로 읽으면 cascade 패턴의 흐름만 깔끔하게 따라갈 수 있다.
  */
 
 import { useRef, useState } from 'react';
+import {
+  CodeAnatomySection,
+  DemoSection,
+  FlowSection,
+  InternalStateSection,
+  IocHintSection,
+  KeyPointsSection,
+  LearningHeader,
+  StateVsRefSection,
+} from './_learning/sections';
 
 // ───────────────────────── 1. 타입 정의 ─────────────────────────
+// [학습] 패턴의 출발점은 "데이터가 어떤 모양으로 흐를지" 를 타입으로 먼저 못박는 것.
+//        타입이 곧 설계도라서, 아래 로직은 이 모양을 그대로 따라가게 된다.
 
-interface Option {
-  label: string;
-  value: string;
+// 드롭다운 한 칸이 다루는 최소 단위 = { 화면에 보일 글자(label), 내부 식별값(value) }
+// 대학/계열/학과 3개 드롭다운 모두 이 동일한 모양을 재사용한다 → 코드 통일.
+export interface Option {
+  label: string; // 사용자에게 보이는 텍스트 (예: "서울대")
+  value: string; // 코드가 식별에 쓰는 값 (예: "1")
 }
 
-interface University {
+// 가짜 서버가 대학 1건에 대해 돌려주는 응답 모양.
+// 핵심: 대학 안에 majors 배열이 "중첩"되어 있다 → 한 번의 fetch 로 그 대학의
+//       모든 학과 정보를 통째로 받아온다. (그래서 계열 변경 시 재요청이 필요 없음 → 캐시 가능)
+export interface University {
   universityId: string;
   universityName: string;
+  // 각 학과는 자신이 어떤 "계열(majorTypeCode)" 에 속하는지를 들고 있다.
+  // 이 코드값(H/N/A/Z)이 2단(계열) ↔ 3단(학과)을 잇는 연결고리.
   majors: { majorId: string; majorName: string; majorTypeCode: string }[];
 }
 
-type FetchMajorTypesByUniv = (universityId: string) => Promise<Option[]>;
+// [학습 / IoC] "대학 ID 를 받아 → 계열 옵션 목록을 비동기로 돌려준다" 는 함수의 계약서(시그니처).
+//   - 실제 구현이 무엇이든(mock 이든 진짜 axios 든) 이 모양만 지키면 hook 이 그대로 동작.
+//   - 나중에 이 타입의 함수를 hook 에 prop 으로 주입하면 = 제어의 역전(IoC).
+export type FetchMajorTypesByUniv = (
+  universityId: string,
+) => Promise<Option[]>;
+
+// 동작 로그 1건의 타입 (학습용 시각화 전용).
+export type LogType = 'event' | 'fetch' | 'state' | 'cache';
+export interface LogEntry {
+  time: string;
+  message: string;
+  type: LogType;
+}
 
 // ───────────────────────── 2. Mock 데이터 + 가짜 서버 ─────────────────────────
 
+// [학습] 전역 코드 테이블 — "계열" 의 전체 후보 목록 (모든 대학 공통).
+//   실무에선 보통 서버/공통 상수로 내려오는 마스터 코드.
+//   주의: 이건 "전체 후보" 일 뿐, 화면에 다 보여주지 않는다.
+//        실제 옵션은 "선택한 대학에 존재하는 계열" 만 골라낸 부분집합 (아래 hook 참고).
 const ALL_MAJOR_TYPES: Option[] = [
   { value: 'H', label: '인문' },
   { value: 'N', label: '자연' },
@@ -37,6 +77,8 @@ const ALL_MAJOR_TYPES: Option[] = [
   { value: 'Z', label: '자율' },
 ];
 
+// [학습] 가짜 서버 DB. 실제로는 백엔드가 들고 있어서 클라이언트엔 안 보이는 정보.
+//   여기선 학습을 위해 메모리에 박아두고, 아래 mockFetchUnivMajors 가 이걸 조회하는 척한다.
 const MOCK_UNIVERSITIES: University[] = [
   {
     universityId: '1',
@@ -68,44 +110,59 @@ const MOCK_UNIVERSITIES: University[] = [
   },
 ];
 
+// [학습] 가짜 서버 호출 함수.
+//   실무에선 이 자리에 ky/axios 같은 HTTP 호출이 들어간다.
+//   여기선 데이터를 즉시 알지만, 일부러 비동기(async)로 만들어 "네트워크 대기" 상황을 재현한다.
+//   → 비동기라서 hook 쪽에서 await / 로딩 처리 / 경합(race) 고려가 필요해진다.
 async function mockFetchUnivMajors(
   universityId: string,
 ): Promise<University['majors']> {
+  // setTimeout(300ms) 로 네트워크 지연을 흉내. 이 지연이 있어야 로딩 인디케이터가 의미를 가진다.
   await new Promise((resolve) => setTimeout(resolve, 300));
+  // 대학 ID 로 DB 에서 한 건 조회 (실제 서버의 WHERE 절에 해당).
   const found = MOCK_UNIVERSITIES.find((u) => u.universityId === universityId);
+  // 없는 ID 면 에러 throw → 호출부(hook)의 try/catch 가 받아 처리.
   if (!found) throw new Error(`Univ ${universityId} not found`);
+  // 그 대학의 학과 배열을 통째로 반환 (계열까지 포함되어 있음 → 이후 캐시·필터의 재료).
   return found.majors;
 }
 
 // ───────────────────────── 3. Cascade Hook ─────────────────────────
 
-type LogType = 'event' | 'fetch' | 'state' | 'cache';
-interface LogEntry {
-  time: string;
-  message: string;
-  type: LogType;
-}
-
+// [학습] 이 hook 이 패턴의 심장. 모든 상태와 로직을 여기 모으고,
+//        UI 컴포넌트는 "받아서 그리기만" 하도록 얇게 유지한다 (관심사 분리).
 function useCascadeDropdowns() {
+  // 1단(대학) 옵션은 고정 목록이라 state 가 필요 없다 → 매 렌더 그냥 계산.
+  //   (대학 목록은 사용자 조작으로 바뀌지 않으므로 useState/useMemo 둘 다 과함)
   const universityOptions: Option[] = MOCK_UNIVERSITIES.map((u) => ({
     value: u.universityId,
     label: u.universityName,
   }));
-  const [majorTypeOptions, setMajorTypeOptions] = useState<Option[]>([]);
-  const [majorOptions, setMajorOptions] = useState<Option[]>([]);
 
+  // [상태] 화면에 그려야 하므로 useState. 상위 선택에 따라 내용이 통째로 갈린다.
+  const [majorTypeOptions, setMajorTypeOptions] = useState<Option[]>([]); // 2단(계열) 옵션
+  const [majorOptions, setMajorOptions] = useState<Option[]>([]); // 3단(학과) 옵션
+
+  // [상태] 현재 사용자가 고른 값 3종을 하나의 객체로 묶어 관리.
+  //   한 객체로 묶으면 "대학 바뀌면 하위 둘을 동시에 비운다" 같은 리셋이 한 번에 끝난다.
   const [selected, setSelected] = useState({
     universityId: '',
     majorTypeCode: '',
     majorId: '',
   });
 
-  // 캐시 — useState 가 아닌 useRef 인 이유: 이 값이 바뀌어도 화면을 다시 그릴 필요 없음
+  // [캐시] 대학 fetch 응답(학과 raw 데이터)을 보관.
+  //   ★ useState 가 아니라 useRef 인 이유:
+  //     - 이 값 자체는 화면에 직접 안 그린다 (계열 변경 때 "필터 입력"으로만 쓰임)
+  //     - 그래서 바뀌어도 리렌더가 필요 없음 → useRef 가 정확. (useState 면 불필요한 렌더 1회 발생)
+  //   즉 "이 값이 바뀌면 화면이 바뀌어야 하나?" → 아니오 → useRef.
   const cachedMajorsRef = useRef<University['majors']>([]);
 
   // ─── 학습용 trace ───
+  // [주의] logs / loading / addLog 는 "학습용 계측" 일 뿐, 패턴의 필수 요소가 아니다.
+  //   화면 우측에 hook 내부 동작을 눈으로 보여주려고 끼워 넣은 것. 실무 코드엔 보통 없다.
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // fetch 진행 여부 (스피너 표시용)
   const addLog = (message: string, type: LogType = 'event') => {
     setLogs((prev) =>
       [
@@ -119,15 +176,21 @@ function useCascadeDropdowns() {
     );
   };
 
-  // ─── 대학 변경 시 트리거 ───
+  // ─── 대학 변경 시 트리거 (1단 → 2단) ───
+  // [학습] 가장 무거운 핸들러. 비동기(fetch)가 있어 async.
+  //   순서가 중요: ①리셋 → ②fetch → ③옵션 채우기. 리셋이 fetch 보다 먼저인 이유는 아래 주석 참고.
   const onUniversityChange = async (universityId: string) => {
     addLog(`onUniversityChange("${universityId || '∅'}") 호출`, 'event');
 
+    // ① 선택값 갱신 + 하위 cascade 리셋.
+    //    대학이 바뀌면 이전에 고른 계열/학과는 무효 → 즉시 비워야 "서울대인데 연세대 학과" 같은
+    //    잘못된 조합이 화면에 한순간도 남지 않는다. (fetch 응답을 기다리는 300ms 동안에도)
     setSelected({ universityId, majorTypeCode: '', majorId: '' });
     setMajorOptions([]);
     setMajorTypeOptions([]);
     addLog('하위 cascade 리셋 — 계열/학과 옵션 비움', 'state');
 
+    // 빈 값(선택 해제)이면 fetch 할 게 없으니 캐시까지 비우고 종료.
     if (!universityId) {
       cachedMajorsRef.current = [];
       addLog('빈 선택 → 캐시도 비움', 'cache');
@@ -135,32 +198,43 @@ function useCascadeDropdowns() {
     }
 
     try {
-      setLoading(true);
+      setLoading(true); // 로딩 on → UI 에 스피너 표시
       addLog('mockFetchUnivMajors() 호출 (300ms 지연)', 'fetch');
+
+      // ② 서버에서 그 대학의 학과 전체를 fetch.
       const majors = await mockFetchUnivMajors(universityId);
+
+      // ③ 받은 raw 데이터를 캐시에 저장 (화면에 안 그림 → ref).
+      //    이후 계열 변경 때 서버 재호출 없이 이 캐시만 필터하면 됨.
       cachedMajorsRef.current = majors;
       addLog(`cachedMajorsRef ← 학과 ${majors.length}개 저장`, 'cache');
 
+      // ④ "이 대학에 실제로 존재하는 계열" 만 추려 2단 옵션으로 변환.
+      //    Set 으로 중복 제거(예: 인문 학과가 2개여도 '인문'은 1번만) → 전체 후보와 교집합.
       const availableTypeCodes = new Set(majors.map((m) => m.majorTypeCode));
       const filteredTypes = ALL_MAJOR_TYPES.filter((t) =>
         availableTypeCodes.has(t.value),
       );
-      setMajorTypeOptions(filteredTypes);
+      setMajorTypeOptions(filteredTypes); // 화면에 그려야 하므로 setState
       addLog(`majorTypeOptions ← 계열 ${filteredTypes.length}개 (set)`, 'state');
     } catch (e) {
+      // fetch 실패 시 옵션은 이미 비워진 상태 → 사용자는 다시 선택만 하면 됨.
       console.error('fetch 실패', e);
       addLog('fetch 실패', 'fetch');
     } finally {
-      setLoading(false);
+      setLoading(false); // 성공/실패와 무관하게 로딩 off
     }
   };
 
-  // ─── 계열 변경 시 트리거 ───
+  // ─── 계열 변경 시 트리거 (2단 → 3단) ───
+  // [학습] ★ 여기엔 서버 호출이 없다. 이게 캐시를 두는 가장 큰 이유.
+  //   같은 대학 안에서 계열을 이리저리 바꿔도 네트워크 왕복 0회 → client 에서 즉시 필터.
   const onMajorTypeChange = (majorTypeCode: string) => {
     addLog(
       `onMajorTypeChange("${majorTypeCode || '∅'}") — 서버 호출 X`,
       'event',
     );
+    // 계열이 바뀌면 그 아래 학과 선택은 무효 → majorId 만 리셋 (대학은 그대로 유지).
     setSelected((prev) => ({ ...prev, majorTypeCode, majorId: '' }));
 
     if (!majorTypeCode) {
@@ -169,6 +243,8 @@ function useCascadeDropdowns() {
       return;
     }
 
+    // 캐시(cachedMajorsRef)를 선택한 계열로 필터 → 3단(학과) 옵션 모양으로 변환.
+    //   majorTypeCode(H/N/A/Z) 가 2단과 3단을 잇는 연결고리임을 여기서 확인할 수 있다.
     const filteredMajors = cachedMajorsRef.current
       .filter((m) => m.majorTypeCode === majorTypeCode)
       .map((m) => ({ value: m.majorId, label: m.majorName }));
@@ -180,7 +256,9 @@ function useCascadeDropdowns() {
     );
   };
 
-  // ─── 학과 변경 시 트리거 ───
+  // ─── 학과 변경 시 트리거 (3단 = 마지막) ───
+  // [학습] 가장 단순. 더 이상 하위 cascade 가 없으니 선택값만 저장하고 끝.
+  //   최종 제출은 보통 별도 버튼에서 selected 객체를 통째로 서버에 보낸다.
   const onMajorChange = (majorId: string) => {
     addLog(`onMajorChange("${majorId || '∅'}") — cascade 끝`, 'event');
     setSelected((prev) => ({ ...prev, majorId }));
@@ -194,6 +272,10 @@ function useCascadeDropdowns() {
     setLogs([]);
   };
 
+  // [학습] hook 의 "공개 API". 컴포넌트는 여기서 받은 것만 쓰면 된다.
+  //   - 옵션 3종 + 현재 선택값 → <DropDown> 에 그대로 전달
+  //   - 핸들러 3종 → 각 <DropDown> 의 onChange 에 연결
+  //   - logs/loading/cachedMajors/resetAll → 학습용 시각화에만 사용
   return {
     selected,
     universityOptions,
@@ -204,13 +286,16 @@ function useCascadeDropdowns() {
     onMajorChange,
     logs,
     loading,
-    cachedMajors: cachedMajorsRef.current,
+    cachedMajors: cachedMajorsRef.current, // ref 의 현재 내용을 읽기 전용으로 노출 (시각화용)
     resetAll,
   };
 }
 
-// ───────────────────────── 4. UI 컴포넌트 ─────────────────────────
-
+// ───────────────────────── 4. 화면 조합 ─────────────────────────
+// [학습] 컴포넌트가 하는 일은 단 둘:
+//   1) hook 호출해서 데이터/핸들러 받기
+//   2) 학습용 섹션들(./_learning)에 그 값을 props 로 내려주기
+// 화면을 꾸미는 JSX 는 전부 섹션 컴포넌트 안에 있어, 여기선 "흐름" 만 보인다.
 export function CascadeDropdownSample() {
   const {
     selected,
@@ -229,915 +314,39 @@ export function CascadeDropdownSample() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* ───── 헤더 ───── */}
-        <header className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700">
-              React Pattern
-            </span>
-            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-purple-100 text-purple-700">
-              Custom Hook
-            </span>
-            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
-              학습용
-            </span>
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            Cascade Dropdown 학습 샘플
-          </h1>
-          <p className="text-slate-600 mt-2 leading-relaxed">
-            <strong>대학 → 계열 → 학과</strong> 순서로 상위 선택이 하위 옵션을
-            결정하는 <span className="text-blue-700 font-semibold">연쇄 의존
-            드롭다운</span> 패턴입니다. 왼쪽에서 직접 선택해 보고, 오른쪽에서
-            내부 상태와 캐시가 어떻게 변하는지 실시간으로 확인하세요.
-          </p>
-        </header>
+        <LearningHeader />
+        <KeyPointsSection />
 
-        {/* ───── 3가지 학습 포인트 ───── */}
-        <section className="grid md:grid-cols-3 gap-4">
-          <PointCard
-            num="01"
-            title="IoC (제어의 역전)"
-            accent="blue"
-            desc="함수를 prop / return 값으로 주입해서 hook 의 동작을 외부에서 결정. fetcher 만 갈아끼우면 대학·고교·지역 등 어디든 같은 hook 재사용."
-            code='const onUniversityChange = async (id) => {...}'
-          />
-          <PointCard
-            num="02"
-            title="Cascade (연쇄 의존)"
-            accent="purple"
-            desc="상위 선택값이 하위 옵션을 결정. 상위가 바뀌면 하위 선택값·옵션을 반드시 리셋해야 잘못된 조합이 남지 않음."
-            code='setSelected({ ..., majorTypeCode: "", majorId: "" })'
-          />
-          <PointCard
-            num="03"
-            title="상태 vs 캐시"
-            accent="emerald"
-            desc="화면에 그릴 옵션은 useState (리렌더 필요), 내부 계산용 raw 데이터는 useRef (리렌더 불필요). 역할이 다름."
-            code='useRef<Majors[]>([]) // 화면에 직접 안 그림'
-          />
-        </section>
-
-        {/* ───── 메인: 좌측 데모 / 우측 시각화 ───── */}
+        {/* ① 데모 / ② 내부 상태 — 좌우 2단 */}
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* === 좌측: 실시간 데모 === */}
-          <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-slate-900">
-                ① 실시간 데모
-              </h2>
-              <button
-                onClick={resetAll}
-                className="text-xs px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
-              >
-                전체 리셋
-              </button>
-            </div>
-
-            <DropdownRow
-              step="1"
-              label="대학"
-              hint="서버 fetch 트리거 (mockFetchUnivMajors)"
-              accent="blue"
-              value={selected.universityId}
-              onChange={onUniversityChange}
-              options={universityOptions}
-            />
-            {loading && (
-              <div className="text-xs text-blue-600 mt-1 mb-2 flex items-center gap-1 pl-1">
-                <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                서버에서 학과 list fetch 중... (300ms 지연 흉내)
-              </div>
-            )}
-
-            <DropdownRow
-              step="2"
-              label="계열"
-              hint="서버 호출 X — 캐시에서 client-side filter"
-              accent="purple"
-              value={selected.majorTypeCode}
-              onChange={onMajorTypeChange}
-              options={majorTypeOptions}
-              disabledMessage="↑ 먼저 대학을 선택하세요"
-            />
-
-            <DropdownRow
-              step="3"
-              label="학과"
-              hint="cascade 끝 — 선택값만 저장"
-              accent="emerald"
-              value={selected.majorId}
-              onChange={onMajorChange}
-              options={majorOptions}
-              disabledMessage="↑ 먼저 계열을 선택하세요"
-            />
-
-            <div className="mt-6 bg-slate-900 rounded-lg p-4">
-              <div className="text-xs text-slate-400 mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                현재 selected (useState)
-              </div>
-              <pre className="text-xs text-emerald-300 font-mono">
-                {JSON.stringify(selected, null, 2)}
-              </pre>
-            </div>
-          </section>
-
-          {/* === 우측: 내부 상태 시각화 === */}
-          <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">
-              ② 내부 상태 (실시간)
-            </h2>
-
-            <div className="space-y-3">
-              <StateRow
-                label="universityOptions"
-                kind="useState (정적)"
-                accent="blue"
-                items={universityOptions.map((o) => o.label)}
-              />
-              <StateRow
-                label="majorTypeOptions"
-                kind="useState · 대학 fetch 후 set"
-                accent="purple"
-                items={majorTypeOptions.map((o) => o.label)}
-              />
-              <StateRow
-                label="majorOptions"
-                kind="useState · 계열 filter 후 set"
-                accent="emerald"
-                items={majorOptions.map((o) => o.label)}
-              />
-              <StateRow
-                label="cachedMajorsRef.current"
-                kind="useRef · 리렌더 안 일으킴"
-                accent="amber"
-                items={cachedMajors.map(
-                  (m) => `${m.majorName} (${m.majorTypeCode})`,
-                )}
-                footnote="화면에 안 그려도 다음 계열 변경 시 filter 입력으로 사용됨"
-              />
-            </div>
-
-            <div className="mt-6">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-bold text-slate-700">
-                  ③ 동작 로그 (최근 15건)
-                </h3>
-                <span className="text-xs text-slate-400">{logs.length}건</span>
-              </div>
-              <div className="bg-slate-900 rounded-lg p-3 h-64 overflow-y-auto font-mono text-xs space-y-1">
-                {logs.length === 0 && (
-                  <div className="text-slate-500">
-                    ↑ 왼쪽에서 대학을 선택하면 hook 내부 동작이 여기에 찍힙니다.
-                  </div>
-                )}
-                {logs.map((log, i) => (
-                  <div key={i} className="flex gap-2">
-                    <span className="text-slate-500 shrink-0">{log.time}</span>
-                    <span className={logColor(log.type)}>
-                      {logIcon(log.type)} {log.message}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs mt-2 text-slate-500">
-                <span><span className="text-pink-500">●</span> event</span>
-                <span><span className="text-cyan-500">●</span> fetch</span>
-                <span><span className="text-amber-500">●</span> cache</span>
-                <span><span className="text-emerald-500">●</span> state</span>
-              </div>
-            </div>
-          </section>
+          <DemoSection
+            selected={selected}
+            universityOptions={universityOptions}
+            majorTypeOptions={majorTypeOptions}
+            majorOptions={majorOptions}
+            onUniversityChange={onUniversityChange}
+            onMajorTypeChange={onMajorTypeChange}
+            onMajorChange={onMajorChange}
+            loading={loading}
+            resetAll={resetAll}
+          />
+          <InternalStateSection
+            universityOptions={universityOptions}
+            majorTypeOptions={majorTypeOptions}
+            majorOptions={majorOptions}
+            cachedMajors={cachedMajors}
+            logs={logs}
+          />
         </div>
 
-        {/* ───── 코드 해부 ───── */}
-        <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-8">
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 mb-1">
-              ④ 코드 해부 — 위 데모를 구성하는 모든 코드
-            </h2>
-            <p className="text-sm text-slate-500">
-              위에서 동작을 봤다면, 이제 그 동작이 어떤 코드로 구현됐는지 그대로
-              봅니다. 코드 블록에서 회색 줄은 주석, 초록색 줄은 실행 코드입니다.
-            </p>
-          </div>
-
-          {/* A. 타입 정의 */}
-          <div>
-            <SectionHeading letter="A" title="타입 정의 — 데이터 모양 계약" accent="blue" />
-            <p className="text-sm text-slate-600 mb-3 leading-relaxed">
-              패턴의 첫 단계는 <strong>"데이터가 어떤 모양으로 흐를 것인가"</strong> 를
-              먼저 합의하는 것. TypeScript 타입이 곧 그 합의서입니다.
-            </p>
-            <CodeBlock code={TYPES_CODE} />
-            <div className="mt-3 grid md:grid-cols-3 gap-2">
-              <TypeNote
-                name="Option"
-                desc="모든 드롭다운이 공통으로 쓰는 { value, label } 형태. <select> 와 1:1 대응."
-              />
-              <TypeNote
-                name="University"
-                desc="가짜 서버 응답 모양 — 대학 1개 + 그 대학이 운영하는 학과 list."
-              />
-              <TypeNote
-                name="FetchMajorTypesByUniv"
-                desc="IoC 의 핵심 — fetcher 함수의 시그니처 계약. 이걸 prop 으로 주입하면 hook 재사용 가능."
-              />
-            </div>
-          </div>
-
-          {/* B. Mock 데이터 + 가짜 서버 */}
-          <div>
-            <SectionHeading letter="B" title="Mock 데이터 + 가짜 서버" accent="purple" />
-            <p className="text-sm text-slate-600 mb-3 leading-relaxed">
-              실무에선 backend DB 가 가진 정보입니다. 학습용으로 메모리에 미리
-              넣어두고 setTimeout 으로 네트워크 지연만 흉내냈습니다.
-            </p>
-            <DataTree />
-            <p className="text-sm text-slate-600 mt-4 mb-3 leading-relaxed">
-              그리고 그 DB 를 조회하는 가짜 서버 함수 — 실무에선 이 자리에 ky/axios
-              호출이 들어갑니다:
-            </p>
-            <CodeBlock code={MOCK_FETCH_CODE} />
-          </div>
-
-          {/* C. Cascade Hook 구조 */}
-          <div>
-            <SectionHeading letter="C" title="Cascade Hook — 전체 구조" accent="emerald" />
-            <p className="text-sm text-slate-600 mb-3 leading-relaxed">
-              이 hook 이 패턴의 핵심. 컴포넌트는 얇게 두고 모든 로직을 여기로 모읍니다.
-              핸들러 본문은 D 섹션에서 따로 봅니다.
-            </p>
-            <CodeBlock code={HOOK_SKELETON_CODE} />
-            <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-600 leading-relaxed">
-              <strong className="text-slate-900">관찰 포인트:</strong> useState 3개
-              (옵션 2개 + 선택값 1개) + useRef 1개 (캐시). useRef 는 화면에 직접
-              그리지 않는 데이터로, 다음 계열 변경 때 filter 입력으로만 쓰입니다.
-            </div>
-          </div>
-
-          {/* D. 핸들러 3종 */}
-          <div>
-            <SectionHeading letter="D" title="이벤트 핸들러 3종 — 실제 트리거 함수" accent="amber" />
-            <p className="text-sm text-slate-600 mb-4 leading-relaxed">
-              각 핸들러는 <code className="text-xs bg-slate-100 px-1 rounded">{'<select onChange>'}</code> 에 연결됩니다.
-              위 데모를 조작하면 정확히 이 함수가 실행되고, 동작 로그(③)에 한 줄씩 찍힙니다.
-            </p>
-
-            {/* D-1: 대학 변경 */}
-            <div className="mb-5">
-              <HandlerLabel num="D-1" title="대학 변경 → onUniversityChange (가장 무거운 핸들러)" />
-              <CodeBlock code={HANDLER_UNIV_CODE} />
-              <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-slate-700 leading-relaxed">
-                <strong className="text-amber-800">왜 cascade 리셋이 fetch 보다 먼저인가?</strong>{' '}
-                사용자가 fetch 응답 대기 중에 다른 대학을 누를 수 있기 때문. 이전
-                계열/학과 옵션을 즉시 비워서 잘못된 조합이 화면에 잠시도 안 남게 합니다.
-              </div>
-            </div>
-
-            {/* D-2: 계열 변경 */}
-            <div className="mb-5">
-              <HandlerLabel num="D-2" title="계열 변경 → onMajorTypeChange (서버 호출 없음)" />
-              <CodeBlock code={HANDLER_TYPE_CODE} />
-              <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-slate-700 leading-relaxed">
-                <strong className="text-amber-800">캐시의 핵심 가치:</strong> 같은
-                대학 안에서 계열을 이리저리 바꿔도 서버를 다시 두드리지 않습니다.
-                cachedMajorsRef 에 학과 raw 데이터가 있기 때문에 client 에서 즉시 filter.
-              </div>
-            </div>
-
-            {/* D-3: 학과 변경 */}
-            <div>
-              <HandlerLabel num="D-3" title="학과 변경 → onMajorChange (cascade 끝)" />
-              <CodeBlock code={HANDLER_MAJOR_CODE} />
-              <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-slate-700 leading-relaxed">
-                <strong className="text-amber-800">가장 단순한 핸들러:</strong> 더
-                이상 하위 cascade 가 없으니 선택값만 저장. 폼 제출은 보통 별도
-                버튼에서 selected 객체를 통째로 전송합니다.
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ───── 동작 흐름 ───── */}
-        <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-          <h2 className="text-lg font-bold text-slate-900 mb-1">
-            ⑤ 동작 흐름 — 단계별로 무엇이 일어나는가
-          </h2>
-          <p className="text-sm text-slate-500 mb-4">
-            왼쪽 데모를 조작할 때마다 이 순서대로 함수가 실행됩니다. 동작 로그와
-            비교해 보세요.
-          </p>
-          <div className="space-y-3">
-            <FlowStep
-              num="1"
-              title="대학 변경 → onUniversityChange"
-              accent="blue"
-              steps={[
-                'setSelected({ universityId, majorTypeCode: "", majorId: "" }) — 하위 cascade 리셋',
-                'setMajorOptions([]) / setMajorTypeOptions([]) — 옵션 비움',
-                'await mockFetchUnivMajors(id) — 가짜 서버 호출 (300ms 지연)',
-                'cachedMajorsRef.current = majors — 응답을 캐시에 저장 (리렌더 X)',
-                'majors → majorTypeCode set 추출 → ALL_MAJOR_TYPES 와 교집합 → setMajorTypeOptions',
-              ]}
-            />
-            <FlowStep
-              num="2"
-              title="계열 변경 → onMajorTypeChange"
-              accent="purple"
-              steps={[
-                'setSelected(prev → { ...prev, majorTypeCode, majorId: "" }) — 학과만 리셋',
-                '서버 호출 없음 — cachedMajorsRef.current 를 majorTypeCode 로 filter',
-                'filter 결과를 { value, label } 로 변환 → setMajorOptions',
-              ]}
-            />
-            <FlowStep
-              num="3"
-              title="학과 변경 → onMajorChange"
-              accent="emerald"
-              steps={[
-                '하위 cascade 없음 — setSelected(prev → { ...prev, majorId }) 만 실행',
-                '이후 폼 제출·서버 전송 등에서 selected 객체를 통째로 사용',
-              ]}
-            />
-          </div>
-        </section>
-
-        {/* ───── useState vs useRef 비교 ───── */}
-        <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-          <h2 className="text-lg font-bold text-slate-900 mb-1">
-            ⑥ 왜 useState 와 useRef 를 나눠 썼나?
-          </h2>
-          <p className="text-sm text-slate-500 mb-4">
-            같은 "데이터 보관"이라도 화면에 영향을 주는지에 따라 도구가
-            달라집니다.
-          </p>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="border border-emerald-200 bg-emerald-50 rounded-lg p-4">
-              <div className="text-xs font-bold text-emerald-700 mb-2">
-                useState · majorTypeOptions / majorOptions
-              </div>
-              <p className="text-sm text-slate-700 mb-2">
-                <strong>값이 바뀌면 화면을 다시 그려야</strong> 함.
-                <code className="bg-white px-1 rounded mx-1 text-xs">
-                  &lt;select&gt;
-                </code>
-                안의 옵션 목록이 그것.
-              </p>
-              <p className="text-xs text-slate-600">
-                → setState 가 트리거하는 리렌더가 필수.
-              </p>
-            </div>
-            <div className="border border-amber-200 bg-amber-50 rounded-lg p-4">
-              <div className="text-xs font-bold text-amber-700 mb-2">
-                useRef · cachedMajorsRef
-              </div>
-              <p className="text-sm text-slate-700 mb-2">
-                <strong>값이 바뀌어도 화면이 바뀌지 않음</strong>. 다음 계열
-                변경 때 filter 입력으로만 쓰는 raw 데이터.
-              </p>
-              <p className="text-xs text-slate-600">
-                → useState 로 두면 불필요한 리렌더 1회 추가. useRef 가 더 정확.
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200 text-sm text-slate-700">
-            <strong className="text-slate-900">판단 기준:</strong> "이 값이
-            바뀌었을 때 화면 어딘가가 달라져야 하나?" → Yes 면 useState, No 면
-            useRef. 캐시·이전값 기록·외부 객체 참조 등은 보통 useRef.
-          </div>
-        </section>
-
-        {/* ───── IoC 확장 힌트 ───── */}
-        <section className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6">
-          <h2 className="text-lg font-bold mb-2">
-            ⑦ 다음 단계 — 실무에서 IoC 로 확장
-          </h2>
-          <p className="text-sm text-slate-300 mb-4">
-            지금은 hook 안에{' '}
-            <code className="bg-slate-700 px-1.5 py-0.5 rounded text-amber-300">
-              mockFetchUnivMajors
-            </code>{' '}
-            가 박혀 있습니다. 실무 코드는 fetcher 를 prop 으로 받아서 hook 을
-            여러 도메인(대학·고교·지역)에 재사용할 수 있게 분리합니다.
-          </p>
-          <pre className="bg-slate-950 p-4 rounded-lg text-xs text-emerald-300 overflow-x-auto leading-relaxed">
-{`// Before — fetcher 가 hook 안에 박혀 있음 (학습용)
-function useCascadeDropdowns() {
-  const majors = await mockFetchUnivMajors(id);
-  ...
-}
-
-// After — fetcher 를 prop 으로 주입 (실무용)
-function useCascadeDropdowns(fetcher: FetchMajorTypesByUniv) {
-  const majors = await fetcher(id);   // 호출부만 바꿔치기 가능
-  ...
-}
-
-// 사용처: 대학용·고교용·지역용 fetcher 만 갈아끼우면 같은 hook 재사용`}
-          </pre>
-        </section>
+        <CodeAnatomySection
+          universities={MOCK_UNIVERSITIES}
+          majorTypes={ALL_MAJOR_TYPES}
+        />
+        <FlowSection />
+        <StateVsRefSection />
+        <IocHintSection />
       </div>
     </div>
   );
 }
-
-// ───────────────────────── 5. 보조 컴포넌트 (학습 UI) ─────────────────────────
-
-type Accent = 'blue' | 'purple' | 'emerald' | 'amber';
-
-const ACCENT: Record<
-  Accent,
-  {
-    border: string;
-    bg: string;
-    text: string;
-    dot: string;
-    ring: string;
-    btnBg: string;
-  }
-> = {
-  blue: {
-    border: 'border-blue-200',
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    dot: 'bg-blue-500',
-    ring: 'focus:ring-blue-400',
-    btnBg: 'bg-blue-500',
-  },
-  purple: {
-    border: 'border-purple-200',
-    bg: 'bg-purple-50',
-    text: 'text-purple-700',
-    dot: 'bg-purple-500',
-    ring: 'focus:ring-purple-400',
-    btnBg: 'bg-purple-500',
-  },
-  emerald: {
-    border: 'border-emerald-200',
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-700',
-    dot: 'bg-emerald-500',
-    ring: 'focus:ring-emerald-400',
-    btnBg: 'bg-emerald-500',
-  },
-  amber: {
-    border: 'border-amber-200',
-    bg: 'bg-amber-50',
-    text: 'text-amber-700',
-    dot: 'bg-amber-500',
-    ring: 'focus:ring-amber-400',
-    btnBg: 'bg-amber-500',
-  },
-};
-
-function PointCard({
-  num,
-  title,
-  desc,
-  code,
-  accent,
-}: {
-  num: string;
-  title: string;
-  desc: string;
-  code: string;
-  accent: Accent;
-}) {
-  const c = ACCENT[accent];
-  return (
-    <div
-      className={`bg-white rounded-xl border ${c.border} p-5 shadow-sm hover:shadow-md transition`}
-    >
-      <div className={`text-xs font-bold ${c.text} mb-1`}>POINT {num}</div>
-      <h3 className="font-bold text-slate-900 mb-2">{title}</h3>
-      <p className="text-sm text-slate-600 mb-3 leading-relaxed">{desc}</p>
-      <code className={`text-xs block ${c.bg} ${c.text} p-2 rounded font-mono`}>
-        {code}
-      </code>
-    </div>
-  );
-}
-
-function DropdownRow({
-  step,
-  label,
-  hint,
-  accent,
-  value,
-  onChange,
-  options,
-  disabledMessage,
-}: {
-  step: string;
-  label: string;
-  hint: string;
-  accent: Accent;
-  value: string;
-  onChange: (v: string) => void;
-  options: Option[];
-  disabledMessage?: string;
-}) {
-  const c = ACCENT[accent];
-  const disabled = options.length === 0 && !!disabledMessage;
-  return (
-    <div className="mb-4">
-      <div className="flex items-center justify-between mb-1">
-        <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-          <span
-            className={`w-5 h-5 rounded-full ${c.btnBg} text-white text-xs font-bold flex items-center justify-center`}
-          >
-            {step}
-          </span>
-          {label}
-        </label>
-        <span className="text-xs text-slate-400">{hint}</span>
-      </div>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        className={`w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 ${c.ring} disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed`}
-      >
-        <option value="">— 선택 —</option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      {disabled && (
-        <div className="text-xs text-slate-400 mt-1 pl-1">
-          {disabledMessage}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function StateRow({
-  label,
-  kind,
-  accent,
-  items,
-  footnote,
-}: {
-  label: string;
-  kind: string;
-  accent: Accent;
-  items: string[];
-  footnote?: string;
-}) {
-  const c = ACCENT[accent];
-  return (
-    <div className={`border ${c.border} ${c.bg} rounded-lg p-3`}>
-      <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
-        <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full ${c.dot}`} />
-          <code className={`text-sm font-bold ${c.text}`}>{label}</code>
-        </div>
-        <span className="text-xs text-slate-500">
-          {kind} · {items.length}개
-        </span>
-      </div>
-      {items.length === 0 ? (
-        <div className="text-xs text-slate-400 italic">비어 있음</div>
-      ) : (
-        <div className="flex flex-wrap gap-1">
-          {items.map((item, i) => (
-            <span
-              key={i}
-              className="text-xs px-2 py-0.5 bg-white rounded border border-slate-200 text-slate-700"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-      )}
-      {footnote && (
-        <div className={`text-xs ${c.text} mt-2 italic`}>↑ {footnote}</div>
-      )}
-    </div>
-  );
-}
-
-function FlowStep({
-  num,
-  title,
-  accent,
-  steps,
-}: {
-  num: string;
-  title: string;
-  accent: Accent;
-  steps: string[];
-}) {
-  const c = ACCENT[accent];
-  return (
-    <div className={`flex gap-4 border ${c.border} ${c.bg} rounded-lg p-4`}>
-      <div
-        className={`flex-shrink-0 w-10 h-10 rounded-full ${c.btnBg} text-white font-bold flex items-center justify-center`}
-      >
-        {num}
-      </div>
-      <div className="flex-1">
-        <h4 className="font-bold text-slate-900 mb-2">{title}</h4>
-        <ol className="space-y-1">
-          {steps.map((step, i) => (
-            <li key={i} className="text-sm text-slate-700 flex gap-2">
-              <span className="text-slate-400 shrink-0">{i + 1}.</span>
-              <span className="leading-relaxed">{step}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </div>
-  );
-}
-
-function logColor(type: LogType) {
-  switch (type) {
-    case 'fetch':
-      return 'text-cyan-300';
-    case 'cache':
-      return 'text-amber-300';
-    case 'state':
-      return 'text-emerald-300';
-    case 'event':
-    default:
-      return 'text-pink-300';
-  }
-}
-
-function logIcon(type: LogType) {
-  switch (type) {
-    case 'fetch':
-      return '↻';
-    case 'cache':
-      return '◇';
-    case 'state':
-      return '▸';
-    case 'event':
-    default:
-      return '●';
-  }
-}
-
-// ───────────────────────── 6. 학습용 코드 스니펫 (화면 표시용) ─────────────────────────
-
-const TYPES_CODE = `// 모든 드롭다운이 공통으로 쓰는 옵션 모양
-interface Option {
-  label: string;
-  value: string;
-}
-
-// 서버가 대학 ID 로 돌려주는 응답 모양
-interface University {
-  universityId: string;
-  universityName: string;
-  majors: {
-    majorId: string;
-    majorName: string;
-    majorTypeCode: string;
-  }[];
-}
-
-// IoC 의 핵심 — fetcher 의 함수 시그니처 계약
-// 대학 ID 받아 → 계열 옵션 list 를 비동기 반환
-type FetchMajorTypesByUniv =
-  (universityId: string) => Promise<Option[]>;`;
-
-const MOCK_FETCH_CODE = `// 실제로는 ky/axios 로 서버 호출
-// 여기선 setTimeout 으로 네트워크 지연 흉내만 냄
-async function mockFetchUnivMajors(universityId: string) {
-  await new Promise(r => setTimeout(r, 300));  // 300ms 지연
-  const found = MOCK_UNIVERSITIES.find(
-    u => u.universityId === universityId,
-  );
-  if (!found) throw new Error(\`Univ \${universityId} not found\`);
-  return found.majors;
-}`;
-
-const HOOK_SKELETON_CODE = `function useCascadeDropdowns() {
-  // ─── 상태 (useState) — 바뀌면 화면 다시 그려야 함 ───
-  const [majorTypeOptions, setMajorTypeOptions] = useState<Option[]>([]);
-  const [majorOptions,     setMajorOptions]     = useState<Option[]>([]);
-  const [selected,         setSelected]         = useState({
-    universityId: '', majorTypeCode: '', majorId: '',
-  });
-
-  // ─── 캐시 (useRef) — 바뀌어도 화면 안 그려도 됨 ───
-  const cachedMajorsRef = useRef<University['majors']>([]);
-
-  // ─── 핸들러 3종 (D 섹션에서 본문 자세히) ───
-  const onUniversityChange = async (id: string) => { /* D-1 */ };
-  const onMajorTypeChange  = (code: string)     => { /* D-2 */ };
-  const onMajorChange      = (id: string)       => { /* D-3 */ };
-
-  return {
-    selected,
-    universityOptions, majorTypeOptions, majorOptions,
-    onUniversityChange, onMajorTypeChange, onMajorChange,
-  };
-}`;
-
-const HANDLER_UNIV_CODE = `const onUniversityChange = async (universityId: string) => {
-  // 1. 선택값 업데이트 + 하위 cascade 리셋 (이전 선택 무효)
-  setSelected({ universityId, majorTypeCode: '', majorId: '' });
-  setMajorOptions([]);
-  setMajorTypeOptions([]);
-
-  if (!universityId) {
-    cachedMajorsRef.current = [];
-    return;
-  }
-
-  // 2. 서버에서 그 대학의 학과 list fetch
-  const majors = await mockFetchUnivMajors(universityId);
-  cachedMajorsRef.current = majors;  // ← 캐시 저장 (리렌더 X)
-
-  // 3. 가져온 학과들의 majorTypeCode set 으로
-  //    → 그 대학에 존재하는 계열만 옵션화
-  const availableTypeCodes = new Set(majors.map(m => m.majorTypeCode));
-  const filteredTypes = ALL_MAJOR_TYPES.filter(t =>
-    availableTypeCodes.has(t.value),
-  );
-  setMajorTypeOptions(filteredTypes);
-};`;
-
-const HANDLER_TYPE_CODE = `const onMajorTypeChange = (majorTypeCode: string) => {
-  setSelected(prev => ({ ...prev, majorTypeCode, majorId: '' }));
-
-  if (!majorTypeCode) {
-    setMajorOptions([]);
-    return;
-  }
-
-  // 서버 호출 없이 cachedMajorsRef 만 filter ← 캐시의 핵심 가치
-  const filteredMajors = cachedMajorsRef.current
-    .filter(m => m.majorTypeCode === majorTypeCode)
-    .map(m => ({ value: m.majorId, label: m.majorName }));
-
-  setMajorOptions(filteredMajors);
-};`;
-
-const HANDLER_MAJOR_CODE = `const onMajorChange = (majorId: string) => {
-  // 하위 cascade 가 없으니 선택값만 저장
-  setSelected(prev => ({ ...prev, majorId }));
-};`;
-
-// ───────────────────────── 7. 학습용 표시 컴포넌트 ─────────────────────────
-
-function CodeBlock({ code }: { code: string }) {
-  const lines = code.split('\n');
-  return (
-    <pre className="bg-slate-950 rounded-lg p-4 text-xs font-mono overflow-x-auto leading-relaxed">
-      <code>
-        {lines.map((line, i) => {
-          const trimmed = line.trim();
-          const isDivider =
-            trimmed.startsWith('// ─') || trimmed.startsWith('// ==');
-          const isComment = trimmed.startsWith('//');
-          const cls = isDivider
-            ? 'text-slate-400'
-            : isComment
-              ? 'text-slate-500'
-              : 'text-emerald-300';
-          return (
-            <div key={i} className="flex">
-              <span className="text-slate-600 w-8 shrink-0 text-right pr-3 select-none">
-                {i + 1}
-              </span>
-              <span className={`${cls} whitespace-pre`}>{line || ' '}</span>
-            </div>
-          );
-        })}
-      </code>
-    </pre>
-  );
-}
-
-function SectionHeading({
-  letter,
-  title,
-  accent,
-}: {
-  letter: string;
-  title: string;
-  accent: Accent;
-}) {
-  const c = ACCENT[accent];
-  return (
-    <div className="flex items-center gap-2 mb-2">
-      <span
-        className={`w-7 h-7 rounded-md ${c.btnBg} text-white text-sm font-bold flex items-center justify-center`}
-      >
-        {letter}
-      </span>
-      <h3 className="text-base font-bold text-slate-900">{title}</h3>
-    </div>
-  );
-}
-
-function TypeNote({ name, desc }: { name: string; desc: string }) {
-  return (
-    <div className="bg-slate-50 border border-slate-200 rounded-md p-2 text-xs">
-      <code className="text-blue-700 font-bold">{name}</code>
-      <div className="text-slate-600 mt-1 leading-relaxed">{desc}</div>
-    </div>
-  );
-}
-
-function HandlerLabel({ num, title }: { num: string; title: string }) {
-  return (
-    <div className="flex items-center gap-2 mb-2 flex-wrap">
-      <span className="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
-        {num}
-      </span>
-      <h4 className="text-sm font-bold text-slate-900">{title}</h4>
-    </div>
-  );
-}
-
-function DataTree() {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 text-xs text-slate-500 mb-1 flex-wrap">
-        <code className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-bold">
-          MOCK_UNIVERSITIES
-        </code>
-        <span>— 가짜 서버 DB (실제론 backend 가 가진 정보)</span>
-      </div>
-      {MOCK_UNIVERSITIES.map((u) => (
-        <div
-          key={u.universityId}
-          className="border border-slate-200 rounded-lg overflow-hidden"
-        >
-          <div className="bg-slate-100 px-3 py-2 flex items-center gap-2 text-sm">
-            <span className="text-xs font-mono text-slate-500">
-              id={u.universityId}
-            </span>
-            <span className="font-bold text-slate-900">{u.universityName}</span>
-            <span className="ml-auto text-xs text-slate-500">
-              학과 {u.majors.length}개
-            </span>
-          </div>
-          <div className="p-2 space-y-1 bg-white">
-            {u.majors.map((m) => (
-              <div key={m.majorId} className="flex items-center gap-2 text-xs">
-                <span className="text-slate-400 font-mono">└</span>
-                <span
-                  className={`px-1.5 py-0.5 rounded font-mono ${majorTypeBadgeColor(m.majorTypeCode)}`}
-                >
-                  {m.majorTypeCode} {majorTypeLabel(m.majorTypeCode)}
-                </span>
-                <span className="text-slate-700">{m.majorName}</span>
-                <span className="text-slate-400 font-mono ml-auto">
-                  {m.majorId}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-      <div className="flex items-center gap-2 text-xs text-slate-500 mt-3 mb-1 flex-wrap">
-        <code className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-bold">
-          ALL_MAJOR_TYPES
-        </code>
-        <span>— 전역 코드 테이블 (모든 대학 공통)</span>
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {ALL_MAJOR_TYPES.map((t) => (
-          <span
-            key={t.value}
-            className={`text-xs px-2 py-0.5 rounded font-mono ${majorTypeBadgeColor(t.value)}`}
-          >
-            {t.value} {t.label}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function majorTypeLabel(code: string) {
-  return ALL_MAJOR_TYPES.find((t) => t.value === code)?.label ?? '?';
-}
-
-function majorTypeBadgeColor(code: string) {
-  switch (code) {
-    case 'H':
-      return 'bg-blue-100 text-blue-700';
-    case 'N':
-      return 'bg-emerald-100 text-emerald-700';
-    case 'A':
-      return 'bg-pink-100 text-pink-700';
-    case 'Z':
-      return 'bg-amber-100 text-amber-700';
-    default:
-      return 'bg-slate-100 text-slate-700';
-  }
-}
-
-export type { FetchMajorTypesByUniv };
