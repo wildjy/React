@@ -3865,3 +3865,275 @@ const step = [
 **적용 판단 한 줄:**
 
 > 이 쿼리가 실패해도 페이지가 의미 있게 동작하는가? → 그렇다면 `throwOnError: false`, 아니면 글로벌 정책 그대로.
+
+---
+
+## Phase 10: 임시 제출(mock Route + sessionStorage) → 실 API 연동 전환
+
+> 이 Phase부터 실제 코드의 이름(`AdmissionEvaluation*`)과 경로를 그대로 사용합니다. (앞 Phase의 `Hakjong*`는 학습용 추상화 명칭이며, 같은 `apps/early`의 학종 서비스를 가리킵니다.)
+
+### 배경: 무엇을, 왜 바꿨나
+
+신청 폼을 처음 만들 때는 백엔드가 준비되지 않아, **임시 제출 경로**로 동작을 확인했습니다.
+
+- 신청 데이터를 Next.js Route Handler(로컬 mock, `apps/early/app/api/admission-evaluation/apply/route.ts`)로 POST → 가짜 `applyId` 발급
+- 폼 입력값 **전체(코드 + 이름)**를 하나의 요청 타입(`AdmissionEvaluationApplyRequest`)으로 정의
+- 그 요청 객체를 **그대로** `sessionStorage`에 저장해 확인(confirm) 페이지로 전달
+
+실제 백엔드 API가 준비되면서, 이 임시 경로를 실 연동으로 교체했습니다. 이때 단순히 엔드포인트만 바꾼 것이 아니라 **"서버로 보낼 데이터"와 "화면 표시·복원용 데이터"의 책임을 분리**한 것이 이번 작업의 핵심입니다.
+
+```
+[이전 — 임시]                              [이후 — 실 API]
+폼 전체(코드+이름)                          서버 페이로드(코드만)
+   │ = 하나의 요청 타입                        │ = AdmissionEvaluationApplyRequest
+   ▼                                          ▼
+mock Route Handler  ──► 가짜 applyId        실 POST /admission-evaluation/apply ──► 실제 applyId
+   │                                          │
+   ▼                                          ▼
+sessionStorage에 요청 객체 그대로 저장       sessionStorage엔 "표시·복원용 스냅샷" 별도 저장
+   └─► 확인 페이지가 이름 읽어 표시            └─► 스냅샷 = 요청 + applyId + 이름(라벨)
+```
+
+---
+
+### Step 44: API 함수 — mock Route Handler 제거하고 실 엔드포인트로
+
+**파일: [apps/early/src/entities/admission-evaluation/api/index.ts](../apps/early/src/entities/admission-evaluation/api/index.ts)**
+
+**변경 전 (임시 — ky로 로컬 Route Handler 직접 호출):**
+
+```typescript
+import ky from 'ky';
+
+export const submitAdmissionEvaluationApply = async (
+  requestData: AdmissionEvaluationApplyRequest,
+): Promise<AdmissionEvaluationApplyResponse> => {
+  const basePath = process.env.NEXT_PUBLIC_BASE_URL ?? '';
+  const data = await ky
+    .post(`${basePath}/api/admission-evaluation/apply`, { json: requestData })
+    .json<AdmissionEvaluationApplyResponse>();
+  return data;
+};
+```
+
+**변경 후 (실 API — 공통 `apiClient`로 백엔드 엔드포인트 호출):**
+
+```typescript
+// 학종 신청 제출 API
+export const submitAdmissionEvaluationApply = async (
+  requestData: AdmissionEvaluationApplyRequest,
+): Promise<AdmissionEvaluationApplyResponse> => {
+  const data = await apiClient()
+    .post('admission-evaluation/apply', { json: requestData })
+    .json<AdmissionEvaluationApplyResponse>();
+  return data;
+};
+```
+
+| 구분        | 임시 (mock Route)                              | 실 API                                  |
+| ----------- | ---------------------------------------------- | --------------------------------------- |
+| HTTP 클라이언트 | `ky` 직접 import                               | 공통 `apiClient()` (baseURL/인증 자동)  |
+| 대상 URL    | `{NEXT_PUBLIC_BASE_URL}/api/admission-evaluation/apply` (앱 내부) | `{API_URL}/admission-evaluation/apply` (백엔드) |
+| `applyId`   | `route.ts`가 `Date.now()`로 생성한 가짜 값     | 서버가 발급한 실제 값                   |
+
+> **mock Route Handler 정리**: 실 연동 후 `apps/early/app/api/admission-evaluation/apply/route.ts`는 더 이상 참조되지 않습니다. [Phase 9](#phase-9-백엔드-미구현-엔드포인트-안전-호출--throwonerror-우회-패턴)의 "임시 우회는 원인 해소 시 제거" 원칙대로, 확인 후 삭제 대상입니다.
+
+---
+
+### Step 45: 요청 타입 재정의 — "전송용"과 "표시·복원용"의 분리
+
+가장 큰 변화는 **요청 타입의 의미가 바뀐 것**입니다.
+
+**변경 전 — 요청 타입 = 폼 전체(코드 + 이름)**
+
+```typescript
+export interface AdmissionEvaluationApplyRequest {
+  universityId: string;
+  universityName: string;        // ← 이름까지 서버로 전송했음
+  majorType: string;
+  majorTypeName: string;
+  minorMajorCategoryCode: string;
+  minorMajorCategoryName: string;
+  preferMajorCode: string;
+  preferMajorName: string;
+  // ... preferArea*, selfActivity1~3
+}
+```
+
+이 구조는 "화면에 보여줄 이름"과 "서버에 보낼 코드"가 한 타입에 섞여 있었습니다. 임시 제출에서는 같은 객체를 sessionStorage에도 그대로 썼기 때문에 편했지만, 실제 서버는 **코드/식별자만** 필요로 합니다.
+
+**변경 후 — 요청 타입 = 서버 페이로드(코드만)**
+
+```typescript
+// 학종 신청 제출 요청 (서버 전송 페이로드 — 코드/식별자만 전송)
+export interface AdmissionEvaluationApplyRequest {
+  userId: string;
+  subjectNot: string;            // 비교과 추가 입력값
+  majorIdHsbs: string[];         // 희망 대학 리스트(카드)의 학과 ID 목록
+  preferAiPartsCodes: string[];  // 선호 전공 코드 (필수 + 선택)
+  preferProvsCodes: string[];    // 선호 지역 코드 (필수 + 선택)
+  emphasis1: string;
+  emphasis2: string;
+  emphasis3: string;
+  simpleQuestion: string;        // 입시전문가 간단 질문
+}
+```
+
+**폼 입력 → 서버 페이로드 매핑:**
+
+| 서버 필드            | 폼 입력 출처                                        | 비고                                  |
+| -------------------- | --------------------------------------------------- | ------------------------------------- |
+| `userId`             | `currentUser.userId`                                | 로그인 사용자                         |
+| `subjectNot`         | `comparativeExtraInfo` (비교과 추가 입력 영역)      |                                       |
+| `majorIdHsbs`        | `selectedCards.map((c) => c.options.drop3.value)`   | 희망 대학 카드들의 학과 ID **배열**   |
+| `preferAiPartsCodes` | `[drop4.value, drop4_1.value].filter(Boolean)`      | 전공 필수 + 선택, 빈 값 제거          |
+| `preferProvsCodes`   | `[drop5.value, drop5_1.value].filter(Boolean)`      | 지역 필수 + 선택, 빈 값 제거          |
+| `emphasis1~3`        | `selfActivity1~3` (강조하고 싶은 내용)              |                                       |
+| `simpleQuestion`     | 간단 질문 Textarea (Step 48에서 신규 추가)          |                                       |
+
+> **단일 값 → 배열의 의미 변화**: 임시 타입은 대학/계열/학과를 단일 값으로만 담았지만, 실제 신청은 "희망 대학 리스트(카드 N개)"를 보냅니다. 그래서 `majorIdHsbs`가 **배열**입니다. 카드 추가 UI([Step 12](#step-12-이벤트-핸들러-작성--사용자-동작-처리))가 이 배열의 원천입니다.
+
+---
+
+### Step 46: 스냅샷 타입을 요청 기준으로 정렬 (`extends`)
+
+요청에서 이름(라벨)을 빼버리면, 확인 페이지가 보여주던 "대학명/계열명/학과명"을 잃습니다. 그래서 **표시·복원 전용 타입**을 따로 두되, 요청 타입을 `extends`해서 정렬했습니다.
+
+```typescript
+/**
+ * 신청 폼 스냅샷 — sessionStorage 저장 전용.
+ * 확인(confirm) 페이지의 요약 표시 + '수정하기' 시 폼 복원에 사용한다.
+ * 서버 전송 페이로드(AdmissionEvaluationApplyRequest)를 그대로 포함하고,
+ * 표시·복원에만 필요한 응답값(applyId)과 라벨/코드를 추가로 보관한다.
+ * (emphasis 등 공통 필드는 요청 타입에서 상속받아 중복을 없앤다)
+ */
+export interface AdmissionEvaluationApplyFormSnapshot
+  extends AdmissionEvaluationApplyRequest {
+  applyId: string;
+  universityId: string;
+  universityName: string;
+  majorType: string;
+  majorTypeName: string;
+  minorMajorCategoryCode: string;
+  minorMajorCategoryName: string;
+  preferMajorCode: string;
+  preferMajorName: string;
+  preferMajorChoiceCode: string;
+  preferMajorChoiceName: string;
+  preferAreaCode: string;
+  preferAreaName: string;
+  preferAreaChoiceCode: string;
+  preferAreaChoiceName: string;
+}
+```
+
+**왜 `extends`인가? — 단일 출처(Single Source of Truth)**
+
+- 스냅샷이 요청 페이로드 전체를 상속하므로, `emphasis1~3` · `simpleQuestion` · `subjectNot` 같은 필드를 **두 타입에 중복 정의하지 않습니다**.
+- 서버 요청 필드가 바뀌면 스냅샷에도 자동 반영 → 타입 드리프트(불일치) 방지.
+- 스냅샷 = `요청` + `applyId`(서버 응답) + `이름/라벨`(화면 표시·복원용) 이라는 의미가 타입 정의만 봐도 드러납니다.
+
+> **이전 임시 타입에는 `selfActivity1~3`가 있었지만**, 요청의 `emphasis1~3`와 의미가 같아 중복이었습니다. 정렬 과정에서 스냅샷의 `selfActivity*`를 제거하고 상속된 `emphasis*`로 통일했습니다. (확인 페이지도 `emphasis*`를 읽도록 함께 수정)
+
+---
+
+### Step 47: handleSubmit 재작성 — 요청 1번 만들고 스냅샷에 재사용
+
+**파일: [apps/early/src/window/admission-evaluation/EarlyAdmissionEvaluationApply.tsx](../apps/early/src/window/admission-evaluation/EarlyAdmissionEvaluationApply.tsx)**
+
+```typescript
+// ① 서버 전송 페이로드: 카드들의 학과 ID와 선택된 코드만 전송
+const requestData: AdmissionEvaluationApplyRequest = {
+  userId: currentUser.userId,
+  subjectNot: comparativeExtraInfo,
+  majorIdHsbs: selectedCards.map((card) => card.options.drop3.value),
+  preferAiPartsCodes: [drop4.value, drop4_1.value].filter(Boolean),
+  preferProvsCodes: [drop5.value, drop5_1.value].filter(Boolean),
+  emphasis1: selfActivity1,
+  emphasis2: selfActivity2,
+  emphasis3: selfActivity3,
+  simpleQuestion,
+};
+const response = await submitApply(requestData);
+
+// ② 확인 페이지 표시 + '수정하기' 복원용 스냅샷
+//    전송 페이로드를 그대로 펼치고(...requestData), applyId·표시용 라벨만 추가
+const snapshot: AdmissionEvaluationApplyFormSnapshot = {
+  ...requestData,
+  applyId: response.applyId,
+  universityId: drop1.value,
+  universityName: drop1.label,
+  majorType: drop2.value,
+  majorTypeName: drop2.label,
+  minorMajorCategoryCode: drop3.value,
+  minorMajorCategoryName: drop3.label,
+  // ... preferMajor*, preferArea* 라벨
+};
+sessionStorage.setItem(
+  ADMISSION_EVALUATION_STORAGE_KEY.applyForm,
+  JSON.stringify(snapshot),
+);
+router.push('/four-year-university/admission-evaluation/confirm');
+```
+
+**핵심 포인트:**
+
+- `submitApply(requestData)` 한 번으로 서버 전송. 디버그 `console.log`는 제거.
+- 스냅샷은 `{ ...requestData, ... }`로 **요청을 재사용**합니다. 요청이 스냅샷의 부분집합이라는 `extends` 관계가 코드에도 그대로 나타납니다.
+- 스냅샷이 요청 전체를 담으므로, '수정하기'로 돌아왔을 때 `subjectNot`(비교과)·`simpleQuestion`까지 복원할 수 있습니다. (복원 useEffect는 [Step 21](#step-21-신청-페이지에서-이전-입력값-복원-sessionstorage-읽기) 패턴 그대로 — 마운트 후 `useEffect`에서 읽기)
+
+---
+
+### Step 48: 간단 질문 입력란 추가 (`simpleQuestion`)
+
+요청에 `simpleQuestion` 필드가 생겼지만 UI에는 입력란이 없었습니다. '간단 질문하기' 섹션에 제어형 `Textarea`를 추가했습니다.
+
+```tsx
+const [simpleQuestion, setSimpleQuestion] = useState('');
+
+// ... '간단 질문하기' 섹션 내부
+<Textarea
+  addId="textarea-simple-question"
+  label="입시전문가에게 궁금한 점을 작성해주세요."
+  mode="base"
+  size="base"
+  value={simpleQuestion}
+  maxLength={200}
+  onChange={(e) => setSimpleQuestion(e.target.value)}
+/>
+```
+
+> **타입을 먼저, UI를 나중에**: 요청 타입에 필드가 생기면 `handleSubmit`에서 타입 에러로 "이 값을 어디서 채울 것인가?"를 강제로 마주하게 됩니다. 타입이 누락된 입력 UI를 잡아준 사례입니다.
+
+---
+
+### 이전 sessionStorage 방식과의 차이점 (정리)
+
+| 항목            | 이전 (임시)                                          | 이후 (실 API)                                              |
+| --------------- | ---------------------------------------------------- | ---------------------------------------------------------- |
+| 제출 대상       | Next.js Route Handler(로컬 mock) → 가짜 `applyId`    | 백엔드 `apiClient().post('admission-evaluation/apply')`    |
+| 전송 데이터     | 폼 전체 (대학/계열/학과 **이름까지** 포함, 단일 값)  | 코드/식별자만 (`majorIdHsbs` 배열, `prefer*Codes` 등)      |
+| 요청 타입 의미  | 전송 + 저장을 한 타입이 겸함                          | **전송 전용** (`…ApplyRequest`)                            |
+| sessionStorage  | 요청 객체를 **그대로** 저장                          | **표시·복원 전용 스냅샷** 별도 저장 (`…ApplyFormSnapshot`) |
+| 타입 관계       | 단일 평면 타입                                        | 스냅샷이 요청을 `extends` (요청 ⊂ 스냅샷)                  |
+| 이름(라벨) 보관 | 요청에 섞여 있음                                      | 스냅샷에만 보관 (서버는 코드, 화면은 이름)                 |
+
+**핵심 한 줄:**
+
+> "서버로 보낼 것(코드)"과 "화면이 기억할 것(코드 + 이름)"을 **다른 타입으로 분리**하고, sessionStorage는 후자만 담당하도록 역할을 좁혔다.
+
+---
+
+### Phase 10 정리
+
+| 새로 배운/적용한 핵심 개념        | 설명                                                                                          |
+| --------------------------------- | --------------------------------------------------------------------------------------------- |
+| **임시 제출 경로의 교체**          | mock Route Handler + `ky` 직접 호출 → 공통 `apiClient`로 실 엔드포인트 POST                    |
+| **전송용/표시용 타입 분리**        | 요청은 코드만(`…ApplyRequest`), 화면 표시·복원은 이름 포함 스냅샷(`…ApplyFormSnapshot`)        |
+| **`extends`로 타입 정렬**          | 스냅샷이 요청을 상속 → 공통 필드 중복 제거, 단일 출처 유지, 드리프트 방지                      |
+| **`{ ...requestData }` 재사용**    | 요청을 한 번 만들고 스냅샷에 펼쳐 넣어, 타입 관계를 코드에서도 그대로 표현                     |
+| **타입이 누락 UI를 드러냄**        | 요청에 추가된 `simpleQuestion`이 입력 Textarea의 부재를 타입 에러로 노출                       |
+
+**적용 판단 한 줄:**
+
+> 같은 객체가 "서버 전송"과 "화면 보관" 두 역할을 동시에 하고 있다면, 타입을 분리하고 한쪽이 다른 쪽을 `extends`하게 만들어라.
