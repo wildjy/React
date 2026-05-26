@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null
   items: NavItem[]
 }
 
@@ -139,6 +139,29 @@ const navGroups: NavGroup[] = [
       { id: 'step46', label: '스냅샷 extends 정렬',       num: 46 },
       { id: 'step47', label: 'handleSubmit 재작성',       num: 47 },
       { id: 'step48', label: 'simpleQuestion 입력란',     num: 48 },
+    ],
+  },
+  {
+    id: 'phase11',
+    label: 'Phase 11 — 트러블슈팅',
+    phase: 11,
+    items: [
+      { id: 'phase11-symptom',  label: '증상',            icon: '🩺' },
+      { id: 'phase11-cause',    label: '원인',            icon: '🔍' },
+      { id: 'phase11-fix',      label: '해결 — 서버 DTO', icon: '🖥️' },
+      { id: 'phase11-followup', label: '프론트 후속 개선', icon: '➕' },
+    ],
+  },
+  {
+    id: 'phase12',
+    label: 'Phase 12 — 쓰기 vs 읽기',
+    phase: 12,
+    items: [
+      { id: 'phase12-write-vs-read', label: '전송 vs 조회',       icon: '↔️' },
+      { id: 'phase12-report-source', label: '리포트 = 분석 결과', icon: '📊' },
+      { id: 'phase12-applyid',       label: 'applyId 번호표',      icon: '🎟️' },
+      { id: 'phase12-flow',          label: '전체 흐름',           icon: '🗺️' },
+      { id: 'phase12-conclusion',    label: '후속: applyId 제거',  icon: '🧹' },
     ],
   },
   {

@@ -12,6 +12,8 @@ const phaseStepBg: Record<number, string> = {
   8: 'bg-orange-500',
   9: 'bg-teal-500',
   10: 'bg-lime-500',
+  11: 'bg-red-500',
+  12: 'bg-pink-500',
 }
 
 const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; label: string }> = {
@@ -25,11 +27,13 @@ const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; 
   8: { wrap: 'bg-orange-50 border-orange-200', num: 'bg-orange-500',  text: 'text-orange-800',  label: '컴포넌트 로직 정리 — 커스텀 훅으로 분리하기' },
   9: { wrap: 'bg-teal-50 border-teal-200',   num: 'bg-teal-500',    text: 'text-teal-800',    label: '백엔드 미구현 엔드포인트 안전 호출 — throwOnError 우회 패턴' },
   10: { wrap: 'bg-lime-50 border-lime-200', num: 'bg-lime-500',  text: 'text-lime-800',  label: '임시 제출(mock Route + sessionStorage) → 실 API 연동 전환' },
+  11: { wrap: 'bg-red-50 border-red-200',  num: 'bg-red-500',   text: 'text-red-800',   label: '트러블슈팅 — 학종 신청 빈 값 거부 오류' },
+  12: { wrap: 'bg-pink-50 border-pink-200', num: 'bg-pink-500', text: 'text-pink-800', label: '개념 정리 — 입력값 전송(쓰기) vs 화면 구성(읽기)' },
 }
 
 /* ── StepCard ─────────────────────────────────── */
 interface StepCardProps {
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
   num: number | string
   id?: string
   title: string
@@ -59,7 +63,7 @@ export function StepCard({ phase, num, id, title, children }: StepCardProps) {
 }
 
 /* ── PhaseHeader ──────────────────────────────── */
-export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 }) {
+export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 }) {
   const s = phaseHeaderMap[phase]
   return (
     <div className={cn('flex items-center gap-3 rounded-xl px-5 py-4 border mb-4', s.wrap)}>

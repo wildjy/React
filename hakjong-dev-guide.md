@@ -4137,3 +4137,275 @@ const [simpleQuestion, setSimpleQuestion] = useState('');
 **적용 판단 한 줄:**
 
 > 같은 객체가 "서버 전송"과 "화면 보관" 두 역할을 동시에 하고 있다면, 타입을 분리하고 한쪽이 다른 쪽을 `extends`하게 만들어라.
+
+---
+
+## Phase 11: 트러블슈팅 — 학종 신청 빈 값 거부 오류
+
+> 기록일: 2026-05-22
+> 관련 파일: `apps/early/src/window/admission-evaluation/EarlyAdmissionEvaluationApply.tsx`, `apps/early/src/entities/admission-evaluation/api/index.ts`
+
+### 증상
+
+학종 신청 화면에서 **선택 입력 필드를 비워둔 채** [입력완료]를 누르면 신청이 실패하고 `alert("신청에 실패했습니다. 다시 시도해주세요.")`가 뜬다.
+
+콘솔에 찍힌 실제 서버 에러:
+
+```
+학종 신청 실패: VALIDATION_PIPE_ERROR: subjectNot should not be empty
+    at async submitAdmissionEvaluationApply (index.ts:102:16)
+Uncaught (in promise) VALIDATION_PIPE_ERROR: subjectNot should not be empty
+```
+
+### 원인
+
+`"... should not be empty"`는 **NestJS class-validator의 `@IsNotEmpty()` 기본 메시지**다. 즉, 서버의 신청 요청 DTO에서 `subjectNot` 필드에 `@IsNotEmpty()`(빈 값 금지)가 걸려 있어, 프론트가 보낸 `subjectNot: ''`(빈 문자열)을 검증 단계에서 거부한 것이다.
+
+- 기획상 `subjectNot`(비교과 추가 입력)은 **선택** 필드인데, 서버는 **필수**로 검증하고 있어 발생한 프론트–서버 계약 불일치.
+- 프론트 payload 자체는 정상이다.
+
+```json
+{
+  "userId": "mynesin24",
+  "subjectNot": "",
+  "majorIdHsbs": ["16383761"],
+  "preferAiPartsCodes": ["Z04F"],
+  "preferProvsCodes": ["2"],
+  "emphasis1": "",
+  "emphasis2": "",
+  "emphasis3": "",
+  "simpleQuestion": ""
+}
+```
+
+#### 요청 경로
+
+- API 함수: `submitAdmissionEvaluationApply` (`api/index.ts`)
+- 호출: `apiClientFor(API_URL).post('admission-evaluation/apply', ...)`
+- `API_URL` (local env 기준): `http://www-dev.jinhak.com/jh/api/early`
+- 최종: `POST http://www-dev.jinhak.com/jh/api/early/admission-evaluation/apply`
+
+> `apps/early/app/api/admission-evaluation/apply/route.ts`의 로컬 Mock 라우트는 **현재 사용되지 않는다.** API 함수가 이미 실제 백엔드(`apiClient`)로 직접 호출하기 때문. 따라서 오류는 **dev 서버에 배포된 코드**에서 발생한다.
+
+### 해결 위치 — 서버 (프론트 변경 없음)
+
+프론트는 이미 빈 값을 정상적으로 전송 중이라 손댈 부분이 없다. (빈 값을 억지로 통과시키려 더미 문자열을 넣는 것은 임시/플레이스홀더 코드 금지 원칙 위반 + 데이터 오염이라 금지.)
+
+**서버 신청 요청 DTO에서 아래 선택 필드들의 검증을 `@IsNotEmpty()` → `@IsOptional()`로 변경해야 한다.**
+
+| 필드            | UI 표기              | 구분 |
+| --------------- | -------------------- | ---- |
+| `subjectNot`    | 비교과 추가 입력     | 선택 |
+| `emphasis1`     | 강조하고 싶은 내용 1 | 선택 |
+| `emphasis2`     | 강조하고 싶은 내용 2 | 선택 |
+| `emphasis3`     | 강조하고 싶은 내용 3 | 선택 |
+| `simpleQuestion`| 간단 질문하기        | 선택 |
+
+```ts
+// 변경 전
+@IsNotEmpty()
+subjectNot: string;
+
+// 변경 후 (선택 필드)
+@IsOptional()
+subjectNot?: string;
+```
+
+**필수로 유지할 필드 (변경 금지):** `userId`, `majorIdHsbs`, `preferAiPartsCodes`, `preferProvsCodes`
+
+> ⚠️ class-validator는 첫 에러에서 막히므로, `subjectNot`만 풀면 다음 빈 필드(`emphasis1` …)에서 동일하게 막힐 수 있다. **선택 필드 5개를 한 번에** 처리할 것.
+
+> 참고: 로컬 서버 체크아웃(`D:\hijinhak-server`)에는 이 `admission-evaluation/apply` 엔드포인트가 존재하지 않았다. 검증 로직은 dev 서버에 배포된(아직 미반영/별도 브랜치) 코드에만 있는 것으로 추정된다.
+
+### (선택) 프론트 후속 개선 거리
+
+지금 mutation `onError`는 서버 메시지를 버리고 고정 문구만 띄운다 (`admission-evaluation.queries.ts`):
+
+```ts
+onError: (error) => {
+  console.error('학종 신청 실패:', error);
+  alert('신청에 실패했습니다. 다시 시도해주세요.');
+},
+```
+
+`ky`의 `beforeError` 훅이 서버 응답 `message`를 `error.message`에 넣어주므로(`APIError.enrichKyError`), 필요 시 서버 메시지를 사용자/콘솔에 노출하도록 개선 가능하다.
+
+또한 `handleSubmit`에서 `await submitApply(...)`를 try/catch 없이 호출해 실패 시 **Uncaught (in promise)**가 발생한다. 에러를 잡아 이후 `router.push`가 실행되지 않도록 정리하는 것도 후속 개선 거리다.
+
+---
+
+## Phase 12: 개념 정리 — "입력값 전송"과 "화면 구성"은 다른 동작이다 (쓰기 vs 읽기)
+
+> 학습 메모: 신청 → 확인 → 리포트로 이어지는 흐름에서, "내가 입력한 값"과 "화면에 그릴 데이터"가 같은 것이라는 착각을 바로잡는 노트.
+> 관련 파일: `EarlyAdmissionEvaluationApply.tsx`, `EarlyAdmissionEvaluationConfirm.tsx`, `EarlyAdmissionEvaluationReport.tsx`
+
+### 가장 중요한 구분: 전송(쓰기) vs 조회(읽기)
+
+서버와 데이터를 주고받는 동작은 방향에 따라 **완전히 다른 두 가지**다.
+
+| 구분        | 전송 (쓰기)                       | 조회 (읽기)                  |
+| ----------- | --------------------------------- | ---------------------------- |
+| 무엇        | 내가 입력한 값을 **서버에 보냄**   | 서버에 있는 값을 **받아옴**  |
+| HTTP        | POST / PUT                        | GET                          |
+| React Query | `useMutation`                     | `useQuery`                   |
+| 이 프로젝트 | `submitAdmissionEvaluationApply`  | (리포트 조회 API — 미구현)   |
+| 비유        | 우체통에 편지를 **넣는다**        | 우편함에서 답장을 **꺼낸다** |
+
+현재 `apply` API는 "넣는" 동작 하나만 한다. 리포트 페이지는 "꺼내는" 동작이 필요한데 그 API가 아직 없는 상태다.
+
+### 핵심: 리포트는 "입력값"이 아니라 "서버 분석 결과"로 그린다
+
+직관적으로는 "내가 입력한 값(대학·학과·활동)을 갖고 있으니 그걸로 리포트를 그리면 되지 않나?"라고 생각하기 쉽다. **아니다.**
+
+```
+[내가 보낸 것]            [리포트에 그려야 할 것]
+대학: 가천대        →     합격 가능성 78%
+학과: 컴퓨터공학    →     추천 대학 5곳
+활동: "..."         →     생기부 분석 코멘트 / 전문가 총평
+```
+
+왼쪽(입력값)만으로는 오른쪽을 만들 수 없다. 오른쪽은 **서버가 입력값을 받아 계산·분석한 뒤 새로 만들어내는 데이터**다. 그래서 리포트 페이지는 반드시 서버에서 GET으로 받아와야 한다.
+
+확인 페이지와 리포트 페이지는 성격이 완전히 다르다:
+
+| 페이지        | 무엇을 보여주나                 | 데이터 출처              |
+| ------------- | ------------------------------- | ------------------------ |
+| 확인(Confirm) | "내가 이렇게 신청한 게 맞나요?" | 내 입력값 (sessionStorage) |
+| 리포트(Report)| "전문가가 분석한 결과는?"       | 서버가 만든 결과 (GET API) |
+
+### `applyId` — 전송과 조회를 잇는 번호표
+
+`apply` API가 돌려주는 `applyId`가 둘을 연결한다.
+
+```
+[전송] POST /admission-evaluation/apply
+       내 입력값 보냄
+        ↓
+       서버: "접수 완료" → { applyId: "ADMISSION-123" }
+        ↓
+[조회] GET /admission-evaluation/report?applyId=ADMISSION-123   ← (이런 API가 나와야 함)
+       서버: "그 신청 건의 분석 결과" → { 합격률, 추천대학, 총평... }
+        ↓
+       리포트 페이지가 이 데이터로 화면을 그림
+```
+
+`applyId`는 "내가 방금 넣은 신청서"를 나중에 다시 찾기 위한 번호표다. 전송할 때 받아두고, 조회할 때 그 번호로 결과를 요청한다.
+
+### 예상되는 API 두 종류 (용어 정리)
+
+"완료 API"라는 말은 보통 아래 두 가지가 섞여 쓰인다. 역할이 다르다.
+
+1. **확정(완료) API** — `POST .../apply/confirm` (쓰기)
+   "이대로 최종 제출할게요, 분석 시작해주세요." 현재 `EarlyAdmissionEvaluationConfirm.tsx` 상단 주석에 연동 예정으로 적혀 있는 것.
+2. **리포트 조회 API** — `GET .../report?applyId=...` (읽기)
+   "분석 결과 데이터 주세요." 리포트 페이지가 마운트되면 `useQuery`로 호출해 그 결과로 화면을 그린다.
+
+### 리포트 페이지가 채워질 모습 (개념 예시)
+
+현재 `EarlyAdmissionEvaluationReport.tsx`는 `<h1>학종 리포트</h1>`만 있는 골격이다. 조회 API가 나오면 이렇게 채워진다.
+
+```tsx
+export const EarlyAdmissionEvaluationReport = () => {
+  // 1. 서버에서 분석 결과를 "읽어온다" (useQuery)
+  const { data: report, isLoading } = useReportQuery(applyId);
+
+  // 2. 로딩 / 없음 처리
+  if (isLoading) return <로딩스피너 />;
+  if (!report) return <p>분석 결과가 아직 없습니다</p>;
+
+  // 3. 받아온 데이터로 화면을 그린다 (입력값이 아니라 "분석 결과")
+  return (
+    <div>
+      <합격가능성그래프 value={report.passRate} />
+      <추천대학목록 list={report.recommendedUniversities} />
+      <전문가총평 text={report.expertComment} />
+    </div>
+  );
+};
+```
+
+### 전체 흐름 한 그림
+
+```
+신청 페이지 (Apply)
+  사용자 입력
+     │  [쓰기] useMutation → POST /apply
+     ▼
+  서버가 applyId 발급 ──────────────┐
+     │                              │ applyId 기억
+     ▼ (sessionStorage에 스냅샷 저장) │
+확인 페이지 (Confirm)               │
+  내 입력값 그대로 표시               │
+     │  [쓰기] useMutation → POST /apply/confirm  ("분석 시작해주세요")
+     ▼                              │
+리포트 페이지 (Report)  ◄───────────┘
+  [읽기] useQuery → GET /report?applyId=...   ("분석 결과 주세요")
+  받아온 "분석 결과"로 화면 구성  ← 입력값이 아님!
+```
+
+### 다음 단계로 가기 위해 백엔드에 확인할 것
+
+리포트 조회 API 스펙이 확정돼야 리포트 페이지 작업을 시작할 수 있다. 백엔드에 물어볼 두 가지:
+
+1. 리포트 데이터를 주는 **조회 API 엔드포인트와 응답 JSON 구조**는?
+2. 그 API는 **무엇으로 신청 건을 식별**하나? (`applyId`? 아니면 로그인 `userId`만으로 최신 신청을 찾아주나?)
+
+### Phase 12 정리
+
+| 핵심 개념                  | 설명                                                                       |
+| -------------------------- | -------------------------------------------------------------------------- |
+| 쓰기 vs 읽기               | 전송(POST·`useMutation`)과 조회(GET·`useQuery`)는 방향도 훅도 다른 동작     |
+| 리포트 = 분석 결과         | 리포트는 내 입력값이 아니라 서버가 입력을 분석해 만든 새 데이터로 그린다    |
+| 확인 페이지 ≠ 리포트 페이지 | 확인은 내 입력값(sessionStorage), 리포트는 서버 결과(GET API)              |
+| `applyId`의 역할           | 전송 때 발급받아 조회 때 신청 건을 다시 찾는 "번호표"                       |
+| 확정 API vs 조회 API       | `POST /confirm`(분석 시작 요청, 쓰기)와 `GET /report`(결과 조회, 읽기)는 별개 |
+
+**적용 판단 한 줄:**
+
+> "이 화면에 그릴 데이터를 내가 이미 갖고 있나, 아니면 서버가 만들어 줘야 하나?"
+> 서버가 만들어 줘야 하면 — 입력값으로 그리지 말고 GET으로 받아와서 그려라.
+
+---
+
+### 후속 결론 — 이 프로젝트는 `applyId`가 아니라 토큰의 `userId`로 식별한다
+
+위 설명에서 "전송과 조회를 잇는 번호표"로 `applyId`를 들었다. 이는 **일반적으로 흔한 패턴**(신청 건마다 ID를 발급받아 그 ID로 결과를 조회)이라 개념 이해용으로 유효하다. 다만 **이 프로젝트의 백엔드는 다른 방식을 택했다.**
+
+#### 확인된 사실
+
+백엔드에 문의한 결과, 학종 관련 조회·확정 API는 **요청 파라미터가 아니라 로그인 토큰(쿠키)에서 `userId`를 꺼내 신청 건을 식별**한다. 이는 이미 `grade-status` 조회에서 관찰된 패턴과 동일하다.
+
+- `apiClient()`가 `credentials: 'include'`로 쿠키를 자동 전송 → 서버가 토큰에서 `userId`를 읽음
+- Swagger에 `userId`가 `required`로 보여도, 실제로는 토큰에서 식별 (문서 표기와 구현의 흔한 불일치)
+- 따라서 프론트가 `userId`/`applyId`를 명시적으로 안 보내도 조회가 동작
+
+#### 그래서 `applyId`를 제거했다
+
+서버가 토큰으로 식별하므로, 서버가 발급하던 `applyId`는 프론트에서 **식별 용도로 쓸 일이 없어졌다.** 유일한 잔존 용도였던 확인 페이지의 "신청 번호" 표시도, 본질적으로 신청서 번호가 아니라 불필요한 식별자 노출이라 정리했다.
+
+| 파일 | 변경 |
+| --- | --- |
+| `admission-evaluation.types.ts` | `AdmissionEvaluationApplyResponse` 인터페이스 삭제, `…ApplyFormSnapshot`에서 `applyId` 필드 제거 |
+| `api/index.ts` | `submitAdmissionEvaluationApply` 반환 타입을 `Promise<void>`로 (응답 파싱 불필요) |
+| `admission-evaluation.queries.ts` | mutation 제네릭을 `useMutation<void, Error, …Request>`로 |
+| `EarlyAdmissionEvaluationApply.tsx` | `response` 캡처·디버그 로그·`snapshot.applyId` 제거 |
+| `EarlyAdmissionEvaluationConfirm.tsx` | 표시를 `userId` 기준으로, 라벨을 "신청자 ID"로 정정 |
+| `app/api/admission-evaluation/apply/route.ts` | **삭제** (안 쓰이던 로컬 mock 라우트) |
+
+> **신청 성공 판정은?** `applyId`를 안 받아도 된다. `ky`는 비-2xx 응답에서 throw하므로(`beforeError` → `APIError`), `await submitApply(requestData)`가 예외 없이 끝나면 성공이다. 굳이 응답 바디를 파싱·검사할 필요가 없어 반환 타입을 `void`로 좁혔다.
+
+#### `userId` ≠ `applyId` — 이름을 합치면 안 되는 이유 (함께 정리)
+
+논의 중 "두 값을 `userId`로 이름 통일하면 깔끔하지 않냐"는 아이디어가 있었으나, **둘은 이름만 다른 같은 값이 아니라 의미·값이 다른 별개**다.
+
+| | `userId` | `applyId` |
+| --- | --- | --- |
+| 식별 대상 | 사람(로그인 사용자) | 신청서 한 건 |
+| 출처 | 로그인 정보 (보내는 값) | 서버 응답 (받는 값) |
+| 예시 | `'mynesin24'` | `'ADMISSION-EVALUATION-1716…'` |
+
+특히 snapshot은 `{ ...requestData, applyId: response.applyId }` 형태였는데, `applyId`를 `userId`로 개명하면 스프레드로 들어온 `userId`('mynesin24')를 신청번호로 **덮어쓰는 버그**가 난다 (JS 객체는 같은 key 중 뒤의 값이 이김). 이름이 다른 건 혼동이 아니라 "정확히 구분 중"이라는 신호다.
+
+#### 정리 한 줄
+
+> 결과 조회를 **무엇으로 식별하는가**는 백엔드 설계에 달려 있다 — `applyId`(신청서별 ID)일 수도, **토큰의 `userId`**(사용자별 최신 건)일 수도 있다. 이 프로젝트는 후자라서 `applyId`를 제거했다. 식별 방식은 **추측하지 말고 백엔드 스펙으로 확인**하라.
