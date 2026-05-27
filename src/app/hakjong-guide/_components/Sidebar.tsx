@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | null
   items: NavItem[]
 }
 
@@ -165,6 +165,48 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase13',
+    label: 'Phase 13 — 컴포넌트 분리/FSD',
+    phase: 13,
+    items: [
+      { id: 'step49', label: '조합 로직 컴포넌트로',  num: 49 },
+      { id: 'step50', label: '반복 UI 서브컴포넌트',  num: 50 },
+      { id: 'step51', label: 'FSD 상향 import 금지',  num: 51 },
+      { id: 'step52', label: 'dead code 제거',        num: 52 },
+    ],
+  },
+  {
+    id: 'phase14',
+    label: 'Phase 14 — Invalid hook call',
+    phase: 14,
+    items: [
+      { id: 'phase14-symptom', label: '증상',                 icon: '🩺' },
+      { id: 'phase14-cause',   label: '원인: 일반 함수서 호출', icon: '🔍' },
+      { id: 'phase14-fix',     label: '해결: 값은 인자로',     icon: '🛠' },
+    ],
+  },
+  {
+    id: 'phase15',
+    label: 'Phase 15 — 타 호스트 API',
+    phase: 15,
+    items: [
+      { id: 'phase15-bg',    label: '배경',              icon: '◎' },
+      { id: 'phase15-trap1', label: '함정① prefixUrl',   icon: '①' },
+      { id: 'phase15-trap2', label: '함정② CSP',         icon: '②' },
+      { id: 'phase15-trap3', label: '함정③ 프록시',      icon: '③' },
+    ],
+  },
+  {
+    id: 'phase16',
+    label: 'Phase 16 — 오케스트레이션 훅',
+    phase: 16,
+    items: [
+      { id: 'step53',                 label: '합성 상위 훅',    num: 53 },
+      { id: 'phase16-split-vs-merge', label: '분리 vs 통합',    icon: '⚖' },
+      { id: 'phase16-tradeoff',       label: 'god-hook 경계',   icon: '⚠' },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -186,6 +228,12 @@ const phaseBadgeColors: Record<number, string> = {
   8: 'bg-orange-100 text-orange-700',
   9: 'bg-teal-100 text-teal-700',
   10: 'bg-lime-100 text-lime-700',
+  11: 'bg-red-100 text-red-700',
+  12: 'bg-pink-100 text-pink-700',
+  13: 'bg-purple-100 text-purple-700',
+  14: 'bg-indigo-100 text-indigo-700',
+  15: 'bg-slate-100 text-slate-700',
+  16: 'bg-blue-100 text-blue-700',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */

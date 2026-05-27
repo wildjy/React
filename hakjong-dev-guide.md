@@ -4409,3 +4409,282 @@ export const EarlyAdmissionEvaluationReport = () => {
 #### 정리 한 줄
 
 > 결과 조회를 **무엇으로 식별하는가**는 백엔드 설계에 달려 있다 — `applyId`(신청서별 ID)일 수도, **토큰의 `userId`**(사용자별 최신 건)일 수도 있다. 이 프로젝트는 후자라서 `applyId`를 제거했다. 식별 방식은 **추측하지 말고 백엔드 스펙으로 확인**하라.
+
+---
+
+## Phase 13: 컴포넌트 분리와 FSD 레이어 — 페이지에서 "끌어올린" prop 정리하기
+
+### 배경: 페이지가 너무 많은 일을 알고 있었다
+
+신청 페이지(`EarlyAdmissionEvaluationApply.tsx`)가 `UnivMajorSelector`에 11개의 prop을 내려주고 있었는데, 그중 가장 큰 문제는 **JSX 안에 인라인으로 박힌 핸들러 조합 로직**이었습니다.
+
+```tsx
+// ❌ 페이지가 selector의 내부 동작 규칙까지 직접 조립
+<UnivMajorSelector
+  universityHandler={(option) => {
+    handleSelectedChange('drop1', option);
+    handleSelectedChange('drop2', { value: '', label: '' }); // 하위 초기화
+    handleSelectedChange('drop3', { value: '', label: '' });
+    onUnivChangeFetch(option.value);                         // cascade 재조회
+  }}
+  aibdPartsHandler={(option) => { ... }}
+  // ...
+/>
+```
+
+"대학을 바꾸면 계열·학과를 비우고 그 대학의 계열을 다시 받아온다"는 규칙은 **selector 고유의 내부 규칙**입니다. 페이지(window 레이어)가 이걸 알고 조립하는 건 책임이 잘못 놓인 것입니다.
+
+### Step 49: 조합 로직을 컴포넌트 내부로 — 페이지는 "원시 도구"만 전달
+
+페이지는 setter와 cascade 함수 같은 **원시 도구**만 넘기고, 그것을 조합하는 일은 컴포넌트가 합니다.
+
+```tsx
+// ✅ 페이지: 원시 도구만 전달
+<UnivMajorSelector
+  selectedOption={selectedOption}
+  onSelectedChange={handleSelectedChange}   // 단순 setter
+  onUnivChangeFetch={onUnivChangeFetch}     // cascade 함수
+  onMajorTypeChange={onMajorTypeChange}
+  selectedCards={selectedCards}
+  onAddCard={handleAddCard}
+  onDeleteCard={handleDeleteCard}
+/>
+```
+
+```tsx
+// ✅ UnivMajorSelector 내부: 조합 규칙이 여기에 산다
+const handleUniversityChange = (option: StringDropDownOption) => {
+  onSelectedChange('drop1', option);
+  onSelectedChange('drop2', EMPTY_OPTION);
+  onSelectedChange('drop3', EMPTY_OPTION);
+  onUnivChangeFetch(option.value);
+};
+```
+
+> **핵심 원칙**: "이 규칙을 아는 게 누구의 책임인가?"를 물어보세요. 화면 한 조각의 내부 동작 규칙은 그 컴포넌트가 알아야 하고, 페이지는 데이터와 단순 setter만 내려주면 됩니다.
+
+### Step 50: 반복되는 UI는 서브컴포넌트로
+
+"선호 정보 입력"은 `라벨 + DropDown + 선택값` 블록이 4번(전공 1·2지망, 지역 1·2지망) 복붙돼 있었습니다. 차이가 (제목, 필수/선택, 옵션, 바인딩 키)뿐이라, 그 차이만 prop으로 받는 내부 서브컴포넌트로 묶습니다.
+
+```
+PreferInfoSelector (컨테이너)
+  └─ PreferSection (전공/지역 한 줄)
+       └─ PreferDropDown (단일 드롭다운 + 라벨)  ← 4번 재사용
+```
+
+같은 방식으로 "강조하고 싶은 내용"의 3개 Textarea도 `EmphasisActivityInput` + 재사용 가능한 `ActivityTextarea`로 분리했습니다(간단 질문 입력란도 같은 서브컴포넌트 재사용).
+
+> **언제 서브컴포넌트로 빼나?** 동일한 마크업이 2~3번 이상 반복되고, 차이가 몇 개의 값으로 표현될 때. 차이를 prop으로 받는 작은 컴포넌트 하나가 복붙 4개보다 안전합니다.
+
+### Step 51: FSD 상향 import 금지 — 컴포넌트의 올바른 레이어
+
+`UnivMajorSelector`는 `entities/`에 있으면서 `modules/`의 `UnivMajorDropDownGroup`을 import하고 있었습니다. 이는 FSD 규칙 위반입니다.
+
+> **FSD 레이어 방향**: `app → entities → modules → window`. 위에서 아래로만 import할 수 있고, **아래(entities)가 위(modules)를 import하면 안 됩니다(상향 의존 금지).**
+
+해결: `UnivMajorSelector`를 `modules/`로 옮겨 같은 레이어에서 조합하게 했습니다. import 흐름이 정방향(`entities`의 타입/훅 → `modules`의 컴포넌트 → `window`의 페이지)으로만 흐릅니다.
+
+**연쇄로 발견된 문제 — 공유 컴포넌트의 위치**: `RequiredBadge`가 페이지(window) 파일에 정의돼 있어서, modules 컴포넌트가 쓰면 또 상향 import가 됩니다. 그래서 공유 UI(`@libs/ui/Flag`)로 끌어내려 양쪽이 정방향으로 import하게 했습니다.
+
+> **교훈**: 한 컴포넌트를 옮기면 그게 의존하던 작은 조각(여기선 배지)도 같이 레이어를 재검토해야 합니다. "누가 import하는가"가 그 조각이 어디 있어야 하는지를 알려줍니다.
+
+### Step 52: 분리하면서 dead code도 함께 제거
+
+리팩토링 중 페이지가 `useAdmissionEvaluationHandler`에서 `setSelectedCards`를 구조분해하지만 **어디서도 안 쓰는** 걸 발견했습니다(카드 추가/삭제는 핸들러가 내부에서 처리). 즉시 제거했습니다.
+
+> **리팩토링은 dead code를 드러낸다**: prop과 구조분해를 정리하다 보면 "받기만 하고 안 쓰는 값"이 보입니다. 이때 바로 지우는 게 CLAUDE.md의 "dead code 즉시 삭제" 원칙입니다.
+
+### 무엇을 옮기지 *못하는가* — 공유 상태는 페이지에 남는다
+
+selector로 다 내리고 싶어도, `selectedOption`·`selectedCards`·`onUnivChangeFetch`는 **handleSubmit과 복원 로직도 함께 쓰는 공유 상태**라 페이지(또는 상위 훅)가 들고 있어야 합니다. 자식에게 내려주는 건 "상태 끌어올리기(lifting state up)"라는 정상 패턴이지, 군더더기가 아닙니다.
+
+---
+
+## Phase 14: "Invalid hook call" — 훅은 아무 데서나 부를 수 없다
+
+### 증상
+
+```
+Invalid hook call. Hooks can only be called inside of the body of a function component.
+```
+
+### 원인: 일반 함수 안에서 훅 호출
+
+API 파일에서 `useCurrentUser()`를 **모듈 최상단/일반 async 함수 안**에서 부르고 있었습니다.
+
+```ts
+// ❌ api/index.ts — 컴포넌트도 커스텀 훅도 아닌 곳에서 훅 호출
+const { currentUser } = useCurrentUser();           // 모듈 최상단
+export const fetchStudentRecordComparativeStatus = async () => {
+  // 또는 이렇게 async 함수 안에서도 ❌
+  const { currentUser } = useCurrentUser();
+  ...
+};
+```
+
+> **React의 훅 규칙(Rules of Hooks)**: 훅은 오직 **① React 함수 컴포넌트 본문**과 **② 다른 커스텀 훅 본문**에서만 호출할 수 있습니다. 일반 함수, 클래스, 조건문/반복문 안에서는 안 됩니다. React가 훅 호출 순서로 상태를 추적하기 때문입니다.
+
+### 해결: 값은 인자로, 훅 호출은 훅 안에서
+
+API 함수는 훅을 부르지 말고 **필요한 값(`userId`)을 인자로 받습니다.** 훅 호출은 이 함수를 감싸는 **query 훅 안**에서 합니다(거긴 합법).
+
+```ts
+// ✅ api/index.ts — 순수 함수, userId는 파라미터
+export const fetchStudentRecordComparativeStatus = async (userId: string) => { ... };
+```
+
+```ts
+// ✅ queries.ts — 커스텀 훅 안이라 useCurrentUser 호출 가능
+export const useStudentRecordComparativeStatusQuery = () => {
+  const { currentUser } = useCurrentUser();
+  return useQuery({
+    queryKey: ['studentRecordComparativeStatus', currentUser.userId],
+    queryFn: () => fetchStudentRecordComparativeStatus(currentUser.userId),
+    enabled: !!currentUser.userId,   // userId 준비 전엔 실행 안 함
+  });
+};
+```
+
+> **한 줄 요약**: "이 코드는 컴포넌트/커스텀 훅 본문인가?"를 먼저 물어보세요. 아니라면 훅을 부르지 말고, 그 값을 **인자로 받도록** 함수 시그니처를 바꾸세요.
+
+---
+
+## Phase 15: 다른 호스트의 API 호출 — 전용 클라이언트 · CSP · 프록시
+
+> ⚠️ **이 Phase의 작업은 최종적으로 원복**했습니다(백엔드에서 호스트·엔드포인트·정책 확정 후 재진행 예정). 하지만 그 과정에서 배운 함정들은 그대로 가치가 있어 기록합니다.
+
+### 배경
+
+비교과 입력 현황을 메인 백엔드(`API_URL`)가 아닌 **다른 호스트**(`http://www.evaluationbygpt.com/api/v1`)에서 가져와야 했습니다. "별도 호스트니 따로 부르자"는 단순해 보였지만 함정이 셋이었습니다.
+
+### 함정 ①: `apiClientFor`에 절대 URL을 넣으면 깨진다 (ky `prefixUrl`)
+
+```ts
+// ❌ 메인 클라이언트(prefixUrl=API_URL)에 절대 URL을 넘김
+apiClient().get('http://www.evaluationbygpt.com/api/v1/...');
+```
+
+`apiClientFor(API_URL)`은 ky의 `prefixUrl`을 설정합니다. ky는 `prefixUrl + input`을 단순 결합하므로 절대 URL을 넣으면 `API_URL + "http://..."`가 되어 깨집니다.
+
+```ts
+// ✅ 호스트별 전용 클라이언트를 따로 만들고, 상대경로로 호출
+const evaluationApiClient = () => apiClientFor(EVALUATION_API_URL);
+evaluationApiClient().get('extra-curricular/origin/${userId}/valid');
+```
+
+> **교훈**: 호스트가 다르면 **클라이언트를 분리**하세요(각자 자기 base에 상대경로). 하나의 클라이언트에 절대 URL을 섞지 마세요.
+
+### 함정 ②: CSP `connect-src` 차단 + http mixed-content
+
+브라우저 콘솔에 이런 에러가 떴습니다.
+
+```
+Connecting to 'http://www.evaluationbygpt.com/...' violates the following
+Content Security Policy directive: "connect-src 'self' https://*.jinhak.com ..."
+```
+
+CSP(`next.config.js`의 `connect-src`)에 그 호스트가 없어서 브라우저가 막은 것입니다. 게다가 호스트가 `http://`라서, **production(https)에선 CSP를 열어줘도 mixed-content로 또 막힙니다.**
+
+| 해결책 | 로컬/dev(http) | production(https) |
+| --- | --- | --- |
+| CSP에 호스트 추가 | 뚫림 | ❌ mixed-content로 막힘 |
+| **Next 프록시 라우트** | ✅ | ✅ |
+
+### 함정 ③ + 해결: Next.js 프록시 라우트 (그리고 ENOTFOUND)
+
+브라우저가 외부 호스트를 직접 못 부르면, **서버가 대신 부르게** 합니다. 클라이언트는 same-origin(`'self'`)인 route handler만 호출하므로 CSP·mixed-content를 모두 피합니다.
+
+```
+브라우저 → fetch {basePath}/api/.../comparative-status  ('self' → CSP 통과)
+  → route.ts (서버) → http://www.evaluationbygpt.com/...  (서버라 CSP/mixed-content 무관)
+```
+
+```ts
+// app/api/.../comparative-status/route.ts (서버 측 프록시)
+export async function GET(request: NextRequest) {
+  const userId = request.nextUrl.searchParams.get('userId');
+  const res = await fetch(`${EVALUATION_API_URL}/extra-curricular/origin/${userId}/valid`);
+  const data = await res.json();
+  return NextResponse.json(data ?? []);
+}
+```
+
+클라이언트는 `useCurrentUser`가 쓰는 것과 같은 패턴으로 self 라우트를 부릅니다:
+
+```ts
+await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/.../comparative-status?userId=${userId}`,
+  { credentials: 'include' });
+```
+
+그런데 프록시를 깔아도 데이터가 비었고, 서버 콘솔에 결정적 단서가 있었습니다.
+
+```
+[cause]: Error: getaddrinfo ENOTFOUND www.evaluationbygpt.com
+```
+
+`ENOTFOUND` = **서버(개발 머신)에서 그 호스트를 DNS로 해석조차 못 함.** 즉 코드 구조 문제가 아니라 **호스트가 틀렸거나 사내망 전용**이라는 환경 문제였습니다. 여기서 "백엔드 확인 후 진행"으로 결론 내고 관련 코드를 전부 원복했습니다.
+
+> **디버깅 교훈**: 프록시 라우트에 `try/catch` + 로그를 넣자 원인이 한 줄로 드러났습니다. "데이터가 빈다"는 증상에서 멈추지 말고, **서버 콘솔의 실제 에러**(상태코드/ENOTFOUND/빈 바디)를 확인하면 (네트워크 불가 / 데이터 없음 / 인증·경로 오류)를 즉시 구분할 수 있습니다.
+>
+> **추측하지 말고 확인하라**: 외부 호스트·엔드포인트·CSP·DNS는 프론트 코드만으로 결정되지 않습니다. 동작하지 않으면 백엔드/인프라 스펙을 먼저 확정하세요.
+
+---
+
+## Phase 16: 페이지 로직을 단일 오케스트레이션 훅으로 통합
+
+### 배경
+
+Phase 8에서 로직을 여러 작은 훅(`useApplyDropOptions`, `useAdmissionEvaluationHandler`)으로 **분리**했습니다. 하지만 페이지에는 여전히 그 훅들의 호출 + 폼 입력 상태(`useState` 5개) + sessionStorage 복원 `useEffect` + `handleSubmit`이 ~180줄 남아 있었습니다.
+
+`handleSubmit`(폼 → 스냅샷 저장)과 복원 `useEffect`(스냅샷 → 폼)는 사실 **같은 스냅샷의 쓰기/읽기 양면**이라, 함께 묶을 명분이 강했습니다.
+
+### Step 53: 작은 훅들을 "합성(composition)"한 상위 훅
+
+기존 훅을 지우지 않고, 새 훅이 **내부에서 호출해 합칩니다.** 페이지는 이 훅 하나만 부릅니다.
+
+```ts
+// entities/admission-evaluation/model/useAdmissionEvaluationApplyForm.ts
+export const useAdmissionEvaluationApplyForm = () => {
+  // 1) 데이터/인프라 훅 내부 호출
+  const router = useRouter();
+  const { currentUser } = useCurrentUser();
+  const { data: gradeStatusData } = useAdmissionEvaluationGradeStatusQuery();
+  const { mutateAsync: submitApply, isPending } = useAdmissionEvaluationApplyMutation();
+
+  // 2) 기존 작은 훅을 합성
+  const dropOptions = useApplyDropOptions();
+  const handler = useAdmissionEvaluationHandler();
+
+  // 3) 폼 입력 상태 소유 + 복원 useEffect + handleSubmit ...
+
+  return {
+    ...dropOptions,   // 옵션 + cascade
+    ...handler,       // 선택 상태 + 카드 + 모달
+    /* 폼 상태, handleSubmit, isPending ... */
+  };
+};
+```
+
+결과적으로 페이지는 **훅 1개 호출 + JSX**만 남아 순수 프레젠테이션 컴포넌트가 됩니다.
+
+```tsx
+export const EarlyAdmissionEvaluationApply = () => {
+  const { selectedOption, handleSubmit, isPending, /* ... */ } =
+    useAdmissionEvaluationApplyForm();
+  return ( /* JSX */ );
+};
+```
+
+### "분리(Phase 8)"와 "통합(Phase 16)"은 모순이 아니다
+
+- Phase 8: 컴포넌트에서 **로직 덩어리**를 작은 훅으로 빼냄(관심사 분리).
+- Phase 16: 그 작은 훅들을 **합성**해 페이지용 단일 진입점을 만듦.
+
+작은 훅은 building block으로 남아 재사용·테스트가 가능하고, 상위 훅은 그것들을 엮어 페이지가 한 번에 쓰게 합니다. 분리한 걸 다시 합치는 게 아니라, **계층을 쌓는 것**입니다.
+
+### 트레이드오프 — god-hook 경계
+
+`...dropOptions`/`...handler` 스프레드는 간결하지만, 한 훅이 너무 많은 책임을 흡수하면 "god-hook"이 됩니다. 이 프로젝트에선 **소비자가 이 페이지 하나뿐**이라 단일 훅이 합리적이었습니다. 같은 selector/폼이 여러 페이지에서 쓰이기 시작하면, 그때는 합성 훅 대신 Context나 더 작은 훅 단위로 다시 쪼개는 게 맞습니다.
+
+> **판단 기준**: "이 묶음을 쓰는 곳이 하나인가, 여럿인가?" 하나면 합성 훅으로 응집, 여럿이면 공유 메커니즘(Context 등)으로 분산. 규모에 맞는 추상화를 고르세요(CLAUDE.md: premature abstraction 금지).

@@ -13,6 +13,10 @@ import { Phase9 }       from './_components/sections/Phase9'
 import { Phase10 }      from './_components/sections/Phase10'
 import { Phase11 }      from './_components/sections/Phase11'
 import { Phase12 }      from './_components/sections/Phase12'
+import { Phase13 }      from './_components/sections/Phase13'
+import { Phase14 }      from './_components/sections/Phase14'
+import { Phase15 }      from './_components/sections/Phase15'
+import { Phase16 }      from './_components/sections/Phase16'
 import { Libraries, Concepts, Cautions } from './_components/sections/Appendix'
 
 export default function HakjongGuidePage() {
@@ -33,6 +37,10 @@ export default function HakjongGuidePage() {
         <Phase10   />
         <Phase11   />
         <Phase12   />
+        <Phase13   />
+        <Phase14   />
+        <Phase15   />
+        <Phase16   />
         <Libraries />
         <Concepts  />
         <Cautions  />

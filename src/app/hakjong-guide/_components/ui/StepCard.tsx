@@ -14,6 +14,10 @@ const phaseStepBg: Record<number, string> = {
   10: 'bg-lime-500',
   11: 'bg-red-500',
   12: 'bg-pink-500',
+  13: 'bg-purple-500',
+  14: 'bg-indigo-500',
+  15: 'bg-slate-500',
+  16: 'bg-blue-500',
 }
 
 const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; label: string }> = {
@@ -29,11 +33,15 @@ const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; 
   10: { wrap: 'bg-lime-50 border-lime-200', num: 'bg-lime-500',  text: 'text-lime-800',  label: '임시 제출(mock Route + sessionStorage) → 실 API 연동 전환' },
   11: { wrap: 'bg-red-50 border-red-200',  num: 'bg-red-500',   text: 'text-red-800',   label: '트러블슈팅 — 학종 신청 빈 값 거부 오류' },
   12: { wrap: 'bg-pink-50 border-pink-200', num: 'bg-pink-500', text: 'text-pink-800', label: '개념 정리 — 입력값 전송(쓰기) vs 화면 구성(읽기)' },
+  13: { wrap: 'bg-purple-50 border-purple-200', num: 'bg-purple-500', text: 'text-purple-800', label: '컴포넌트 분리와 FSD 레이어 — 페이지에서 끌어올린 prop 정리' },
+  14: { wrap: 'bg-indigo-50 border-indigo-200', num: 'bg-indigo-500', text: 'text-indigo-800', label: 'Invalid hook call — 훅은 아무 데서나 부를 수 없다' },
+  15: { wrap: 'bg-slate-50 border-slate-200', num: 'bg-slate-500', text: 'text-slate-800', label: '다른 호스트의 API 호출 — 전용 클라이언트 · CSP · 프록시' },
+  16: { wrap: 'bg-blue-50 border-blue-200', num: 'bg-blue-500', text: 'text-blue-800', label: '페이지 로직을 단일 오케스트레이션 훅으로 통합' },
 }
 
 /* ── StepCard ─────────────────────────────────── */
 interface StepCardProps {
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16
   num: number | string
   id?: string
   title: string
@@ -63,7 +71,7 @@ export function StepCard({ phase, num, id, title, children }: StepCardProps) {
 }
 
 /* ── PhaseHeader ──────────────────────────────── */
-export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 }) {
+export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 }) {
   const s = phaseHeaderMap[phase]
   return (
     <div className={cn('flex items-center gap-3 rounded-xl px-5 py-4 border mb-4', s.wrap)}>
