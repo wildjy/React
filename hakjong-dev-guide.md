@@ -4688,3 +4688,501 @@ export const EarlyAdmissionEvaluationApply = () => {
 `...dropOptions`/`...handler` 스프레드는 간결하지만, 한 훅이 너무 많은 책임을 흡수하면 "god-hook"이 됩니다. 이 프로젝트에선 **소비자가 이 페이지 하나뿐**이라 단일 훅이 합리적이었습니다. 같은 selector/폼이 여러 페이지에서 쓰이기 시작하면, 그때는 합성 훅 대신 Context나 더 작은 훅 단위로 다시 쪼개는 게 맞습니다.
 
 > **판단 기준**: "이 묶음을 쓰는 곳이 하나인가, 여럿인가?" 하나면 합성 훅으로 응집, 여럿이면 공유 메커니즘(Context 등)으로 분산. 규모에 맞는 추상화를 고르세요(CLAUDE.md: premature abstraction 금지).
+
+---
+
+## Phase 17: Confirm 페이지에도 같은 패턴을 — 그리고 "통째 호출"의 함정
+
+### 배경
+
+Apply 페이지를 단일 훅으로 정리한 뒤(Phase 16), 같은 정신을 Confirm(신청 내용 최종 확인) 페이지에도 적용합니다. Confirm은 **읽기 전용 표시**가 핵심입니다 — sessionStorage 스냅샷을 읽어 화면에 보여주고, 제출 모달만 띄웁니다.
+
+복원 `useEffect` + 13개 `useState`(userId, universityName, ... simpleQuestion)가 페이지에 그대로 박혀 있던 걸 `useAdmissionEvaluationConfirmSummary` 훅으로 분리합니다.
+
+### Step 54: 읽기 전용 스냅샷 요약 훅
+
+핵심 아이디어: **스냅샷 → 표시용 상태로의 매핑**만 담당하는 훅을 만듭니다.
+
+```ts
+// entities/admission-evaluation/model/useAdmissionEvaluationConfirmSummary.ts
+export const useAdmissionEvaluationConfirmSummary = () => {
+  const isMobile = useAppSelector((s) => s.common.isMobile);
+  const { data: gradeStatusData } = useAdmissionEvaluationGradeStatusQuery();
+  const { data: mockStatusData } = useAdmissionEvaluationMockStatusQuery();
+
+  // 스냅샷에서 복원되는 표시용 상태들
+  const [userId, setUserId] = useState('');
+  const [selectedCards, setSelectedCards] = useState<SelectedCard[]>([]);
+  // ...
+
+  useEffect(() => {
+    const raw = sessionStorage.getItem(ADMISSION_EVALUATION_STORAGE_KEY.applyForm);
+    if (!raw) return;
+    const saved = JSON.parse(raw) as Partial<AdmissionEvaluationApplyFormSnapshot>;
+    setUserId(saved.userId ?? '');
+    setSelectedCards(saved.selectedCards ?? []);
+    // ...
+  }, []);
+
+  return { userId, isMobile, gradeStatusData, mockStatusData, selectedCards, /* ... */ };
+};
+```
+
+`Partial<AdmissionEvaluationApplyFormSnapshot>`로 타입을 단언하는 점이 Apply의 복원 effect와 다릅니다 — 외부 storage에서 온 값이라 일부 필드가 없을 수도 있다는 의도를 명시합니다.
+
+### Step 55: 함정 — 단 3개 값 때문에 Apply 폼 훅 전체를 호출
+
+리뷰 중 발견한 실수입니다.
+
+```ts
+// ❌ Confirm 요약 훅이 Apply 폼 훅을 통째로 호출
+export const useAdmissionEvaluationConfirmSummary = () => {
+  const { isMobile, gradeStatusData, mockStatusData } =
+    useAdmissionEvaluationApplyForm();
+  // ...
+};
+```
+
+3개 값만 쓰고 싶었던 건데, `useAdmissionEvaluationApplyForm()`을 부르면 그 안에서 **이 페이지엔 전혀 필요 없는 것들이 다 돌아갑니다.**
+
+- `useApplyDropOptions()` → 대학 목록·선호 전공/지역 **쿼리 자동 실행**
+- `useAdmissionEvaluationApplyMutation()` → 제출 mutation 셋업
+- 그 훅의 **복원 `useEffect` 실행** → `setSelectedOption(...)` + `onUnivChangeFetch(...)` 호출로 **계열·학과 list 네트워크 요청**까지 발사 (Confirm은 이 데이터를 쓰지 않음)
+
+즉, Confirm 페이지 진입만으로 안 쓰는 API가 줄줄이 호출되고, Apply 폼의 부수 효과(복원 effect)까지 의도치 않게 일어납니다.
+
+### Step 56: 해결 — 필요한 만큼만 의존한다
+
+`gradeStatusData`/`mockStatusData`는 React Query 캐시 공유로 비용이 거의 없고(Apply에서 같은 queryKey로 이미 캐싱), `isMobile`은 redux selector 한 줄입니다. **직접 부르면 됩니다.**
+
+```ts
+// ✅ 필요한 3개만 직접 가져오기
+const isMobile = useAppSelector((state) => state.common.isMobile);
+const { data: gradeStatusData } = useAdmissionEvaluationGradeStatusQuery();
+const { data: mockStatusData } = useAdmissionEvaluationMockStatusQuery();
+```
+
+> **교훈 (의존성 최소화)**: "이 훅이 반환하는 값 중 일부만 필요하다"는 신호가 보이면, 그 훅 전체를 부르지 말고 **그 일부의 출처를 직접 부르세요.** 훅은 호출하는 순간 그 안의 모든 side effect(쿼리 자동 실행, useEffect, mutation 셋업)가 함께 따라옵니다. 같은 React Query queryKey는 어디서 불러도 캐시를 공유하므로 중복 호출 걱정은 안 해도 됩니다.
+
+### Step 57: 그 외 정리 거리 (선택)
+
+리뷰에서 함께 발견한 작은 문제들:
+
+- **응집도** — `isConfirmOpen`(제출 모달 토글)이 요약 훅에 있는데, 정작 제출 로직(`sessionStorage` 정리 + `router.push`)은 페이지에 있습니다. 책임이 갈리면 추적이 어려워지므로, 모달 상태는 페이지의 `useState`로 두는 게 더 자연스럽습니다.
+- **죽은 주석** — 옛 필드(`setSelfIntroduction` 등) 주석은 즉시 제거(CLAUDE.md: no dead code).
+- **`comparativeExtraInfo` 편집 가능 여부** — "최종 확인" 페이지인데 비교과 입력란이 수정 가능합니다. 의도라면 OK, 아니라면 `AdmissionScoreStatus`에 읽기 전용 모드로 전환.
+
+---
+
+## Phase 18: 복수 데이터를 스냅샷에 담는 법 — comma-join vs 구조화 배열
+
+### 배경
+
+희망 대학/학과는 카드 여러 장(`selectedCards: SelectedCard[]`)으로 추가할 수 있는데, **스냅샷에는 단일 필드**(`universityName`, `majorTypeName`, `minorMajorCategoryName`)밖에 없었습니다. 그래서 Confirm 페이지에서 복수로 노출하려면 데이터를 어딘가에 더 담아야 했습니다.
+
+서버 전송 페이로드(`majorIdHsbs`)는 카드의 학과 ID만 배열로 보내므로 표시용 라벨이 사라집니다 → 스냅샷(표시·복원 전용)에 라벨까지 보관해야 합니다.
+
+### Step 58: 시도 — 단일 필드에 comma-join
+
+처음엔 단일 필드에 카드의 값을 `,`로 합쳐 넣고, Confirm에서 `split(',')`으로 분해하는 방식을 시도했습니다.
+
+```ts
+// ❌ handleSubmit
+universityName: handler.selectedCards.map((c) => c.options.drop1.label).join(','),
+majorTypeName:  handler.selectedCards.map((c) => c.options.drop2.label).join(','),
+minorMajorCategoryName: handler.selectedCards.map((c) => c.options.drop3.label).join(','),
+```
+
+```ts
+// ❌ Confirm 훅: split해서 string[] 3개
+setUniversityName(saved.universityName?.split(',') ?? []);
+setMajorTypeName(saved.majorTypeName?.split(',') ?? []);
+setMinorMajorCategoryName(saved.minorMajorCategoryName?.split(',') ?? []);
+```
+
+**두 가지 문제가 함께 발생합니다.**
+
+**문제 ①: 카드 단위 짝이 깨진다.**
+카드는 `(대학·계열·학과)` 세 값이 한 묶음입니다. 위 방식은 세 필드를 각각 join하고 split하므로, 표시 시 인덱스로 짝을 다시 맞춰야 합니다(`uni[0]+mt[0]+mc[0]`, `uni[1]+mt[1]+mc[1]`…). 라벨에 쉼표가 들어가는 순간(예: "○○대학교, 분교") 인덱스가 어긋나 짝이 영원히 망가집니다.
+
+**문제 ②: 단일 필드의 의미가 오염되어 "수정하기 복원"이 망가진다.**
+`universityId`/`universityName` 같은 단일 필드는 원래 **Apply의 드롭다운 복원용**입니다. Apply 복원 effect는 이렇게 동작합니다.
+
+```ts
+setSelectedOption({
+  drop1: { value: saved.universityId, label: saved.universityName },
+  // ...
+});
+onUnivChangeFetch(saved.universityId);  // ← 단일 코드 기대
+```
+
+여기에 `universityId = "101,102,103"`(comma-join) 같은 값이 들어가면 드롭다운 라벨이 "서울대,연세대"가 되고, cascade fetch는 `univCode = "101,102,103"`을 서버에 보내 깨집니다.
+
+### Step 59: 해결 — 구조화 배열로 분리
+
+**표시(복수 카드)와 복원(드롭다운 단일 값)은 목적이 다르므로, 둘을 분리해서 저장합니다.**
+
+스냅샷 타입에 카드 배열을 추가합니다:
+
+```ts
+// admission-evaluation.types.ts
+export interface AdmissionEvaluationApplyFormSnapshot extends AdmissionEvaluationApplyRequest {
+  // 희망 대학 리스트(복수 카드) — Confirm 복수 표시 + 수정하기 복원
+  selectedCards: SelectedCard[];
+  // 제출 시점의 단일 드롭다운 선택값 — 수정하기 시 드롭다운/cascade 복원용
+  universityId: string;
+  universityName: string;
+  majorType: string;
+  majorTypeName: string;
+  // ...
+}
+```
+
+handleSubmit은 **둘 다** 저장합니다:
+
+```ts
+const snapshot: AdmissionEvaluationApplyFormSnapshot = {
+  ...requestData,
+  selectedCards: handler.selectedCards,   // ← 구조화 배열 (라벨 포함)
+  universityId: drop1.value,              // ← 단일 값 (드롭다운 복원용)
+  universityName: drop1.label,
+  // ...
+};
+```
+
+Confirm 훅은 `selectedCards`만 복원해서 그대로 렌더에 넘기고, Apply 복원 effect는 단일 필드로 드롭다운을 복원합니다.
+
+```tsx
+{/* Confirm 페이지 — 카드를 카드답게 렌더 */}
+{selectedCards.map((card) => (
+  <div key={card.id} className="p-4 ...">
+    <p>대학: <strong>{card.options.drop1.label}</strong></p>
+    <p>계열: <strong>{card.options.drop2.label}</strong></p>
+    <p>학과: <strong>{card.options.drop3.label}</strong></p>
+  </div>
+))}
+```
+
+### Step 60: 보너스 — 수정하기 시 카드도 복원
+
+기존 Apply 복원 effect는 단일 드롭다운만 복원하고 **카드 리스트는 통째로 잃어버리고** 있었습니다. 스냅샷에 `selectedCards`가 생긴 김에 함께 복원합니다.
+
+```ts
+// Apply 복원 effect (한 줄 추가)
+handler.setSelectedCards(saved.selectedCards ?? []);
+```
+
+이제 사용자가 카드를 6장 추가 → 제출 → Confirm → "수정하기"로 돌아와도 카드 6장이 그대로 살아 있습니다.
+
+### 데이터 모델링 한 줄 교훈
+
+> **표시(structured) 목적과 복원(single) 목적이 다르면, 같은 필드 하나에 둘을 우겨넣지 말고 따로 저장하라.** "단일 필드를 join/split해서 다목적으로 쓰자"는 유혹은 짧게는 동작하지만, 라벨에 쉼표가 들어오는 순간 / 의미가 오염되어 다른 흐름(여기선 복원·cascade)을 망가뜨리는 순간 부러집니다. **필요한 모양 그대로 저장하세요.**
+
+### 정리: 카드 라이프사이클
+
+```
+Apply 추가 → handler.selectedCards (구조화 배열)
+  ↓ handleSubmit
+스냅샷(sessionStorage): selectedCards (구조화) + 단일 드롭다운 값
+  ├→ Confirm: selectedCards 복원 → 카드별로 렌더
+  └→ Apply 수정하기: selectedCards 복원 → 카드 그대로 + 단일 필드로 드롭다운 복원
+```
+
+---
+
+## Phase 19: sessionStorage 의존을 걷어내고 서버를 "진실의 원천"으로
+
+### 배경
+
+Phase 5/10/18에서 sessionStorage로 신청 폼 ↔ 확인 페이지를 잇는 방식을 다뤘다. 동작은 했지만 두 가지가 거슬렸다:
+
+1. 같은 데이터가 sessionStorage와 서버 두 군데에 존재 → **어느 쪽이 최신인가**라는 동기화 책임이 프론트로 떠밀림.
+2. 다른 기기/세션에서 수정하기 불가 — sessionStorage는 탭/세션 단위.
+
+서버에 확정 후 조회 API 세 개(`confirmHopeUnivs`, `confirmPreferSelects`, `confirmSimpleQuestions`)가 생기면서, **서버를 단일 진실의 원천(source of truth)**으로 만들 수 있게 됐다. sessionStorage 의존을 모두 걷어내고 서버 데이터로 폼을 채운다.
+
+### Step 61: prefetch effect 설계 — `useRef`로 "한 번만"
+
+Apply 폼 훅 안에서 confirm 쿼리 3개를 호출하고, 데이터가 도착하면 **한 번만** 폼 state에 적용한다.
+
+```ts
+const { data: hopeUnivsData } = useConfirmHopeUnivsQuery();
+const { data: preferSelectsData } = useConfirmPreferSelectsQuery();
+const { data: simpleQuestionData } = useConfirmSimpleQuestionsQuery();
+const hasHydrated = useRef(false);
+
+useEffect(() => {
+  if (hasHydrated.current) return;
+  if (!hopeUnivsData || !preferSelectsData || !simpleQuestionData) return;
+
+  // 카드/선호/활동/질문 일괄 적용...
+
+  hasHydrated.current = true;
+}, [hopeUnivsData, preferSelectsData, simpleQuestionData]);
+```
+
+세 가지 설계 결정의 의도:
+
+| 결정 | 이유 |
+|---|---|
+| `useRef` 가드 | `useState`로 플래그 두면 set 시 리렌더가 일어나 무한 루프 위험. ref는 변경해도 리렌더 안 함. |
+| **셋 다 도착 후** 일괄 적용 (AND 조건) | 하나만 도착해 부분 적용하고 hydrated=true 처리하면 늦게 온 데이터가 영원히 반영 안 됨. |
+| `hasHydrated.current = true` 위치 | 첫 적용 직전/직후 어디든 OK. 핵심은 **이후 데이터 변경(예: refetch)에도 다시 적용하지 않는 것**. 사용자가 이미 입력한 값을 덮어쓰지 않기 위함. |
+
+### Step 62: 알려진 데이터 갭
+
+서버 응답이 일부 필드를 누락한다. 코드로는 메울 수 없는 부분이라 명시적으로 빈 값으로 두고 백엔드 보완을 추적.
+
+| 폼 필드 | 응답 출처 | 복원 가능? |
+|---|---|---|
+| 카드의 대학/학과 | `HopeUnivsResponse[].univCode/majorIdHsb` | ✅ |
+| **카드의 계열(aiBdPart)** | 응답에 없음 | ❌ 빈 값 |
+| 선호 전공/지역 | `PreferSelectsResponse.preferParts/preferAreas` | ✅ |
+| 강조 활동/간단 질문 | `SimpleQuestionResponse` | ✅ |
+| **비교과 추가 입력(`subjectNot`)** | 응답에 없음 | ❌ 빈 값 |
+
+> 클라이언트에서 역추적도 가능하다 — 예: `(univCode, majorIdHsb)`로 `fetchAiBdCategoryList + fetchMajorListByUnivAndAiBd` 루프를 돌려 aiBdPart 찾기. 그러나 카드당 O(계열 수)의 API 호출이 누적되고, 부분 캐시로도 첫 prefetch 비용이 크다. **백엔드가 응답 필드를 추가하는 게 정답.**
+
+### Step 63: sessionStorage 코드 일괄 제거
+
+서버가 진실의 원천이 됐으므로 더 이상 스냅샷을 저장/복원할 이유가 없다.
+
+- Apply의 복원 useEffect → 제거 (대체: prefetch effect)
+- Apply의 handleSubmit 안 스냅샷 setItem → 제거 (서버가 저장하니 중복)
+- Confirm의 복원 useEffect → 제거 (대체: confirm 쿼리들)
+- `useAdmissionEvaluationConfirmSummary` 같이 sessionStorage 기반이던 훅 → 파일 삭제
+
+**예외**: 신청 완료 상태 플래그(`applyComplete`) 같은 "단순 boolean"은 sessionStorage 유지(전용 API가 없을 때 한정).
+
+### Step 64: 첫 신청자(서버에 데이터 없음) 처리
+
+prefetch는 모든 사용자에게 발사된다. 첫 신청자도 confirm 쿼리들이 호출되는데, 두 가지 경우를 graceful하게 다뤄야 한다.
+
+- **서버가 빈 배열/객체 반환**: `hopeUnivsData = []` → `restoredCards = []` → 빈 폼과 동일. 문제 없음.
+- **서버가 404 반환**: `data === undefined` → 가드(`if (!hopeUnivsData) return;`)에 걸려 effect 미실행 → 빈 폼 유지.
+
+다만 404가 콘솔 에러로 찍히는 게 거슬리면 [Phase 9의 `throwOnError: false`](#phase-9-백엔드-미구현-엔드포인트-안전-호출-throwonerror-우회-패턴) 패턴을 confirm 쿼리들에 적용.
+
+### 교훈
+
+> 같은 데이터를 **클라이언트 캐시(sessionStorage)**와 **서버** 두 곳에 두지 마라. 어느 한쪽이 진실의 원천이고, 다른 쪽은 그것의 일시적 뷰여야 한다. 서버 API가 갖춰지는 순간 sessionStorage를 *완전히* 걷어내는 게 단순성과 데이터 일관성 면에서 이득. 동기화 책임이 모호한 두 캐시는 항상 어디서 어긋난다.
+
+---
+
+## Phase 20: 서버 응답의 `number` vs 요청의 `string` — 대칭 깨짐 사냥
+
+### 배경: 같은 ID가 어디서는 string, 어디서는 number
+
+신청 POST는 Swagger에서 모든 코드 필드를 string으로 요구한다.
+
+```json
+{ "majorIdHsbs": ["12345", "12346"], "preferProvsCodes": ["1", "2"] }
+```
+
+그런데 조회 응답들에서는 같은 코드가 number로 온다.
+
+```json
+{ "univCode": 1046, "majorIdHsb": 16219191, "preferProvsCode": 1 }
+```
+
+이 **요청 ↔ 응답 비대칭**이 한 세션 안에서 두 가지 서로 다른 사고로 나타났다.
+
+### 발견 경로 ① — 서버 검증이 막은 경우
+
+수정하기로 들어와 prefetch가 카드를 채우고, 사용자가 입력완료를 누르자:
+
+```
+VALIDATION_PIPE_ERROR: each value in majorIdHsbs must be a string
+```
+
+NestJS `class-validator`의 `@IsString({ each: true })` 검증이 차단한 것. 원인 추적:
+
+1. prefetch가 응답의 `majorIdHsb: 16219191` (number)를 그대로 `drop3.value`에 넣음.
+2. 타입은 `StringDropDownOption.value: string`인데 런타임은 number — **silent type drift**.
+3. handleSubmit이 `card.options.drop3.value`를 모아 `majorIdHsbs`로 보냄 → `number[]` JSON.
+4. 서버 검증 차단.
+
+### 발견 경로 ② — UI가 조용히 비어 있는 경우
+
+선호 지역 드롭다운이 prefetch 후에도 placeholder만 표시. 콘솔 로그는 정상 데이터를 보여줌:
+
+```
+preferSelectsData.preferAreas = [{num:1, provCode:'1', provName:'서울'}]
+```
+
+원인:
+- DropDown은 `selectedValue === option.value`로 라벨을 찾아 표시.
+- 옵션 출처(`usePreferProvsList`)는 서버가 `preferProvsCode: 1` (number)로 줘 `option.value = 1` (number).
+- 복원값은 `String(provCode) = '1'` (string).
+- `'1' === 1` → **false** → 매치 실패 → 빈 드롭다운.
+
+**같은 비대칭이 다른 곳에서 다른 증상으로 발현**됐다. 검증 에러는 "왁자지껄"하게 죽고, 매칭 실패는 "조용히" UI만 비어 있다.
+
+### Step 65: 어디에서 정규화할 것인가
+
+세 가지 위치가 가능. 각각의 트레이드오프:
+
+| 위치 | 장점 | 단점 |
+|---|---|---|
+| **백엔드** | 단일 해결, 프론트 코드 그대로 | 배포 필요, 협의 필요 |
+| **API 함수 boundary** (`fetchXxx`) | 한 번만 normalize, 모든 사용처 안전 | 약간의 boilerplate, raw 타입 분리 |
+| **사용처마다** (`String(...)`) | 변경 범위 최소 | 새 사용처 추가 시 빠뜨리기 쉬움 — 함정 |
+
+이 프로젝트는 **사용처별 `String(...)` 정규화**로 둘 다 패치했다(API boundary는 다른 turn에서 시도했다 보류).
+
+```ts
+// 1) 카드 복원 (useAdmissionEvaluationApplyForm)
+drop1: { value: String(item.univCode), label: item.univName },
+drop3: { value: String(item.majorIdHsb), label: item.majorName },
+
+// 2) 선호 복원 (같은 훅)
+drop5: { value: String(pa1.provCode), label: pa1.provName },
+
+// 3) 옵션 매핑 (useApplyDropOptions)
+{ label: item.preferProvsName, value: String(item.preferProvsCode) }
+{ label: item.preferAiPartsName, value: String(item.preferAiPartsCode) }
+```
+
+총 네 군데. 패턴이 같아 한꺼번에 보이지만, **각각 빠뜨리면 다른 증상으로 터진다.**
+
+### Step 66: 근본 해결은 백엔드 통일 — TODO로 추적
+
+같은 코드를 사용처마다 정규화하는 건 **새 사용처를 추가할 때 빠뜨릴 위험**이 있다. 진짜 해결은 백엔드가 응답 코드 필드를 모두 string으로 통일하는 것.
+
+다음 필드들이 영향 범위:
+
+| 엔드포인트 | 필드 | 현재 응답 |
+|---|---|---|
+| `GET /admission-evaluation/univs` | `univCode` | number |
+| `GET /admission-evaluation/prefer-aiparts` | `preferAiPartsCode` | number 의심 |
+| `GET /admission-evaluation/prefer-provs` | `preferProvsCode` | **number 확인됨** |
+| `GET /admission-evaluation/hope-univs` | `univCode`, `majorIdHsb` | number |
+| `GET /admission-evaluation/prefer-selections` | `pPartCode`, `provCode` | number 의심 |
+
+요청 메시지(백엔드용):
+
+> 신청 요청 body(`POST /admission-evaluation/apply`)는 모든 코드 필드를 string으로 받습니다. 그런데 조회 응답들이 같은 코드를 number로 반환합니다. 프론트 DropDown은 옵션과 선택값을 `===` 비교해 라벨을 표시하는데, 타입이 다르면 매치가 깨져 선택 상태가 표시되지 않습니다. 모든 응답의 코드 필드를 **string으로 통일**해 주세요(요청 body와 동일 형식).
+
+TODO 마커를 한 곳에 모아두면 잊지 않는다:
+
+```ts
+/**
+ * TODO(backend): 응답의 코드 필드들을 모두 string으로 통일 요청.
+ *   - univCode, majorIdHsb, preferAiPartsCode, preferProvsCode 등
+ * 통일 완료 시 useApplyDropOptions / useAdmissionEvaluationApplyForm 의
+ * String(...) 정규화 모두 제거 가능.
+ */
+```
+
+### 교훈
+
+> **`.json<HopeUnivsResponse[]>()` 같은 ky의 json 캐스팅은 타입 단언이지 검증이 아니다.** 서버가 다른 형식을 줘도 TS는 잡지 못한다. 외부 시스템과의 경계에서 명시적으로 정규화하거나, 더 안전하게는 zod 같은 런타임 검증을 둬라.
+
+> **요청 ↔ 응답 비대칭은 가장 흔한 사고 원인이다.** 같은 의미의 필드를 한쪽은 string, 다른 쪽은 number로 받으면 차이만큼 프론트가 어댑터 코드를 떠안는다. 발견하는 즉시 백엔드와 정렬 요청 — 어댑터를 늘리는 건 단기 해결, 정렬이 본 해결.
+
+---
+
+## Phase 21: state updater는 pure해야 한다 — `alert()` 함정
+
+### 증상
+
+카드 삭제(X) 버튼을 누르면 "카드는 최대 6개까지 추가할 수 있습니다" alert가 뜨는 것처럼 보였다. 그런데 코드를 보면 wiring이 멀쩡:
+
+- `handleDeleteCard`: `filter`만, alert 없음.
+- `handleAddCard`: alert가 있긴 한데, **`setSelectedCards`의 updater 안**에 있음.
+- `CloseButton`: `type="button"` + `e.stopPropagation()` — 다른 핸들러로 못 샘.
+
+### 원인: React StrictMode의 의도적 이중 호출 + impure updater
+
+React 공식 가이드:
+> State updater functions **MUST be pure**. They should only compute and return the next state. Don't call setState inside them, don't trigger side effects (alert, fetch, mutation...), don't mutate prev state.
+
+문제의 코드는 정확히 이 규칙을 위반.
+
+```ts
+// ❌ updater 안에서 alert (side effect)
+setSelectedCards((prevState) => {
+  if (prevState.length >= 6) {
+    alert('카드는 최대 6개까지 추가할 수 있습니다.');
+    return prevState;
+  }
+  return [newCard, ...prevState];
+});
+```
+
+StrictMode(개발 모드)에서 React는 **updater 함수를 의도적으로 두 번 호출**한다 — pure하지 않은 updater를 잡아내기 위함. 그래서:
+
+- handleAddCard 호출 1회 → updater 2회 실행 → **alert 2회 발사**.
+- 비동기/배치/concurrent 시나리오에서는 다른 시점에 또 실행될 수도 있어, 사용자에겐 "관련 없는 클릭에서 alert가 뜨는 것처럼" 느껴진다.
+
+여기서 사용자는 X 클릭 후 alert를 보고 "삭제가 alert를 띄운다"고 보고했다. 실제론 직전 add 시도의 updater가 StrictMode/concurrent 타이밍에 다시 호출되거나, 다른 경로로 leak된 것.
+
+### 해결: 검사를 updater 밖으로
+
+```ts
+const handleAddCard = () => {
+  // ...기존 validation...
+
+  // ✅ updater 밖에서 검사 — 이벤트 핸들러 본문은 한 번만 실행됨
+  if (selectedCards.length >= 6) {
+    alert('카드는 최대 6개까지 추가할 수 있습니다.');
+    return;
+  }
+
+  setSelectedCards((prevState) => {
+    if (prevState.some((card) => card.id === cardId)) return prevState;
+    return [newCard, ...prevState];
+  });
+};
+```
+
+이렇게 하면:
+- updater는 pure (이전 상태 조회 + 다음 상태 반환만).
+- alert는 이벤트 핸들러 본문에서 한 번만 발사.
+- StrictMode에서 updater가 두 번 돌아도 alert는 한 번.
+
+**보너스 — 같은 검사로 버튼 disabled까지**:
+
+```tsx
+<Button disabled={selectedCards.length >= 6} onClick={onAddCard}>
+  희망 대학 리스트에 추가
+</Button>
+```
+
+alert는 사용자가 강제로 시도했을 때의 안전망이고, 정상 흐름에서는 버튼이 비활성화돼 시도조차 안 하게 된다 → UX 명확.
+
+### Phase 21 짧은 부수 정리: 6슬롯 placeholder
+
+확인 페이지의 희망 대학 카드는 항상 6슬롯을 보여주고 싶었다. 카드가 2개면 4개는 "비어 있음" placeholder.
+
+```tsx
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+  {Array.from({ length: MAX_HOPE_CARDS }).map((_, idx) => {
+    const item = hopeUnivsData?.[idx];
+    if (item) {
+      return <FilledCard key={item.num} item={item} />;
+    }
+    return (
+      <div
+        key={`empty-${idx}`}
+        className="... border-dashed bg-gray-50 text-gray-400 ..."
+      >
+        비어 있음
+      </div>
+    );
+  })}
+</div>
+```
+
+`MAX_HOPE_CARDS = 6`을 공유 const(`libs/const.ts`)에 두고 handler.handleAddCard의 추가 제한과 의미를 일치시킴 — 한 곳에서 정책 관리.
+
+### 교훈
+
+> **setState의 updater는 pure function이다.** `(prev) => next` 외 다른 일은 하지 마라.
+> - 검증/alert/console.log → handler 본문 (updater 밖)
+> - 다른 setState 호출 → handler 본문 또는 useEffect
+> - 외부 API 호출 → handler 본문 또는 useEffect
+>
+> StrictMode dev에서 updater가 두 번 호출되는 건 **버그가 아니라 기능**이다. 그 안에서 두 번 일어나면 안 되는 일(alert, fetch 등)을 미리 잡아준다. "왜 알람이 두 번 뜨지?"가 신호다.
+
+> **"왜 다른 곳에서 부작용이 발생하지?"라는 미스터리의 절반은 impure updater다.** updater에 side effect를 넣지 않으면, 진단 시간이 절약된다.

@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | null
   items: NavItem[]
 }
 
@@ -207,6 +207,61 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase17',
+    label: 'Phase 17 — Confirm 패턴',
+    phase: 17,
+    items: [
+      { id: 'step54', label: '읽기 전용 요약 훅',     num: 54 },
+      { id: 'step55', label: '함정: 통째 호출',       num: 55 },
+      { id: 'step56', label: '해결: 최소 의존',        num: 56 },
+      { id: 'step57', label: '그 외 정리 거리',        num: 57 },
+    ],
+  },
+  {
+    id: 'phase18',
+    label: 'Phase 18 — 복수 데이터 모델링',
+    phase: 18,
+    items: [
+      { id: 'step58',             label: '시도: comma-join',     num: 58 },
+      { id: 'step59',             label: '해결: 구조화 배열',     num: 59 },
+      { id: 'step60',             label: '보너스: 카드 복원',     num: 60 },
+      { id: 'phase18-lifecycle',  label: '카드 라이프사이클',     icon: '🔄' },
+    ],
+  },
+  {
+    id: 'phase19',
+    label: 'Phase 19 — sessionStorage 제거',
+    phase: 19,
+    items: [
+      { id: 'step61', label: 'prefetch effect',     num: 61 },
+      { id: 'step62', label: '데이터 갭',           num: 62 },
+      { id: 'step63', label: 'sessionStorage 제거', num: 63 },
+      { id: 'step64', label: '첫 신청자 처리',      num: 64 },
+    ],
+  },
+  {
+    id: 'phase20',
+    label: 'Phase 20 — number vs string',
+    phase: 20,
+    items: [
+      { id: 'phase20-case1', label: '발견 ①: 검증 차단', icon: '①' },
+      { id: 'phase20-case2', label: '발견 ②: 조용한 실패', icon: '②' },
+      { id: 'step65',        label: '정규화 위치',         num: 65 },
+      { id: 'step66',        label: '근본 해결 TODO',      num: 66 },
+    ],
+  },
+  {
+    id: 'phase21',
+    label: 'Phase 21 — impure updater',
+    phase: 21,
+    items: [
+      { id: 'phase21-symptom',     label: '증상',                icon: '🩺' },
+      { id: 'phase21-cause',       label: '원인: StrictMode',    icon: '🔍' },
+      { id: 'phase21-fix',         label: '해결: updater 밖으로', icon: '🛠' },
+      { id: 'phase21-placeholder', label: '부수: 6슬롯',         icon: '➕' },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -234,6 +289,11 @@ const phaseBadgeColors: Record<number, string> = {
   14: 'bg-indigo-100 text-indigo-700',
   15: 'bg-slate-100 text-slate-700',
   16: 'bg-blue-100 text-blue-700',
+  17: 'bg-green-100 text-green-700',
+  18: 'bg-yellow-100 text-yellow-700',
+  19: 'bg-stone-100 text-stone-700',
+  20: 'bg-zinc-100 text-zinc-700',
+  21: 'bg-neutral-100 text-neutral-700',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */

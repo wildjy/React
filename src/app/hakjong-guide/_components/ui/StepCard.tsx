@@ -18,6 +18,11 @@ const phaseStepBg: Record<number, string> = {
   14: 'bg-indigo-500',
   15: 'bg-slate-500',
   16: 'bg-blue-500',
+  17: 'bg-green-500',
+  18: 'bg-yellow-500',
+  19: 'bg-stone-500',
+  20: 'bg-zinc-500',
+  21: 'bg-neutral-500',
 }
 
 const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; label: string }> = {
@@ -37,11 +42,16 @@ const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; 
   14: { wrap: 'bg-indigo-50 border-indigo-200', num: 'bg-indigo-500', text: 'text-indigo-800', label: 'Invalid hook call — 훅은 아무 데서나 부를 수 없다' },
   15: { wrap: 'bg-slate-50 border-slate-200', num: 'bg-slate-500', text: 'text-slate-800', label: '다른 호스트의 API 호출 — 전용 클라이언트 · CSP · 프록시' },
   16: { wrap: 'bg-blue-50 border-blue-200', num: 'bg-blue-500', text: 'text-blue-800', label: '페이지 로직을 단일 오케스트레이션 훅으로 통합' },
+  17: { wrap: 'bg-green-50 border-green-200', num: 'bg-green-500', text: 'text-green-800', label: 'Confirm 페이지에도 같은 패턴을 — 통째 호출의 함정' },
+  18: { wrap: 'bg-yellow-50 border-yellow-200', num: 'bg-yellow-500', text: 'text-yellow-800', label: '복수 데이터를 스냅샷에 담는 법 — comma-join vs 구조화 배열' },
+  19: { wrap: 'bg-stone-50 border-stone-200', num: 'bg-stone-500', text: 'text-stone-800', label: 'sessionStorage 의존을 걷어내고 서버를 진실의 원천으로' },
+  20: { wrap: 'bg-zinc-50 border-zinc-200', num: 'bg-zinc-500', text: 'text-zinc-800', label: '서버 응답의 number vs 요청의 string — 대칭 깨짐 사냥' },
+  21: { wrap: 'bg-neutral-50 border-neutral-200', num: 'bg-neutral-500', text: 'text-neutral-800', label: 'state updater는 pure해야 한다 — alert() 함정' },
 }
 
 /* ── StepCard ─────────────────────────────────── */
 interface StepCardProps {
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
   num: number | string
   id?: string
   title: string
@@ -71,7 +81,7 @@ export function StepCard({ phase, num, id, title, children }: StepCardProps) {
 }
 
 /* ── PhaseHeader ──────────────────────────────── */
-export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 }) {
+export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 }) {
   const s = phaseHeaderMap[phase]
   return (
     <div className={cn('flex items-center gap-3 rounded-xl px-5 py-4 border mb-4', s.wrap)}>
