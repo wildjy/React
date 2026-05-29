@@ -4929,6 +4929,307 @@ useEffect(() => {
 | **셋 다 도착 후** 일괄 적용 (AND 조건) | 하나만 도착해 부분 적용하고 hydrated=true 처리하면 늦게 온 데이터가 영원히 반영 안 됨. |
 | `hasHydrated.current = true` 위치 | 첫 적용 직전/직후 어디든 OK. 핵심은 **이후 데이터 변경(예: refetch)에도 다시 적용하지 않는 것**. 사용자가 이미 입력한 값을 덮어쓰지 않기 위함. |
 
+---
+
+### Step 61의 심층 학습 — prefetch effect 해부
+
+위 코드 한 덩어리에 React의 여러 개념(useRef vs useState, AND-gating, deps, race condition, React Query 캐시, 대안 패턴)이 응축돼 있다. 이 패턴은 한 번 익히면 form hydration 전반에 재사용 가능하니, 8개 측면으로 풀어 설명한다.
+
+#### Step 61-1: 왜 `useRef`인가 — `useState`로 했다면
+
+가드 플래그를 `useState`로 두면 set 시 컴포넌트가 **다시 렌더링**된다.
+
+```ts
+// ❌ useState로 가드 — 동작은 하지만 불필요한 비용
+const [hasHydrated, setHasHydrated] = useState(false);
+
+useEffect(() => {
+  if (hasHydrated) return;
+  if (!hopeUnivsData || !preferSelectsData || !simpleQuestionData) return;
+  // ... apply ...
+  setHasHydrated(true);  // ← 이 set이 리렌더를 일으킴
+}, [hopeUnivsData, preferSelectsData, simpleQuestionData, hasHydrated]);
+//                                                       ^^^^^^^^^^^
+//   eslint-react-hooks/exhaustive-deps가 강제 — 안 넣으면 경고
+```
+
+문제:
+1. `setHasHydrated(true)` → 리렌더 한 번 추가.
+2. 다음 렌더에서 effect 재실행 → `hasHydrated`가 true니 guard에 걸려 무한 루프는 아님.
+3. 그러나 deps에 `hasHydrated` 포함 → effect가 의미 없이 한 번 더 평가됨.
+
+`useRef`는 모두 우회한다:
+
+```ts
+// ✅ useRef로 가드 — 깔끔
+const hasHydrated = useRef(false);
+
+useEffect(() => {
+  if (hasHydrated.current) return;
+  if (!hopeUnivsData || ...) return;
+  // ... apply ...
+  hasHydrated.current = true;  // ← 리렌더 안 일으킴
+}, [hopeUnivsData, preferSelectsData, simpleQuestionData]);
+//   ref는 deps에 넣지 않음 — 의도된 생략
+```
+
+핵심 차이:
+
+| | `useState` | `useRef` |
+|---|---|---|
+| 값 저장 | ✅ | ✅ |
+| 컴포넌트 간/마운트 간 지속 | ✅ | ✅ |
+| set 시 리렌더 트리거 | ✅ (필요할 때 — UI 반영) | ❌ |
+| deps에 포함해야 함 | ✅ | ❌ |
+| 용도 | "UI에 반영되어야 할 값" | "렌더와 무관한 mutable 값" |
+
+> **규칙 한 줄**: 값이 바뀌어도 **화면을 다시 그릴 필요가 없다면** `useRef`를 써라. 플래그 / 타이머 ID / 이전 값 보관 / DOM 노드 참조 등이 대표 용례.
+
+#### Step 61-2: AND-gating — "부분 적용"의 함정
+
+세 쿼리가 비동기로 따로 도착할 때, 응답 하나에 적용하고 hydrated=true 처리하면 어떻게 될까?
+
+```ts
+// ❌ 부분 적용 함정
+useEffect(() => {
+  if (hasHydrated.current) return;
+  if (hopeUnivsData) {
+    // ... 카드만 적용 ...
+  }
+  if (preferSelectsData) { /* ... */ }
+  if (simpleQuestionData) { /* ... */ }
+  hasHydrated.current = true;   // ← 여기가 문제
+}, [hopeUnivsData, preferSelectsData, simpleQuestionData]);
+```
+
+시나리오:
+1. `t=0.3s`: `hopeUnivsData`만 먼저 도착 → 카드 적용 → `hasHydrated.current = true`.
+2. `t=0.5s`: `preferSelectsData` 도착 → effect 재실행 → 가드에 걸려 **return** → 선호 영영 비어 있음.
+3. `t=0.7s`: `simpleQuestionData` 도착 → 마찬가지로 **return** → 활동·질문 영영 비어 있음.
+
+결과: 사용자는 카드만 채워진 채 선호/활동이 비어 있는 폼을 보게 됨.
+
+올바른 AND 조건:
+```ts
+// ✅ 셋 다 모이길 기다린 뒤 한 번에 적용
+useEffect(() => {
+  if (hasHydrated.current) return;
+  if (!hopeUnivsData || !preferSelectsData || !simpleQuestionData) return;
+  // 셋 다 있음을 보장한 뒤 일괄 적용
+  // ... apply all ...
+  hasHydrated.current = true;
+}, [...]);
+```
+
+이 AND-gating은 "여러 비동기 소스를 단일 트랜잭션으로 묶기"의 React 버전이다.
+
+```
+[OR 패턴]                          [AND 패턴]
+hopeUnivsData 도착 → 적용+lock      hopeUnivsData 도착 → wait
+preferSelectsData 도착 → blocked   preferSelectsData 도착 → wait
+simpleQuestionData 도착 → blocked  simpleQuestionData 도착 → 셋 다 적용+lock
+```
+
+> **요약**: "한 번만"의 핵심은 **언제 한 번인가**다. 부분 적용 후 한 번이면 다른 부분이 잃어버려진다. **모두 도착한 뒤 한 번**이 정답.
+
+#### Step 61-3: 의존성 배열의 의미 — 가드와 deps의 협업
+
+`useEffect(callback, deps)`에서 deps는 "이 값들이 바뀔 때마다 callback을 다시 실행하라"는 의미.
+
+```ts
+}, [hopeUnivsData, preferSelectsData, simpleQuestionData]);
+```
+
+여기에 셋을 넣은 이유:
+- React Query의 `data`는 **요청 도착 시 reference가 바뀐다** (`undefined` → 실제 객체).
+- 첫 렌더에선 셋 다 `undefined`일 수 있음 → effect 발사되나 가드에 걸려 return.
+- 데이터가 하나씩 도착할 때마다 deps 값 변경 → effect 재발사 → AND 통과 시 한 번 적용.
+
+**deps에 무엇을 넣을지의 일반 원칙**:
+
+| 변수 종류 | deps 포함? | 이유 |
+|---|---|---|
+| 쿼리 data, props, state | ✅ | 값이 바뀌면 effect 재실행 필요 |
+| setter (`setX`, `dispatch`) | 선택 — 안 넣어도 OK | React가 stable reference 보장 |
+| ref (`hasHydrated`) | ❌ | 변경이 리렌더 안 일으키므로 deps 의미 없음 |
+| handler/dropOptions 같은 합성 객체 | 보수적으로 ✅, 안정성 확신 시 ❌ | useMemo/useCallback 없으면 매 렌더 새 ref |
+
+ESLint `react-hooks/exhaustive-deps`는 effect 본문에서 사용한 모든 변수를 deps에 넣길 요구한다. 우리 코드는 handler·dropOptions의 setter들도 본문에서 호출하지만 deps에는 안 넣었다 — setter는 stable이라 안전하다고 판단한 trade-off다. 경고가 거슬리면 `// eslint-disable-next-line react-hooks/exhaustive-deps` 또는 React 19의 `useEffectEvent`(실험적)로 우회.
+
+#### Step 61-4: race condition — 데이터 도착 전 사용자가 입력하면?
+
+이 패턴의 가장 미묘한 결함: **데이터가 늦게 오면 사용자 입력을 덮어쓸 위험**.
+
+```
+t=0    페이지 마운트 → 폼 빈 상태 → 쿼리 발사
+t=0.1  사용자가 빠르게 활동1 textarea에 "내가 적은 내용..." 입력 시작
+t=0.5  쿼리 도착 → effect 발사 → 가드 통과 → setSelfActivity1(server.emphasis1) → 사용자 입력 ❌ 덮어씌워짐
+```
+
+발생 확률은 낮다(쿼리는 보통 빠르고, 사용자가 마운트 직후 즉시 입력할 가능성 낮음). 하지만 0은 아님.
+
+세 가지 완화책, 강도순:
+
+**(a) 데이터 도착 전 폼 자체를 disabled / 가림 (가장 안전)**
+```tsx
+const isLoading = !hopeUnivsData || !preferSelectsData || !simpleQuestionData;
+
+{isLoading ? (
+  <FormSkeleton />
+) : (
+  <ActualForm {...allProps} />
+)}
+```
+
+**(b) form 전체에 opacity + pointer-events-none**
+```tsx
+<form className={isLoading ? 'opacity-50 pointer-events-none' : ''}>
+```
+
+**(c) 필드별 dirty 추적 → dirty인 필드만 prefetch 스킵 (가장 사용자 친화)**
+react-hook-form 등 폼 라이브러리가 자동 제공하는 기능. 직접 구현하려면 각 필드마다 "사용자가 건드렸나" boolean을 관리해야 해 복잡.
+
+이 프로젝트는 단순함을 위해 어떤 완화도 안 적용했다 — 발생 확률이 낮고, 발생해도 사용자가 다시 입력하면 됨. 사용자 보고가 들어오면 **(a)**부터 적용.
+
+#### Step 61-5: React Query 캐시와의 상호작용
+
+React Query는 `staleTime`이 지나면 백그라운드에서 자동 refetch한다. 이때 prefetch effect는 어떻게 동작할까?
+
+시나리오:
+```
+t=0     페이지 마운트 → 쿼리 fetch → 데이터 도착 → effect 적용 → hasHydrated=true
+t=10s   사용자가 폼 일부 편집
+t=5min  staleTime 만료 → React Query 백그라운드 refetch
+t=5min+ 새 데이터 도착 → data reference 변경 → effect deps 변화 → effect 재발사
+        가드 if (hasHydrated.current) return; → 건너뜀 ✅
+```
+
+즉 **ref 가드 덕분에 refetch가 사용자 편집 내용을 덮어쓰지 않는다.** 이게 의도된 동작.
+
+다만 알아둘 점:
+- **컴포넌트가 unmount/remount되면** ref도 새로 만들어진다. 다시 prefetch 적용.
+- Confirm 페이지의 confirm 쿼리들과 **같은 queryKey**라면 React Query 캐시 공유 — 첫 도착이 빠르다. 이건 이득.
+
+> **요약**: `useRef` 가드는 "**한 hook 인스턴스 안에서 한 번**"이다. 컴포넌트가 unmount/remount되면 새 가드 → 다시 적용. 의도한 라이프사이클과 맞는지 검토.
+
+#### Step 61-6: 대안 패턴들 — 언제 다른 걸 쓸까?
+
+prefetch effect는 강력하지만 만능은 아니다. 상황별 다른 옵션:
+
+**(a) 직접 렌더 — 폼 시드가 아니라 표시용**
+사용자가 편집하지 않는 데이터(읽기 전용)는 state로 옮길 필요가 없다. 그냥 렌더:
+```tsx
+<p>{hopeUnivsData?.[0]?.univName}</p>
+```
+이 프로젝트의 Confirm 페이지가 이 패턴이다. 편집 불가니까 state 동기화가 불필요. **prefetch effect보다 압도적으로 단순**하니, 편집할 일이 없으면 무조건 이 쪽.
+
+**(b) `useQuery`의 `select` 옵션 — 변환만**
+```ts
+useQuery({
+  queryKey,
+  queryFn,
+  select: (data) => data.map(transform),  // 응답을 변환해서 컴포넌트에 다른 모양으로 노출
+});
+```
+변환 결과를 state로 옮기지 않으니 사용자 편집 시나리오엔 안 맞음. 하지만 "보여주기 전에 한 번 변환"이 필요할 때 깔끔.
+
+**(c) 폼 라이브러리의 `reset(data)`**
+react-hook-form, formik 등을 쓴다면 prefetch 후 `reset(serverData)` 한 줄로 끝.
+```ts
+const { reset } = useForm();
+useEffect(() => {
+  if (data) reset(data);  // ← 라이브러리가 dirty 추적까지 자동 처리
+}, [data, reset]);
+```
+우리 프로젝트는 `useState` 기반이라 수동 매핑이 필요했다. 폼이 더 커지면 react-hook-form 도입 고려.
+
+**(d) Next.js `initialData` / SSR hydration**
+서버 컴포넌트에서 데이터 prefetch → 클라이언트로 hydrate. App Router의 표준 패턴 중 하나.
+```ts
+// 서버 컴포넌트
+const data = await fetchOnServer();
+<ClientComponent initialData={data} />
+```
+이번 케이스는 클라이언트 전용 페이지라 적용 안 함. 하지만 SEO/초기 렌더가 중요한 페이지에선 첫 선택지.
+
+**(e) URL 쿼리스트링** ([Phase 5의 "방법 1"](#phase-5-수정하기--페이지-간-데이터-전달-두-가지-방식-비교))
+서버 prefetch가 가능해진 지금은 거의 안 씀.
+
+> **선택 기준 (의사결정 표)**:
+>
+> | 상황 | 추천 패턴 |
+> |---|---|
+> | 편집 가능한 폼 시드, 서버 API 있음 | **prefetch effect** (이 패턴) |
+> | 읽기 전용 표시 | 직접 렌더 |
+> | 응답 변환만 (사용자 편집 없음) | `useQuery({ select })` |
+> | 폼 라이브러리 도입한 프로젝트 | 그 라이브러리의 `reset/setValue` |
+> | SEO/초기 렌더 중요 | SSR initialData |
+> | 서버 API 없음 | sessionStorage (Phase 5/10) |
+
+#### Step 61-7: 흔한 버그와 디버깅 팁
+
+| 증상 | 원인 후보 | 빠른 디버깅 |
+|---|---|---|
+| 폼이 안 채워짐 | 쿼리 응답이 빈 배열/undefined / 가드 조건 잘못 | `console.log({hope: hopeUnivsData})` / Network 탭 |
+| 사용자 입력이 사라짐 | `hasHydrated` 누락 / ref가 매 렌더 새로 만들어짐(잘못된 위치) | `console.log('hydrate?', hasHydrated.current)` |
+| effect가 두 번 적용 | StrictMode dev 환경의 의도적 이중 마운트 | dev에서만 그러는 거면 무시 가능. ref 가드로 차단됨 |
+| 무한 루프 | deps에 effect 본문에서 set하는 state가 있음 | deps에서 그 state 제거 또는 setter ref 안정화 |
+| 한 페이지 진입에 두 번 prefetch | 컴포넌트가 remount되고 있음 (parent key 변경 등) | React DevTools로 mount 횟수 확인 |
+| Confirm에서는 되는데 Apply에선 안 됨 | 두 페이지의 hook 인스턴스가 분리됨 — 정상. 다만 prefetch 적용 로직이 한쪽에만 있을 수 있음 | 페이지별로 prefetch 책임 분리 정책 결정 |
+| 응답은 OK인데 DropDown 매치 안 됨 | 타입 비대칭 (Phase 20) | `typeof data.x` 로 number vs string 확인 |
+
+자주 쓰는 진단 로그 한 줄:
+```ts
+useEffect(() => {
+  console.log('[prefetch]', {
+    hydrated: hasHydrated.current,
+    hope: !!hopeUnivsData,
+    prefer: !!preferSelectsData,
+    simple: !!simpleQuestionData,
+  });
+}, [hopeUnivsData, preferSelectsData, simpleQuestionData]);
+```
+
+#### Step 61-8: sessionStorage 복원 vs 서버 prefetch — 결정적 차이
+
+같은 "초기값 시드" 문제를 두 방법으로 풀 수 있다. 이번 프로젝트는 후자로 옮겨갔다.
+
+| 항목 | sessionStorage (Phase 5/10) | 서버 prefetch (이 Phase 19) |
+|---|---|---|
+| 데이터 소유 | 클라이언트(브라우저) | 서버 |
+| 진실의 원천 | 모호함 — 두 군데 동시 존재 | 서버 단일 |
+| 다른 기기/세션 | ❌ (탭/세션 단위) | ✅ (계정 기준) |
+| 오프라인 동작 | ✅ 가능 | ❌ 불가 |
+| 동기화 책임 | 프론트가 양쪽 챙겨야 함 | 서버에 위임 |
+| 데이터 일관성 | 깨질 가능성 (race, stale) | 보장 |
+| 코드 복잡도 | 중간 (직렬화/역직렬화 + 키 관리) | 낮음 (React Query 위임) |
+| 첫 신청자 처리 | 비어 있음(자연스러움) | 빈 응답 처리 필요 |
+| 보안 | 클라이언트에 데이터 노출 | 서버 측 인증 통과해야 접근 |
+
+이 프로젝트가 sessionStorage에서 서버 prefetch로 넘어간 흐름:
+1. 서버 API가 없을 땐 sessionStorage 외 선택지가 없었음 (Phase 5/10).
+2. 서버에 확정 후 조회 API가 생긴 순간, sessionStorage는 **불필요한 중복**으로 전락.
+3. "서버가 진실의 원천" 정책으로 일관성을 보장하면서 클라이언트 코드를 단순화.
+
+```
+[과거]                              [현재]
+사용자 입력                          사용자 입력
+  ↓                                  ↓
+sessionStorage 저장 ←┐                서버 POST
+  ↓                  │                  ↓
+페이지 이동           │                저장됨 (서버)
+  ↓                  │                  ↓
+sessionStorage 복원 ─┘                페이지 이동
+  ↓                                    ↓
+폼 채움                              서버 GET (React Query)
+                                       ↓
+                                     prefetch effect → 폼 채움
+```
+
+> **결정 한 줄**: 서버에 같은 데이터를 가진 API가 존재한다면, sessionStorage 의존을 *완전히* 걷어내라. 두 캐시를 유지하면 동기화 책임이 모호해지고, 결국 어디서 어긋난다.
+
+---
+
 ### Step 62: 알려진 데이터 갭
 
 서버 응답이 일부 필드를 누락한다. 코드로는 메울 수 없는 부분이라 명시적으로 빈 값으로 두고 백엔드 보완을 추적.
@@ -5186,3 +5487,413 @@ alert는 사용자가 강제로 시도했을 때의 안전망이고, 정상 흐�
 > StrictMode dev에서 updater가 두 번 호출되는 건 **버그가 아니라 기능**이다. 그 안에서 두 번 일어나면 안 되는 일(alert, fetch 등)을 미리 잡아준다. "왜 알람이 두 번 뜨지?"가 신호다.
 
 > **"왜 다른 곳에서 부작용이 발생하지?"라는 미스터리의 절반은 impure updater다.** updater에 side effect를 넣지 않으면, 진단 시간이 절약된다.
+
+---
+
+## Phase 22: Confirm 모드의 "빈값 숨김" 분기 패턴
+
+### 배경
+
+같은 컴포넌트를 **Apply(편집)** 와 **Confirm(확인)** 두 모드에서 재사용할 때, "확인 모드에선 입력값이 비어 있는 항목 자체를 숨긴다"는 정책이 한 세션 안에서 세 곳에서 발견됐다.
+
+1. `AdmissionScoreStatus`의 **비교과 추가 입력** Textarea
+2. `EmphasisActivityInput`의 **활동 1~3** Textarea
+3. **희망 대학 카드** 6슬롯 (이건 약간 변형 — 빈 슬롯을 placeholder로)
+
+세 곳 모두 "사용자가 입력한 것만 보여준다"는 같은 원칙을 다른 모양으로 적용한다. 한 번 익히면 새 항목이 추가될 때 자동으로 같은 패턴을 쓰면 된다.
+
+### Step 67: 단일 항목 — `mode ? hasValue : conditionForMode` 패턴
+
+기존엔 `showComparativeExtra` (3-1 미입력일 때만 노출)만으로 게이트했다.
+
+```ts
+// before
+const showComparativeExtra = studentRecordComparativeStatus.some(...);
+{showComparativeExtra && <Textarea ... />}
+```
+
+확인 모드에선 추가로 "값이 있을 때만" 조건이 더해진다. 두 조건을 모드별로 가르면 깔끔.
+
+```ts
+// after
+const showComparativeExtra = studentRecordComparativeStatus.some(...);
+
+// 확인(confirm) 모드에선 입력값이 있을 때만 노출 — 빈 입력은 숨김
+// 신청(edit) 모드에선 기존대로 3-1 미입력 조건만 적용
+const showComparativeExtraSection = confirmPage
+  ? !!comparativeExtraInfo
+  : showComparativeExtra;
+
+{showComparativeExtraSection && <Textarea ... />}
+```
+
+**패턴의 일반화**:
+```
+visible = mode === '확인' ? hasValue(value) : modeAgnosticCondition
+```
+
+### Step 68: 다중 항목 — 배열 + filter + map
+
+`EmphasisActivityInput`은 활동1/2/3을 `ActivityTextarea`로 3번 그렸다. 거의 동일한 코드 복붙.
+
+```tsx
+// ❌ before — 복붙 3번
+<ActivityTextarea title="활동1" label="..." value={selfActivity1} onChange={...} />
+<ActivityTextarea title="활동2" label="..." value={selfActivity2} onChange={...} />
+<ActivityTextarea title="활동3" label="..." value={selfActivity3} onChange={...} />
+```
+
+배열로 추상화하면 빈값 필터링이 한 줄로 끝난다.
+
+```tsx
+// ✅ after — 배열 + filter + map
+const activities = [
+  { title: '활동1', value: selfActivity1, onChange: setSelfActivity1 },
+  { title: '활동2', value: selfActivity2, onChange: setSelfActivity2 },
+  { title: '활동3', value: selfActivity3, onChange: setSelfActivity3 },
+];
+
+const visibleActivities = confirmPage
+  ? activities.filter(({ value }) => !!value)   // confirm: 값 있는 것만
+  : activities;                                  // edit: 전부
+
+return (
+  <ContLayout type="sm">
+    {visibleActivities.map(({ title, value, onChange }) => (
+      <ActivityTextarea
+        key={title}
+        title={title}
+        label={ACTIVITY_PLACEHOLDER}
+        value={value}
+        maxLength={100}
+        readOnly={confirmPage}
+        onChange={onChange ?? NOOP}
+      />
+    ))}
+  </ContLayout>
+);
+```
+
+**얻는 것**:
+- 활동 4번째 추가가 한 줄(배열 원소 추가) — JSX 안 건드림.
+- 동일한 긴 placeholder 문자열을 `ACTIVITY_PLACEHOLDER` 상수로 단일화 — 문구 수정이 한 곳.
+- `NOOP = () => {}` 모듈 상수 — 매 렌더마다 새 함수 생성 회피(메모리/리렌더 최적화).
+- 확인 모드 빈값 숨김이 `.filter(...)` 한 줄.
+
+### Step 69: 변형 — 항상 N슬롯, 빈 슬롯은 placeholder
+
+희망 대학 카드는 한 발 더 나간다. "Confirm에서 항상 6슬롯을 보여주되, 채워진 카드 + 빈 placeholder 카드를 grid에 자동 정렬".
+
+```tsx
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+  {Array.from({ length: MAX_HOPE_CARDS }).map((_, idx) => {
+    const item = hopeUnivsData?.[idx];
+    if (item) {
+      return <FilledCard key={item.num} item={item} />;
+    }
+    return (
+      <div
+        key={`empty-${idx}`}
+        className="... border-dashed bg-gray-50 text-gray-400 ..."
+      >
+        비어 있음
+      </div>
+    );
+  })}
+</div>
+```
+
+**핵심 기법**: `Array.from({ length: N })`로 **항상 N번 순회**하고, 각 슬롯에서 데이터 유무로 분기. "데이터 길이만큼만 그린다"가 아니라 "**항상 N개 슬롯을 그리고 각자 채울지 비울지 결정**".
+
+`MAX_HOPE_CARDS`를 공유 const(`libs/const.ts`)로 두고 `handler.handleAddCard`의 추가 제한과 의미를 일치시킴 — 한 곳에서 정책 관리.
+
+### 세 가지의 공통 골격
+
+```
+1) 단일:     visible = mode ? hasValue : otherCond
+2) 다중:     visibleItems = mode ? items.filter(hasValue) : items
+3) 슬롯형:   N번 순회 + 각 슬롯: data[i] ? <Filled> : <Empty>
+```
+
+**모두 "표시할지 결정"이 데이터 + 모드의 함수**라는 점이 같다. 새 항목이 추가되면 어느 패턴인지 먼저 물어보고 적용.
+
+### 디자인 원칙 — 두 줄
+
+> **Confirm은 진실의 거울이다.** 사용자가 입력한 그대로만 보여줘야 한다. 빈 항목은 거울에 없어야 한다.
+
+> **반복 항목은 배열로 추상화하라.** 분기·필터링·정렬이 한 줄로 끝난다. 4번째 항목 추가가 JSX 안 건드리는지 보고 추상화의 성공을 판단.
+
+---
+
+## Phase 23: 로컬 플래그를 서버 진실로 옮기기 — `isApplyCompleted` 사례
+
+### 배경: 같은 정보를 어디에 둘 것인가
+
+Phase 19에서 sessionStorage 의존을 걷어내고 서버를 진실의 원천으로 옮겼다. 그런데 신청 완료 여부(`isApplyCompleted`)는 여전히 sessionStorage 플래그(`applyComplete: 'true'`)로 남아 있었다. 이걸 서버 API로 옮기는 결정을 다루면서 몇 가지 함정과 의미 분리 이슈가 드러났다.
+
+### Step 70: 흔한 오해 — "submit POST 호출로 상태 확인"
+
+> "submit이 성공하면 그게 완료 아닌가? `submitAdmissionEvaluationApply`로 대체하면 되지 않나?"
+
+**❌ 안 됨.** `submitAdmissionEvaluationApply`는 POST — write 동사다. 호출하면 **새 신청이 또 생성**된다. 상태 확인 용도로 호출하면 매번 새 신청이 일어나는 사고가 발생.
+
+> **HTTP 동사를 헷갈리지 마라.** 상태 확인은 read 동사여야 한다. write(POST/PUT/DELETE)는 데이터를 바꾼다. "확인"이라는 단어가 양쪽에 쓰여도, 데이터를 바꾸지 않는 게 진짜 확인.
+
+### Step 71: 임시 우회 — 기존 GET 쿼리로 derivation
+
+이미 존재하는 confirm 조회 쿼리들이 사용자의 저장된 신청 데이터를 돌려준다. **응답이 비어 있지 않으면 = 신청한 적 있음**.
+
+```ts
+const { data: hopeUnivsData } = useConfirmHopeUnivsQuery();
+const isApplyCompleted = (hopeUnivsData?.length ?? 0) > 0;
+```
+
+이러면 sessionStorage 플래그 없이 서버 진실로 가드 가능. **다만 의미가 살짝 바뀐다.**
+
+| 측면 | sessionStorage 플래그 | GET 쿼리 derivation |
+|---|---|---|
+| true 되는 시점 | Confirm 모달 "신청완료" 버튼 클릭 | Apply 페이지 submit POST 성공 |
+| 의미 | "사용자가 최종 확인까지 마침" | "임시저장 포함, 서버에 데이터 있음" |
+| 세션 끊기면 | 사라짐 (탭 닫기) | 유지 (서버에 있으니까) |
+| 다른 기기 | false | true |
+
+**이게 정책적으로 맞는지** 백엔드/PO와 정렬 필수.
+
+### Step 72: 정석 — dedicated status API
+
+가장 깨끗한 해결은 백엔드에 **신청 상태 전용 엔드포인트**를 추가:
+
+```
+GET /admission-evaluation/apply/status
+Response: { isApplyCompleted: boolean }
+```
+
+프론트 스캐폴드는 미리 준비해 두면 응답 도착 시 swap이 한 줄로 끝난다.
+
+```ts
+// types
+export interface AdmissionEvaluationApplyStatusResponse {
+  isApplyCompleted: boolean;
+}
+
+// api
+export const fetchAdmissionEvaluationApplyStatus =
+  async (): Promise<AdmissionEvaluationApplyStatusResponse> => {
+    return apiClient()
+      .get('admission-evaluation/apply/status')
+      .json<AdmissionEvaluationApplyStatusResponse>();
+  };
+
+// query 훅
+export function useAdmissionEvaluationApplyStatusQuery() {
+  return useQuery({
+    queryKey: ['admissionEvaluationApplyStatus'],
+    queryFn: () => fetchAdmissionEvaluationApplyStatus(),
+  });
+}
+```
+
+`useAdmissionEvaluationNavigation` 안에서 sessionStorage.getItem 호출을 이 훅의 데이터로 swap. ConfirmModal의 sessionStorage.setItem도 제거(서버가 알아서 갱신).
+
+### Step 73: 의미 다양성 — "완료"가 의미하는 세 가지
+
+"신청 완료"는 모호한 표현이다. 코드를 읽는 사람이 같은 단어로 다른 걸 떠올릴 수 있다. 가능한 후보:
+
+| 정의 | 어떤 동작이 true로 만드는가 |
+|---|---|
+| A. **임시저장 완료** | Apply 페이지에서 submit POST 성공 |
+| B. **확인 완료** | Confirm 페이지의 모달 "신청완료" 버튼 클릭 |
+| C. **최종 확정 완료** | 별도 확정 API 호출 (POST /apply/confirm) — 현재 미구현 |
+
+**현재 구현은 B**(sessionStorage만 세팅, 서버는 아직 모름). **GET 쿼리 derivation은 A**. **정석 API는 백엔드 정책에 따라 A·B·C 중 어느 것이라도 될 수 있음**.
+
+같은 변수명 `isApplyCompleted`로 셋 다 가리킬 수 있으니, 코드 옆 주석이나 더 정확한 이름이 필요하다.
+
+```ts
+// ❌ 모호
+const isApplyCompleted = ...;
+
+// ✅ 구체적
+const hasSubmittedDraft = ...;       // A
+const hasConfirmedFinal = ...;        // B/C
+```
+
+### Step 74: 백엔드 응답 대기 동안의 트래킹
+
+백엔드에 API 추가를 요청한 후 응답까지 시차가 생긴다. 그 사이 작업이 잊혀지지 않도록:
+
+- **프로젝트 메모리**(Claude memory): "백엔드에 GET /apply/status 요청 완료, 응답 대기 중 (YYYY-MM-DD)"
+- **코드 내 TODO 주석**: `// TODO: API 연동 시 ... ; 예상 API: GET /apply/status returning { isApplyCompleted: boolean }`
+- **변경 체크리스트**: 응답 도착 시 손볼 곳을 미리 정리
+  1. types: response interface 추가
+  2. api: fetch 함수 추가
+  3. queries: query 훅 추가
+  4. navigation 가드 — sessionStorage.getItem → 훅 데이터
+  5. Confirm 모달 onClick — sessionStorage.setItem 제거
+  6. 진입 시 sessionStorage.removeItem 제거
+  7. const.ts에서 `applyComplete` 키 제거
+
+### 교훈
+
+> **같은 boolean 변수도 누가 언제 true로 만드는가에 따라 의미가 달라진다.** `isCompleted`라는 이름은 무엇의 완료인지 말해주지 않는다. 정의를 주석으로 박거나, 더 정확한 이름(`hasSubmittedDraft` / `hasConfirmedFinal` 등)으로 분리하라.
+
+> **상태 확인은 read API로.** write API(POST submit)를 read 용도로 쓰지 마라. 매 호출이 데이터를 바꾸는 사고로 이어진다.
+
+> **백엔드 의존 작업은 메모리/TODO로 추적.** 응답 도착 시 swap 체크리스트를 미리 정리해두면 frictionless하게 전환된다.
+
+---
+
+## Phase 24: 훅 책임 경계 — 결합 vs 분리의 판단 기준
+
+### 배경: "기존 handler에 추가해도 되나?"
+
+리포트 페이지의 "전문가에게 질문하기"용 mutation 훅(`useAdmissionQnaMutation`)이 만들어졌다. 질문이 들어왔다:
+
+> "이 mutation을 `useAdmissionEvaluationHandler`에 합쳐도 되나?"
+
+답은 **❌ 합치면 안 된다**. 이유와 판단 기준을 정리.
+
+### Step 75: 책임 경계의 정의
+
+먼저 각 훅이 무엇을 책임지는지 정확히 본다.
+
+`useAdmissionEvaluationHandler`:
+- **신청 페이지(Apply)** 폼의 선택 상태
+- 드롭다운 (selectedOption, selectedTypeOption)
+- 카드 추가/삭제 (selectedCards, handleAddCard, handleDeleteCard)
+- 자격 검증 알림 + 모달 상태 (alertMessage, isConfirmOpen)
+
+`useAdmissionQnaMutation`:
+- **리포트 페이지(Report)** 의 전문가 질문 제출
+- POST /admission-evaluation/qna
+
+→ **두 책임이 향하는 페이지가 다르다.** 도메인은 같지만(admission-evaluation) 사용처가 다르고, 같이 마운트되지 않는다.
+
+### Step 76: 합치면 일어나는 일 — Phase 17의 재발
+
+`useAdmissionEvaluationHandler`는 이미 `useAdmissionEvaluationApplyForm`(Apply 페이지 전용)에 합성돼 있다. 거기에 QnA mutation까지 들어가면:
+
+1. **Apply 페이지가 안 쓰는 QnA mutation 셋업을 매번 들고 다님** — useMutation의 mutationFn/onError 클로저를 매 렌더 생성.
+2. **이름의 모호화** — "Evaluation Handler"가 신청 폼 + 리포트 mutation 둘 다 가리키게 되어 무엇을 책임지는지 모호.
+3. **Report 페이지가 Apply 폼 훅을 통째로 부르게 됨** — Phase 17의 "통째 호출 함정"이 그대로 재발(드롭다운 쿼리, 카드 핸들러까지 다 발사).
+
+### Step 77: 의사결정 — 어디에 둘 것인가
+
+| 옵션 | 적용 시점 |
+|---|---|
+| **A. 페이지에서 직접 사용** | 간단하고 한 곳에서만 쓸 때. 가장 가벼움. |
+| **B. 페이지 전용 훅으로 분리** | 로직(검증/제출/후속처리/관련 state)이 페이지 안에서 복잡해질 때. |
+| **C. 기존 다른 훅에 합침** | **책임이 같을 때만.** "같은 페이지 + 같은 종류의 상태/동작" → 거의 X. |
+
+QnA 사례에선 **A 또는 B**가 정답. 페이지가 단순하면 A, 복잡해지면 B로 진화.
+
+### Step 78: mutation UX 4가지 체크리스트
+
+QnA 제출 사례에서 보였던 빠진 디테일들을 패턴화한다.
+
+```tsx
+// ❌ 부족한 mutation 호출
+const { mutate: submitQuestion } = useAdmissionQnaMutation();
+
+<Button onClick={() => submitQuestion({
+  userId: currentUser.userId ?? '',
+  question: question,
+})}>
+  질문 제출
+</Button>
+```
+
+빠진 4가지:
+
+#### ① 빈값 가드
+서버에 빈 입력을 보내면 검증 실패하거나(서버 부하), 더 나쁘게는 빈 질문이 저장된다.
+```ts
+if (!question.trim()) {
+  alert('질문을 입력해주세요.');
+  return;
+}
+```
+
+#### ② 인증 가드
+`userId ?? ''`로 빈 문자열을 그대로 보내는 건 위험. 비로그인 사용자가 페이지에 도달했을 때 가드.
+```ts
+if (!currentUser.userId) return;
+```
+
+#### ③ `isPending`로 중복 제출 차단
+mutation은 비동기. 사용자가 버튼을 빨리 두 번 누르면 두 번 제출된다.
+```tsx
+const { mutate, isPending } = useAdmissionQnaMutation();
+
+<Button disabled={isPending} onClick={...}>
+  {isPending ? '질문 제출 중...' : '질문 제출'}
+</Button>
+```
+
+#### ④ `onSuccess`로 후속 처리
+제출 성공 시 form reset + 알림 + 관련 쿼리 invalidate 등. mutate의 두 번째 인자로 callback 전달.
+
+```ts
+submitQuestion(
+  { userId: currentUser.userId, question },
+  {
+    onSuccess: () => {
+      setQuestion('');               // textarea 비우기
+      alert('질문이 제출되었습니다.');
+    },
+  },
+);
+```
+
+> **훅 정의의 onSuccess/onError vs 호출 시점의 onSuccess/onError**
+> - 훅 정의(`useMutation({ onError: ... })`): 모든 호출에 공통. 에러 로깅, 공통 알림 등 "모든 호출에서 같은 일" 용도.
+> - 호출 시점(`mutate(vars, { onSuccess: ... })`): 그 호출만의 후속처리. form reset, 페이지 이동 등.
+>
+> 두 곳 다 둘 수 있고, 호출 시점이 훅 정의보다 나중에 실행되는 게 아니라 **둘 다 실행**된다. 역할을 분담시켜라.
+
+### 종합 — mutation의 "기본 4종 세트"
+
+```tsx
+// 완성형 패턴
+const [question, setQuestion] = useState('');
+const { mutate: submitQuestion, isPending } = useAdmissionQnaMutation();
+
+const handleSubmit = () => {
+  if (!currentUser.userId) return;        // ② 인증 가드
+  if (!question.trim()) {                  // ① 빈값 가드
+    alert('질문을 입력해주세요.');
+    return;
+  }
+  submitQuestion(
+    { userId: currentUser.userId, question },
+    {
+      onSuccess: () => {                   // ④ 후속 처리
+        setQuestion('');
+        alert('질문이 제출되었습니다.');
+      },
+    },
+  );
+};
+
+<Button disabled={isPending} onClick={handleSubmit}>
+  {/* ③ isPending */}
+  {isPending ? '질문 제출 중...' : '질문 제출'}
+</Button>
+```
+
+이 4가지가 빠지면 사용자는 차례로 다음을 경험한다:
+1. 빈값 보냄 → 서버 검증 에러 alert ("뭐가 잘못된 거지?")
+2. 비로그인 → 401/403 → 에러 alert ("로그인은 됐는데?")
+3. 더블 클릭 → 두 번 제출 → 같은 질문 두 번 등록 ("내가 한 번만 눌렀는데?")
+4. 제출 후 textarea 그대로 → 같은 질문 또 보냄 ("아까 보낸 거 맞나?")
+
+### 교훈
+
+> **훅은 책임 단위로 자른다.** 같은 도메인이라도 페이지가 다르고 책임이 다르면 별도 훅. "도메인 이름"으로 묶지 말고 "사용처/책임 단위"로 묶어라.
+
+> **mutation은 호출만 한다고 끝이 아니다.** ① 빈값 가드 ② 인증 가드 ③ isPending로 중복 차단 ④ onSuccess로 후속처리 — 4가지가 기본 세트. 빠뜨리면 사용자는 "버튼을 눌렀는데 아무 반응 없네" 또는 "왜 두 번 보내졌지" 같은 경험을 한다.
+
+> **합치고 싶다 vs 분리해야 한다의 판단**:
+> - 두 훅이 같은 페이지에서만 함께 마운트되나? → 합쳐도 OK 가능성
+> - 다른 페이지에서 한쪽만 쓰나? → 무조건 분리
+> - 책임 이름이 자연스럽게 한 줄로 표현되나? → 한 훅. 두 줄 이상이면 분리.
