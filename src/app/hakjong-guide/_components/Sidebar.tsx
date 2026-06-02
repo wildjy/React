@@ -25,7 +25,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase1',
-    label: 'Phase 1 — 페이지 구조',
+    label: 'Phase 1 — 탭 + 라우팅으로 페이지 나누기',
     phase: 1,
     items: [
       { id: 'step1', label: '탭 네비게이터 생성',  num: 1 },
@@ -37,7 +37,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase2',
-    label: 'Phase 2 — 접근 제어',
+    label: 'Phase 2 — 비로그인 사용자 차단 가드',
     phase: 2,
     items: [
       { id: 'step6', label: '로그인 체크 & 가드',   num: 6 },
@@ -46,7 +46,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase3',
-    label: 'Phase 3 — 신청 페이지',
+    label: 'Phase 3 — 드롭다운 + 카드 추가 UI',
     phase: 3,
     items: [
       { id: 'step8',  label: 'TypeScript 타입 정의',  num: 8  },
@@ -59,7 +59,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase4',
-    label: 'Phase 4 — 서버 전송',
+    label: 'Phase 4 — 폼 데이터 POST 전송',
     phase: 4,
     items: [
       { id: 'step14', label: '서버 타입 정의',     num: 14 },
@@ -72,7 +72,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase5',
-    label: 'Phase 5 — 수정하기',
+    label: 'Phase 5 — 페이지 간 입력값 전달',
     phase: 5,
     items: [
       { id: 'step20', label: 'URLSearchParams 방식',      num: 20 },
@@ -84,7 +84,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase6',
-    label: 'Phase 6 — 최종 제출',
+    label: 'Phase 6 — 확인 모달 + 최종 제출',
     phase: 6,
     items: [
       { id: 'step25', label: 'ConfirmModal 사용',      num: 25 },
@@ -95,7 +95,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase7',
-    label: 'Phase 7 — 탭 접근 제어',
+    label: 'Phase 7 — 단계 완료해야 다음 탭 진입',
     phase: 7,
     items: [
       { id: 'step29', label: '탭 내비게이션 구조',           num: 29 },
@@ -107,7 +107,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase8',
-    label: 'Phase 8 — 커스텀 훅 분리',
+    label: 'Phase 8 — 컴포넌트가 너무 길어졌어요',
     phase: 8,
     items: [
       { id: 'step34', label: '분리 대상 식별',                num: 34 },
@@ -120,7 +120,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase9',
-    label: 'Phase 9 — throwOnError 우회',
+    label: 'Phase 9 — 쿼리 하나가 페이지 다 깨요',
     phase: 9,
     items: [
       { id: 'step40', label: '글로벌 정책과 문제',         num: 40 },
@@ -131,7 +131,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase10',
-    label: 'Phase 10 — 실 API 연동 전환',
+    label: 'Phase 10 — mock 떼고 실 서버 붙이기',
     phase: 10,
     items: [
       { id: 'step44', label: 'mock 제거 → 실 엔드포인트', num: 44 },
@@ -143,7 +143,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase11',
-    label: 'Phase 11 — 트러블슈팅',
+    label: 'Phase 11 — "should not be empty" 에러',
     phase: 11,
     items: [
       { id: 'phase11-symptom',  label: '증상',            icon: '🩺' },
@@ -154,7 +154,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase12',
-    label: 'Phase 12 — 쓰기 vs 읽기',
+    label: 'Phase 12 — 입력값 vs 서버응답 헷갈려요',
     phase: 12,
     items: [
       { id: 'phase12-write-vs-read', label: '전송 vs 조회',       icon: '↔️' },
@@ -166,7 +166,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase13',
-    label: 'Phase 13 — 컴포넌트 분리/FSD',
+    label: 'Phase 13 — prop을 11개나 내려보내요',
     phase: 13,
     items: [
       { id: 'step49', label: '조합 로직 컴포넌트로',  num: 49 },
@@ -177,7 +177,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase14',
-    label: 'Phase 14 — Invalid hook call',
+    label: 'Phase 14 — Invalid hook call 에러',
     phase: 14,
     items: [
       { id: 'phase14-symptom', label: '증상',                 icon: '🩺' },
@@ -187,7 +187,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase15',
-    label: 'Phase 15 — 타 호스트 API',
+    label: 'Phase 15 — 다른 도메인 API · CORS/CSP',
     phase: 15,
     items: [
       { id: 'phase15-bg',    label: '배경',              icon: '◎' },
@@ -198,7 +198,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase16',
-    label: 'Phase 16 — 오케스트레이션 훅',
+    label: 'Phase 16 — useState/useEffect 폭증',
     phase: 16,
     items: [
       { id: 'step53',                 label: '합성 상위 훅',    num: 53 },
@@ -208,7 +208,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase17',
-    label: 'Phase 17 — Confirm 패턴',
+    label: 'Phase 17 — 훅 3개 값만 쓰고 싶은데 통째 부름',
     phase: 17,
     items: [
       { id: 'step54', label: '읽기 전용 요약 훅',     num: 54 },
@@ -219,7 +219,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase18',
-    label: 'Phase 18 — 복수 데이터 모델링',
+    label: 'Phase 18 — 카드 N개 sessionStorage에 어떻게',
     phase: 18,
     items: [
       { id: 'step58',             label: '시도: comma-join',     num: 58 },
@@ -230,7 +230,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase19',
-    label: 'Phase 19 — sessionStorage 제거',
+    label: 'Phase 19 — 서버 API 생겨서 캐시 걷어내기',
     phase: 19,
     items: [
       { id: 'step61', label: 'prefetch effect',     num: 61 },
@@ -241,7 +241,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase20',
-    label: 'Phase 20 — number vs string',
+    label: 'Phase 20 — 선택값이 드롭다운에 안 잡혀요',
     phase: 20,
     items: [
       { id: 'phase20-case1', label: '발견 ①: 검증 차단', icon: '①' },
@@ -252,7 +252,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase21',
-    label: 'Phase 21 — impure updater',
+    label: 'Phase 21 — alert가 두 번 떠요 (StrictMode)',
     phase: 21,
     items: [
       { id: 'phase21-symptom',     label: '증상',                icon: '🩺' },
@@ -263,7 +263,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase22',
-    label: 'Phase 22 — Confirm 빈값 숨김',
+    label: 'Phase 22 — 편집/확인 모드 같은 컴포넌트 재사용',
     phase: 22,
     items: [
       { id: 'step67', label: '단일: mode ? hasValue', num: 67 },
@@ -273,7 +273,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase23',
-    label: 'Phase 23 — 서버 진실로',
+    label: 'Phase 23 — sessionStorage 플래그 → 서버로',
     phase: 23,
     items: [
       { id: 'step70', label: '오해: POST로 상태확인', num: 70 },
@@ -285,7 +285,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase24',
-    label: 'Phase 24 — 훅 책임 경계',
+    label: 'Phase 24 — 새 mutation 기존 훅에 합칠까',
     phase: 24,
     items: [
       { id: 'step75', label: '책임 경계 정의',      num: 75 },
@@ -296,7 +296,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase25',
-    label: 'Phase 25 — apply vs submit',
+    label: 'Phase 25 — 신청 POST가 왜 두 개인가요',
     phase: 25,
     items: [
       { id: 'step79', label: '사용자 상태 머신',    num: 79 },
@@ -308,7 +308,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase26',
-    label: 'Phase 26 — 빈 응답 깊이',
+    label: 'Phase 26 — 빈 배열인데 || 가 안 잡아요',
     phase: 26,
     items: [
       { id: 'step84', label: '깊이 3가지',          num: 84 },
@@ -319,7 +319,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase27',
-    label: 'Phase 27 — 제네릭 + render-prop',
+    label: 'Phase 27 — 같은 UI 두 데이터에 공유',
     phase: 27,
     items: [
       { id: 'step88', label: '데이터 비교',         num: 88 },
@@ -332,7 +332,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase28',
-    label: 'Phase 28 — POST 에러 응답',
+    label: 'Phase 28 — 상태 전용 API 없을 때',
     phase: 28,
     items: [
       { id: 'step94', label: '사전 vs 사후 처리',   num: 94 },
@@ -345,7 +345,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase29',
-    label: 'Phase 29 — 서버 가드 + options',
+    label: 'Phase 29 — 서버 컴포넌트 진입 가드',
     phase: 29,
     items: [
       { id: 'step99',  label: 'use* 접두사 함정',    num: 99 },
@@ -358,7 +358,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase30',
-    label: 'Phase 30 — Cache Invalidation',
+    label: 'Phase 30 — 제출했는데 화면이 그대로예요',
     phase: 30,
     items: [
       { id: 'step105', label: 'stale cache 문제',       num: 105 },
@@ -371,7 +371,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase31',
-    label: 'Phase 31 — Pointer Events',
+    label: 'Phase 31 — 마우스 + 터치 드래그 UI',
     phase: 31,
     items: [
       { id: 'step111', label: 'Pointer Events 통합',    num: 111 },
@@ -385,7 +385,7 @@ const navGroups: NavGroup[] = [
   },
   {
     id: 'phase32',
-    label: 'Phase 32 — server-first display',
+    label: 'Phase 32 — 한 번 제출하면 잠그고 싶어요',
     phase: 32,
     items: [
       { id: 'step118', label: 'derived display value',  num: 118 },
