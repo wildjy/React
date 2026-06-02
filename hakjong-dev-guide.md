@@ -6234,6 +6234,215 @@ export function EvaluationTabModule<T>({
 - **`getKey`/`getLabel`/`renderContent`**: 호출자가 자기 데이터를 어떻게 표현할지 결정
 - **`findIndex`로 selectedIndex 계산**: 키 → index 매핑을 컨테이너가 알아서 처리. 기존 `Number(selectedValue) - 1` 같은 인덱스 추정보다 안전
 
+---
+
+### Step 90의 심층 학습 — `<T>` 제네릭 컴포넌트 해부
+
+`function EvaluationTabModule<T>(...)`라는 한 줄에 TypeScript의 핵심 개념이 응축돼 있다. 처음 마주치면 마법 같지만 원리를 알면 가장 강력한 도구 중 하나다. 9개 측면으로 풀어 설명한다.
+
+#### Step 90-1: 왜 제네릭이 필요한가 — `any`/`unknown`/유니온으로 했다면?
+
+같은 컨테이너 UX를 두 데이터 타입(`HopeUnivEvaluation`, `RecommUnivTab`)이 공유해야 하는 상황. 제네릭 없이 푼다면:
+
+**❌ 시도 A: `any`로 받기**
+```ts
+function EvaluationTabModule({ items }: { items: any[] }) {
+  // getLabel: (item: any) => string
+}
+
+<EvaluationTabModule
+  items={hopeUnivEvaluations}
+  getLabel={(item) => item.univNamee}   // ← 오타 — TS가 못 잡음!
+/>
+```
+`any`는 **타입 체크를 꺼버리는** 키워드. 오타·잘못된 필드 접근이 컴파일에서 안 잡히고 런타임에 `undefined`로 잠수.
+
+**❌ 시도 B: `unknown`으로 받기**
+```ts
+function EvaluationTabModule({ items }: { items: unknown[] }) {
+  // ...
+}
+
+getLabel={(item) => item.univName}
+//                  ^^^^^^^^^^^^^^
+//   TS Error: Object is of type 'unknown'.
+```
+`unknown`은 안전하지만 **너무 안전해서** 아무 필드도 못 씀. 매번 타입 가드/캐스팅 필요 → 사용성 0.
+
+**❌ 시도 C: 유니온 타입**
+```ts
+function EvaluationTabModule({ items }: {
+  items: HopeUnivEvaluation[] | RecommUnivTab[];
+}) { ... }
+```
+문제 2가지:
+- 새 데이터 타입(`SomethingElse[]`) 추가할 때마다 컴포넌트 시그니처 수정 필요.
+- 내부에서 `item.num`(HopeUniv만 있음) 접근 시 RecommUnivTab에 없어 또 타입 에러.
+
+**✅ 제네릭이 답인 이유**: 컴포넌트는 "어떤 타입이든 다 받을 수 있지만 각 호출에서는 그 타입을 정확히 기억" 한다. 호출자가 자기 데이터 타입에 맞춰 콜백을 작성하면 TS가 그 안에서 `item`을 정확히 추론.
+
+#### Step 90-2: `<T>`의 의미 — "타입 변수"
+
+함수의 일반 매개변수가 "값 변수"인 것처럼, 제네릭의 `<T>`는 **"타입 변수"**.
+
+```ts
+// 값 변수 — 함수 호출 시 값이 결정됨
+function add(a: number, b: number) { return a + b; }
+add(1, 2);   // a=1, b=2
+
+// 타입 변수 — 함수 호출 시 타입이 결정됨
+function identity<T>(value: T): T { return value; }
+identity<string>('hello');   // T=string (명시)
+identity(42);                // T=number  (TS가 추론)
+```
+
+`T`는 관례 이름일 뿐 아무 이름이나 가능(`<Item>`, `<DataType>` 등). 보통 한 글자(T, U, K, V)나 의미 있는 PascalCase 이름.
+
+#### Step 90-3: 우리 코드 한 줄씩 풀기
+
+```ts
+interface EvaluationTabModuleProps<T> {
+  items: T[];
+  getKey: (item: T) => string;
+  getLabel: (item: T) => string;
+  renderContent: (item: T) => React.ReactNode;
+  // ...
+}
+
+export function EvaluationTabModule<T>(
+  props: EvaluationTabModuleProps<T>
+) { ... }
+```
+
+| 줄 | 의미 |
+|---|---|
+| `interface EvaluationTabModuleProps<T>` | 이 인터페이스는 T라는 타입 변수를 받음. T는 인터페이스 안에서 일관된 의미로 사용 |
+| `items: T[]` | items는 T의 배열. T가 `HopeUnivEvaluation`이면 `HopeUnivEvaluation[]` |
+| `getKey: (item: T) => string` | item을 받아 string 돌려주는 함수. 호출자가 작성한 함수는 T의 필드를 직접 쓸 수 있음 |
+| `function EvaluationTabModule<T>(...)` | 이 함수도 T를 받음 — Props의 T와 **같은** T 임을 컴파일러가 연결 |
+
+호출 시:
+```tsx
+<EvaluationTabModule
+  items={hopeUnivEvaluations}   // ← items 타입이 HopeUnivEvaluation[]
+  getKey={(item) => String(item.num)}
+  //              ^^^^^^^^^^^^^^^^^
+  // item이 HopeUnivEvaluation 으로 자동 추론 → num 필드 사용 가능
+/>
+```
+TS가 `items={...}`를 보고 **T = HopeUnivEvaluation으로 자동 추론**. 이후 모든 콜백 매개변수가 HopeUnivEvaluation으로 좁혀짐.
+
+다른 호출에선 다른 T:
+```tsx
+<EvaluationTabModule
+  items={recommUnivTabs}         // ← T = RecommUnivTab으로 추론
+  getKey={(item) => String(item.position)}
+  //              ^^^^^^^^^^^^^^^^^^^^^^
+  // item이 RecommUnivTab → position 필드 사용 (num은 없음 — RecommUnivTab엔 없으니까)
+/>
+```
+
+#### Step 90-4: T의 "일관성"이 핵심
+
+```ts
+function EvaluationTabModule<T>({
+  items,         // T[]
+  getKey,        // (T) => string
+  renderContent, // (T) => ReactNode
+}: EvaluationTabModuleProps<T>) {
+  items.map((item) => {
+    //         ^^^^ item: T (자동)
+    getKey(item);          // OK
+    renderContent(item);   // OK
+  });
+}
+```
+
+**한 컴포넌트 호출 안에서 T는 단일 타입.** 만약 items가 `HopeUnivEvaluation[]`인데 getKey가 `(item: RecommUnivTab) => ...`이면 → 컴파일 에러. TS가 "T 일관성"을 강제해서 잘못된 짝을 자동으로 막아준다.
+
+#### Step 90-5: React 컴포넌트 + 제네릭 — JSX 문법 함정
+
+화살표 함수로 작성하면 JSX 파서가 `<T>`를 JSX 태그로 오인:
+
+```tsx
+// ❌ 화살표 + 제네릭 — JSX 파서가 깨짐
+const EvaluationTabModule = <T>(props: ...) => { ... }
+//                          ^^^ 여기서 파싱 오류
+```
+
+회피책 3가지:
+```tsx
+// ✅ 옵션 A: function 선언 (이 프로젝트의 선택)
+export function EvaluationTabModule<T>(props: ...) { ... }
+
+// ✅ 옵션 B: trailing comma 트릭
+const EvaluationTabModule = <T,>(props: ...) => { ... }
+
+// ✅ 옵션 C: extends 제약
+const EvaluationTabModule = <T extends object>(props: ...) => { ... }
+```
+
+이 프로젝트는 **A**를 선택. JSX와 가장 깔끔하게 공존하고 가독성도 좋음.
+
+#### Step 90-6: 제약(constraint) — `extends`로 T를 좁히기
+
+T가 "아무거나"가 아니라 "최소한 어떤 필드는 있어야" 한다고 강제 가능:
+
+```ts
+// T가 num 필드를 반드시 가져야 함
+function Module<T extends { num: number }>(props: { items: T[] }) {
+  props.items[0].num;   // ← OK, T가 num을 갖는다고 보장됨
+}
+
+Module({ items: hopeUnivEvaluations });   // OK (num 있음)
+Module({ items: recommUnivTabs });         // ❌ RecommUnivTab엔 num 없음
+```
+
+우리 `EvaluationTabModule`은 T에 **아무 제약이 없다**. 대신 `getKey/getLabel/renderContent`로 호출자가 "T를 어떻게 다룰지"를 통째 위임 → 컴포넌트 자체는 T의 구체 모양을 몰라도 됨. 이게 핵심 설계 결정 중 하나.
+
+#### Step 90-7: render-prop과 제네릭의 궁합
+
+- **제네릭**은 "타입을 매개변수화" 한다.
+- **render-prop**은 "렌더링을 매개변수화" 한다.
+
+둘을 결합하면:
+```tsx
+<EvaluationTabModule
+  items={data}                            // 어떤 데이터든
+  renderContent={(item) => <Card .../>}   // 어떻게 렌더할지
+/>
+```
+
+| 역할 | 책임 |
+|---|---|
+| **컴포넌트** | "Tab + DropDown 동기화"라는 컨테이너 로직만 — 데이터 모양/렌더링 모름 |
+| **호출자** | "내 데이터에서 키/라벨/콘텐츠를 어떻게 뽑을지"만 |
+
+책임이 깔끔히 양분된다.
+
+#### Step 90-8: 실전 학습 체크리스트 — 언제 제네릭을 써야 하나
+
+| 신호 | 제네릭이 답일 가능성 |
+|---|---|
+| 같은 컨테이너 UX를 여러 데이터 타입이 공유 | ✅ |
+| 호출자가 "내 데이터로 뭘 할지"를 다 정해줄 수 있음 | ✅ |
+| 컴포넌트 안에서 데이터의 특정 필드(`item.num` 등)에 직접 접근 | ⚠️ 제약(`extends`) 필요 |
+| 그냥 `any`/`unknown`으로 해도 동작은 함 | ❌ 타입 안전성 잃음 |
+| 단일 데이터 타입에서만 쓰일 컴포넌트 | ❌ 불필요한 추상화 |
+
+#### Step 90-9: 짧은 비유
+
+- **일반 함수**: "정수 두 개를 더해주는 계산기" — 정수만 받음
+- **제네릭 함수**: "두 개를 합쳐주는 빈 트레이" — 정수도, 문자열도, 객체도 올려놓으면 그 자리에서 그 타입에 맞게 동작
+
+`EvaluationTabModule<T>`는 **빈 트레이**. 호출자가 `HopeUnivEvaluation[]`을 올리면 그 모양으로, `RecommUnivTab[]`을 올리면 그 모양으로 자동 적응. 트레이 자신은 자기가 뭘 들고 있는지 모르지만 **그게 일관되게 같은 종류라는 것**만 보장한다.
+
+#### 정리 한 줄
+
+> **제네릭 컴포넌트는 "데이터 타입을 잠시 비워두고 호출자가 채우게 하는" 패턴이다.** `<T>`는 그 빈자리. 호출 시점에 T가 정해지면 모든 콜백/매개변수가 자동으로 그 타입으로 좁혀져서 **재사용성과 타입 안전성을 동시에** 얻는다.
+
+---
+
 ### Step 91: 두 호출부
 
 ```tsx
@@ -6489,4 +6698,650 @@ Report 페이지
 CONFIRMED 상태에서 POST 재시도
   → 400 "이미 신청이 완료되었습니다."
   → Phase 28 (status API 없을 때 — 에러 응답 활용)
+```
+
+---
+
+## Phase 29: Next.js 서버 가드 — 훅 규칙의 경계 + options로 페이지별 정책
+
+### 배경
+
+Apply / Confirm / Report 세 페이지의 **진입 조건**이 모두 다르다:
+- `/apply`: 비로그인 차단. 결제+완료된 사용자가 URL 직타로 진입 시 → Report로
+- `/confirm`: 비로그인 차단. 결제+완료된 사용자 → Report로
+- `/report`: 비로그인 차단. 미완료 사용자 → INTRO로
+
+이걸 클라이언트 useEffect로 처리하면 **페이지 한 번 그려진 후 redirect** 깜빡임 발생. Next.js App Router의 정석은 **서버 컴포넌트 페이지의 진입 가드를 async 함수로** 두는 것.
+
+### Step 99: `use*` 접두사 함정 — 훅 규칙으로 검사됨
+
+처음 시도한 코드:
+```ts
+// ❌ navigation.server.ts
+export async function useAdmissionEvaluationNavigationHandler() {
+  const currentUser = await getCurrentUser();
+  const { data: applyStatusData } =
+    await useAdmissionEvaluationApplyStatusQuery();   // ← 훅 호출
+  // ...
+}
+```
+
+위반 사항이 여러 개:
+
+| 위반 | 설명 |
+|---|---|
+| `use*` 네이밍 컨벤션 | React 규칙: "use로 시작하는 함수는 반드시 React Hook." ESLint의 `react-hooks/rules-of-hooks`가 즉시 검사 시작 |
+| async + 훅 | 훅은 동기 렌더링 컨텍스트에서만 동작 — `async function` 본문에서 훅 호출은 React가 추적 불가 |
+| 훅에 `await` | 훅은 Promise 아님. `{ data, isLoading }` 객체를 즉시 리턴. `await`은 의미 없음 |
+| 서버에서 클라이언트 훅 | `.server.ts` + `redirect` from `next/navigation` = 서버 컨텍스트. React 렌더 트리 없는 곳에서 훅 호출은 불가 |
+
+> **규칙 한 줄**: `use*` 접두사를 쓰면 **그 함수가 훅이라고 컴파일러·린터가 가정**한다. 훅이 아니면 다른 이름을 써라. `getXxx`, `ensureXxx`, `fetchXxx` 등.
+
+### Step 100: 올바른 형태 — 일반 async 함수 + fetch 직접 호출
+
+```ts
+// ✅ 일반 async 함수, 훅 X
+export async function ensureAdmissionEvaluationAccess() {
+  const currentUser = await getCurrentUser();
+  if (!currentUser.userId) {
+    redirect(ADMISSION_EVALUATION_PATH.INTRO);
+  }
+  // React Query 훅 대신 fetch 함수 직접 호출
+  const applyStatus = await fetchAdmissionEvaluationApplyStatus();
+  return { currentUser, isApplyCompleted: applyStatus?.completed ?? false };
+}
+```
+
+핵심 변화:
+- `use*` → 동사형 일반 함수명 (`ensureXxx`, `getXxx`)
+- `useXxxQuery()` (훅) → `fetchXxx()` (api 함수 직접 호출)
+- 반환값은 `await Promise` 결과
+
+### Step 101: `alert`는 서버에서 ReferenceError
+
+```ts
+// ❌ 서버에서
+alert('로그인이 필요합니다.');   // ReferenceError: alert is not defined
+redirect(INFO_PATH);
+```
+
+`alert`는 브라우저 전용(`window.alert`). 서버 런타임(Node.js)엔 `window` 없음.
+- `alert` 라인에서 즉시 `ReferenceError` throw
+- redirect 도달 못 함 → 사용자는 500 에러 페이지만 봄
+
+서버에서 사용자에게 안내 전달하려면:
+- **옵션 A**: 그냥 redirect (도착 페이지가 알아서 안내)
+- **옵션 B**: 쿼리 파라미터에 reason 담아 보냄 → 도착 페이지(client)가 읽어 alert
+- **옵션 C**: `cookies().set('flash', 'reason')` → 도착 페이지가 읽고 지움
+
+대부분 A로 충분. 안내가 정말 필요하면 B.
+
+### Step 102: options 패턴 — 페이지별 다른 정책
+
+3개 페이지가 같은 함수를 호출하되 각자 정책이 다르니, **options 객체로 분기**:
+
+```ts
+export async function ensureAdmissionEvaluationAccess(options?: {
+  /** 신청 완료 안 된 경우 INTRO 로 보냄 (Report 페이지용) */
+  redirectIfNotCompleted?: boolean;
+  /** 결제 + 신청 모두 완료된 경우 REPORT 로 보냄 (Apply/Confirm 페이지용) */
+  redirectIfCompleted?: boolean;
+}) {
+  const currentUser = await getCurrentUser();
+  if (!currentUser.userId) redirect(INTRO);
+
+  const applyStatus = await fetchAdmissionEvaluationApplyStatus();
+  const isApplyCompleted = applyStatus?.completed ?? false;
+
+  // Report: 미완료 → INTRO
+  if (options?.redirectIfNotCompleted && !isApplyCompleted) {
+    redirect(INTRO);
+  }
+
+  // Apply/Confirm: 결제+완료 → REPORT
+  if (options?.redirectIfCompleted && isApplyCompleted) {
+    const isPaid = await fetchSusiPaymentStatus();
+    if (isPaid) redirect(REPORT);
+  }
+
+  return { currentUser, isApplyCompleted };
+}
+```
+
+호출:
+```tsx
+// apply/page.tsx
+await ensureAdmissionEvaluationAccess({ redirectIfCompleted: true });
+
+// confirm/page.tsx
+await ensureAdmissionEvaluationAccess({ redirectIfCompleted: true });
+
+// report/page.tsx
+await ensureAdmissionEvaluationAccess({ redirectIfNotCompleted: true });
+```
+
+### Step 103: 옵션 이름 ↔ 동작 일치의 중요성
+
+한때 시도된 패턴:
+```ts
+// ❌ 옵션 이름과 동작이 어긋남
+if (isApplyCompleted && options?.redirectIfNotCompleted) {
+  redirect(REPORT);
+}
+```
+
+`redirectIfNotCompleted`(미완료면 리다이렉트) 라는 이름이 `isApplyCompleted`(완료) 인 경우에 발동 → 정반대. 한 옵션으로 두 정반대 동작을 처리하려는 충동을 막아야 함.
+
+| 의도 | 옵션 이름 |
+|---|---|
+| 미완료면 INTRO로 | `redirectIfNotCompleted` |
+| 완료면 REPORT로 | `redirectIfCompleted` |
+
+두 정책이 정반대니 **옵션도 정확히 두 개**. 한 옵션으로 묶으면 의미가 모호.
+
+### Step 104: 결제 fetch 위치 — 조건부 호출로 최적화
+
+```ts
+// ❌ 모든 진입에서 결제 조회
+const isPaid = await fetchSusiPaymentStatus();
+
+// ✅ 필요할 때만 조회 — 결제 완료 안 됐을 사용자는 결제 정보 자체 필요 없음
+if (options?.redirectIfCompleted && isApplyCompleted) {
+  const isPaid = await fetchSusiPaymentStatus();
+  if (isPaid) redirect(REPORT);
+}
+```
+
+`isApplyCompleted` 가 false 면 결제 여부는 redirect 결정에 영향 없음. 호출 자체를 안 하는 게 빠름. 가장 흔한 케이스(첫 신청자)의 페이지 진입 속도 ↑.
+
+### 교훈
+
+> **`use*` 접두사는 React Hook 한정 예약어다.** 훅이 아니면 동사형 일반 함수명을 써라. ESLint가 그 이름을 본 순간부터 hook rules로 검사한다.
+
+> **서버 함수에서는 클라이언트 훅도, `alert` 도 못 쓴다.** fetch 함수를 직접 호출하고, 사용자 안내는 redirect 경로나 쿼리 파라미터로.
+
+> **옵션 이름과 동작은 정확히 일치해야 한다.** "이 옵션 켜면 무슨 일이 일어나는가"를 이름이 그대로 말해줘야 한다. 두 정반대 동작을 한 옵션에 묶지 마라.
+
+---
+
+## Phase 30: Mutation 후 화면 갱신 — Cache Invalidation 표준 패턴
+
+### 배경
+
+질문을 제출했는데 **화면이 그대로**다. 가드(`remainingQuestions`, `items.length`)도 옛 값. 사용자가 한 번 더 제출 가능. 직전에 보낸 질문은 카운트에 반영 안 됨.
+
+원인은 React Query의 **stale cache**.
+
+### Step 105: stale cache 문제 한 그림
+
+```
+t=0  qnaListData = { remainingQuestions: 3, items: [] }   ← 캐시
+     사용자: 첫 질문 제출 → POST 성공
+t=1  서버에는 items 1개 추가됨, remainingQuestions=2
+     하지만 클라이언트 캐시는 그대로 { remainingQuestions: 3, items: [] }
+t=2  사용자: 두 번째 질문 시도
+     가드: 옛값 사용 → 통과 → 또 제출
+     서버는 진짜를 알지만 클라이언트는 모름
+```
+
+mutation은 서버 상태를 바꾸지만 **React Query 캐시까지는 자동으로 갱신 안 한다** — 우리가 명시적으로 알려줘야 함.
+
+### Step 106: 결정적 함정 — `new QueryClient()`
+
+처음 시도한 코드:
+```ts
+// ❌ queries.ts
+onSuccess: (_, { userId }) => {
+  alert('질문이 성공적으로 제출되었습니다.');
+  const queryClient = new QueryClient();   // ← 새 인스턴스!
+  queryClient.invalidateQueries({
+    queryKey: ['admissionReportQnaList', userId],
+  });
+},
+```
+
+`new QueryClient()` 는 **완전히 새, 독립된** QueryClient 인스턴스를 만든다. 앱이 실제로 쓰는 QueryClient(`<QueryClientProvider>` 가 들고 있는 것)는 건드리지 않는다.
+
+비유:
+> "방금 산 빈 노트의 메모를 지웠다" — 진짜 문제의 노트는 그대로.
+
+invalidate가 **실제 캐시엔 아무 영향 없음** → refetch 안 됨 → 화면 안 바뀜.
+
+### Step 107: 정답 — `useQueryClient()` 훅
+
+```ts
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+export function useAdmissionQnaMutation() {
+  const queryClient = useQueryClient();   // ✅ 앱이 제공한 진짜 인스턴스
+  return useMutation({
+    mutationFn: submitAdmissionReportQna,
+    onSuccess: (_, { userId }) => {
+      queryClient.invalidateQueries({
+        queryKey: ['admissionReportQnaList', userId],
+      });
+    },
+  });
+}
+```
+
+| | `new QueryClient()` | `useQueryClient()` |
+|---|---|---|
+| 가져오는 client | 새 빈 인스턴스 | 앱의 `QueryClientProvider`가 제공한 인스턴스 |
+| invalidate 효과 | 새 인스턴스 안 캐시만 (사실상 없음) | 앱이 실제 쓰는 캐시 → useQuery 가 refetch |
+| 사용 위치 | (이론상) 외부 코드 | React 컴포넌트/훅 본문 |
+
+### Step 108: invalidate 표준 위치 — mutation 정의 안
+
+mutation의 onSuccess를 **두 곳**에 둘 수 있다:
+- **mutation 정의의 onSuccess** (queries.ts) — 모든 호출에 공통
+- **mutate 호출 시의 onSuccess** (mutate(vars, { onSuccess })) — 그 호출만의 후속
+
+역할 분담:
+| 위치 | 담당 |
+|---|---|
+| **정의 안 onSuccess** | 캐시 invalidate, 공통 로깅 |
+| **호출 시 onSuccess** | UI 후속 처리 (form reset, alert, 페이지 이동) |
+
+```ts
+// queries.ts — 정의: 캐시 관리
+export function useAdmissionQnaMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: submitAdmissionReportQna,
+    onSuccess: (_, { userId }) => {
+      // 모든 호출에서 공통으로: 캐시 무효화
+      queryClient.invalidateQueries({
+        queryKey: ['admissionReportQnaList', userId],
+      });
+    },
+    onError: (error) => {
+      console.error('질문 제출 실패:', error);
+      alert('질문 제출에 실패했습니다.');
+    },
+  });
+}
+
+// 호출 site — UI 후속만
+submitQuestion(
+  { userId, question },
+  {
+    onSuccess: () => {
+      setQuestion('');
+      alert('질문이 제출되었습니다.');
+    },
+  },
+);
+```
+
+> **두 onSuccess는 둘 다 실행된다.** 정의 쪽이 먼저, 호출 쪽이 그 다음. 역할만 분담하면 충돌 없음.
+
+### Step 109: alert 중복 함정
+
+정의·호출 양쪽에서 alert 띄우면 사용자에게 2번 보임:
+```ts
+// queries.ts onSuccess
+alert('질문이 성공적으로 제출되었습니다.');   // 1번째
+
+// Report.tsx 호출 site onSuccess
+alert('질문이 제출되었습니다.');             // 2번째
+```
+
+→ 정의에서 alert 제거, 호출 site에서만.
+
+### Step 110: 더 빠른 반응이 필요하면 — Optimistic Update
+
+invalidate는 "서버에서 다시 받아오기" 라 round-trip 1회. 사용자 클릭 즉시 화면 반영하려면 optimistic update 패턴:
+
+```ts
+onMutate: async ({ userId, question }) => {
+  await queryClient.cancelQueries({ queryKey: ['admissionReportQnaList', userId] });
+  const previous = queryClient.getQueryData(['admissionReportQnaList', userId]);
+  queryClient.setQueryData(['admissionReportQnaList', userId], (old) => ({
+    ...old,
+    remainingQuestions: Math.max(0, (old?.remainingQuestions ?? 0) - 1),
+    items: [...(old?.items ?? []), { question, ... }],
+  }));
+  return { previous };
+},
+onError: (_err, { userId }, context) => {
+  // 실패 시 롤백
+  if (context?.previous) {
+    queryClient.setQueryData(['admissionReportQnaList', userId], context.previous);
+  }
+},
+onSettled: (_data, _err, { userId }) => {
+  // 성공/실패 어느 쪽이든 서버 진실로 동기화
+  queryClient.invalidateQueries({ queryKey: ['admissionReportQnaList', userId] });
+},
+```
+
+- 장점: 클릭 즉시 화면 반영 (낙관적 갱신)
+- 단점: 코드량 ↑, 실패 시 롤백 로직 필요
+
+흔치 않은 액션(QnA 제출 등)은 invalidate만으로 충분. 자주 일어나는 액션(좋아요 등)에 optimistic 권장.
+
+### 교훈
+
+> **`new QueryClient()` 는 invalidate 의도엔 절대 안 된다.** 새 빈 인스턴스라 실제 캐시 안 건드림. 반드시 `useQueryClient()` 훅으로 진짜 인스턴스 가져와야 함.
+
+> **mutation 정의 onSuccess vs 호출 시 onSuccess — 역할 분담.** 정의는 "캐시 관리" 공통 책임, 호출은 "UI 후속" 개별 책임. 둘 다 실행되니 중복 alert 주의.
+
+> **mutate 후 화면 안 바뀌면 첫 의심은 cache invalidation 누락.** queryKey 가 정확히 일치하는지도 점검.
+
+---
+
+## Phase 31: 인터랙티브 UI 만들기 — Pointer Events + StarRating 사례
+
+### 배경
+
+별점(0.5 단위, 5점 만점) UI를 PC 마우스 드래그 + Mobile 터치로 지원하고 싶다. 두 입력 방식을 따로 코딩하지 말고 통합하는 게 학습 포인트.
+
+### Step 111: Pointer Events — 마우스+터치 통합 인터페이스
+
+브라우저에는 두 가지 입력 이벤트 계열이 있다:
+- **MouseEvents** (`onMouseDown/Move/Up`): PC 마우스
+- **TouchEvents** (`onTouchStart/Move/End`): 모바일 터치
+
+이걸 둘 다 다루면 코드가 두 배. 대신 **Pointer Events** 는 둘 다 통합한다:
+
+| Pointer 이벤트 | 마우스 | 터치 | 펜 |
+|---|---|---|---|
+| `onPointerDown` | mousedown | touchstart | pen down |
+| `onPointerMove` | mousemove | touchmove | pen move |
+| `onPointerUp` | mouseup | touchend | pen up |
+
+```tsx
+<div
+  onPointerDown={handlePointerDown}
+  onPointerMove={handlePointerMove}
+  onPointerUp={handlePointerUp}
+>
+```
+
+이 한 세트로 마우스·터치·펜 모두 처리. 추가로 `onPointerCancel` 은 시스템이 입력을 끊는 경우(예: 시스템 모달 등장) 처리.
+
+### Step 112: `setPointerCapture` — 영역 밖으로 나가도 추적
+
+드래그 중 사용자가 컨테이너 밖으로 빠르게 손가락/마우스를 이동시키면 보통 `onPointerMove`/`Up` 이벤트가 끊긴다. `setPointerCapture`는 이걸 막아준다:
+
+```tsx
+const handlePointerDown = (e: React.PointerEvent) => {
+  e.currentTarget.setPointerCapture(e.pointerId);   // ← 이 pointer는 이 요소가 끝까지 추적
+  // ...
+};
+```
+
+사용자가 별 영역을 벗어나도 손 뗄 때까지 `onPointerMove`/`Up` 이 계속 들어옴.
+
+### Step 113: 두 레이어 width% 오버레이 — 시각 패턴
+
+별 5개를 0.5 단위로 표현하려면 별 하나하나를 분기하기보단 **같은 배경을 두 번 깔고 전경의 width%로 채움 비율 표현**:
+
+```tsx
+<div className="relative inline-block">
+  {/* 배경: 빈 별 5개 */}
+  <div className="flex text-gray-300">★★★★★</div>
+
+  {/* 전경: 채워진 별 5개 — width 로 채움 비율 */}
+  <div
+    className="absolute top-0 left-0 flex overflow-hidden text-yellow-400 whitespace-nowrap"
+    style={{ width: `${fillPercentage}%` }}
+  >
+    ★★★★★
+  </div>
+</div>
+```
+
+3.7 별, 1.5 별, 0.5 별 등 **어떤 비율이든 자연스럽게 표현**된다.
+
+이 패턴은 별점뿐 아니라 다른 진행 표시기에도 응용 가능 (HP 바, 로딩 등).
+
+### Step 114: 0.5 단위 스냅 (또는 임의 단위)
+
+```ts
+const calculateValue = (clientX: number) => {
+  const rect = containerRef.current!.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  return Math.round(ratio * TOTAL_UNITS);
+};
+```
+
+`TOTAL_UNITS`가 곧 단위 해상도:
+- `TOTAL_UNITS = 5` → 1.0 단위 (1, 2, 3, 4, 5)
+- `TOTAL_UNITS = 10` → 0.5 단위 (0.5, 1.0, 1.5, ...) — 5 stars × 2
+- `TOTAL_UNITS = 100` → 0.05 단위 (소수점 두 자리)
+
+`Math.round` 만으로 정확한 단위 스냅 가능.
+
+### Step 115: hoverValue vs value 분리 — 드래그 미리보기
+
+```ts
+const [hoverValue, setHoverValue] = useState<number | null>(null);
+
+const handlePointerDown = (e) => {
+  // ...
+  setHoverValue(calculateValue(e.clientX));   // ← 미리보기만
+};
+
+const handlePointerMove = (e) => {
+  if (isDragging) setHoverValue(calculateValue(e.clientX));
+};
+
+const handlePointerUp = () => {
+  if (hoverValue !== null) onChange(hoverValue);   // ← 손 떼는 순간 커밋
+  setHoverValue(null);
+};
+
+const displayValue = hoverValue ?? value;   // 표시: 드래그 중엔 미리보기, 아니면 확정값
+```
+
+이러면 **부모는 손 떼는 순간 한 번만 리렌더**. 드래그 중 매번 onChange 부르면 부모가 매 px 마다 리렌더 → 성능 저하.
+
+### Step 116: 내부 정수 vs 외부 표시 분리
+
+서버가 `@IsInt()` 로 정수만 받는 상황. 0.5 단위 UI를 유지하면서 정수로 전송하려면:
+
+```ts
+const TOTAL_STARS = 5;
+const TOTAL_UNITS = TOTAL_STARS * 2;   // 10 — 반 별 단위로 쪼갠 총 눈금
+
+// 내부 값(컴포넌트 외부 API): 0 ~ 10 정수
+const value = 7;   // = 3.5 별
+
+// 시각 표시 (라벨용)
+const visualStars = value / 2;          // 3.5
+const fillPercentage = (value / TOTAL_UNITS) * 100;   // 70%
+```
+
+| 영역 | 단위 | 예시 |
+|---|---|---|
+| 외부 (value/onChange) | 0 ~ 10 정수 | `7` |
+| 내부 시각 | 5점 만점, 0.5 단위 | "3.5 / 5" |
+
+사용자엔 익숙한 5점 만점으로 보이고, 서버엔 정수로 전송. **백엔드 정수 컬럼 그대로 사용 가능** (DB 마이그레이션 불필요).
+
+> **단, 컨벤션을 백엔드 DTO 주석에 명시.** "satisfiedRate: 0~10, 1 단위 = 반 별, 만점 10" 처럼. 그렇지 않으면 평균 계산할 때 "왜 7점이 만점이지?" 같은 혼동 발생.
+
+### Step 117: `disabled` prop — 잠금 시 클릭 무시
+
+```ts
+const handlePointerDown = (e) => {
+  if (disabled) return;   // ← 가드
+  // ...
+};
+```
+
+가드 + 시각 변화(`cursor-not-allowed opacity-50`)로 잠금 상태 표현.
+
+### 교훈
+
+> **Pointer Events 가 마우스/터치를 둘 다 처리한다.** 따로 코딩하지 마라. `setPointerCapture` 까지 곁들이면 드래그 추적이 안정적.
+
+> **시각적 비율 표현은 두 레이어 + width% 가 가장 단순하다.** 별 하나하나 분기하지 말고 같은 콘텐츠를 깔고 위 레이어의 width 로 채움 비율 조절.
+
+> **드래그 미리보기는 컴포넌트 내부 hoverValue 로.** 부모 onChange 는 손 떼는 순간만 호출. 성능 + 부모 코드 단순화.
+
+> **외부 단위와 내부 시각 단위를 분리할 수 있다.** 서버 요구(정수)와 UX(0.5 단위)가 안 맞을 때 유용한 절충안.
+
+---
+
+## Phase 32: server-first display, local fallback 패턴
+
+### 배경
+
+별점을 한 번 제출하면 다시 못 바꾸는 정책. 페이지 진입 시 사용자가 이전에 제출한 별점이 있다면 **그 값을 보여주고 잠금** 처리하고 싶다.
+
+순진한 시도:
+```ts
+const [rating, setRating] = useState(0);
+const { data: satisfactionSurveyData } = useSatisfactionSurveyQuery(userId);
+
+useEffect(() => {
+  if (satisfactionSurveyData?.satisfiedRate) {
+    setRating(satisfactionSurveyData.satisfiedRate);
+  }
+}, [satisfactionSurveyData?.satisfiedRate]);
+```
+
+이게 동작은 하지만 **세 가지 문제**:
+1. 페이지 로드 → 빈 별 → useEffect 발동 → 별이 채워짐 (깜빡임)
+2. `useEffect`로 sync 코드가 매번 보임 (보일러플레이트)
+3. 캐시 변경(invalidate) 시 사용자가 드래그 중이었다면 그 입력을 덮어쓸 위험
+
+### Step 118: 더 깨끗한 패턴 — derived display value
+
+useEffect 없이 **렌더 시점에 어느 값을 보여줄지 결정**:
+
+```ts
+const [rating, setRating] = useState(0);   // 사용자가 새로 드래그한 임시 값
+const { data: satisfactionSurveyData } = useSatisfactionSurveyQuery(userId);
+
+const isAlreadyRated = (satisfactionSurveyData?.satisfiedRate ?? 0) > 0;
+
+// derived: 이미 제출했으면 서버 값, 아니면 로컬 값
+const displayRating = isAlreadyRated
+  ? (satisfactionSurveyData?.satisfiedRate ?? 0)
+  : rating;
+
+<StarRating value={displayRating} onChange={setRating} disabled={isAlreadyRated} />
+```
+
+흐름:
+
+```
+[케이스 A: 미제출 사용자]
+  satisfactionSurveyData = { satisfiedRate: null }
+  isAlreadyRated = false
+  displayRating = rating (로컬 0)
+  → 별 비어 있음, 드래그 가능
+
+[케이스 B: 이미 제출한 사용자]
+  satisfactionSurveyData = { satisfiedRate: 7 }
+  isAlreadyRated = true
+  displayRating = 7 (서버 값)
+  → 별 채워져 있음, disabled
+```
+
+**useEffect 없음, sync 코드 없음, 깜빡임 없음.** `displayRating` 은 단순한 ternary로 매 렌더에 결정.
+
+### Step 119: 왜 derived가 useEffect보다 깨끗한가
+
+| | useEffect로 sync | derived value |
+|---|---|---|
+| 코드 양 | useEffect 본문 5줄+ | 한 줄 ternary |
+| race condition | 가능 (data 도착 vs 사용자 입력) | 없음 (선택 명확) |
+| 깜빡임 | 있음 (빈 별 → 채워짐) | 없음 (처음부터 올바른 값) |
+| 캐시 변경에 따른 자동 갱신 | 가능하지만 setState 사이클 | 자동 (다음 렌더가 새 derived 값) |
+
+> **규칙**: "state로 따로 들고 있어야 하는가, 아니면 props/server 값에서 매번 계산 가능한가?" 후자면 derived value 가 답.
+
+### Step 120: mutation cache invalidation 과의 짝
+
+derived 패턴 단독으론 부족. 제출 직후 서버 값이 캐시에 안 들어오면 `isAlreadyRated` 가 계속 false 다. → mutation 의 onSuccess에서 invalidate (Phase 30):
+
+```ts
+export function useSubmitSatisfactionMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: submitSatisfactionSurvey,
+    onSuccess: (_, { userId }) => {
+      queryClient.invalidateQueries({
+        queryKey: ['satisfactionSurvey', userId],
+      });
+    },
+  });
+}
+```
+
+이러면 흐름:
+1. 사용자: 별점 7 드래그 → `rating = 7`
+2. [별점 남기기] 클릭 → mutate
+3. 서버 성공 → mutation onSuccess → invalidateQueries
+4. `useSatisfactionSurveyQuery` 가 refetch → `satisfactionSurveyData.satisfiedRate = 7`
+5. `isAlreadyRated = true` → `displayRating = 7` (server 우선)
+6. StarRating disabled
+
+**사용자 입장에서: 클릭 → 잠시 후 자동으로 잠금.** 새로고침 안 해도 됨.
+
+### Step 121: 새로고침 후에도 잠금 유지
+
+derived + invalidation 패턴의 보너스: **새로고침해도 잠금 유지**.
+- 새로고침 → 컴포넌트 마운트 → `useSatisfactionSurveyQuery` 재실행
+- 서버에 이전 제출 값 존재 → `satisfactionSurveyData.satisfiedRate = 7`
+- `isAlreadyRated = true` → 처음부터 잠긴 상태로 그려짐
+
+**Phase 19의 "서버가 진실의 원천" 정책의 응용.** 로컬 sessionStorage 같은 임시 저장 없이 서버 데이터가 곧 잠금 상태.
+
+### Step 122: 다른 적용처
+
+이 패턴(`isXxx ? serverValue : localValue`)은 별점 외에 다양한 곳에 응용 가능:
+- **읽기 전용 폼 필드**: 이미 확정된 입력은 서버값 표시, 아니면 사용자 입력
+- **카운터의 마지막 동기화 값**: 서버 카운트 vs 사용자가 막 누른 클릭
+- **공유 cursor 위치**: 다른 사용자가 있으면 그 위치, 아니면 본인 위치
+
+### 교훈
+
+> **server-first / local fallback 은 useEffect로 sync 보다 깔끔하다.** 단순 ternary로 매 렌더에 결정하면 race condition도 깜빡임도 없다.
+
+> **derived value + mutation invalidate는 한 쌍이다.** 한 쪽만 두면 미완성. 서버 변경이 클라이언트 캐시에 반영돼야 derived 값이 새로워진다.
+
+> **"상태로 들고 있어야 하나, props/server에서 계산 가능한가?"** 가 derived 판단 기준. 후자면 state 줄이고 derived 늘리는 게 거의 항상 더 단순.
+
+---
+
+## Phase 29-32 합쳐서 — 오늘 한 일의 한 그림
+
+```
+페이지 진입 (서버 컴포넌트)
+  ↓
+ensureAdmissionEvaluationAccess({ ... })   ── Phase 29
+  ├─ 비로그인 → redirect(INTRO)
+  ├─ 미완료 + redirectIfNotCompleted → redirect(INTRO)
+  └─ 완료+결제 + redirectIfCompleted → redirect(REPORT)
+
+클라이언트 렌더
+  ↓
+useSatisfactionSurveyQuery(userId)   ── 캐시에 서버 값 확보
+  ↓
+displayRating = isAlreadyRated ? server : local   ── Phase 32
+  ↓ 사용자: 별점 드래그 (PointerEvents)
+  ↓
+StarRating 컴포넌트                     ── Phase 31
+  ├─ Pointer Events (PC + Mobile 통합)
+  ├─ 두 레이어 width% 오버레이
+  ├─ hoverValue 미리보기 → 손 떼는 순간 onChange
+  └─ 0~10 정수 송신 (서버 @IsInt 친화)
+  ↓
+[별점 남기기] 클릭
+  ↓
+useSubmitSatisfactionMutation
+  ↓ mutationFn
+  ↓ onSuccess (정의)
+queryClient.invalidateQueries(['satisfactionSurvey', userId])   ── Phase 30
+  ↓ React Query 자동 refetch
+satisfactionSurveyData.satisfiedRate = 새 값
+  ↓
+isAlreadyRated = true → displayRating = server 값
+  → StarRating 자동 잠금, 새로고침해도 유지
 ```

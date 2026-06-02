@@ -30,6 +30,10 @@ const phaseStepBg: Record<number, string> = {
   26: 'bg-fuchsia-600',
   27: 'bg-violet-600',
   28: 'bg-orange-600',
+  29: 'bg-indigo-700',
+  30: 'bg-rose-700',
+  31: 'bg-teal-700',
+  32: 'bg-pink-700',
 }
 
 const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; label: string }> = {
@@ -61,11 +65,15 @@ const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; 
   26: { wrap: 'bg-fuchsia-50 border-fuchsia-300', num: 'bg-fuchsia-600', text: 'text-fuchsia-900', label: '빈 응답의 깊이별 판정 — ||/??/length/some' },
   27: { wrap: 'bg-violet-50 border-violet-300', num: 'bg-violet-600', text: 'text-violet-900', label: '같은 UI를 두 데이터에 공유 — 제네릭 + render-prop' },
   28: { wrap: 'bg-orange-50 border-orange-300', num: 'bg-orange-600', text: 'text-orange-900', label: 'dedicated status API 없을 때 — POST 에러 응답으로 대체' },
+  29: { wrap: 'bg-indigo-50 border-indigo-300', num: 'bg-indigo-700', text: 'text-indigo-900', label: 'Next.js 서버 가드 — 훅 규칙 경계 + options 페이지별 정책' },
+  30: { wrap: 'bg-rose-50 border-rose-300', num: 'bg-rose-700', text: 'text-rose-900', label: 'Mutation 후 화면 갱신 — Cache Invalidation 표준 패턴' },
+  31: { wrap: 'bg-teal-50 border-teal-300', num: 'bg-teal-700', text: 'text-teal-900', label: '인터랙티브 UI — Pointer Events + StarRating 사례' },
+  32: { wrap: 'bg-pink-50 border-pink-300', num: 'bg-pink-700', text: 'text-pink-900', label: 'server-first display, local fallback 패턴' },
 }
 
 /* ── StepCard ─────────────────────────────────── */
 interface StepCardProps {
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32
   num: number | string
   id?: string
   title: string
@@ -95,7 +103,7 @@ export function StepCard({ phase, num, id, title, children }: StepCardProps) {
 }
 
 /* ── PhaseHeader ──────────────────────────────── */
-export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 }) {
+export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 }) {
   const s = phaseHeaderMap[phase]
   return (
     <div className={cn('flex items-center gap-3 rounded-xl px-5 py-4 border mb-4', s.wrap)}>

@@ -121,6 +121,268 @@ export function EvaluationTabModule<T>({
         </ul>
       </StepCard>
 
+      {/* Step 90 심층 학습 인트로 */}
+      <div className="bg-white border border-gray-200 rounded-xl p-5 md:p-6 mb-4">
+        <div className="flex items-center gap-2.5 mb-4">
+          <div className="w-7 h-7 rounded-lg bg-violet-400 flex items-center justify-center text-white text-xs font-bold shrink-0">
+            🔬
+          </div>
+          <h4 className="text-[15px] font-bold text-gray-900">Step 90의 심층 학습 — &lt;T&gt; 제네릭 컴포넌트 해부</h4>
+        </div>
+        <p className="text-[14px] text-gray-700 leading-7">
+          <IC>{'function EvaluationTabModule<T>(...)'}</IC>라는 한 줄에 TypeScript의 핵심 개념이 응축돼 있다.
+          처음 마주치면 마법 같지만 원리를 알면 가장 강력한 도구 중 하나다. 9개 측면으로 풀어 설명한다.
+        </p>
+      </div>
+
+      {/* Step 90-1 */}
+      <StepCard phase={27} num="90-1" id="step90-1" title="왜 제네릭이 필요한가 — any/unknown/유니온으로 했다면?">
+        <p>같은 컨테이너 UX를 두 데이터 타입(<IC>HopeUnivEvaluation</IC>, <IC>RecommUnivTab</IC>)이 공유해야 하는 상황. 제네릭 없이 푼다면:</p>
+        <p className="font-semibold text-gray-800 mt-2">❌ 시도 A: any로 받기</p>
+        <CodeBlock
+          lang="typescript"
+          code={`function EvaluationTabModule({ items }: { items: any[] }) {
+  // getLabel: (item: any) => string
+}
+
+<EvaluationTabModule
+  items={hopeUnivEvaluations}
+  getLabel={(item) => item.univNamee}   // ← 오타 — TS가 못 잡음!
+/>`}
+        />
+        <p><IC>any</IC>는 <strong>타입 체크를 꺼버리는</strong> 키워드. 오타·잘못된 필드 접근이 컴파일에서 안 잡히고 런타임에 <IC>undefined</IC>로 잠수.</p>
+
+        <p className="font-semibold text-gray-800 mt-3">❌ 시도 B: unknown으로 받기</p>
+        <CodeBlock
+          lang="typescript"
+          code={`function EvaluationTabModule({ items }: { items: unknown[] }) {
+  // ...
+}
+
+getLabel={(item) => item.univName}
+//                  ^^^^^^^^^^^^^^
+//   TS Error: Object is of type 'unknown'.`}
+        />
+        <p><IC>unknown</IC>은 안전하지만 <strong>너무 안전해서</strong> 아무 필드도 못 씀. 매번 타입 가드/캐스팅 필요 → 사용성 0.</p>
+
+        <p className="font-semibold text-gray-800 mt-3">❌ 시도 C: 유니온 타입</p>
+        <CodeBlock
+          lang="typescript"
+          code={`function EvaluationTabModule({ items }: {
+  items: HopeUnivEvaluation[] | RecommUnivTab[];
+}) { ... }`}
+        />
+        <p>문제 2가지:</p>
+        <ul className="list-disc pl-5 space-y-1 text-[14px] text-gray-700 leading-7">
+          <li>새 데이터 타입(<IC>{'SomethingElse[]'}</IC>) 추가할 때마다 컴포넌트 시그니처 수정 필요.</li>
+          <li>내부에서 <IC>item.num</IC>(HopeUniv만 있음) 접근 시 RecommUnivTab에 없어 또 타입 에러.</li>
+        </ul>
+        <Callout variant="key">
+          <strong>✅ 제네릭이 답인 이유:</strong> 컴포넌트는 "어떤 타입이든 다 받을 수 있지만 각 호출에서는 그 타입을 정확히 기억"한다.
+          호출자가 자기 데이터 타입에 맞춰 콜백을 작성하면 TS가 그 안에서 <IC>item</IC>을 정확히 추론.
+        </Callout>
+      </StepCard>
+
+      {/* Step 90-2 */}
+      <StepCard phase={27} num="90-2" id="step90-2" title='<T>의 의미 — "타입 변수"'>
+        <p>함수의 일반 매개변수가 "값 변수"인 것처럼, 제네릭의 <IC>{'<T>'}</IC>는 <strong>"타입 변수"</strong>.</p>
+        <CodeBlock
+          lang="typescript"
+          code={`// 값 변수 — 함수 호출 시 값이 결정됨
+function add(a: number, b: number) { return a + b; }
+add(1, 2);   // a=1, b=2
+
+// 타입 변수 — 함수 호출 시 타입이 결정됨
+function identity<T>(value: T): T { return value; }
+identity<string>('hello');   // T=string (명시)
+identity(42);                // T=number  (TS가 추론)`}
+        />
+        <p><IC>T</IC>는 관례 이름일 뿐 아무 이름이나 가능(<IC>{'<Item>'}</IC>, <IC>{'<DataType>'}</IC> 등). 보통 한 글자(T, U, K, V)나 의미 있는 PascalCase 이름.</p>
+      </StepCard>
+
+      {/* Step 90-3 */}
+      <StepCard phase={27} num="90-3" id="step90-3" title="우리 코드 한 줄씩 풀기">
+        <CodeBlock
+          lang="typescript"
+          code={`interface EvaluationTabModuleProps<T> {
+  items: T[];
+  getKey: (item: T) => string;
+  getLabel: (item: T) => string;
+  renderContent: (item: T) => React.ReactNode;
+  // ...
+}
+
+export function EvaluationTabModule<T>(
+  props: EvaluationTabModuleProps<T>
+) { ... }`}
+        />
+        <DataTable
+          headers={['줄', '의미']}
+          rows={[
+            [<IC key="a">{'interface EvaluationTabModuleProps<T>'}</IC>, '이 인터페이스는 T라는 타입 변수를 받음. T는 인터페이스 안에서 일관된 의미로 사용'],
+            [<IC key="b">{'items: T[]'}</IC>, <>items는 T의 배열. T가 <IC key="b2">HopeUnivEvaluation</IC>이면 <IC key="b3">{'HopeUnivEvaluation[]'}</IC></>],
+            [<IC key="c">{'getKey: (item: T) => string'}</IC>, 'item을 받아 string 돌려주는 함수. 호출자가 작성한 함수는 T의 필드를 직접 쓸 수 있음'],
+            [<IC key="d">{'function EvaluationTabModule<T>(...)'}</IC>, <>이 함수도 T를 받음 — Props의 T와 <strong>같은</strong> T 임을 컴파일러가 연결</>],
+          ]}
+        />
+        <p className="font-semibold text-gray-800 mt-2">호출 시:</p>
+        <CodeBlock
+          lang="tsx"
+          code={`<EvaluationTabModule
+  items={hopeUnivEvaluations}   // ← items 타입이 HopeUnivEvaluation[]
+  getKey={(item) => String(item.num)}
+  //              ^^^^^^^^^^^^^^^^^
+  // item이 HopeUnivEvaluation 으로 자동 추론 → num 필드 사용 가능
+/>`}
+        />
+        <p>TS가 <IC>{'items={...}'}</IC>를 보고 <strong>T = HopeUnivEvaluation으로 자동 추론</strong>. 이후 모든 콜백 매개변수가 HopeUnivEvaluation으로 좁혀짐.</p>
+        <p className="font-semibold text-gray-800 mt-2">다른 호출에선 다른 T:</p>
+        <CodeBlock
+          lang="tsx"
+          code={`<EvaluationTabModule
+  items={recommUnivTabs}         // ← T = RecommUnivTab으로 추론
+  getKey={(item) => String(item.position)}
+  //              ^^^^^^^^^^^^^^^^^^^^^^
+  // item이 RecommUnivTab → position 필드 사용 (num은 없음 — RecommUnivTab엔 없으니까)
+/>`}
+        />
+      </StepCard>
+
+      {/* Step 90-4 */}
+      <StepCard phase={27} num="90-4" id="step90-4" title='T의 "일관성"이 핵심'>
+        <CodeBlock
+          lang="typescript"
+          code={`function EvaluationTabModule<T>({
+  items,         // T[]
+  getKey,        // (T) => string
+  renderContent, // (T) => ReactNode
+}: EvaluationTabModuleProps<T>) {
+  items.map((item) => {
+    //         ^^^^ item: T (자동)
+    getKey(item);          // OK
+    renderContent(item);   // OK
+  });
+}`}
+        />
+        <p>
+          <strong>한 컴포넌트 호출 안에서 T는 단일 타입.</strong> 만약 items가 <IC>{'HopeUnivEvaluation[]'}</IC>인데
+          getKey가 <IC>{'(item: RecommUnivTab) => ...'}</IC>이면 → 컴파일 에러.
+          TS가 "T 일관성"을 강제해서 잘못된 짝을 자동으로 막아준다.
+        </p>
+      </StepCard>
+
+      {/* Step 90-5 */}
+      <StepCard phase={27} num="90-5" id="step90-5" title="React 컴포넌트 + 제네릭 — JSX 문법 함정">
+        <p>화살표 함수로 작성하면 JSX 파서가 <IC>{'<T>'}</IC>를 JSX 태그로 오인:</p>
+        <CodeBlock
+          lang="tsx"
+          code={`// ❌ 화살표 + 제네릭 — JSX 파서가 깨짐
+const EvaluationTabModule = <T>(props: ...) => { ... }
+//                          ^^^ 여기서 파싱 오류`}
+        />
+        <p className="font-semibold text-gray-800 mt-2">회피책 3가지:</p>
+        <CodeBlock
+          lang="tsx"
+          code={`// ✅ 옵션 A: function 선언 (이 프로젝트의 선택)
+export function EvaluationTabModule<T>(props: ...) { ... }
+
+// ✅ 옵션 B: trailing comma 트릭
+const EvaluationTabModule = <T,>(props: ...) => { ... }
+
+// ✅ 옵션 C: extends 제약
+const EvaluationTabModule = <T extends object>(props: ...) => { ... }`}
+        />
+        <Callout variant="key">
+          이 프로젝트는 <strong>A</strong>를 선택. JSX와 가장 깔끔하게 공존하고 가독성도 좋음.
+        </Callout>
+      </StepCard>
+
+      {/* Step 90-6 */}
+      <StepCard phase={27} num="90-6" id="step90-6" title="제약(constraint) — extends로 T를 좁히기">
+        <p>T가 "아무거나"가 아니라 "최소한 어떤 필드는 있어야" 한다고 강제 가능:</p>
+        <CodeBlock
+          lang="typescript"
+          code={`// T가 num 필드를 반드시 가져야 함
+function Module<T extends { num: number }>(props: { items: T[] }) {
+  props.items[0].num;   // ← OK, T가 num을 갖는다고 보장됨
+}
+
+Module({ items: hopeUnivEvaluations });   // OK (num 있음)
+Module({ items: recommUnivTabs });         // ❌ RecommUnivTab엔 num 없음`}
+        />
+        <p>
+          우리 <IC>EvaluationTabModule</IC>은 T에 <strong>아무 제약이 없다</strong>.
+          대신 <IC>getKey/getLabel/renderContent</IC>로 호출자가 "T를 어떻게 다룰지"를 통째 위임 →
+          컴포넌트 자체는 T의 구체 모양을 몰라도 됨. 이게 핵심 설계 결정 중 하나.
+        </p>
+      </StepCard>
+
+      {/* Step 90-7 */}
+      <StepCard phase={27} num="90-7" id="step90-7" title="render-prop과 제네릭의 궁합">
+        <ul className="list-disc pl-5 space-y-1 text-[14px] text-gray-700 leading-7">
+          <li><strong>제네릭</strong>은 "타입을 매개변수화" 한다.</li>
+          <li><strong>render-prop</strong>은 "렌더링을 매개변수화" 한다.</li>
+        </ul>
+        <p className="font-semibold text-gray-800 mt-2">둘을 결합하면:</p>
+        <CodeBlock
+          lang="tsx"
+          code={`<EvaluationTabModule
+  items={data}                            // 어떤 데이터든
+  renderContent={(item) => <Card .../>}   // 어떻게 렌더할지
+/>`}
+        />
+        <DataTable
+          headers={['역할', '책임']}
+          rows={[
+            [<strong key="a">컴포넌트</strong>, '"Tab + DropDown 동기화"라는 컨테이너 로직만 — 데이터 모양/렌더링 모름'],
+            [<strong key="b">호출자</strong>, '"내 데이터에서 키/라벨/콘텐츠를 어떻게 뽑을지"만'],
+          ]}
+        />
+        <p>책임이 깔끔히 양분된다.</p>
+      </StepCard>
+
+      {/* Step 90-8 */}
+      <StepCard phase={27} num="90-8" id="step90-8" title="실전 학습 체크리스트 — 언제 제네릭을 써야 하나">
+        <DataTable
+          headers={['신호', '제네릭이 답일 가능성']}
+          rows={[
+            ['같은 컨테이너 UX를 여러 데이터 타입이 공유', '✅'],
+            ['호출자가 "내 데이터로 뭘 할지"를 다 정해줄 수 있음', '✅'],
+            [<>컴포넌트 안에서 데이터의 특정 필드(<IC key="a">item.num</IC> 등)에 직접 접근</>, <>⚠️ 제약(<IC key="b">extends</IC>) 필요</>],
+            [<>그냥 <IC key="c">any</IC>/<IC key="d">unknown</IC>으로 해도 동작은 함</>, '❌ 타입 안전성 잃음'],
+            ['단일 데이터 타입에서만 쓰일 컴포넌트', '❌ 불필요한 추상화'],
+          ]}
+        />
+      </StepCard>
+
+      {/* Step 90-9 */}
+      <StepCard phase={27} num="90-9" id="step90-9" title="짧은 비유">
+        <ul className="list-disc pl-5 space-y-1 text-[14px] text-gray-700 leading-7">
+          <li><strong>일반 함수</strong>: "정수 두 개를 더해주는 계산기" — 정수만 받음</li>
+          <li><strong>제네릭 함수</strong>: "두 개를 합쳐주는 빈 트레이" — 정수도, 문자열도, 객체도 올려놓으면 그 자리에서 그 타입에 맞게 동작</li>
+        </ul>
+        <p>
+          <IC>{'EvaluationTabModule<T>'}</IC>는 <strong>빈 트레이</strong>. 호출자가 <IC>{'HopeUnivEvaluation[]'}</IC>을 올리면 그 모양으로,
+          <IC>{'RecommUnivTab[]'}</IC>을 올리면 그 모양으로 자동 적응. 트레이 자신은 자기가 뭘 들고 있는지 모르지만
+          <strong> 그게 일관되게 같은 종류라는 것</strong>만 보장한다.
+        </p>
+      </StepCard>
+
+      {/* Step 90 정리 한 줄 */}
+      <div className="bg-white border border-gray-200 rounded-xl p-5 md:p-6 mb-4">
+        <div className="flex items-center gap-2.5 mb-4">
+          <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+            ✓
+          </div>
+          <h4 className="text-[15px] font-bold text-gray-900">Step 90 심층 학습 정리 한 줄</h4>
+        </div>
+        <Callout variant="key">
+          <strong>제네릭 컴포넌트는 "데이터 타입을 잠시 비워두고 호출자가 채우게 하는" 패턴이다.</strong>{' '}
+          <IC>{'<T>'}</IC>는 그 빈자리. 호출 시점에 T가 정해지면 모든 콜백/매개변수가 자동으로 그 타입으로 좁혀져서
+          <strong> 재사용성과 타입 안전성을 동시에</strong> 얻는다.
+        </Callout>
+      </div>
+
       <StepCard phase={27} num={91} id="step91" title="두 호출부">
         <CodeBlock
           lang="tsx"

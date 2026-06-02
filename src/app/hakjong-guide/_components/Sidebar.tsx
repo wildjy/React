@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | null
   items: NavItem[]
 }
 
@@ -344,6 +344,59 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase29',
+    label: 'Phase 29 — 서버 가드 + options',
+    phase: 29,
+    items: [
+      { id: 'step99',  label: 'use* 접두사 함정',    num: 99 },
+      { id: 'step100', label: '일반 async + fetch',   num: 100 },
+      { id: 'step101', label: 'alert는 서버 X',       num: 101 },
+      { id: 'step102', label: 'options 패턴',         num: 102 },
+      { id: 'step103', label: '옵션 이름↔동작 일치',  num: 103 },
+      { id: 'step104', label: '결제 조건부 호출',     num: 104 },
+    ],
+  },
+  {
+    id: 'phase30',
+    label: 'Phase 30 — Cache Invalidation',
+    phase: 30,
+    items: [
+      { id: 'step105', label: 'stale cache 문제',       num: 105 },
+      { id: 'step106', label: 'new QueryClient() 함정', num: 106 },
+      { id: 'step107', label: 'useQueryClient() 정답',  num: 107 },
+      { id: 'step108', label: 'invalidate 표준 위치',   num: 108 },
+      { id: 'step109', label: 'alert 중복 함정',        num: 109 },
+      { id: 'step110', label: 'Optimistic Update',      num: 110 },
+    ],
+  },
+  {
+    id: 'phase31',
+    label: 'Phase 31 — Pointer Events',
+    phase: 31,
+    items: [
+      { id: 'step111', label: 'Pointer Events 통합',    num: 111 },
+      { id: 'step112', label: 'setPointerCapture',      num: 112 },
+      { id: 'step113', label: '두 레이어 width%',       num: 113 },
+      { id: 'step114', label: '0.5 단위 스냅',          num: 114 },
+      { id: 'step115', label: 'hoverValue 분리',        num: 115 },
+      { id: 'step116', label: '내부 정수 vs 표시',      num: 116 },
+      { id: 'step117', label: 'disabled prop',          num: 117 },
+    ],
+  },
+  {
+    id: 'phase32',
+    label: 'Phase 32 — server-first display',
+    phase: 32,
+    items: [
+      { id: 'step118', label: 'derived display value',  num: 118 },
+      { id: 'step119', label: 'derived vs useEffect',   num: 119 },
+      { id: 'step120', label: 'invalidate 짝',          num: 120 },
+      { id: 'step121', label: '새로고침 잠금',          num: 121 },
+      { id: 'step122', label: '다른 적용처',            num: 122 },
+      { id: 'phase29-32-summary', label: '29-32 합쳐서', icon: '🗺' },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -383,6 +436,10 @@ const phaseBadgeColors: Record<number, string> = {
   26: 'bg-fuchsia-100 text-fuchsia-800',
   27: 'bg-violet-100 text-violet-800',
   28: 'bg-orange-100 text-orange-800',
+  29: 'bg-indigo-100 text-indigo-800',
+  30: 'bg-rose-100 text-rose-800',
+  31: 'bg-teal-100 text-teal-800',
+  32: 'bg-pink-100 text-pink-800',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */
