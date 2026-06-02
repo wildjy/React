@@ -5897,3 +5897,596 @@ const handleSubmit = () => {
 > - 두 훅이 같은 페이지에서만 함께 마운트되나? → 합쳐도 OK 가능성
 > - 다른 페이지에서 한쪽만 쓰나? → 무조건 분리
 > - 책임 이름이 자연스럽게 한 줄로 표현되나? → 한 훅. 두 줄 이상이면 분리.
+
+---
+
+## Phase 25: 신청의 두 단계 — `apply`(draft) vs `submit`(confirmed)
+
+### 배경: 왜 POST가 두 개인가
+
+학종 신청은 **두 단계**로 나뉜다.
+
+| POST 엔드포인트 | 의미 | 수정 가능? |
+|---|---|---|
+| `/admission-evaluation/apply` | **초안 저장**(draft) | ✅ 다시 POST로 덮어쓰기 가능 |
+| `/admission-evaluation/submit` | **최종 확정**(final) | ❌ 이후 어떤 변경도 거부 |
+
+쇼핑몰의 "장바구니 → 결제" 또는 은행 이체 confirm 모달 같은 2-step 패턴과 같은 결. 사용자에게 **"확인" 단계**를 제공해 실수를 막고, "신청완료 후 수정 불가" 정책을 강제하기 위함.
+
+### Step 79: 사용자 상태 머신
+
+세 상태로 정리하면 흐름이 또렷해진다.
+
+```
+                  POST /apply                  POST /submit
+[빈 상태] ─────────────────→ [DRAFT] ─────────────────→ [CONFIRMED]
+                                ↑↓
+                          POST /apply (수정)
+                          (자기 자신으로 재진입 가능)
+
+
+CONFIRMED 상태에서 POST /apply 또는 /submit 시도
+  → 400 { message: "이미 신청이 완료되었습니다." }
+```
+
+| 상태 | 사용자 입장 | 서버 측 의미 |
+|---|---|---|
+| **빈 상태** | 아직 아무것도 안 함 | 사용자별 신청 row 없음 |
+| **DRAFT** | "신청은 했지만 아직 확정 전" | 데이터 저장됐고 수정 가능 |
+| **CONFIRMED** | "최종 제출 완료" | lock — 어떤 modify도 거부 |
+
+### Step 80: 페이지별 흐름
+
+```
+┌─ APPLY 페이지 ─────────────────────────────────────────────────────┐
+│ 마운트 → GET /hope-univs, /prefer-selections, /simple-questions   │
+│         (prefetch — 이전 DRAFT 가 있으면 폼에 채움)                │
+│ [입력완료] → POST /apply → /confirm 로 이동                        │
+└────────────────────────┬───────────────────────────────────────────┘
+                         ↓
+┌─ CONFIRM 페이지 ───────────────────────────────────────────────────┐
+│ 마운트 → 같은 GET 3개 (서버 DRAFT 재조회 → 표시)                  │
+│ [수정하기] → /apply 로 이동                                       │
+│ [신청완료] → 모달 → [신청] → POST /submit → /report 로 이동       │
+└────────────────────────┬───────────────────────────────────────────┘
+                         ↓
+┌─ REPORT 페이지 ────────────────────────────────────────────────────┐
+│ 마운트 → GET /report-header, /transcript-evaluation,             │
+│         /application-strategy (CONFIRMED 이후 평가 결과)         │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+### Step 81: GET 엔드포인트가 끼는 위치
+
+각 GET이 **어느 상태에서 의미 있는지**가 학습 포인트.
+
+| GET | 의미 있는 상태 | 사용 페이지 | 역할 |
+|---|---|---|---|
+| `/hope-univs` | DRAFT, CONFIRMED | Apply, Confirm | 희망 대학 카드 |
+| `/prefer-selections` | DRAFT, CONFIRMED | Apply, Confirm | 선호 전공/지역 |
+| `/simple-questions` | DRAFT, CONFIRMED | Apply, Confirm | 강조 활동/간단 질문 |
+| `/report-header` | CONFIRMED | Report | 평가 진행 상태 |
+| `/transcript-evaluation` | CONFIRMED + 평가 완료 | Report | 학생부 평가 |
+| `/application-strategy` | CONFIRMED + 평가 완료 | Report | 추천/비추천 |
+
+**GET은 모두 read-only.** 호출해도 상태 전이 없음. 같은 데이터를 어디서 보든 같음.
+
+### Step 82: 코드 네이밍 — 영어 `apply` ≠ 한국어 "신청"
+
+이 부분이 **가장 큰 혼동 포인트**:
+
+| 코드 이름 | 실제 동작 | 사용자 용어 |
+|---|---|---|
+| `submitAdmissionEvaluationApply` | POST /apply (draft 저장) | "**입력완료**" |
+| `submitAdmissionEvaluationSubmit` | POST /submit (최종 확정) | "**신청완료**" |
+| `useAdmissionEvaluationApplyMutation` | apply 호출용 mutation | Apply 페이지 [입력완료] |
+| `useAdmissionEvaluationConfirmMutation` | submit 호출용 mutation | Confirm 페이지 [신청완료] |
+
+영어 "apply"가 한국어 "신청"으로 직역되지만, **코드의 `apply`는 "draft 저장"**이고 **한국어 "신청완료"는 실제로 `submit`**. 이 어긋남이 코드 읽을 때 가장 헷갈리는 부분.
+
+**장기적 개명 후보** (가독성 개선):
+- `submitAdmissionEvaluationApply` → `saveApplicationDraft`
+- `useAdmissionEvaluationConfirmMutation` → `useFinalizeApplicationMutation`
+
+### Step 83: "이미 신청 완료" 에러는 언제
+
+**오직 CONFIRMED 상태에서 modify 시도할 때**:
+- 사용자가 한 번 [신청완료] → 모달 [신청] 완료 → 서버 CONFIRMED
+- 그 후 어떤 경로로든 /apply 또는 /submit 호출 → 400 거부
+
+발생 가능 경로:
+- Confirm 페이지에서 [신청완료] 또 누름 (새로고침 후)
+- Apply 페이지에서 [입력완료] 누름 (다른 탭에서 confirm한 줄 모르고)
+- 직접 URL로 /apply 진입
+
+처리 방법은 [Phase 28](#phase-28-dedicated-status-api-없을-때--400-에러-응답으로-대체)에서.
+
+### 교훈
+
+> **두 단계 신청은 "확인" 의 가치를 강제한다.** 한 번에 완료되는 흐름보다 코드는 복잡해지지만, 사용자가 본인의 입력을 검토한 뒤 lock을 걸 수 있어 "되돌리기 불가" 정책이 자연스럽게 강제된다.
+
+> **API 동사를 직역하지 마라.** 영어 endpoint 명("apply")이 한국어 UX 단어("신청")와 다른 단계를 가리킬 수 있다. 코드 옆에 "어느 단계인지" 명시하거나 함수명을 그 단계의 의미로 바꾸자.
+
+---
+
+## Phase 26: 빈 응답의 깊이별 판정 — `||`/`??`/`.length`/`.some(meaningful)`
+
+### 배경
+
+"비어있을 때 mock으로 대체" 또는 "비어있으면 검증" 같은 정책을 짤 때, **빈 응답을 어떻게 정의하느냐**가 자주 미묘하게 어긋난다. 한 세션 안에서 같은 함정이 세 번 다른 모양으로 나타났다.
+
+### Step 84: "비어있음"의 세 가지 깊이
+
+```
+깊이 1: 값 자체 존재 여부          → undefined, null
+깊이 2: 컨테이너가 비어있음        → 빈 배열 [], 빈 객체 {}
+깊이 3: 컨테이너에 의미 없는 값만 → [{title:'', content:''}], [0, 0, 0]
+```
+
+각 깊이마다 검사 도구가 다르다:
+
+| 깊이 | 도구 | 잡는 것 |
+|---|---|---|
+| 1 | `??`, `\|\|` | undefined, null (+ falsy 값) |
+| 1 + 2 | `.length`, `Object.keys(x).length` | 빈 컨테이너 |
+| 1 + 2 + 3 | `.some(predicate)` | 의미 있는 콘텐츠 |
+
+### Step 85: 세 가지 실제 함정 (이 프로젝트)
+
+#### 함정 ① — `||`로 빈 배열 안 잡힘 (깊이 1만 잡음)
+
+```ts
+// ❌ 빈 배열은 truthy 라서 mock으로 안 떨어짐
+const hopeUnivEvaluations =
+  applicationStrategyData?.hopeUnivEvaluations || hopeUnivEvaluationsMOCK;
+```
+
+- `undefined` → mock ✓ (의도대로)
+- `[]` → **mock 안 됨** ✗ (`[]`은 truthy)
+
+**fix**: `.length` 체크.
+```ts
+const hopeUnivEvaluations = applicationStrategyData?.hopeUnivEvaluations?.length
+  ? applicationStrategyData.hopeUnivEvaluations
+  : hopeUnivEvaluationsMOCK;
+```
+
+#### 함정 ② — `!data`로 검증 분기 못함 (같은 원리)
+
+```ts
+// ❌ 첫 신청자는 hopeUnivsData = [] 라서 검증 블록 진입 못함
+if (!hopeUnivsData) {
+  // 첫 신청자만 카드/드롭다운 검증
+  if (handler.selectedCards.length === 0) alert(...);
+}
+```
+
+- `undefined`(쿼리 로딩 중) → 검증 ✓
+- `[]`(서버가 빈 배열) → **검증 건너뜀** ✗ → 빈 폼 그대로 POST
+
+**fix**: `length` 또는 의미 변수.
+```ts
+const hasSavedDraft = (hopeUnivsData?.length ?? 0) > 0;
+if (!hasSavedDraft) { /* 첫 신청자 검증 */ }
+```
+
+#### 함정 ③ — `.length`도 부족, 콘텐츠 깊이까지 봐야 (깊이 3)
+
+```ts
+// ❌ 서버가 [{title:'', content:''}] 로 줘도 length 1 이라 통과
+const hasAnyData =
+  !!datas?.academicAbility?.length ||
+  !!datas?.careerCompetency?.length ||
+  !!datas?.communityCompetency?.length;
+```
+
+서버가 placeholder 객체로 채워서 응답하면 length는 truthy인데 화면엔 빈 카드만 보임.
+
+**fix**: `.some(...)`로 아이템 내부 콘텐츠 확인.
+```ts
+const hasMeaningfulItems = (items?: CompetencyItem[]) =>
+  !!items?.some(({ title, content }) => !!title?.trim() || !!content?.trim());
+
+const hasAnyData =
+  hasMeaningfulItems(datas?.academicAbility) ||
+  hasMeaningfulItems(datas?.careerCompetency) ||
+  hasMeaningfulItems(datas?.communityCompetency);
+```
+
+`.trim()`까지 두면 공백/줄바꿈만 있는 케이스도 정리됨.
+
+### Step 86: 정확한 깊이를 고르는 기준
+
+| 데이터 모양 | 필요한 깊이 |
+|---|---|
+| primitive (string, number) | 1 (`??`, `\|\|`) — 단 빈 문자열 `''`은 falsy주의 |
+| 배열/객체 컨테이너 | 1 + 2 (`?.length`, `Object.keys`) |
+| 컨테이너 안 아이템 | 1 + 2 + 3 (`.some(predicate)`) — 아이템이 placeholder일 가능성 있을 때 |
+
+**판단법**: "이 데이터가 '비어있다'고 말할 수 있는 경우의 수를 모두 적어보라." 그게 셋이면 깊이 3.
+
+### Step 87: 패턴 — `hasMeaningfulXxx` 헬퍼
+
+`!!arr?.length` 같은 짧은 표현은 깊이 1+2까지 빠르지만 가독성이 낮고 깊이 3은 다루지 못한다. 이름 있는 헬퍼로 빼면:
+
+```ts
+const isEmpty = <T>(arr?: T[]) => !arr || arr.length === 0;
+const hasMeaningfulItems = <T>(arr: T[] | undefined, predicate: (item: T) => boolean) =>
+  !!arr?.some(predicate);
+```
+
+호출:
+```ts
+if (isEmpty(hopeUnivEvaluations)) { /* mock */ }
+
+if (hasMeaningfulItems(data?.academicAbility, ({title, content}) =>
+  !!title?.trim() || !!content?.trim())) { /* real */ }
+```
+
+코드 의도가 영어 헬퍼 이름으로 표현됨 — `||` 한 줄 대비 의미 명확.
+
+### 교훈
+
+> **"비어있다"는 한 단어가 아니다.** undefined, 빈 배열, 빈 문자열 아이템 — 모두 다른 깊이의 빈. 검사 도구를 데이터 깊이에 맞추지 않으면 함정에 정확히 빠진다.
+
+> **`||`/`??`는 깊이 1까지만 잡는다.** 컨테이너 비교에는 `.length`, 아이템 내부 비교에는 `.some(predicate)`. 같은 fallback 코드가 깊이 1·2·3 어디까지 책임지는지 의식하면서 짜라.
+
+> **헬퍼로 이름 붙이면 의도가 코드에 보인다.** `applicationStrategyData?.hopeUnivEvaluations?.length` 보다 `hasSavedDraft`/`hasMeaningfulItems` 가 다음 작업자에게 친절.
+
+---
+
+## Phase 27: 같은 UI를 두 데이터에 공유 — 제네릭 + render-prop
+
+### 배경
+
+리포트 페이지에 두 섹션이 거의 동일한 UI를 쓴다:
+- **희망 대학 평가 결과**: Tab + DropDown 동기화 + 카드 리스트
+- **전문가 추천 대학**: Tab + DropDown 동기화 + 카드 리스트
+
+데이터 형태가 다른데 컨테이너 UX는 같다. 그래서 같은 컴포넌트로 묶고 싶다.
+
+### Step 88: 데이터 비교
+
+| | `HopeUnivEvaluation` (희망) | `RecommUnivTab` (추천) |
+|---|---|---|
+| Tab 키 후보 | `num: number` | `position: number` |
+| Tab 라벨 | `univName + typeName + majorName` | `partName + univName` |
+| 디테일 배열 | `evaluations: Evaluation[]` | `majors: RecommMajor[]` |
+| 디테일 아이템 | `Evaluation` | `RecommMajor` (+ `position`) |
+
+→ **컨테이너 로직(Tab/DropDown 동기화)은 동일**, **콘텐츠 추출과 렌더링은 다름**.
+
+### Step 89: 접근 옵션 셋
+
+| 옵션 | 설명 | 단점 |
+|---|---|---|
+| **공통 shape 으로 정규화** | 두 데이터를 공통 인터페이스로 변환 후 동일 컴포넌트에 주입 | 약간 다른 필드(예: `position`) 손실되거나 강제 매핑 |
+| **제네릭 + render-prop** | 컴포넌트는 컨테이너만 책임, 키/라벨/콘텐츠 추출은 호출자 | 약간의 보일러플레이트 |
+| **두 컴포넌트로 분리** | 그냥 두 개로 둠 | UI 변경 시 두 곳 수정 |
+
+**제네릭 + render-prop이 균형이 가장 좋다** — 컨테이너 로직 단일화, 호출자가 자기 데이터 모양 그대로 다룸.
+
+### Step 90: 제네릭 컴포넌트 설계
+
+```tsx
+interface EvaluationTabModuleProps<T> {
+  items: T[];
+  selectedValue: string;
+  setSelectedValue: (value: string) => void;
+  getKey: (item: T) => string;          // ← 키 추출
+  getLabel: (item: T) => string;         // ← Tab/Dropdown 라벨
+  renderContent: (item: T) => React.ReactNode;  // ← 콘텐츠 렌더링
+}
+
+export function EvaluationTabModule<T>({
+  items,
+  selectedValue,
+  setSelectedValue,
+  getKey,
+  getLabel,
+  renderContent,
+}: EvaluationTabModuleProps<T>) {
+  const selectedIndex = Math.max(
+    0,
+    items.findIndex((item) => getKey(item) === selectedValue),
+  );
+
+  return (
+    <div>
+      <DropDown
+        options={items.map((item) => ({
+          label: getLabel(item),
+          value: getKey(item),
+        }))}
+        addClass="block md:hidden"
+        value={selectedValue}
+        onChange={(option) => setSelectedValue(option.value)}
+      />
+      <Tab initTab={selectedIndex}>
+        <Tab.List addClass="hidden md:flex">
+          {items.map((item) => (
+            <Tab.Button
+              key={getKey(item)}
+              onBeforeChange={() => {
+                setSelectedValue(getKey(item));
+                return true;
+              }}
+            >
+              {getLabel(item)}
+            </Tab.Button>
+          ))}
+        </Tab.List>
+        <Tab.ContentView>
+          {items.map((item) => (
+            <Tab.Contents key={getKey(item)}>
+              {renderContent(item)}
+            </Tab.Contents>
+          ))}
+        </Tab.ContentView>
+      </Tab>
+    </div>
+  );
+}
+```
+
+**핵심 설계 결정**:
+- **제네릭 `<T>`**: 어떤 데이터 모양이든 받음
+- **`getKey`/`getLabel`/`renderContent`**: 호출자가 자기 데이터를 어떻게 표현할지 결정
+- **`findIndex`로 selectedIndex 계산**: 키 → index 매핑을 컨테이너가 알아서 처리. 기존 `Number(selectedValue) - 1` 같은 인덱스 추정보다 안전
+
+### Step 91: 두 호출부
+
+```tsx
+// 희망 대학
+<EvaluationTabModule
+  items={hopeUnivEvaluations}
+  selectedValue={hopeUnivSelectedValue}
+  setSelectedValue={setHopeUnivSelectedValue}
+  getKey={(item) => String(item.num)}
+  getLabel={(item) => `${item.univName} ${item.typeName} ${item.majorName}`}
+  renderContent={(item) =>
+    item.evaluations.map((ev, idx) => (
+      <EvaluationCard key={idx} evaluation={ev} />
+    ))
+  }
+/>
+
+// 전문가 추천 대학
+<EvaluationTabModule
+  items={recommUnivTabs}
+  selectedValue={recommUnivSelectedValue}
+  setSelectedValue={setRecommUnivSelectedValue}
+  getKey={(item) => String(item.position)}
+  getLabel={(item) => `${item.partName} · ${item.univName}`}
+  renderContent={(item) =>
+    item.majors.map((major, idx) => (
+      <RecommMajorCard key={idx} major={major} />
+    ))
+  }
+/>
+```
+
+키가 number라 `String(...)` 변환하는 부분은 [Phase 20의 number/string 비대칭](#phase-20-서버-응답의-number-vs-요청의-string--대칭-깨짐-사냥) 패턴과 같음.
+
+### Step 92: 디테일 카드 분리
+
+비슷하지만 다른 필드를 가진 두 디테일 카드는 따로 작은 컴포넌트로:
+
+```tsx
+const EvaluationCard = ({ evaluation }: { evaluation: Evaluation }) => (
+  <div className="p-4 mb-4 border rounded">
+    <p>{evaluation.recomm}</p>
+    <p>{evaluation.univName} {evaluation.typeName} {evaluation.majorName}</p>
+    <p>{evaluation.refText}</p>
+    <p>전년도 경쟁률 : {evaluation.lastCR ?? '-'}</p>
+  </div>
+);
+
+const RecommMajorCard = ({ major }: { major: RecommMajor }) => (
+  <div className="p-4 mb-4 border rounded">
+    <p>
+      {major.recomm}
+      {major.position && <span className="ml-2">· {major.position}</span>}
+    </p>
+    <p>{major.univName} {major.typeName} {major.majorName}</p>
+    <p>{major.refText}</p>
+    <p>전년도 경쟁률 : {major.lastCR ?? '-'}</p>
+  </div>
+);
+```
+
+두 카드의 차이는 `RecommMajor`에 `position`이 추가된 것뿐. 거의 같지만 별도로 둬서 각자 디자인 진화 가능.
+
+### Step 93: render-prop vs 다른 패턴
+
+| 패턴 | 언제 적합 |
+|---|---|
+| **render-prop**(이번 선택) | 콘텐츠 모양이 달라 호출자가 통제해야 할 때 |
+| **children prop** | 단일 슬롯만 필요할 때 (이번엔 키/라벨/콘텐츠 3개라 부적합) |
+| **컴포넌트 합성**(`<Tabs><Tab.Header/>...`) | 더 큰 구조 자유도 필요할 때. 보일러플레이트 ↑ |
+| **공통 shape 정규화** | 데이터 모양이 정말 같아질 수 있을 때 |
+
+### 교훈
+
+> **컨테이너와 콘텐츠를 분리하라.** Tab/DropDown 동기화 같은 "관리" 로직은 컴포넌트로, 데이터에서 키/라벨/콘텐츠를 어떻게 뽑을지는 호출자로 위임. 이러면 새 데이터 타입이 추가돼도 컨테이너는 안 건드림.
+
+> **`Number(selectedValue) - 1` 같은 인덱스 추정은 위험하다.** 데이터 순서가 1, 2, 3 으로 깨끗하지 않을 수도 있고(예: num=1, 5, 7), 키 형태가 달라지면 동작 안 함. `findIndex(getKey)`로 키 매칭이 안전.
+
+---
+
+## Phase 28: dedicated status API 없을 때 — POST 에러 응답으로 대체
+
+### 배경
+
+[Phase 23](#phase-23-로컬-플래그를-서버-진실로-옮기기--isapplycompleted-사례)에서 `isApplyCompleted`를 sessionStorage 플래그에서 서버 진실로 옮기는 방향을 다뤘다. 정석은 `GET /admission-evaluation/apply/status` 같은 상태 전용 API. 하지만:
+
+> 백엔드: "그건 따로 안 줘. POST /apply가 이미 거부 응답을 주잖아 — 그걸로 알 수 있어."
+
+서버는 CONFIRMED 상태에서 POST 시도하면:
+```json
+HTTP 400
+{
+  "alias": "UNKNOWN",
+  "message": "이미 신청이 완료되었습니다.",
+  "code": 400
+}
+```
+
+이 응답을 **사실상의 status API 대체**로 쓸 수 있다.
+
+### Step 94: 트레이드오프 — 사전 차단 vs 사후 처리
+
+| | dedicated status API | POST 에러 응답 |
+|---|---|---|
+| 진입 차단 (Navigation guard) | ✅ 페이지 마운트 전 | ❌ 호출 전엔 모름 |
+| 버튼 disabled 사전 표시 | ✅ | ❌ |
+| **제출 시 거부 + 안내** | ✅ | ✅ — 서버가 항상 최후 방어선 |
+| **진실의 원천이 서버** | ✅ | ✅ |
+| 백엔드 추가 작업 | 필요 | 불필요 (이미 있음) |
+
+실용 효과는 거의 같다 — 사용자가 confirm 페이지에서 [신청완료] 누르는 순간 서버가 알려주니까. **사전 차단이 절대 필요한 UX가 아니라면 충분**.
+
+### Step 95: 에러 식별 헬퍼
+
+ky의 `HTTPError`를 잡아 메시지로 분기:
+
+```ts
+import { HTTPError } from 'ky';
+
+const ALREADY_COMPLETED_MESSAGE = '이미 신청이 완료되었습니다.';
+
+export async function isAlreadyCompletedError(error: unknown): Promise<boolean> {
+  if (!(error instanceof HTTPError)) return false;
+  if (error.response.status !== 400) return false;
+  try {
+    const body = await error.response.clone().json<{ message?: string }>();
+    return body.message === ALREADY_COMPLETED_MESSAGE;
+  } catch {
+    return false;
+  }
+}
+```
+
+`response.clone()`을 쓰는 이유: ky의 onError에서 body를 이미 한 번 읽었을 수 있어서 clone으로 안전하게 재읽기.
+
+### Step 96: 처리 위치 — 호출자 vs mutation 훅
+
+**A. 호출자(handler)에서 try/catch**
+```ts
+const handleSubmit = async () => {
+  try {
+    await submitApply(requestData);
+    router.push('/.../confirm');
+  } catch (error) {
+    if (await isAlreadyCompletedError(error)) {
+      alert('이미 신청이 완료된 상태입니다.');
+      router.push('/.../report');
+      return;
+    }
+    throw error;
+  }
+};
+```
+
+**B. mutation 훅의 onError에서 처리** (페이지마다 중복 안 됨)
+```ts
+export function useAdmissionEvaluationApplyMutation() {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: submitAdmissionEvaluationApply,
+    onError: async (error) => {
+      if (await isAlreadyCompletedError(error)) {
+        alert('이미 신청이 완료되었습니다.');
+        router.push('/.../report');
+        return;
+      }
+      console.error('학종 신청 실패:', error);
+      alert('신청에 실패했습니다.');
+    },
+  });
+}
+```
+
+**B가 더 깨끗** — 모든 호출 site에서 동일 처리. 단, 페이지별 UX 분기가 필요하면 A.
+
+### Step 97: 메시지 매칭의 취약성
+
+```ts
+return body.message === '이미 신청이 완료되었습니다.';
+```
+
+한국어 문자열이 코드의 식별자. **백엔드가 메시지를 바꾸면 프론트가 즉시 깨진다.** 임시 OK지만 장기로는 안 좋다.
+
+**더 안전한 매칭**:
+```ts
+// 백엔드에 에러 코드 표준화 요청
+{ "code": "APPLY_ALREADY_COMPLETED", "message": "..." }
+```
+프론트는 코드(언어 무관 식별자)로 분기. 다국어 지원 시에도 안전.
+
+**TODO 마커로 추적**:
+```ts
+// TODO(backend): 에러 응답에 "code" 또는 "alias" 필드 표준화 요청
+// 현재는 message 문자열 매칭 (취약) — code 기반으로 전환 예정
+```
+
+### Step 98: 부가 — POST body 의 표준 형식
+
+이 작업 중 같이 잡힌 함정: POST body에 **원시값을 그대로 넣지 마라**.
+
+```ts
+// ❌ 서버가 JSON 객체 body 기대 → 파싱 깨짐
+await apiClient().post('/submit', { json: userId });
+// 실제 body: "mynesin24" (JSON 문자열 리터럴)
+
+// ✅ 객체로 감싸기
+await apiClient().post('/submit', { json: { userId } });
+// 실제 body: {"userId":"mynesin24"}
+```
+
+실제 발생 에러:
+```
+UNKNOWN: Unexpected token '"', ""mynesin24"" is not valid JSON
+```
+
+REST API의 POST body는 거의 항상 JSON 객체. 원시값 하나만 보내고 싶어도 객체로 감싸는 게 표준 — DTO 매핑/validation/추후 필드 추가가 모두 객체 전제.
+
+### 교훈
+
+> **dedicated status API가 없어도 서버는 항상 진실을 안다.** POST 시도에 대한 거부 응답으로 충분히 derive 가능. 사전 차단이 절대 필요한 UX가 아니면 추가 API 만드는 것보다 에러 응답 활용이 가성비 좋다.
+
+> **에러 매칭은 메시지 문자열보다 코드/alias로.** 한국어 문구가 식별자가 되면 다국어/리팩토링에 취약. 백엔드와 에러 코드 표준 합의가 장기적으로 안전.
+
+> **POST body는 객체로 감싸라.** 원시값을 `{ json: value }`로 그대로 넣으면 서버가 JSON 객체 기대와 어긋난다. `{ json: { fieldName: value } }`가 표준.
+
+---
+
+## Phase 25-28 합쳐서 — 오늘 한 일의 한 그림
+
+```
+사용자 입력
+  ↓
+Apply: POST /apply (draft)              ─┐
+  ↓                                       │
+Confirm: 검토                              ├─ Phase 25 (두 단계 흐름)
+  ↓                                       │
+Confirm 모달: POST /submit (final)      ─┘
+  ↓
+Report 페이지
+  ├─ 학생부 평가 결과
+  │    ├─ StudentRecordEvaluation
+  │    │    └─ 빈 응답 처리 ── Phase 26 (깊이별 판정)
+  │    │         └─ hasMeaningfulItems
+  │    └─ Mock fallback
+  ├─ 수시 지원 전략
+  │    ├─ 희망 대학 ─┐
+  │    │            ├─ Phase 27 (같은 UI 공유)
+  │    │            │   └─ EvaluationTabModule<T> + render-prop
+  │    └─ 추천 대학 ─┘
+  └─ 전문가에게 질문 (mutation 4종 세트 — Phase 24)
+
+
+CONFIRMED 상태에서 POST 재시도
+  → 400 "이미 신청이 완료되었습니다."
+  → Phase 28 (status API 없을 때 — 에러 응답 활용)
+```

@@ -23,6 +23,13 @@ const phaseStepBg: Record<number, string> = {
   19: 'bg-stone-500',
   20: 'bg-zinc-500',
   21: 'bg-neutral-500',
+  22: 'bg-gray-500',
+  23: 'bg-sky-600',
+  24: 'bg-emerald-600',
+  25: 'bg-amber-600',
+  26: 'bg-fuchsia-600',
+  27: 'bg-violet-600',
+  28: 'bg-orange-600',
 }
 
 const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; label: string }> = {
@@ -47,11 +54,18 @@ const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; 
   19: { wrap: 'bg-stone-50 border-stone-200', num: 'bg-stone-500', text: 'text-stone-800', label: 'sessionStorage 의존을 걷어내고 서버를 진실의 원천으로' },
   20: { wrap: 'bg-zinc-50 border-zinc-200', num: 'bg-zinc-500', text: 'text-zinc-800', label: '서버 응답의 number vs 요청의 string — 대칭 깨짐 사냥' },
   21: { wrap: 'bg-neutral-50 border-neutral-200', num: 'bg-neutral-500', text: 'text-neutral-800', label: 'state updater는 pure해야 한다 — alert() 함정' },
+  22: { wrap: 'bg-gray-50 border-gray-200', num: 'bg-gray-500', text: 'text-gray-800', label: 'Confirm 모드의 빈값 숨김 분기 패턴' },
+  23: { wrap: 'bg-sky-50 border-sky-300', num: 'bg-sky-600', text: 'text-sky-900', label: '로컬 플래그를 서버 진실로 — isApplyCompleted 사례' },
+  24: { wrap: 'bg-emerald-50 border-emerald-300', num: 'bg-emerald-600', text: 'text-emerald-900', label: '훅 책임 경계 — 결합 vs 분리의 판단 기준' },
+  25: { wrap: 'bg-amber-50 border-amber-300', num: 'bg-amber-600', text: 'text-amber-900', label: '신청의 두 단계 — apply(draft) vs submit(confirmed)' },
+  26: { wrap: 'bg-fuchsia-50 border-fuchsia-300', num: 'bg-fuchsia-600', text: 'text-fuchsia-900', label: '빈 응답의 깊이별 판정 — ||/??/length/some' },
+  27: { wrap: 'bg-violet-50 border-violet-300', num: 'bg-violet-600', text: 'text-violet-900', label: '같은 UI를 두 데이터에 공유 — 제네릭 + render-prop' },
+  28: { wrap: 'bg-orange-50 border-orange-300', num: 'bg-orange-600', text: 'text-orange-900', label: 'dedicated status API 없을 때 — POST 에러 응답으로 대체' },
 }
 
 /* ── StepCard ─────────────────────────────────── */
 interface StepCardProps {
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28
   num: number | string
   id?: string
   title: string
@@ -81,7 +95,7 @@ export function StepCard({ phase, num, id, title, children }: StepCardProps) {
 }
 
 /* ── PhaseHeader ──────────────────────────────── */
-export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 }) {
+export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 }) {
   const s = phaseHeaderMap[phase]
   return (
     <div className={cn('flex items-center gap-3 rounded-xl px-5 py-4 border mb-4', s.wrap)}>

@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | null
   items: NavItem[]
 }
 
@@ -262,6 +262,88 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase22',
+    label: 'Phase 22 — Confirm 빈값 숨김',
+    phase: 22,
+    items: [
+      { id: 'step67', label: '단일: mode ? hasValue', num: 67 },
+      { id: 'step68', label: '다중: filter + map',   num: 68 },
+      { id: 'step69', label: '슬롯: N칸 + placeholder', num: 69 },
+    ],
+  },
+  {
+    id: 'phase23',
+    label: 'Phase 23 — 서버 진실로',
+    phase: 23,
+    items: [
+      { id: 'step70', label: '오해: POST로 상태확인', num: 70 },
+      { id: 'step71', label: '임시: GET derivation', num: 71 },
+      { id: 'step72', label: '정석: status API',    num: 72 },
+      { id: 'step73', label: '의미 다양성',         num: 73 },
+      { id: 'step74', label: '응답 대기 트래킹',    num: 74 },
+    ],
+  },
+  {
+    id: 'phase24',
+    label: 'Phase 24 — 훅 책임 경계',
+    phase: 24,
+    items: [
+      { id: 'step75', label: '책임 경계 정의',      num: 75 },
+      { id: 'step76', label: '합치면 Phase 17 재발', num: 76 },
+      { id: 'step77', label: '의사결정 A/B/C',      num: 77 },
+      { id: 'step78', label: 'mutation UX 4종',     num: 78 },
+    ],
+  },
+  {
+    id: 'phase25',
+    label: 'Phase 25 — apply vs submit',
+    phase: 25,
+    items: [
+      { id: 'step79', label: '사용자 상태 머신',    num: 79 },
+      { id: 'step80', label: '페이지별 흐름',       num: 80 },
+      { id: 'step81', label: 'GET 의미 있는 상태',  num: 81 },
+      { id: 'step82', label: '네이밍 함정',         num: 82 },
+      { id: 'step83', label: '"이미 완료" 에러',    num: 83 },
+    ],
+  },
+  {
+    id: 'phase26',
+    label: 'Phase 26 — 빈 응답 깊이',
+    phase: 26,
+    items: [
+      { id: 'step84', label: '깊이 3가지',          num: 84 },
+      { id: 'step85', label: '실제 함정 ①②③',       num: 85 },
+      { id: 'step86', label: '깊이 고르는 기준',    num: 86 },
+      { id: 'step87', label: 'hasMeaningful 헬퍼',  num: 87 },
+    ],
+  },
+  {
+    id: 'phase27',
+    label: 'Phase 27 — 제네릭 + render-prop',
+    phase: 27,
+    items: [
+      { id: 'step88', label: '데이터 비교',         num: 88 },
+      { id: 'step89', label: '접근 옵션 셋',        num: 89 },
+      { id: 'step90', label: '제네릭 컴포넌트',     num: 90 },
+      { id: 'step91', label: '두 호출부',           num: 91 },
+      { id: 'step92', label: '디테일 카드 분리',    num: 92 },
+      { id: 'step93', label: 'render-prop 비교',    num: 93 },
+    ],
+  },
+  {
+    id: 'phase28',
+    label: 'Phase 28 — POST 에러 응답',
+    phase: 28,
+    items: [
+      { id: 'step94', label: '사전 vs 사후 처리',   num: 94 },
+      { id: 'step95', label: '에러 식별 헬퍼',      num: 95 },
+      { id: 'step96', label: '처리 위치 A vs B',    num: 96 },
+      { id: 'step97', label: '메시지 매칭 취약',    num: 97 },
+      { id: 'step98', label: 'POST body 표준',      num: 98 },
+      { id: 'phase25-28-summary', label: '25-28 합쳐서', icon: '🗺' },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -294,6 +376,13 @@ const phaseBadgeColors: Record<number, string> = {
   19: 'bg-stone-100 text-stone-700',
   20: 'bg-zinc-100 text-zinc-700',
   21: 'bg-neutral-100 text-neutral-700',
+  22: 'bg-gray-100 text-gray-700',
+  23: 'bg-sky-100 text-sky-800',
+  24: 'bg-emerald-100 text-emerald-800',
+  25: 'bg-amber-100 text-amber-800',
+  26: 'bg-fuchsia-100 text-fuchsia-800',
+  27: 'bg-violet-100 text-violet-800',
+  28: 'bg-orange-100 text-orange-800',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */
