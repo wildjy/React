@@ -35,6 +35,9 @@ import { Phase30 }      from './_components/sections/Phase30'
 import { Phase31 }      from './_components/sections/Phase31'
 import { Phase32 }      from './_components/sections/Phase32'
 import { Phase29_32Summary } from './_components/sections/Phase29_32Summary'
+import { Phase33 }      from './_components/sections/Phase33'
+import { Phase34 }      from './_components/sections/Phase34'
+import { Phase33_34Summary } from './_components/sections/Phase33_34Summary'
 import { Libraries, Concepts, Cautions } from './_components/sections/Appendix'
 
 export default function HakjongGuidePage() {
@@ -77,6 +80,9 @@ export default function HakjongGuidePage() {
         <Phase31   />
         <Phase32   />
         <Phase29_32Summary />
+        <Phase33   />
+        <Phase34   />
+        <Phase33_34Summary />
         <Libraries />
         <Concepts  />
         <Cautions  />

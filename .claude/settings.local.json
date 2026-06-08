@@ -4,7 +4,8 @@
       "Bash(npx cursor-talk-to-figma-mcp:*)",
       "Bash(npx tsc:*)",
       "mcp__talk-to-figma__get_local_components",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(grep -E \"^\\\\+#{2,4} |Phase|Step [0-9]\")"
     ]
   },
   "enableAllProjectMcpServers": true,

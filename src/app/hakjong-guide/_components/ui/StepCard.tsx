@@ -34,6 +34,8 @@ const phaseStepBg: Record<number, string> = {
   30: 'bg-rose-700',
   31: 'bg-teal-700',
   32: 'bg-pink-700',
+  33: 'bg-cyan-700',
+  34: 'bg-violet-700',
 }
 
 const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; label: string }> = {
@@ -69,11 +71,13 @@ const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; 
   30: { wrap: 'bg-rose-50 border-rose-300', num: 'bg-rose-700', text: 'text-rose-900', label: 'Mutation 후 화면 갱신 — Cache Invalidation 표준 패턴' },
   31: { wrap: 'bg-teal-50 border-teal-300', num: 'bg-teal-700', text: 'text-teal-900', label: '인터랙티브 UI — Pointer Events + StarRating 사례' },
   32: { wrap: 'bg-pink-50 border-pink-300', num: 'bg-pink-700', text: 'text-pink-900', label: 'server-first display, local fallback 패턴' },
+  33: { wrap: 'bg-cyan-50 border-cyan-300', num: 'bg-cyan-700', text: 'text-cyan-900', label: 'Options API 진화 — boolean에서 enum 값으로' },
+  34: { wrap: 'bg-violet-50 border-violet-300', num: 'bg-violet-700', text: 'text-violet-900', label: '조건부 렌더링의 흔한 함정 — 모순 조건과 0 함정' },
 }
 
 /* ── StepCard ─────────────────────────────────── */
 interface StepCardProps {
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34
   num: number | string
   id?: string
   title: string
@@ -103,7 +107,7 @@ export function StepCard({ phase, num, id, title, children }: StepCardProps) {
 }
 
 /* ── PhaseHeader ──────────────────────────────── */
-export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 }) {
+export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 }) {
   const s = phaseHeaderMap[phase]
   return (
     <div className={cn('flex items-center gap-3 rounded-xl px-5 py-4 border mb-4', s.wrap)}>

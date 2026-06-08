@@ -7345,3 +7345,282 @@ satisfactionSurveyData.satisfiedRate = 새 값
 isAlreadyRated = true → displayRating = server 값
   → StarRating 자동 잠금, 새로고침해도 유지
 ```
+
+---
+
+## Phase 33: Options API 진화 — boolean에서 enum 값으로
+
+### 배경
+
+Phase 29 에서 만든 페이지 가드:
+```ts
+ensureAdmissionEvaluationAccess(options?: {
+  redirectIfNotCompleted?: boolean;   // → INTRO (Report 페이지)
+  redirectIfCompleted?: boolean;      // → REPORT (Apply/Confirm)
+});
+```
+
+여기서 `redirectIfNotCompleted: true` 는 "미완료면 INTRO 로 보낸다" — **destination이 함수 안에 하드코딩**돼 있다.
+
+새 요구사항이 들어왔다:
+> "Confirm 페이지로 URL 직타 진입할 때 신청 미완료면 `/apply` 로 보내달라."
+
+문제: 같은 "미완료" 조건이지만 페이지마다 가야 할 곳이 다름.
+- Report 페이지: 미완료 → **INTRO** (애초에 보면 안 됨, 도입부로)
+- Confirm 페이지: 미완료 → **APPLY** (신청부터 하라고 입력 페이지로)
+- Apply 페이지: 미완료 → 통과 (여기서 신청 시작)
+
+### Step 123: 함정 — boolean 옵션을 늘리기
+
+직관적인 시도:
+```ts
+// ❌ 옵션 폭증
+options?: {
+  redirectToIntroIfNotCompleted?: boolean;
+  redirectToApplyIfNotCompleted?: boolean;
+  redirectIfCompleted?: boolean;
+}
+```
+
+호출:
+```ts
+// Report 페이지
+ensureAdmissionEvaluationAccess({ redirectToIntroIfNotCompleted: true });
+
+// Confirm 페이지
+ensureAdmissionEvaluationAccess({
+  redirectToApplyIfNotCompleted: true,
+  redirectIfCompleted: true,
+});
+```
+
+문제점:
+- destination이 추가될 때마다 옵션 수가 곱빼기로 증가 (INTRO/APPLY/REPORT/SETTINGS...)
+- 두 옵션이 동시에 true면 어떻게? — 모호함 → 함수 안에 우선순위 처리 코드 필요
+- 옵션 이름이 길어져 자동완성 시 구분 어려움
+
+옵션 폭증은 **함수가 호출자의 분기를 대신 떠안았을 때** 자주 일어난다.
+
+### Step 124: 더 나은 답 — 옵션 값을 destination 자체로
+
+```ts
+// ✅ 옵션 1개, 값으로 행선지 표현
+options?: {
+  redirectIfNotCompleted?: 'INTRO' | 'APPLY';
+  redirectIfCompleted?: boolean;
+}
+```
+
+함수 본문:
+```ts
+if (options?.redirectIfNotCompleted && !isApplyCompleted) {
+  redirect(ADMISSION_EVALUATION_PATH[options.redirectIfNotCompleted]);
+  //                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  //                                  옵션 값이 곧 path 키
+}
+```
+
+호출:
+```ts
+// Report
+ensureAdmissionEvaluationAccess({ redirectIfNotCompleted: 'INTRO' });
+
+// Confirm
+ensureAdmissionEvaluationAccess({
+  redirectIfNotCompleted: 'APPLY',
+  redirectIfCompleted: true,
+});
+
+// Apply — 옵션 자체를 안 줌
+ensureAdmissionEvaluationAccess({ redirectIfCompleted: true });
+```
+
+### Step 125: 이 패턴이 좋은 이유
+
+| 측면 | boolean 여러 개 | 값 enum 하나 |
+|---|---|---|
+| 옵션 개수 | destination 수만큼 증가 | 1개 고정 |
+| destination 추가 비용 | 새 옵션 추가 + 함수 본문 분기 추가 | union에 한 단어 추가 |
+| "둘 다 true" 모호함 | 우선순위 정의 필요 | 발생 불가 (값은 하나만 가능) |
+| 옵션 이름 길이 | 길어짐 | 짧고 깔끔 |
+| TypeScript 자동완성 | 옵션 6개 보임 | 값 2개 보임 |
+
+핵심 통찰: **"옵션 켜고 끄기"가 아니라 "옵션 값을 무엇으로 둘지" 가 의도일 때 enum 값**.
+
+### Step 126: TypeScript 안전 인덱싱
+
+```ts
+redirect(ADMISSION_EVALUATION_PATH[options.redirectIfNotCompleted]);
+```
+
+`options.redirectIfNotCompleted` 의 타입이 `'INTRO' | 'APPLY'` 로 좁혀져 있어:
+- `ADMISSION_EVALUATION_PATH` 에 두 키 모두 있어야 컴파일 통과
+- 새 destination 추가 시 path 객체에 키 빼먹으면 컴파일 에러
+- 오타 방지
+
+```ts
+export const ADMISSION_EVALUATION_PATH = {
+  INTRO: '.../admission-evaluation/intro',
+  APPLY: '.../admission-evaluation/apply',
+  REPORT: '.../admission-evaluation/report',
+} as const;
+```
+
+`as const` 로 잠가 두면 키 누락이 컴파일 단계에서 잡힘.
+
+### Step 127: 호출자가 destination을 안다 vs 함수가 destination을 안다
+
+이건 더 큰 설계 원칙:
+
+| | 함수가 안다 (boolean) | 호출자가 안다 (enum) |
+|---|---|---|
+| 호출 코드 | `{ foo: true }` (의도 숨김) | `{ foo: 'APPLY' }` (의도 명시) |
+| 함수 본문 | 분기로 destination 결정 | 그냥 받은 값을 사용 |
+| 정책 변경 | 함수 본문 수정 | 호출 한 곳만 수정 |
+| 결정 위치 | 분산 (함수 + 옵션 이름) | 호출 site 한 곳 |
+
+함수는 "어떻게 redirect 할지" 만 알고, "어디로 갈지" 는 페이지가 결정. **각 페이지가 자기 정책의 책임을 진다.**
+
+### 교훈
+
+> **"옵션 켜고 끄기" → boolean, "옵션 값을 무엇으로" → enum.** 이 구분이 옵션 API 설계의 첫 번째 가지.
+
+> **destination/색상/모드 같은 분기 값은 호출자가 알고 있다.** 함수가 boolean 으로 받아 안에서 분기하면 옵션이 곧 폭증한다. 값으로 받아 그대로 쓰면 옵션 1개로 끝.
+
+> **`as const` + 키 인덱싱 = 컴파일 단계 안전 가드.** path 객체에 키 빼먹으면 컴파일 에러로 즉시 잡힘.
+
+---
+
+## Phase 34: 조건부 렌더링의 흔한 함정 — 모순 조건과 `0` 함정
+
+### 배경
+
+Q&A 섹션 코드에서 발견한 한 줄:
+
+```tsx
+{datas?.items?.length && datas?.items?.length === 0 && (
+  <div>...첫 회차 질문 카드...</div>
+)}
+```
+
+화면을 아무리 새로고침해도 첫 회차 카드가 안 나타남. 코드를 한참 들여다본 뒤에야 알아챔 — **조건이 영원히 false**.
+
+### Step 128: 모순 조건 진단
+
+조건을 분해:
+- `datas?.items?.length` — truthy 여야 함 (즉, length가 1 이상)
+- `&& datas?.items?.length === 0` — length가 정확히 0이어야 함
+
+같은 값이 동시에 `> 0` 이면서 `= 0` 일 수는 없다. **두 조건의 교집합은 ∅**. 따라서 블록 본문은 절대 실행 안 됨.
+
+원인 추측: `=== 0` 부분이 다른 의도(또는 디버깅 코드)였거나, copy-paste 후 수정 누락. 컴파일러는 잡지 못함 — 둘 다 타입은 valid `boolean`.
+
+### Step 129: 의도 복원 — items 있을 때만 렌더
+
+블록 안의 `items.slice(0, 1).map(...)` 가 단서:
+- 첫 항목만 잘라서 표시
+- → "items 가 1개 이상 있을 때만" 이 의도
+
+올바른 조건:
+```tsx
+{(datas?.items?.length ?? 0) > 0 && (
+  <div>...첫 회차 질문 카드...</div>
+)}
+```
+
+### Step 130: `length && ...` 의 또 다른 함정 — 화면에 `0` 이 찍힘
+
+위 조건을 단순히 이렇게 줄이고 싶을 수 있다:
+```tsx
+// ❌ length 자체를 truthy 검사로
+{datas?.items?.length && (<div>...</div>)}
+```
+
+이건 동작은 하는데 — items 가 빈 배열일 때 **화면에 숫자 `0` 이 그대로 찍힌다**.
+
+이유:
+- React: "truthy면 오른쪽 표현식 렌더, falsy면 그 값을 렌더"
+- `0 && <div/>` → 단락 평가(short-circuit)로 `0` 반환
+- React는 `0` 을 텍스트 노드로 렌더 (`null`, `undefined`, `false` 만 무시함)
+
+```
+items.length = 0   → 0 && <div/>   → 0          → 화면에 "0"
+items.length = 3   → 3 && <div/>   → <div/>     → 정상
+items = undefined  → undefined && <div/> → undefined → 무시
+```
+
+이 함정은 **숫자 값을 직접 boolean 으로 쓰는 모든 곳**에 도사림.
+
+### Step 131: 안전한 표현 3가지
+
+```tsx
+// ✅ 명시적 비교 — 가장 명확
+{(datas?.items?.length ?? 0) > 0 && <div>...</div>}
+
+// ✅ boolean 캐스팅 — 짧음
+{!!datas?.items?.length && <div>...</div>}
+
+// ✅ ternary — null 명시
+{datas?.items?.length ? <div>...</div> : null}
+```
+
+세 패턴 모두 `0` 함정 회피. 코드 컨벤션에 따라 선택. 우리 프로젝트는 명시적 비교(`> 0`)를 선호 — 읽는 사람이 의도(0보다 큰 경우)를 즉시 알 수 있음.
+
+| 패턴 | 장점 | 단점 |
+|---|---|---|
+| `length > 0` | 의도 명시, IDE/리뷰어 친화 | 길다 |
+| `!!length` | 짧음 | `!!` 가 익숙하지 않은 사람엔 noise |
+| `length ? … : null` | 거짓 분기 표현 가능 | else 가 필요 없을 때 noise |
+
+### Step 132: React falsy 렌더 규칙 정리
+
+JSX 가 "무시" 하는 값:
+| 값 | 렌더 결과 |
+|---|---|
+| `null` | 무시 |
+| `undefined` | 무시 |
+| `false` | 무시 |
+| `true` | 무시 (의외) |
+| `0` | **"0" 텍스트 렌더** ← 함정 |
+| `''` (빈 문자열) | 무시 |
+| `NaN` | **"NaN" 텍스트 렌더** |
+
+> `0` 과 `NaN` 만 다르다. 숫자 표현식을 `&&` 의 왼쪽에 둘 때 항상 의식해야 함.
+
+### Step 133: 조건문 가독성 체크리스트
+
+코드 리뷰 시 다음을 보면 거의 잡힘:
+
+1. **`&&` 양쪽이 의미적으로 같은 변수의 다른 비교?** → 모순 가능성. 본문에 진입 가능한 케이스가 정말 있는지 확인.
+2. **`&&` 왼쪽이 숫자/문자열?** → `0` / `''` / `NaN` 함정 검토.
+3. **`?.length`만 단독으로 truthy 검사?** → boolean 캐스팅 또는 명시 비교.
+4. **`!` 가 두 번 이상 들어간 조건?** → 드모르간 변환 검토. (`!a && !b` → `!(a || b)`)
+5. **조건 안에 옵셔널 체이닝이 깊이 3 이상?** → 가독성 ↓, 변수로 빼내기.
+
+### 교훈
+
+> **`&&` 양쪽이 모순일 수 있다.** 모순 조건은 컴파일도, 린트도 잡지 않는다. 코드 리뷰가 마지막 방어선.
+
+> **숫자를 `&&` 왼쪽에 두지 마라.** `0` 이 그대로 렌더된다. `> 0`, `!!`, ternary 중 하나로 boolean 으로 만들어야 한다.
+
+> **"왜 안 나오지?" 라면 첫 의심은 조건문.** map/slice 가 멀쩡한데 안 보이면, 둘러싼 `&&` 가 거짓이거나 모순일 가능성이 높다.
+
+---
+
+## Phase 33-34 한 그림 — 오늘 한 일
+
+```
+Phase 29 가드 (boolean) ────► 새 요구: Confirm 미완료 → /apply
+                              ─────────────────────────────────
+                              naive: boolean 옵션 추가 (폭증)
+                              ✅ 정답: 옵션 값을 enum destination 으로
+                              ─────────────────────────────────
+                              redirectIfNotCompleted?: 'INTRO' | 'APPLY'
+
+ExpertQuestionSection ────► length && length === 0  (영원히 false)
+                            ─────────────────────────────────
+                            진단: 두 조건 교집합 ∅
+                            ✅ 정답: (length ?? 0) > 0
+                            ─────────────────────────────────
+                            보너스: `length && ...` 자체도 `0` 함정 회피 위해 명시 비교
+```

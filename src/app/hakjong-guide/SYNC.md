@@ -17,6 +17,7 @@
 5) 이스케이프 함정 점검      →  아래 6장
 6) 타입 체크                →  npx tsc --noEmit -p .
 7) 체크리스트 확인          →  아래 7장
+8) 배포                     →  pnpm run deploy   (predeploy=build → gh-pages 자동)
 ```
 
 변경 확인 명령:
@@ -196,6 +197,47 @@ Step 번호가 없는 Phase는 `StepCard` 대신 **흰 카드 여러 장 + `Phas
 - [ ] 코드 블록의 백틱/`${}` 이스케이프, JSX의 `<>{}` 처리 확인했다
 - [ ] `npx tsc --noEmit -p .` 에러 없음
 - [ ] (가능하면) `/hakjong-guide` 화면에서 새 섹션 + 사이드바 이동 육안 확인
+- [ ] `pnpm run deploy` 정상 종료 (build → gh-pages 배포까지)
+
+---
+
+## 8. 배포 (GitHub Pages)
+
+타입 체크와 육안 확인이 끝났으면 한 줄로 배포한다:
+
+```bash
+pnpm run deploy
+```
+
+내부 동작 순서:
+
+1. `predeploy` 훅이 자동으로 `pnpm run build` 실행 → Next.js가 `out/` 디렉터리에 정적 파일 생성
+2. `deploy` 스크립트가 `gh-pages -d out` 실행 → `gh-pages` 브랜치에 푸시
+3. GitHub Pages가 그 브랜치를 호스팅 (수 분 내 반영)
+
+`package.json` 스크립트 참고:
+
+```json
+{
+  "scripts": {
+    "build": "next build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d out"
+  }
+}
+```
+
+**배포 전 점검**
+
+- 타입 체크 통과(7장 체크리스트)가 선결 조건. 빌드도 같은 TS 컴파일러를 거치므로 미통과 시 `pnpm run deploy`도 실패한다.
+- 새 색상/클래스가 **완성형 문자열**로 들어가 있는지 확인 (Tailwind purge 안전).
+- `next.config` 가 정적 export(`output: 'export'`)로 잡혀 있어야 `out/`이 생성됨.
+
+**배포 실패 시 점검 순서**
+
+1. `pnpm run build` 단독 실행해 빌드 단계 에러인지 확인
+2. 빌드 OK인데 `gh-pages` 단계에서 막힘 → 인증/원격 권한 확인 (`git remote -v`, `gh auth status`)
+3. 배포는 됐지만 화면이 안 바뀜 → GitHub Pages 캐시(수 분), 브라우저 강력 새로고침(Ctrl+F5)
 
 ---
 

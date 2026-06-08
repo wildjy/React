@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | null
   items: NavItem[]
 }
 
@@ -397,6 +397,32 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase33',
+    label: 'Phase 33 — 옵션 폭증 → enum 값으로',
+    phase: 33,
+    items: [
+      { id: 'step123', label: 'boolean 옵션 폭증 함정', num: 123 },
+      { id: 'step124', label: 'enum 값 destination',    num: 124 },
+      { id: 'step125', label: '패턴 좋은 이유',         num: 125 },
+      { id: 'step126', label: 'TS 안전 인덱싱',         num: 126 },
+      { id: 'step127', label: '결정 위치 (호출자)',     num: 127 },
+    ],
+  },
+  {
+    id: 'phase34',
+    label: 'Phase 34 — 화면에 "0" 이 찍혀요',
+    phase: 34,
+    items: [
+      { id: 'step128', label: '모순 조건 진단',         num: 128 },
+      { id: 'step129', label: '의도 복원',              num: 129 },
+      { id: 'step130', label: '"0" 함정',               num: 130 },
+      { id: 'step131', label: '안전한 표현 3가지',      num: 131 },
+      { id: 'step132', label: 'falsy 렌더 규칙',         num: 132 },
+      { id: 'step133', label: '가독성 체크리스트',      num: 133 },
+      { id: 'phase33-34-summary', label: '33-34 한 그림', icon: '🗺' },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -440,6 +466,8 @@ const phaseBadgeColors: Record<number, string> = {
   30: 'bg-rose-100 text-rose-800',
   31: 'bg-teal-100 text-teal-800',
   32: 'bg-pink-100 text-pink-800',
+  33: 'bg-cyan-100 text-cyan-800',
+  34: 'bg-violet-100 text-violet-800',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */
