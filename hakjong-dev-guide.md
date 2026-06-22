@@ -1204,9 +1204,9 @@ Step 16의 훅은 꺾쇠(`<>`) 안에 타입 3개를 **순서대로** 받습니�
 
 ```typescript
 useMutation<
-  HakjongApplyResponse,   // ① TData      - 성공 시 mutationFn이 resolve하는 값 → data로 받음
-  Error,                  // ② TError     - 실패 시 error 타입
-  HakjongApplyRequest     // ③ TVariables - mutate()에 넘길 인자 타입 → mutationFn의 인자
+  HakjongApplyResponse, // ① TData      - 성공 시 mutationFn이 resolve하는 값 → data로 받음
+  Error, // ② TError     - 실패 시 error 타입
+  HakjongApplyRequest // ③ TVariables - mutate()에 넘길 인자 타입 → mutationFn의 인자
 >({
   mutationFn: (requestData) => submitHakjongApply(requestData),
   onError: (error) => {
@@ -1216,11 +1216,11 @@ useMutation<
 });
 ```
 
-| 제네릭 | 이름         | 무엇을 정하나                          | 어디서 만나나                       |
-| ------ | ------------ | -------------------------------------- | ----------------------------------- |
-| ①      | `TData`      | 성공 응답 타입                         | `const { data } = ...`              |
-| ②      | `TError`     | 실패 시 에러 타입                      | `onError(error)`, `const { error }` |
-| ③      | `TVariables` | `mutate()`에 넘기는 인자 타입          | `mutate(③)` → `mutationFn(③)`       |
+| 제네릭 | 이름         | 무엇을 정하나                 | 어디서 만나나                       |
+| ------ | ------------ | ----------------------------- | ----------------------------------- |
+| ①      | `TData`      | 성공 응답 타입                | `const { data } = ...`              |
+| ②      | `TError`     | 실패 시 에러 타입             | `onError(error)`, `const { error }` |
+| ③      | `TVariables` | `mutate()`에 넘기는 인자 타입 | `mutate(③)` → `mutationFn(③)`       |
 
 **핵심 흐름 한 줄:** `mutate(③ TVariables)` → `mutationFn(③)` 실행 → 성공하면 `① TData`, 실패하면 `② TError`.
 
@@ -1242,11 +1242,11 @@ mutation 한 번이 실행되면 콜백들이 **정해진 순서**로 호출됩�
 
 ```typescript
 useMutation({
-  mutationFn,                      // 1. 실제 비동기 작업 (POST 등)
-  onMutate,                        // 2. mutationFn 직전 (낙관적 업데이트 준비)
-  onSuccess: (data, vars) => {},   // 3a. 성공 시
-  onError:   (err, vars)  => {},   // 3b. 실패 시
-  onSettled: () => {},             // 4. 성공/실패 무관하게 마지막
+  mutationFn, // 1. 실제 비동기 작업 (POST 등)
+  onMutate, // 2. mutationFn 직전 (낙관적 업데이트 준비)
+  onSuccess: (data, vars) => {}, // 3a. 성공 시
+  onError: (err, vars) => {}, // 3b. 실패 시
+  onSettled: () => {}, // 4. 성공/실패 무관하게 마지막
 });
 ```
 
@@ -1274,15 +1274,15 @@ onSettled           (항상 마지막에 실행 — 로딩 정리 등)
 대표 사례가 바로 **대학 → 계열 → 학과로 이어지는 cascade(연쇄) 드롭다운**입니다. 같은 화면에서도 조회 성격에 따라 훅이 갈립니다.
 
 ```typescript
-useUniversityList     // useQuery    ← 페이지 진입 시 한 번 자동으로 받으면 됨
-useAiBdListMutation   // useMutation ← 대학을 "골랐을 때" 계열을 명령형으로 조회
-useMajorListMutation  // useMutation ← 계열을 "골랐을 때" 학과를 명령형으로 조회
+useUniversityList; // useQuery    ← 페이지 진입 시 한 번 자동으로 받으면 됨
+useAiBdListMutation; // useMutation ← 대학을 "골랐을 때" 계열을 명령형으로 조회
+useMajorListMutation; // useMutation ← 계열을 "골랐을 때" 학과를 명령형으로 조회
 ```
 
-| 조회 성격                | 어울리는 훅   | 이유                                        |
-| ------------------------ | ------------- | ------------------------------------------- |
-| 페이지 진입 시 자동      | `useQuery`    | 렌더되면 알아서 돈다 (선언적)               |
-| 사용자가 고른 순간에만   | `useMutation` | `mutate()`를 부를 때 돈다 (명령형), 순서 제어가 쉬움 |
+| 조회 성격              | 어울리는 훅   | 이유                                                 |
+| ---------------------- | ------------- | ---------------------------------------------------- |
+| 페이지 진입 시 자동    | `useQuery`    | 렌더되면 알아서 돈다 (선언적)                        |
+| 사용자가 고른 순간에만 | `useMutation` | `mutate()`를 부를 때 돈다 (명령형), 순서 제어가 쉬움 |
 
 > `useQuery`도 `enabled`로 조건 실행이 가능합니다(Step 9의 `enabled` 참고).
 > 하지만 "대학 선택 → 계열 → 학과"처럼 **상위 선택에 따라 단계적으로 트리거**되는 흐름은,
@@ -1509,20 +1509,20 @@ MSW 핸들러를 제거하거나 주석 처리하면 자동으로 실제 서버�
 
 즉, React Query를 쓸 때 핵심은 `조회(useQuery)`와 `변경(useMutation)`을 나누고, **변경 이후에는 필요한 조회를 다시 동기화하는 것**입니다.
 
-| 새로 배운 핵심 개념 | 설명                                                            |
-| ------------------- | --------------------------------------------------------------- |
-| `useQuery`          | GET 요청으로 서버 데이터를 읽고 캐시하는 훅                     |
-| `useMutation`       | POST/PUT/DELETE 요청의 생명주기(pending, success, error)를 관리 |
-| `mutateAsync`       | async/await로 응답값을 직접 사용할 때                           |
-| `invalidateQueries` | mutation 이후 관련 query를 다시 조회시켜 화면을 최신화          |
+| 새로 배운 핵심 개념 | 설명                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| `useQuery`          | GET 요청으로 서버 데이터를 읽고 캐시하는 훅                                                |
+| `useMutation`       | POST/PUT/DELETE 요청의 생명주기(pending, success, error)를 관리                            |
+| `mutateAsync`       | async/await로 응답값을 직접 사용할 때                                                      |
+| `invalidateQueries` | mutation 이후 관련 query를 다시 조회시켜 화면을 최신화                                     |
 | 제네릭 3개          | `useMutation<TData, TError, TVariables>` — 성공/에러/인자 타입을 순서대로 지정 (Step 16-1) |
-| 콜백 실행 순서      | `onMutate → mutationFn → onSuccess/onError → onSettled` (Step 16-1) |
-| 명령형 조회         | cascade처럼 순서 제어가 필요한 조회는 GET이라도 `useMutation`으로 (Step 16-1) |
-| `isPending`         | 요청 중 버튼 비활성화 등 UX 처리에 활용                         |
-| 제어 컴포넌트       | `value` + `onChange`로 React가 입력값 추적                      |
-| `URLSearchParams`   | 한글 포함 데이터를 URL 쿼리스트링으로 안전하게 인코딩           |
-| `useSearchParams`   | URL 쿼리스트링 값을 읽는 Next.js 훅                             |
-| MSW handler         | `http.post(정규식, handler)` 패턴으로 API 목업 등록             |
+| 콜백 실행 순서      | `onMutate → mutationFn → onSuccess/onError → onSettled` (Step 16-1)                        |
+| 명령형 조회         | cascade처럼 순서 제어가 필요한 조회는 GET이라도 `useMutation`으로 (Step 16-1)              |
+| `isPending`         | 요청 중 버튼 비활성화 등 UX 처리에 활용                                                    |
+| 제어 컴포넌트       | `value` + `onChange`로 React가 입력값 추적                                                 |
+| `URLSearchParams`   | 한글 포함 데이터를 URL 쿼리스트링으로 안전하게 인코딩                                      |
+| `useSearchParams`   | URL 쿼리스트링 값을 읽는 Next.js 훅                                                        |
+| MSW handler         | `http.post(정규식, handler)` 패턴으로 API 목업 등록                                        |
 
 ```
 apps/early/src/window/hakjong/
@@ -3175,13 +3175,13 @@ function useApplyOptions() {
 
 `EarlyHakjongApply`와 `EarlyHakjongNavigator`를 분석하면:
 
-| 로직 종류                 | Apply 사용 | Navigator 사용 | 분리 단위                  |
-| ------------------------- | ---------- | -------------- | -------------------------- |
-| 대학·학과 옵션 변환       | ✅         | ❌             | `useApplyDropOptions`      |
-| 드롭다운 선택 상태        | ✅         | ❌             | `useHakjongApplyForm`      |
-| 카드 추가/삭제            | ✅         | ❌             | `useHakjongApplyForm`      |
-| 탭 초기 인덱스 계산       | ❌         | ✅             | `useHakjongNavigation`     |
-| 탭 이동 전 로그인/결제 검사 | ❌         | ✅             | `useHakjongNavigation`     |
+| 로직 종류                   | Apply 사용 | Navigator 사용 | 분리 단위              |
+| --------------------------- | ---------- | -------------- | ---------------------- |
+| 대학·학과 옵션 변환         | ✅         | ❌             | `useApplyDropOptions`  |
+| 드롭다운 선택 상태          | ✅         | ❌             | `useHakjongApplyForm`  |
+| 카드 추가/삭제              | ✅         | ❌             | `useHakjongApplyForm`  |
+| 탭 초기 인덱스 계산         | ❌         | ✅             | `useHakjongNavigation` |
+| 탭 이동 전 로그인/결제 검사 | ❌         | ✅             | `useHakjongNavigation` |
 
 → **3개 훅으로 분리** 가능합니다.
 
@@ -3291,9 +3291,7 @@ export const useHakjongNavigation = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const queryString = searchParams.toString()
-    ? `?${searchParams.toString()}`
-    : '';
+  const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
 
   // 현재 경로 기반 초기 탭 인덱스
   const getInitTab = () => {
@@ -3313,8 +3311,7 @@ export const useHakjongNavigation = () => {
       return false;
     }
     // ⚠️ 핸들러 내부에서 sessionStorage 읽기 (이유는 Step 38 참고)
-    const isApplyCompleted =
-      sessionStorage.getItem(HAKJONG_STORAGE_KEY.applyComplete) === 'true';
+    const isApplyCompleted = sessionStorage.getItem(HAKJONG_STORAGE_KEY.applyComplete) === 'true';
     if (isApplyCompleted) {
       router.push('/hakjong/report');
     } else {
@@ -3329,8 +3326,7 @@ export const useHakjongNavigation = () => {
       alert('로그인이 필요한 서비스입니다.');
       return false;
     }
-    const isApplyCompleted =
-      sessionStorage.getItem(HAKJONG_STORAGE_KEY.applyComplete) === 'true';
+    const isApplyCompleted = sessionStorage.getItem(HAKJONG_STORAGE_KEY.applyComplete) === 'true';
     if (!isApplyCompleted) {
       alert('평가 신청을 먼저 완료해주세요.');
       return false;
@@ -3373,13 +3369,14 @@ export const useHakjongNavigation = () => {
 ```tsx
 // EarlyHakjongNavigator.tsx
 export const EarlyHakjongNavigator = () => {
-  const { getInitTab, handleTabBeforeApply, handleTabBeforeReport } =
-    useHakjongNavigation();
+  const { getInitTab, handleTabBeforeApply, handleTabBeforeReport } = useHakjongNavigation();
 
   return (
     <Tab initTab={getInitTab()} modeType="type4">
       <Tab.List>
-        <Tab.Button link href="/hakjong">서비스 안내</Tab.Button>
+        <Tab.Button link href="/hakjong">
+          서비스 안내
+        </Tab.Button>
         <Tab.Button onBeforeChange={handleTabBeforeApply}>평가 신청하기</Tab.Button>
         <Tab.Button onBeforeChange={handleTabBeforeReport}>평가 리포트</Tab.Button>
       </Tab.List>
@@ -3517,12 +3514,12 @@ export const useHakjongNavigation = () => {
 
 #### 다른 해결 방법들
 
-| 방법                                                       | 장점                          | 단점                                                |
-| ---------------------------------------------------------- | ----------------------------- | --------------------------------------------------- |
-| **(A) 핸들러 내부로 이동** ✅ 채택                          | 가장 단순, 항상 최신 값       | 핸들러가 여러 번이면 코드 중복                      |
-| (B) `typeof window !== 'undefined'` 체크                    | 훅 본문에서도 호출 가능        | SSR 시점엔 항상 `false`로 평가되어 의미 흐려짐      |
-| (C) `useEffect` + `useState`로 클라이언트 마운트 후 읽기    | React 상태로 관리, 자동 리렌더링 | 첫 렌더링에 잠깐 `false` 노출(깜빡임 가능성)        |
-| (D) `useSyncExternalStore`                                  | React 18 공식 패턴            | 학습 곡선 있음, 보일러플레이트 많음                 |
+| 방법                                                     | 장점                             | 단점                                           |
+| -------------------------------------------------------- | -------------------------------- | ---------------------------------------------- |
+| **(A) 핸들러 내부로 이동** ✅ 채택                       | 가장 단순, 항상 최신 값          | 핸들러가 여러 번이면 코드 중복                 |
+| (B) `typeof window !== 'undefined'` 체크                 | 훅 본문에서도 호출 가능          | SSR 시점엔 항상 `false`로 평가되어 의미 흐려짐 |
+| (C) `useEffect` + `useState`로 클라이언트 마운트 후 읽기 | React 상태로 관리, 자동 리렌더링 | 첫 렌더링에 잠깐 `false` 노출(깜빡임 가능성)   |
+| (D) `useSyncExternalStore`                               | React 18 공식 패턴               | 학습 곡선 있음, 보일러플레이트 많음            |
 
 이 프로젝트는 **(A) 핸들러 내부 호출**이 적합한 이유:
 
@@ -3532,14 +3529,15 @@ export const useHakjongNavigation = () => {
 
 #### 핵심 학습 포인트
 
-| 개념                              | 설명                                                                                |
-| --------------------------------- | ----------------------------------------------------------------------------------- |
-| **SSR (Server-Side Rendering)**   | Next.js가 첫 화면을 서버에서 미리 렌더링하는 것. 브라우저 API(`window`, `sessionStorage`, `localStorage`, `document`)는 사용 불가 |
-| **Hydration**                     | 서버가 만든 HTML에 브라우저가 이벤트 핸들러를 다시 붙이는 과정                      |
-| **`'use client'`도 SSR 대상**     | 클라이언트 컴포넌트도 **첫 렌더링은 서버에서** 실행됨. 완전히 클라이언트 전용이 아님 |
-| **이벤트 핸들러는 SSR 안 됨**     | 핸들러 내부 코드는 사용자 상호작용 시점에만 실행되므로 브라우저 API 안전           |
+| 개념                            | 설명                                                                                                                              |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **SSR (Server-Side Rendering)** | Next.js가 첫 화면을 서버에서 미리 렌더링하는 것. 브라우저 API(`window`, `sessionStorage`, `localStorage`, `document`)는 사용 불가 |
+| **Hydration**                   | 서버가 만든 HTML에 브라우저가 이벤트 핸들러를 다시 붙이는 과정                                                                    |
+| **`'use client'`도 SSR 대상**   | 클라이언트 컴포넌트도 **첫 렌더링은 서버에서** 실행됨. 완전히 클라이언트 전용이 아님                                              |
+| **이벤트 핸들러는 SSR 안 됨**   | 핸들러 내부 코드는 사용자 상호작용 시점에만 실행되므로 브라우저 API 안전                                                          |
 
 > **체크리스트:** 코드를 작성할 때 `window`, `sessionStorage`, `localStorage`, `document`를 쓴다면 다음 중 하나여야 합니다.
+>
 > 1. 이벤트 핸들러 내부
 > 2. `useEffect` 내부
 > 3. `typeof window !== 'undefined'` 가드 뒤
@@ -3561,6 +3559,7 @@ useHakjongHandler (가상의 통합 훅)
 ```
 
 판단 기준: **"이 두 로직이 서로 다른 이유로 변경되는가?"**
+
 - 가드 로직은 결제/로그인 정책 변경 시 수정 → A 이유
 - 폼 상태는 입력 항목 추가 시 수정 → B 이유
 - 서로 다른 이유로 변경됨 → 분리 권장
@@ -3577,14 +3576,13 @@ sessionStorage.getItem('hakjong_apply_complete');
 // ✅ 헬퍼 함수로 한 번 더 감싸기
 // libs/hakjongStorage.ts
 export const hakjongStorage = {
-  setApplyComplete: (value: boolean) =>
-    sessionStorage.setItem(HAKJONG_STORAGE_KEY.applyComplete, String(value)),
-  getApplyComplete: () =>
-    sessionStorage.getItem(HAKJONG_STORAGE_KEY.applyComplete) === 'true',
+  setApplyComplete: (value: boolean) => sessionStorage.setItem(HAKJONG_STORAGE_KEY.applyComplete, String(value)),
+  getApplyComplete: () => sessionStorage.getItem(HAKJONG_STORAGE_KEY.applyComplete) === 'true',
 };
 ```
 
 장점:
+
 - `String(value) === 'true'` 변환을 매번 안 써도 됨
 - 키 이름과 값 직렬화 방식이 한 곳에 응집
 - 테스트 시 이 객체만 모킹(mocking)하면 됨
@@ -3613,16 +3611,16 @@ export const useHakjongNavigation = () => {
 
 ### Phase 8 정리
 
-| 새로 배운 핵심 개념              | 설명                                                                                                |
-| -------------------------------- | --------------------------------------------------------------------------------------------------- |
-| **커스텀 훅 (custom hook)**       | `use`로 시작하는 함수. 컴포넌트의 로직(상태/효과/계산)을 떼어내 재사용·테스트 가능하게 만든 패턴      |
-| **단일 책임 원칙 (SRP)**          | 하나의 훅/모듈은 하나의 변경 이유만 가져야 함. 서로 다른 이유로 변경되면 분리 신호                  |
-| **`useMemo` 의존성 배열**         | 의존성 값이 바뀔 때만 재계산. 불필요한 `map` 반복을 방지                                            |
-| **훅 인스턴스의 독립성**          | 같은 훅을 여러 컴포넌트에서 호출하면 각각 별개 인스턴스. 상태 공유 안 됨                            |
-| **SSR과 브라우저 API의 충돌**     | `'use client'`도 첫 렌더링은 서버에서 실행. `sessionStorage` 등 브라우저 API는 SSR 시점에 사용 불가 |
-| **Hydration**                     | 서버 HTML에 브라우저가 이벤트 핸들러를 붙이는 과정                                                  |
-| **이벤트 핸들러 내부의 안전성**   | 사용자 상호작용 시점에만 실행되므로 `sessionStorage` 등 브라우저 API 호출 가능                      |
-| **분리 판단 기준**                | 재사용성, 단일 책임, 테스트 필요성 — 셋 중 하나 이상 충족할 때만 분리. 무조건 분리는 과한 추상화    |
+| 새로 배운 핵심 개념             | 설명                                                                                                |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **커스텀 훅 (custom hook)**     | `use`로 시작하는 함수. 컴포넌트의 로직(상태/효과/계산)을 떼어내 재사용·테스트 가능하게 만든 패턴    |
+| **단일 책임 원칙 (SRP)**        | 하나의 훅/모듈은 하나의 변경 이유만 가져야 함. 서로 다른 이유로 변경되면 분리 신호                  |
+| **`useMemo` 의존성 배열**       | 의존성 값이 바뀔 때만 재계산. 불필요한 `map` 반복을 방지                                            |
+| **훅 인스턴스의 독립성**        | 같은 훅을 여러 컴포넌트에서 호출하면 각각 별개 인스턴스. 상태 공유 안 됨                            |
+| **SSR과 브라우저 API의 충돌**   | `'use client'`도 첫 렌더링은 서버에서 실행. `sessionStorage` 등 브라우저 API는 SSR 시점에 사용 불가 |
+| **Hydration**                   | 서버 HTML에 브라우저가 이벤트 핸들러를 붙이는 과정                                                  |
+| **이벤트 핸들러 내부의 안전성** | 사용자 상호작용 시점에만 실행되므로 `sessionStorage` 등 브라우저 API 호출 가능                      |
+| **분리 판단 기준**              | 재사용성, 단일 책임, 테스트 필요성 — 셋 중 하나 이상 충족할 때만 분리. 무조건 분리는 과한 추상화    |
 
 **파일 구조 결과:**
 
@@ -3643,13 +3641,13 @@ apps/early/src/entities/hakjong/
 
 **컴포넌트별 사용 훅:**
 
-| 컴포넌트                  | 사용 훅                                                          |
-| ------------------------- | ---------------------------------------------------------------- |
-| `EarlyHakjongIntro`       | `useHakjongNavigation` (handleServiceClick)                      |
-| `EarlyHakjongNavigator`   | `useHakjongNavigation` (getInitTab, handleTabBefore*)            |
-| `EarlyHakjongApply`       | `useApplyDropOptions` + `useHakjongHandler` (드롭다운/카드 상태) |
-| `EarlyHakjongConfirm`     | (페이지별 자체 로직)                                             |
-| 임시 구현 → API 전환 패턴        | 하드코딩/sessionStorage로 먼저 동작 확인 후, API 확정 시 `useQuery`로 교체  |
+| 컴포넌트                  | 사용 훅                                                                    |
+| ------------------------- | -------------------------------------------------------------------------- |
+| `EarlyHakjongIntro`       | `useHakjongNavigation` (handleServiceClick)                                |
+| `EarlyHakjongNavigator`   | `useHakjongNavigation` (getInitTab, handleTabBefore\*)                     |
+| `EarlyHakjongApply`       | `useApplyDropOptions` + `useHakjongHandler` (드롭다운/카드 상태)           |
+| `EarlyHakjongConfirm`     | (페이지별 자체 로직)                                                       |
+| 임시 구현 → API 전환 패턴 | 하드코딩/sessionStorage로 먼저 동작 확인 후, API 확정 시 `useQuery`로 교체 |
 
 ---
 
@@ -3778,7 +3776,7 @@ const count = userStatus.mockApplicationCount; // ❌ TypeError: Cannot read pro
 ```tsx
 const { data: userStatus } = useUserStatusQuery(currentUser?.userId, !currentUser?.isLoading);
 
-const mockApplicationCount = userStatus?.mockApplicationCount ?? 0;   // ← Optional chaining + Nullish coalescing
+const mockApplicationCount = userStatus?.mockApplicationCount ?? 0; // ← Optional chaining + Nullish coalescing
 const scoreDisclosureCount = userStatus?.scoreDisclosureCount ?? 0;
 
 const step = [
@@ -3787,7 +3785,7 @@ const step = [
     id: 2,
     label: '교과성적',
     result: {
-      active: userStatus?.isNesinGradeInput ?? false,                  // ← undefined → false
+      active: userStatus?.isNesinGradeInput ?? false, // ← undefined → false
       value: userStatus?.isNesinGradeInput ? '입력완료' : '입력하기',
     },
   },
@@ -3797,11 +3795,11 @@ const step = [
 
 **두 연산자의 조합 패턴:**
 
-| 연산자                              | 동작                                                 |
-| ----------------------------------- | ---------------------------------------------------- |
+| 연산자                              | 동작                                                         |
+| ----------------------------------- | ------------------------------------------------------------ |
 | Optional chaining `?.`              | 왼쪽이 `undefined`/`null`이면 평가를 멈추고 `undefined` 반환 |
-| Nullish coalescing `??`             | 왼쪽이 `undefined`/`null`이면 오른쪽 값 사용                  |
-| 조합 `userStatus?.field ?? default` | `userStatus`가 없으면 → `undefined ?? default` → `default` |
+| Nullish coalescing `??`             | 왼쪽이 `undefined`/`null`이면 오른쪽 값 사용                 |
+| 조합 `userStatus?.field ?? default` | `userStatus`가 없으면 → `undefined ?? default` → `default`   |
 
 이 조합으로 모든 사용처에서 안전한 기본값(빈 상태, `false`, `0`)을 보장하면, 백엔드 미구현 상태에서도 stepbar는 "아무것도 완료되지 않은 초기 상태"로 자연스럽게 표시됩니다.
 
@@ -3811,12 +3809,12 @@ const step = [
 
 모든 미구현 API에 `throwOnError: false`를 남발해서는 안 됩니다. 판단 기준:
 
-| 상황                                              | 적용 여부 | 이유                                                                                    |
-| ------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
-| stepbar 진행 상태 (`/user-status`)                | ✅ 적용    | 없어도 페이지의 핵심 기능은 동작. 그저 진행률이 초기값으로 보일 뿐                       |
-| 평가 신청 페이지의 사용자 정보 조회               | ❌ 부적합  | 사용자 정보 없이는 신청 자체가 불가능. 에러를 던져서 사용자에게 알리는 것이 맞음           |
-| 리포트 페이지의 평가 결과 데이터                  | ❌ 부적합  | 데이터 자체가 페이지의 존재 이유. 에러면 페이지를 닫는 것이 맞음                          |
-| 우상단 알림 뱃지 개수                             | ✅ 적용    | 부수적 정보. 실패 시 뱃지를 안 보이는 것이 페이지 전체를 막는 것보다 나음                |
+| 상황                                | 적용 여부 | 이유                                                                             |
+| ----------------------------------- | --------- | -------------------------------------------------------------------------------- |
+| stepbar 진행 상태 (`/user-status`)  | ✅ 적용   | 없어도 페이지의 핵심 기능은 동작. 그저 진행률이 초기값으로 보일 뿐               |
+| 평가 신청 페이지의 사용자 정보 조회 | ❌ 부적합 | 사용자 정보 없이는 신청 자체가 불가능. 에러를 던져서 사용자에게 알리는 것이 맞음 |
+| 리포트 페이지의 평가 결과 데이터    | ❌ 부적합 | 데이터 자체가 페이지의 존재 이유. 에러면 페이지를 닫는 것이 맞음                 |
+| 우상단 알림 뱃지 개수               | ✅ 적용   | 부수적 정보. 실패 시 뱃지를 안 보이는 것이 페이지 전체를 막는 것보다 나음        |
 
 **판단 한 줄 요약**: 이 데이터가 없으면 페이지를 보여주는 의미가 사라지는가? **그렇다면 throw가 맞고, 아니면 옵트아웃이 맞습니다.**
 
@@ -3833,22 +3831,25 @@ const step = [
      queryKey: userStatusQueries.status(userId).queryKey,
      queryFn: () => fetchUserStatus(userId),
      enabled: !!userId && enabled,
-  -  // 서버 `/user-status` 엔드포인트 구현 완료 후 이 옵션 제거 — 호출부 fallback(`?? 0`, `?? false`)으로 안전하게 degrade
-  -  throwOnError: false,
-   });
    ```
+
+- // 서버 `/user-status` 엔드포인트 구현 완료 후 이 옵션 제거 — 호출부 fallback(`?? 0`, `?? false`)으로 안전하게 degrade
+- throwOnError: false,
+  });
+
+```
 
 2. **fallback은 그대로 유지**
 
-   호출부의 `?? 0`, `?? false`는 옵트아웃이 사라져도 그대로 둡니다. 이유:
-   - 쿼리는 항상 로딩 상태로 시작하므로 `data`가 `undefined`인 시점이 존재합니다.
-   - 네트워크 일시 장애나 인증 만료 등으로 일시적으로 `undefined`가 들어올 수 있습니다.
-   - fallback은 옵트아웃과 별개로, **모든 쿼리 호출부에 두는 것이 일반적인 좋은 습관**입니다.
+호출부의 `?? 0`, `?? false`는 옵트아웃이 사라져도 그대로 둡니다. 이유:
+- 쿼리는 항상 로딩 상태로 시작하므로 `data`가 `undefined`인 시점이 존재합니다.
+- 네트워크 일시 장애나 인증 만료 등으로 일시적으로 `undefined`가 들어올 수 있습니다.
+- fallback은 옵트아웃과 별개로, **모든 쿼리 호출부에 두는 것이 일반적인 좋은 습관**입니다.
 
 3. **실제 동작 확인**
 
-   - 정상 응답: 쿼리 성공 → stepbar에 실제 진행률이 표시되는지
-   - 의도적 실패: 백엔드에서 500을 반환했을 때 Error Boundary가 잡는지 (이때는 옵트아웃이 빠졌으니 throw 정책이 다시 적용됨)
+- 정상 응답: 쿼리 성공 → stepbar에 실제 진행률이 표시되는지
+- 의도적 실패: 백엔드에서 500을 반환했을 때 Error Boundary가 잡는지 (이때는 옵트아웃이 빠졌으니 throw 정책이 다시 적용됨)
 
 ---
 
@@ -3883,16 +3884,18 @@ const step = [
 실제 백엔드 API가 준비되면서, 이 임시 경로를 실 연동으로 교체했습니다. 이때 단순히 엔드포인트만 바꾼 것이 아니라 **"서버로 보낼 데이터"와 "화면 표시·복원용 데이터"의 책임을 분리**한 것이 이번 작업의 핵심입니다.
 
 ```
-[이전 — 임시]                              [이후 — 실 API]
-폼 전체(코드+이름)                          서버 페이로드(코드만)
-   │ = 하나의 요청 타입                        │ = AdmissionEvaluationApplyRequest
-   ▼                                          ▼
-mock Route Handler  ──► 가짜 applyId        실 POST /admission-evaluation/apply ──► 실제 applyId
-   │                                          │
-   ▼                                          ▼
-sessionStorage에 요청 객체 그대로 저장       sessionStorage엔 "표시·복원용 스냅샷" 별도 저장
-   └─► 확인 페이지가 이름 읽어 표시            └─► 스냅샷 = 요청 + applyId + 이름(라벨)
-```
+
+[이전 — 임시] [이후 — 실 API]
+폼 전체(코드+이름) 서버 페이로드(코드만)
+│ = 하나의 요청 타입 │ = AdmissionEvaluationApplyRequest
+▼ ▼
+mock Route Handler ──► 가짜 applyId 실 POST /admission-evaluation/apply ──► 실제 applyId
+│ │
+▼ ▼
+sessionStorage에 요청 객체 그대로 저장 sessionStorage엔 "표시·복원용 스냅샷" 별도 저장
+└─► 확인 페이지가 이름 읽어 표시 └─► 스냅샷 = 요청 + applyId + 이름(라벨)
+
+````
 
 ---
 
@@ -3914,27 +3917,23 @@ export const submitAdmissionEvaluationApply = async (
     .json<AdmissionEvaluationApplyResponse>();
   return data;
 };
-```
+````
 
 **변경 후 (실 API — 공통 `apiClient`로 백엔드 엔드포인트 호출):**
 
 ```typescript
 // 학종 신청 제출 API
-export const submitAdmissionEvaluationApply = async (
-  requestData: AdmissionEvaluationApplyRequest,
-): Promise<AdmissionEvaluationApplyResponse> => {
-  const data = await apiClient()
-    .post('admission-evaluation/apply', { json: requestData })
-    .json<AdmissionEvaluationApplyResponse>();
+export const submitAdmissionEvaluationApply = async (requestData: AdmissionEvaluationApplyRequest): Promise<AdmissionEvaluationApplyResponse> => {
+  const data = await apiClient().post('admission-evaluation/apply', { json: requestData }).json<AdmissionEvaluationApplyResponse>();
   return data;
 };
 ```
 
-| 구분        | 임시 (mock Route)                              | 실 API                                  |
-| ----------- | ---------------------------------------------- | --------------------------------------- |
-| HTTP 클라이언트 | `ky` 직접 import                               | 공통 `apiClient()` (baseURL/인증 자동)  |
-| 대상 URL    | `{NEXT_PUBLIC_BASE_URL}/api/admission-evaluation/apply` (앱 내부) | `{API_URL}/admission-evaluation/apply` (백엔드) |
-| `applyId`   | `route.ts`가 `Date.now()`로 생성한 가짜 값     | 서버가 발급한 실제 값                   |
+| 구분            | 임시 (mock Route)                                                 | 실 API                                          |
+| --------------- | ----------------------------------------------------------------- | ----------------------------------------------- |
+| HTTP 클라이언트 | `ky` 직접 import                                                  | 공통 `apiClient()` (baseURL/인증 자동)          |
+| 대상 URL        | `{NEXT_PUBLIC_BASE_URL}/api/admission-evaluation/apply` (앱 내부) | `{API_URL}/admission-evaluation/apply` (백엔드) |
+| `applyId`       | `route.ts`가 `Date.now()`로 생성한 가짜 값                        | 서버가 발급한 실제 값                           |
 
 > **mock Route Handler 정리**: 실 연동 후 `apps/early/app/api/admission-evaluation/apply/route.ts`는 더 이상 참조되지 않습니다. [Phase 9](#phase-9-백엔드-미구현-엔드포인트-안전-호출--throwonerror-우회-패턴)의 "임시 우회는 원인 해소 시 제거" 원칙대로, 확인 후 삭제 대상입니다.
 
@@ -3949,7 +3948,7 @@ export const submitAdmissionEvaluationApply = async (
 ```typescript
 export interface AdmissionEvaluationApplyRequest {
   universityId: string;
-  universityName: string;        // ← 이름까지 서버로 전송했음
+  universityName: string; // ← 이름까지 서버로 전송했음
   majorType: string;
   majorTypeName: string;
   minorMajorCategoryCode: string;
@@ -3968,28 +3967,28 @@ export interface AdmissionEvaluationApplyRequest {
 // 학종 신청 제출 요청 (서버 전송 페이로드 — 코드/식별자만 전송)
 export interface AdmissionEvaluationApplyRequest {
   userId: string;
-  subjectNot: string;            // 비교과 추가 입력값
-  majorIdHsbs: string[];         // 희망 대학 리스트(카드)의 학과 ID 목록
-  preferAiPartsCodes: string[];  // 선호 전공 코드 (필수 + 선택)
-  preferProvsCodes: string[];    // 선호 지역 코드 (필수 + 선택)
+  subjectNot: string; // 비교과 추가 입력값
+  majorIdHsbs: string[]; // 희망 대학 리스트(카드)의 학과 ID 목록
+  preferAiPartsCodes: string[]; // 선호 전공 코드 (필수 + 선택)
+  preferProvsCodes: string[]; // 선호 지역 코드 (필수 + 선택)
   emphasis1: string;
   emphasis2: string;
   emphasis3: string;
-  simpleQuestion: string;        // 입시전문가 간단 질문
+  simpleQuestion: string; // 입시전문가 간단 질문
 }
 ```
 
 **폼 입력 → 서버 페이로드 매핑:**
 
-| 서버 필드            | 폼 입력 출처                                        | 비고                                  |
-| -------------------- | --------------------------------------------------- | ------------------------------------- |
-| `userId`             | `currentUser.userId`                                | 로그인 사용자                         |
-| `subjectNot`         | `comparativeExtraInfo` (비교과 추가 입력 영역)      |                                       |
-| `majorIdHsbs`        | `selectedCards.map((c) => c.options.drop3.value)`   | 희망 대학 카드들의 학과 ID **배열**   |
-| `preferAiPartsCodes` | `[drop4.value, drop4_1.value].filter(Boolean)`      | 전공 필수 + 선택, 빈 값 제거          |
-| `preferProvsCodes`   | `[drop5.value, drop5_1.value].filter(Boolean)`      | 지역 필수 + 선택, 빈 값 제거          |
-| `emphasis1~3`        | `selfActivity1~3` (강조하고 싶은 내용)              |                                       |
-| `simpleQuestion`     | 간단 질문 Textarea (Step 48에서 신규 추가)          |                                       |
+| 서버 필드            | 폼 입력 출처                                      | 비고                                |
+| -------------------- | ------------------------------------------------- | ----------------------------------- |
+| `userId`             | `currentUser.userId`                              | 로그인 사용자                       |
+| `subjectNot`         | `comparativeExtraInfo` (비교과 추가 입력 영역)    |                                     |
+| `majorIdHsbs`        | `selectedCards.map((c) => c.options.drop3.value)` | 희망 대학 카드들의 학과 ID **배열** |
+| `preferAiPartsCodes` | `[drop4.value, drop4_1.value].filter(Boolean)`    | 전공 필수 + 선택, 빈 값 제거        |
+| `preferProvsCodes`   | `[drop5.value, drop5_1.value].filter(Boolean)`    | 지역 필수 + 선택, 빈 값 제거        |
+| `emphasis1~3`        | `selfActivity1~3` (강조하고 싶은 내용)            |                                     |
+| `simpleQuestion`     | 간단 질문 Textarea (Step 48에서 신규 추가)        |                                     |
 
 > **단일 값 → 배열의 의미 변화**: 임시 타입은 대학/계열/학과를 단일 값으로만 담았지만, 실제 신청은 "희망 대학 리스트(카드 N개)"를 보냅니다. 그래서 `majorIdHsbs`가 **배열**입니다. 카드 추가 UI([Step 12](#step-12-이벤트-핸들러-작성--사용자-동작-처리))가 이 배열의 원천입니다.
 
@@ -4007,8 +4006,7 @@ export interface AdmissionEvaluationApplyRequest {
  * 표시·복원에만 필요한 응답값(applyId)과 라벨/코드를 추가로 보관한다.
  * (emphasis 등 공통 필드는 요청 타입에서 상속받아 중복을 없앤다)
  */
-export interface AdmissionEvaluationApplyFormSnapshot
-  extends AdmissionEvaluationApplyRequest {
+export interface AdmissionEvaluationApplyFormSnapshot extends AdmissionEvaluationApplyRequest {
   applyId: string;
   universityId: string;
   universityName: string;
@@ -4069,10 +4067,7 @@ const snapshot: AdmissionEvaluationApplyFormSnapshot = {
   minorMajorCategoryName: drop3.label,
   // ... preferMajor*, preferArea* 라벨
 };
-sessionStorage.setItem(
-  ADMISSION_EVALUATION_STORAGE_KEY.applyForm,
-  JSON.stringify(snapshot),
-);
+sessionStorage.setItem(ADMISSION_EVALUATION_STORAGE_KEY.applyForm, JSON.stringify(snapshot));
 router.push('/four-year-university/admission-evaluation/confirm');
 ```
 
@@ -4092,15 +4087,7 @@ router.push('/four-year-university/admission-evaluation/confirm');
 const [simpleQuestion, setSimpleQuestion] = useState('');
 
 // ... '간단 질문하기' 섹션 내부
-<Textarea
-  addId="textarea-simple-question"
-  label="입시전문가에게 궁금한 점을 작성해주세요."
-  mode="base"
-  size="base"
-  value={simpleQuestion}
-  maxLength={200}
-  onChange={(e) => setSimpleQuestion(e.target.value)}
-/>
+<Textarea addId="textarea-simple-question" label="입시전문가에게 궁금한 점을 작성해주세요." mode="base" size="base" value={simpleQuestion} maxLength={200} onChange={(e) => setSimpleQuestion(e.target.value)} />;
 ```
 
 > **타입을 먼저, UI를 나중에**: 요청 타입에 필드가 생기면 `handleSubmit`에서 타입 에러로 "이 값을 어디서 채울 것인가?"를 강제로 마주하게 됩니다. 타입이 누락된 입력 UI를 잡아준 사례입니다.
@@ -4109,14 +4096,14 @@ const [simpleQuestion, setSimpleQuestion] = useState('');
 
 ### 이전 sessionStorage 방식과의 차이점 (정리)
 
-| 항목            | 이전 (임시)                                          | 이후 (실 API)                                              |
-| --------------- | ---------------------------------------------------- | ---------------------------------------------------------- |
-| 제출 대상       | Next.js Route Handler(로컬 mock) → 가짜 `applyId`    | 백엔드 `apiClient().post('admission-evaluation/apply')`    |
-| 전송 데이터     | 폼 전체 (대학/계열/학과 **이름까지** 포함, 단일 값)  | 코드/식별자만 (`majorIdHsbs` 배열, `prefer*Codes` 등)      |
-| 요청 타입 의미  | 전송 + 저장을 한 타입이 겸함                          | **전송 전용** (`…ApplyRequest`)                            |
-| sessionStorage  | 요청 객체를 **그대로** 저장                          | **표시·복원 전용 스냅샷** 별도 저장 (`…ApplyFormSnapshot`) |
-| 타입 관계       | 단일 평면 타입                                        | 스냅샷이 요청을 `extends` (요청 ⊂ 스냅샷)                  |
-| 이름(라벨) 보관 | 요청에 섞여 있음                                      | 스냅샷에만 보관 (서버는 코드, 화면은 이름)                 |
+| 항목            | 이전 (임시)                                         | 이후 (실 API)                                              |
+| --------------- | --------------------------------------------------- | ---------------------------------------------------------- |
+| 제출 대상       | Next.js Route Handler(로컬 mock) → 가짜 `applyId`   | 백엔드 `apiClient().post('admission-evaluation/apply')`    |
+| 전송 데이터     | 폼 전체 (대학/계열/학과 **이름까지** 포함, 단일 값) | 코드/식별자만 (`majorIdHsbs` 배열, `prefer*Codes` 등)      |
+| 요청 타입 의미  | 전송 + 저장을 한 타입이 겸함                        | **전송 전용** (`…ApplyRequest`)                            |
+| sessionStorage  | 요청 객체를 **그대로** 저장                         | **표시·복원 전용 스냅샷** 별도 저장 (`…ApplyFormSnapshot`) |
+| 타입 관계       | 단일 평면 타입                                      | 스냅샷이 요청을 `extends` (요청 ⊂ 스냅샷)                  |
+| 이름(라벨) 보관 | 요청에 섞여 있음                                    | 스냅샷에만 보관 (서버는 코드, 화면은 이름)                 |
 
 **핵심 한 줄:**
 
@@ -4126,13 +4113,13 @@ const [simpleQuestion, setSimpleQuestion] = useState('');
 
 ### Phase 10 정리
 
-| 새로 배운/적용한 핵심 개념        | 설명                                                                                          |
-| --------------------------------- | --------------------------------------------------------------------------------------------- |
-| **임시 제출 경로의 교체**          | mock Route Handler + `ky` 직접 호출 → 공통 `apiClient`로 실 엔드포인트 POST                    |
-| **전송용/표시용 타입 분리**        | 요청은 코드만(`…ApplyRequest`), 화면 표시·복원은 이름 포함 스냅샷(`…ApplyFormSnapshot`)        |
-| **`extends`로 타입 정렬**          | 스냅샷이 요청을 상속 → 공통 필드 중복 제거, 단일 출처 유지, 드리프트 방지                      |
-| **`{ ...requestData }` 재사용**    | 요청을 한 번 만들고 스냅샷에 펼쳐 넣어, 타입 관계를 코드에서도 그대로 표현                     |
-| **타입이 누락 UI를 드러냄**        | 요청에 추가된 `simpleQuestion`이 입력 Textarea의 부재를 타입 에러로 노출                       |
+| 새로 배운/적용한 핵심 개념      | 설명                                                                                    |
+| ------------------------------- | --------------------------------------------------------------------------------------- |
+| **임시 제출 경로의 교체**       | mock Route Handler + `ky` 직접 호출 → 공통 `apiClient`로 실 엔드포인트 POST             |
+| **전송용/표시용 타입 분리**     | 요청은 코드만(`…ApplyRequest`), 화면 표시·복원은 이름 포함 스냅샷(`…ApplyFormSnapshot`) |
+| **`extends`로 타입 정렬**       | 스냅샷이 요청을 상속 → 공통 필드 중복 제거, 단일 출처 유지, 드리프트 방지               |
+| **`{ ...requestData }` 재사용** | 요청을 한 번 만들고 스냅샷에 펼쳐 넣어, 타입 관계를 코드에서도 그대로 표현              |
+| **타입이 누락 UI를 드러냄**     | 요청에 추가된 `simpleQuestion`이 입력 Textarea의 부재를 타입 에러로 노출                |
 
 **적용 판단 한 줄:**
 
@@ -4193,13 +4180,13 @@ Uncaught (in promise) VALIDATION_PIPE_ERROR: subjectNot should not be empty
 
 **서버 신청 요청 DTO에서 아래 선택 필드들의 검증을 `@IsNotEmpty()` → `@IsOptional()`로 변경해야 한다.**
 
-| 필드            | UI 표기              | 구분 |
-| --------------- | -------------------- | ---- |
-| `subjectNot`    | 비교과 추가 입력     | 선택 |
-| `emphasis1`     | 강조하고 싶은 내용 1 | 선택 |
-| `emphasis2`     | 강조하고 싶은 내용 2 | 선택 |
-| `emphasis3`     | 강조하고 싶은 내용 3 | 선택 |
-| `simpleQuestion`| 간단 질문하기        | 선택 |
+| 필드             | UI 표기              | 구분 |
+| ---------------- | -------------------- | ---- |
+| `subjectNot`     | 비교과 추가 입력     | 선택 |
+| `emphasis1`      | 강조하고 싶은 내용 1 | 선택 |
+| `emphasis2`      | 강조하고 싶은 내용 2 | 선택 |
+| `emphasis3`      | 강조하고 싶은 내용 3 | 선택 |
+| `simpleQuestion` | 간단 질문하기        | 선택 |
 
 ```ts
 // 변경 전
@@ -4243,13 +4230,13 @@ onError: (error) => {
 
 서버와 데이터를 주고받는 동작은 방향에 따라 **완전히 다른 두 가지**다.
 
-| 구분        | 전송 (쓰기)                       | 조회 (읽기)                  |
-| ----------- | --------------------------------- | ---------------------------- |
-| 무엇        | 내가 입력한 값을 **서버에 보냄**   | 서버에 있는 값을 **받아옴**  |
-| HTTP        | POST / PUT                        | GET                          |
-| React Query | `useMutation`                     | `useQuery`                   |
-| 이 프로젝트 | `submitAdmissionEvaluationApply`  | (리포트 조회 API — 미구현)   |
-| 비유        | 우체통에 편지를 **넣는다**        | 우편함에서 답장을 **꺼낸다** |
+| 구분        | 전송 (쓰기)                      | 조회 (읽기)                  |
+| ----------- | -------------------------------- | ---------------------------- |
+| 무엇        | 내가 입력한 값을 **서버에 보냄** | 서버에 있는 값을 **받아옴**  |
+| HTTP        | POST / PUT                       | GET                          |
+| React Query | `useMutation`                    | `useQuery`                   |
+| 이 프로젝트 | `submitAdmissionEvaluationApply` | (리포트 조회 API — 미구현)   |
+| 비유        | 우체통에 편지를 **넣는다**       | 우편함에서 답장을 **꺼낸다** |
 
 현재 `apply` API는 "넣는" 동작 하나만 한다. 리포트 페이지는 "꺼내는" 동작이 필요한데 그 API가 아직 없는 상태다.
 
@@ -4268,10 +4255,10 @@ onError: (error) => {
 
 확인 페이지와 리포트 페이지는 성격이 완전히 다르다:
 
-| 페이지        | 무엇을 보여주나                 | 데이터 출처              |
-| ------------- | ------------------------------- | ------------------------ |
-| 확인(Confirm) | "내가 이렇게 신청한 게 맞나요?" | 내 입력값 (sessionStorage) |
-| 리포트(Report)| "전문가가 분석한 결과는?"       | 서버가 만든 결과 (GET API) |
+| 페이지         | 무엇을 보여주나                 | 데이터 출처                |
+| -------------- | ------------------------------- | -------------------------- |
+| 확인(Confirm)  | "내가 이렇게 신청한 게 맞나요?" | 내 입력값 (sessionStorage) |
+| 리포트(Report) | "전문가가 분석한 결과는?"       | 서버가 만든 결과 (GET API) |
 
 ### `applyId` — 전송과 조회를 잇는 번호표
 
@@ -4352,13 +4339,13 @@ export const EarlyAdmissionEvaluationReport = () => {
 
 ### Phase 12 정리
 
-| 핵심 개념                  | 설명                                                                       |
-| -------------------------- | -------------------------------------------------------------------------- |
-| 쓰기 vs 읽기               | 전송(POST·`useMutation`)과 조회(GET·`useQuery`)는 방향도 훅도 다른 동작     |
-| 리포트 = 분석 결과         | 리포트는 내 입력값이 아니라 서버가 입력을 분석해 만든 새 데이터로 그린다    |
-| 확인 페이지 ≠ 리포트 페이지 | 확인은 내 입력값(sessionStorage), 리포트는 서버 결과(GET API)              |
-| `applyId`의 역할           | 전송 때 발급받아 조회 때 신청 건을 다시 찾는 "번호표"                       |
-| 확정 API vs 조회 API       | `POST /confirm`(분석 시작 요청, 쓰기)와 `GET /report`(결과 조회, 읽기)는 별개 |
+| 핵심 개념                   | 설명                                                                          |
+| --------------------------- | ----------------------------------------------------------------------------- |
+| 쓰기 vs 읽기                | 전송(POST·`useMutation`)과 조회(GET·`useQuery`)는 방향도 훅도 다른 동작       |
+| 리포트 = 분석 결과          | 리포트는 내 입력값이 아니라 서버가 입력을 분석해 만든 새 데이터로 그린다      |
+| 확인 페이지 ≠ 리포트 페이지 | 확인은 내 입력값(sessionStorage), 리포트는 서버 결과(GET API)                 |
+| `applyId`의 역할            | 전송 때 발급받아 조회 때 신청 건을 다시 찾는 "번호표"                         |
+| 확정 API vs 조회 API        | `POST /confirm`(분석 시작 요청, 쓰기)와 `GET /report`(결과 조회, 읽기)는 별개 |
 
 **적용 판단 한 줄:**
 
@@ -4383,14 +4370,14 @@ export const EarlyAdmissionEvaluationReport = () => {
 
 서버가 토큰으로 식별하므로, 서버가 발급하던 `applyId`는 프론트에서 **식별 용도로 쓸 일이 없어졌다.** 유일한 잔존 용도였던 확인 페이지의 "신청 번호" 표시도, 본질적으로 신청서 번호가 아니라 불필요한 식별자 노출이라 정리했다.
 
-| 파일 | 변경 |
-| --- | --- |
-| `admission-evaluation.types.ts` | `AdmissionEvaluationApplyResponse` 인터페이스 삭제, `…ApplyFormSnapshot`에서 `applyId` 필드 제거 |
-| `api/index.ts` | `submitAdmissionEvaluationApply` 반환 타입을 `Promise<void>`로 (응답 파싱 불필요) |
-| `admission-evaluation.queries.ts` | mutation 제네릭을 `useMutation<void, Error, …Request>`로 |
-| `EarlyAdmissionEvaluationApply.tsx` | `response` 캡처·디버그 로그·`snapshot.applyId` 제거 |
-| `EarlyAdmissionEvaluationConfirm.tsx` | 표시를 `userId` 기준으로, 라벨을 "신청자 ID"로 정정 |
-| `app/api/admission-evaluation/apply/route.ts` | **삭제** (안 쓰이던 로컬 mock 라우트) |
+| 파일                                          | 변경                                                                                             |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `admission-evaluation.types.ts`               | `AdmissionEvaluationApplyResponse` 인터페이스 삭제, `…ApplyFormSnapshot`에서 `applyId` 필드 제거 |
+| `api/index.ts`                                | `submitAdmissionEvaluationApply` 반환 타입을 `Promise<void>`로 (응답 파싱 불필요)                |
+| `admission-evaluation.queries.ts`             | mutation 제네릭을 `useMutation<void, Error, …Request>`로                                         |
+| `EarlyAdmissionEvaluationApply.tsx`           | `response` 캡처·디버그 로그·`snapshot.applyId` 제거                                              |
+| `EarlyAdmissionEvaluationConfirm.tsx`         | 표시를 `userId` 기준으로, 라벨을 "신청자 ID"로 정정                                              |
+| `app/api/admission-evaluation/apply/route.ts` | **삭제** (안 쓰이던 로컬 mock 라우트)                                                            |
 
 > **신청 성공 판정은?** `applyId`를 안 받아도 된다. `ky`는 비-2xx 응답에서 throw하므로(`beforeError` → `APIError`), `await submitApply(requestData)`가 예외 없이 끝나면 성공이다. 굳이 응답 바디를 파싱·검사할 필요가 없어 반환 타입을 `void`로 좁혔다.
 
@@ -4398,11 +4385,11 @@ export const EarlyAdmissionEvaluationReport = () => {
 
 논의 중 "두 값을 `userId`로 이름 통일하면 깔끔하지 않냐"는 아이디어가 있었으나, **둘은 이름만 다른 같은 값이 아니라 의미·값이 다른 별개**다.
 
-| | `userId` | `applyId` |
-| --- | --- | --- |
-| 식별 대상 | 사람(로그인 사용자) | 신청서 한 건 |
-| 출처 | 로그인 정보 (보내는 값) | 서버 응답 (받는 값) |
-| 예시 | `'mynesin24'` | `'ADMISSION-EVALUATION-1716…'` |
+|           | `userId`                | `applyId`                      |
+| --------- | ----------------------- | ------------------------------ |
+| 식별 대상 | 사람(로그인 사용자)     | 신청서 한 건                   |
+| 출처      | 로그인 정보 (보내는 값) | 서버 응답 (받는 값)            |
+| 예시      | `'mynesin24'`           | `'ADMISSION-EVALUATION-1716…'` |
 
 특히 snapshot은 `{ ...requestData, applyId: response.applyId }` 형태였는데, `applyId`를 `userId`로 개명하면 스프레드로 들어온 `userId`('mynesin24')를 신청번호로 **덮어쓰는 버그**가 난다 (JS 객체는 같은 key 중 뒤의 값이 이김). 이름이 다른 건 혼동이 아니라 "정확히 구분 중"이라는 신호다.
 
@@ -4442,8 +4429,8 @@ export const EarlyAdmissionEvaluationReport = () => {
 // ✅ 페이지: 원시 도구만 전달
 <UnivMajorSelector
   selectedOption={selectedOption}
-  onSelectedChange={handleSelectedChange}   // 단순 setter
-  onUnivChangeFetch={onUnivChangeFetch}     // cascade 함수
+  onSelectedChange={handleSelectedChange} // 단순 setter
+  onUnivChangeFetch={onUnivChangeFetch} // cascade 함수
   onMajorTypeChange={onMajorTypeChange}
   selectedCards={selectedCards}
   onAddCard={handleAddCard}
@@ -4495,7 +4482,7 @@ PreferInfoSelector (컨테이너)
 
 > **리팩토링은 dead code를 드러낸다**: prop과 구조분해를 정리하다 보면 "받기만 하고 안 쓰는 값"이 보입니다. 이때 바로 지우는 게 CLAUDE.md의 "dead code 즉시 삭제" 원칙입니다.
 
-### 무엇을 옮기지 *못하는가* — 공유 상태는 페이지에 남는다
+### 무엇을 옮기지 _못하는가_ — 공유 상태는 페이지에 남는다
 
 selector로 다 내리고 싶어도, `selectedOption`·`selectedCards`·`onUnivChangeFetch`는 **handleSubmit과 복원 로직도 함께 쓰는 공유 상태**라 페이지(또는 상위 훅)가 들고 있어야 합니다. 자식에게 내려주는 건 "상태 끌어올리기(lifting state up)"라는 정상 패턴이지, 군더더기가 아닙니다.
 
@@ -4541,7 +4528,7 @@ export const useStudentRecordComparativeStatusQuery = () => {
   return useQuery({
     queryKey: ['studentRecordComparativeStatus', currentUser.userId],
     queryFn: () => fetchStudentRecordComparativeStatus(currentUser.userId),
-    enabled: !!currentUser.userId,   // userId 준비 전엔 실행 안 함
+    enabled: !!currentUser.userId, // userId 준비 전엔 실행 안 함
   });
 };
 ```
@@ -4586,10 +4573,10 @@ Content Security Policy directive: "connect-src 'self' https://*.jinhak.com ..."
 
 CSP(`next.config.js`의 `connect-src`)에 그 호스트가 없어서 브라우저가 막은 것입니다. 게다가 호스트가 `http://`라서, **production(https)에선 CSP를 열어줘도 mixed-content로 또 막힙니다.**
 
-| 해결책 | 로컬/dev(http) | production(https) |
-| --- | --- | --- |
-| CSP에 호스트 추가 | 뚫림 | ❌ mixed-content로 막힘 |
-| **Next 프록시 라우트** | ✅ | ✅ |
+| 해결책                 | 로컬/dev(http) | production(https)       |
+| ---------------------- | -------------- | ----------------------- |
+| CSP에 호스트 추가      | 뚫림           | ❌ mixed-content로 막힘 |
+| **Next 프록시 라우트** | ✅             | ✅                      |
 
 ### 함정 ③ + 해결: Next.js 프록시 라우트 (그리고 ENOTFOUND)
 
@@ -4613,8 +4600,7 @@ export async function GET(request: NextRequest) {
 클라이언트는 `useCurrentUser`가 쓰는 것과 같은 패턴으로 self 라우트를 부릅니다:
 
 ```ts
-await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/.../comparative-status?userId=${userId}`,
-  { credentials: 'include' });
+await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/.../comparative-status?userId=${userId}`, { credentials: 'include' });
 ```
 
 그런데 프록시를 깔아도 데이터가 비었고, 서버 콘솔에 결정적 단서가 있었습니다.
@@ -4659,8 +4645,8 @@ export const useAdmissionEvaluationApplyForm = () => {
   // 3) 폼 입력 상태 소유 + 복원 useEffect + handleSubmit ...
 
   return {
-    ...dropOptions,   // 옵션 + cascade
-    ...handler,       // 선택 상태 + 카드 + 모달
+    ...dropOptions, // 옵션 + cascade
+    ...handler, // 선택 상태 + 카드 + 모달
     /* 폼 상태, handleSubmit, isPending ... */
   };
 };
@@ -4724,7 +4710,7 @@ export const useAdmissionEvaluationConfirmSummary = () => {
     // ...
   }, []);
 
-  return { userId, isMobile, gradeStatusData, mockStatusData, selectedCards, /* ... */ };
+  return { userId, isMobile, gradeStatusData, mockStatusData, selectedCards /* ... */ };
 };
 ```
 
@@ -4737,8 +4723,7 @@ export const useAdmissionEvaluationConfirmSummary = () => {
 ```ts
 // ❌ Confirm 요약 훅이 Apply 폼 훅을 통째로 호출
 export const useAdmissionEvaluationConfirmSummary = () => {
-  const { isMobile, gradeStatusData, mockStatusData } =
-    useAdmissionEvaluationApplyForm();
+  const { isMobile, gradeStatusData, mockStatusData } = useAdmissionEvaluationApplyForm();
   // ...
 };
 ```
@@ -4813,7 +4798,7 @@ setSelectedOption({
   drop1: { value: saved.universityId, label: saved.universityName },
   // ...
 });
-onUnivChangeFetch(saved.universityId);  // ← 단일 코드 기대
+onUnivChangeFetch(saved.universityId); // ← 단일 코드 기대
 ```
 
 여기에 `universityId = "101,102,103"`(comma-join) 같은 값이 들어가면 드롭다운 라벨이 "서울대,연세대"가 되고, cascade fetch는 `univCode = "101,102,103"`을 서버에 보내 깨집니다.
@@ -4843,8 +4828,8 @@ handleSubmit은 **둘 다** 저장합니다:
 ```ts
 const snapshot: AdmissionEvaluationApplyFormSnapshot = {
   ...requestData,
-  selectedCards: handler.selectedCards,   // ← 구조화 배열 (라벨 포함)
-  universityId: drop1.value,              // ← 단일 값 (드롭다운 복원용)
+  selectedCards: handler.selectedCards, // ← 구조화 배열 (라벨 포함)
+  universityId: drop1.value, // ← 단일 값 (드롭다운 복원용)
   universityName: drop1.label,
   // ...
 };
@@ -4853,14 +4838,24 @@ const snapshot: AdmissionEvaluationApplyFormSnapshot = {
 Confirm 훅은 `selectedCards`만 복원해서 그대로 렌더에 넘기고, Apply 복원 effect는 단일 필드로 드롭다운을 복원합니다.
 
 ```tsx
-{/* Confirm 페이지 — 카드를 카드답게 렌더 */}
-{selectedCards.map((card) => (
-  <div key={card.id} className="p-4 ...">
-    <p>대학: <strong>{card.options.drop1.label}</strong></p>
-    <p>계열: <strong>{card.options.drop2.label}</strong></p>
-    <p>학과: <strong>{card.options.drop3.label}</strong></p>
-  </div>
-))}
+{
+  /* Confirm 페이지 — 카드를 카드답게 렌더 */
+}
+{
+  selectedCards.map((card) => (
+    <div key={card.id} className="p-4 ...">
+      <p>
+        대학: <strong>{card.options.drop1.label}</strong>
+      </p>
+      <p>
+        계열: <strong>{card.options.drop2.label}</strong>
+      </p>
+      <p>
+        학과: <strong>{card.options.drop3.label}</strong>
+      </p>
+    </div>
+  ));
+}
 ```
 
 ### Step 60: 보너스 — 수정하기 시 카드도 복원
@@ -4923,11 +4918,11 @@ useEffect(() => {
 
 세 가지 설계 결정의 의도:
 
-| 결정 | 이유 |
-|---|---|
-| `useRef` 가드 | `useState`로 플래그 두면 set 시 리렌더가 일어나 무한 루프 위험. ref는 변경해도 리렌더 안 함. |
-| **셋 다 도착 후** 일괄 적용 (AND 조건) | 하나만 도착해 부분 적용하고 hydrated=true 처리하면 늦게 온 데이터가 영원히 반영 안 됨. |
-| `hasHydrated.current = true` 위치 | 첫 적용 직전/직후 어디든 OK. 핵심은 **이후 데이터 변경(예: refetch)에도 다시 적용하지 않는 것**. 사용자가 이미 입력한 값을 덮어쓰지 않기 위함. |
+| 결정                                   | 이유                                                                                                                                           |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `useRef` 가드                          | `useState`로 플래그 두면 set 시 리렌더가 일어나 무한 루프 위험. ref는 변경해도 리렌더 안 함.                                                   |
+| **셋 다 도착 후** 일괄 적용 (AND 조건) | 하나만 도착해 부분 적용하고 hydrated=true 처리하면 늦게 온 데이터가 영원히 반영 안 됨.                                                         |
+| `hasHydrated.current = true` 위치      | 첫 적용 직전/직후 어디든 OK. 핵심은 **이후 데이터 변경(예: refetch)에도 다시 적용하지 않는 것**. 사용자가 이미 입력한 값을 덮어쓰지 않기 위함. |
 
 ---
 
@@ -4947,13 +4942,14 @@ useEffect(() => {
   if (hasHydrated) return;
   if (!hopeUnivsData || !preferSelectsData || !simpleQuestionData) return;
   // ... apply ...
-  setHasHydrated(true);  // ← 이 set이 리렌더를 일으킴
+  setHasHydrated(true); // ← 이 set이 리렌더를 일으킴
 }, [hopeUnivsData, preferSelectsData, simpleQuestionData, hasHydrated]);
 //                                                       ^^^^^^^^^^^
 //   eslint-react-hooks/exhaustive-deps가 강제 — 안 넣으면 경고
 ```
 
 문제:
+
 1. `setHasHydrated(true)` → 리렌더 한 번 추가.
 2. 다음 렌더에서 effect 재실행 → `hasHydrated`가 true니 guard에 걸려 무한 루프는 아님.
 3. 그러나 deps에 `hasHydrated` 포함 → effect가 의미 없이 한 번 더 평가됨.
@@ -4975,13 +4971,13 @@ useEffect(() => {
 
 핵심 차이:
 
-| | `useState` | `useRef` |
-|---|---|---|
-| 값 저장 | ✅ | ✅ |
-| 컴포넌트 간/마운트 간 지속 | ✅ | ✅ |
-| set 시 리렌더 트리거 | ✅ (필요할 때 — UI 반영) | ❌ |
-| deps에 포함해야 함 | ✅ | ❌ |
-| 용도 | "UI에 반영되어야 할 값" | "렌더와 무관한 mutable 값" |
+|                            | `useState`               | `useRef`                   |
+| -------------------------- | ------------------------ | -------------------------- |
+| 값 저장                    | ✅                       | ✅                         |
+| 컴포넌트 간/마운트 간 지속 | ✅                       | ✅                         |
+| set 시 리렌더 트리거       | ✅ (필요할 때 — UI 반영) | ❌                         |
+| deps에 포함해야 함         | ✅                       | ❌                         |
+| 용도                       | "UI에 반영되어야 할 값"  | "렌더와 무관한 mutable 값" |
 
 > **규칙 한 줄**: 값이 바뀌어도 **화면을 다시 그릴 필요가 없다면** `useRef`를 써라. 플래그 / 타이머 ID / 이전 값 보관 / DOM 노드 참조 등이 대표 용례.
 
@@ -4996,13 +4992,18 @@ useEffect(() => {
   if (hopeUnivsData) {
     // ... 카드만 적용 ...
   }
-  if (preferSelectsData) { /* ... */ }
-  if (simpleQuestionData) { /* ... */ }
-  hasHydrated.current = true;   // ← 여기가 문제
+  if (preferSelectsData) {
+    /* ... */
+  }
+  if (simpleQuestionData) {
+    /* ... */
+  }
+  hasHydrated.current = true; // ← 여기가 문제
 }, [hopeUnivsData, preferSelectsData, simpleQuestionData]);
 ```
 
 시나리오:
+
 1. `t=0.3s`: `hopeUnivsData`만 먼저 도착 → 카드 적용 → `hasHydrated.current = true`.
 2. `t=0.5s`: `preferSelectsData` 도착 → effect 재실행 → 가드에 걸려 **return** → 선호 영영 비어 있음.
 3. `t=0.7s`: `simpleQuestionData` 도착 → 마찬가지로 **return** → 활동·질문 영영 비어 있음.
@@ -5010,6 +5011,7 @@ useEffect(() => {
 결과: 사용자는 카드만 채워진 채 선호/활동이 비어 있는 폼을 보게 됨.
 
 올바른 AND 조건:
+
 ```ts
 // ✅ 셋 다 모이길 기다린 뒤 한 번에 적용
 useEffect(() => {
@@ -5041,18 +5043,19 @@ simpleQuestionData 도착 → blocked  simpleQuestionData 도착 → 셋 다 적
 ```
 
 여기에 셋을 넣은 이유:
+
 - React Query의 `data`는 **요청 도착 시 reference가 바뀐다** (`undefined` → 실제 객체).
 - 첫 렌더에선 셋 다 `undefined`일 수 있음 → effect 발사되나 가드에 걸려 return.
 - 데이터가 하나씩 도착할 때마다 deps 값 변경 → effect 재발사 → AND 통과 시 한 번 적용.
 
 **deps에 무엇을 넣을지의 일반 원칙**:
 
-| 변수 종류 | deps 포함? | 이유 |
-|---|---|---|
-| 쿼리 data, props, state | ✅ | 값이 바뀌면 effect 재실행 필요 |
-| setter (`setX`, `dispatch`) | 선택 — 안 넣어도 OK | React가 stable reference 보장 |
-| ref (`hasHydrated`) | ❌ | 변경이 리렌더 안 일으키므로 deps 의미 없음 |
-| handler/dropOptions 같은 합성 객체 | 보수적으로 ✅, 안정성 확신 시 ❌ | useMemo/useCallback 없으면 매 렌더 새 ref |
+| 변수 종류                          | deps 포함?                       | 이유                                       |
+| ---------------------------------- | -------------------------------- | ------------------------------------------ |
+| 쿼리 data, props, state            | ✅                               | 값이 바뀌면 effect 재실행 필요             |
+| setter (`setX`, `dispatch`)        | 선택 — 안 넣어도 OK              | React가 stable reference 보장              |
+| ref (`hasHydrated`)                | ❌                               | 변경이 리렌더 안 일으키므로 deps 의미 없음 |
+| handler/dropOptions 같은 합성 객체 | 보수적으로 ✅, 안정성 확신 시 ❌ | useMemo/useCallback 없으면 매 렌더 새 ref  |
 
 ESLint `react-hooks/exhaustive-deps`는 effect 본문에서 사용한 모든 변수를 deps에 넣길 요구한다. 우리 코드는 handler·dropOptions의 setter들도 본문에서 호출하지만 deps에는 안 넣었다 — setter는 stable이라 안전하다고 판단한 trade-off다. 경고가 거슬리면 `// eslint-disable-next-line react-hooks/exhaustive-deps` 또는 React 19의 `useEffectEvent`(실험적)로 우회.
 
@@ -5071,17 +5074,17 @@ t=0.5  쿼리 도착 → effect 발사 → 가드 통과 → setSelfActivity1(se
 세 가지 완화책, 강도순:
 
 **(a) 데이터 도착 전 폼 자체를 disabled / 가림 (가장 안전)**
+
 ```tsx
 const isLoading = !hopeUnivsData || !preferSelectsData || !simpleQuestionData;
 
-{isLoading ? (
-  <FormSkeleton />
-) : (
-  <ActualForm {...allProps} />
-)}
+{
+  isLoading ? <FormSkeleton /> : <ActualForm {...allProps} />;
+}
 ```
 
 **(b) form 전체에 opacity + pointer-events-none**
+
 ```tsx
 <form className={isLoading ? 'opacity-50 pointer-events-none' : ''}>
 ```
@@ -5096,6 +5099,7 @@ react-hook-form 등 폼 라이브러리가 자동 제공하는 기능. 직접 �
 React Query는 `staleTime`이 지나면 백그라운드에서 자동 refetch한다. 이때 prefetch effect는 어떻게 동작할까?
 
 시나리오:
+
 ```
 t=0     페이지 마운트 → 쿼리 fetch → 데이터 도착 → effect 적용 → hasHydrated=true
 t=10s   사용자가 폼 일부 편집
@@ -5107,6 +5111,7 @@ t=5min+ 새 데이터 도착 → data reference 변경 → effect deps 변화 �
 즉 **ref 가드 덕분에 refetch가 사용자 편집 내용을 덮어쓰지 않는다.** 이게 의도된 동작.
 
 다만 알아둘 점:
+
 - **컴포넌트가 unmount/remount되면** ref도 새로 만들어진다. 다시 prefetch 적용.
 - Confirm 페이지의 confirm 쿼리들과 **같은 queryKey**라면 React Query 캐시 공유 — 첫 도착이 빠르다. 이건 이득.
 
@@ -5118,38 +5123,46 @@ prefetch effect는 강력하지만 만능은 아니다. 상황별 다른 옵션:
 
 **(a) 직접 렌더 — 폼 시드가 아니라 표시용**
 사용자가 편집하지 않는 데이터(읽기 전용)는 state로 옮길 필요가 없다. 그냥 렌더:
+
 ```tsx
 <p>{hopeUnivsData?.[0]?.univName}</p>
 ```
+
 이 프로젝트의 Confirm 페이지가 이 패턴이다. 편집 불가니까 state 동기화가 불필요. **prefetch effect보다 압도적으로 단순**하니, 편집할 일이 없으면 무조건 이 쪽.
 
 **(b) `useQuery`의 `select` 옵션 — 변환만**
+
 ```ts
 useQuery({
   queryKey,
   queryFn,
-  select: (data) => data.map(transform),  // 응답을 변환해서 컴포넌트에 다른 모양으로 노출
+  select: (data) => data.map(transform), // 응답을 변환해서 컴포넌트에 다른 모양으로 노출
 });
 ```
+
 변환 결과를 state로 옮기지 않으니 사용자 편집 시나리오엔 안 맞음. 하지만 "보여주기 전에 한 번 변환"이 필요할 때 깔끔.
 
 **(c) 폼 라이브러리의 `reset(data)`**
 react-hook-form, formik 등을 쓴다면 prefetch 후 `reset(serverData)` 한 줄로 끝.
+
 ```ts
 const { reset } = useForm();
 useEffect(() => {
-  if (data) reset(data);  // ← 라이브러리가 dirty 추적까지 자동 처리
+  if (data) reset(data); // ← 라이브러리가 dirty 추적까지 자동 처리
 }, [data, reset]);
 ```
+
 우리 프로젝트는 `useState` 기반이라 수동 매핑이 필요했다. 폼이 더 커지면 react-hook-form 도입 고려.
 
 **(d) Next.js `initialData` / SSR hydration**
 서버 컴포넌트에서 데이터 prefetch → 클라이언트로 hydrate. App Router의 표준 패턴 중 하나.
+
 ```ts
 // 서버 컴포넌트
 const data = await fetchOnServer();
 <ClientComponent initialData={data} />
 ```
+
 이번 케이스는 클라이언트 전용 페이지라 적용 안 함. 하지만 SEO/초기 렌더가 중요한 페이지에선 첫 선택지.
 
 **(e) URL 쿼리스트링** ([Phase 5의 "방법 1"](#phase-5-수정하기--페이지-간-데이터-전달-두-가지-방식-비교))
@@ -5157,28 +5170,29 @@ const data = await fetchOnServer();
 
 > **선택 기준 (의사결정 표)**:
 >
-> | 상황 | 추천 패턴 |
-> |---|---|
-> | 편집 가능한 폼 시드, 서버 API 있음 | **prefetch effect** (이 패턴) |
-> | 읽기 전용 표시 | 직접 렌더 |
-> | 응답 변환만 (사용자 편집 없음) | `useQuery({ select })` |
-> | 폼 라이브러리 도입한 프로젝트 | 그 라이브러리의 `reset/setValue` |
-> | SEO/초기 렌더 중요 | SSR initialData |
-> | 서버 API 없음 | sessionStorage (Phase 5/10) |
+> | 상황                               | 추천 패턴                        |
+> | ---------------------------------- | -------------------------------- |
+> | 편집 가능한 폼 시드, 서버 API 있음 | **prefetch effect** (이 패턴)    |
+> | 읽기 전용 표시                     | 직접 렌더                        |
+> | 응답 변환만 (사용자 편집 없음)     | `useQuery({ select })`           |
+> | 폼 라이브러리 도입한 프로젝트      | 그 라이브러리의 `reset/setValue` |
+> | SEO/초기 렌더 중요                 | SSR initialData                  |
+> | 서버 API 없음                      | sessionStorage (Phase 5/10)      |
 
 #### Step 61-7: 흔한 버그와 디버깅 팁
 
-| 증상 | 원인 후보 | 빠른 디버깅 |
-|---|---|---|
-| 폼이 안 채워짐 | 쿼리 응답이 빈 배열/undefined / 가드 조건 잘못 | `console.log({hope: hopeUnivsData})` / Network 탭 |
-| 사용자 입력이 사라짐 | `hasHydrated` 누락 / ref가 매 렌더 새로 만들어짐(잘못된 위치) | `console.log('hydrate?', hasHydrated.current)` |
-| effect가 두 번 적용 | StrictMode dev 환경의 의도적 이중 마운트 | dev에서만 그러는 거면 무시 가능. ref 가드로 차단됨 |
-| 무한 루프 | deps에 effect 본문에서 set하는 state가 있음 | deps에서 그 state 제거 또는 setter ref 안정화 |
-| 한 페이지 진입에 두 번 prefetch | 컴포넌트가 remount되고 있음 (parent key 변경 등) | React DevTools로 mount 횟수 확인 |
-| Confirm에서는 되는데 Apply에선 안 됨 | 두 페이지의 hook 인스턴스가 분리됨 — 정상. 다만 prefetch 적용 로직이 한쪽에만 있을 수 있음 | 페이지별로 prefetch 책임 분리 정책 결정 |
-| 응답은 OK인데 DropDown 매치 안 됨 | 타입 비대칭 (Phase 20) | `typeof data.x` 로 number vs string 확인 |
+| 증상                                 | 원인 후보                                                                                  | 빠른 디버깅                                        |
+| ------------------------------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| 폼이 안 채워짐                       | 쿼리 응답이 빈 배열/undefined / 가드 조건 잘못                                             | `console.log({hope: hopeUnivsData})` / Network 탭  |
+| 사용자 입력이 사라짐                 | `hasHydrated` 누락 / ref가 매 렌더 새로 만들어짐(잘못된 위치)                              | `console.log('hydrate?', hasHydrated.current)`     |
+| effect가 두 번 적용                  | StrictMode dev 환경의 의도적 이중 마운트                                                   | dev에서만 그러는 거면 무시 가능. ref 가드로 차단됨 |
+| 무한 루프                            | deps에 effect 본문에서 set하는 state가 있음                                                | deps에서 그 state 제거 또는 setter ref 안정화      |
+| 한 페이지 진입에 두 번 prefetch      | 컴포넌트가 remount되고 있음 (parent key 변경 등)                                           | React DevTools로 mount 횟수 확인                   |
+| Confirm에서는 되는데 Apply에선 안 됨 | 두 페이지의 hook 인스턴스가 분리됨 — 정상. 다만 prefetch 적용 로직이 한쪽에만 있을 수 있음 | 페이지별로 prefetch 책임 분리 정책 결정            |
+| 응답은 OK인데 DropDown 매치 안 됨    | 타입 비대칭 (Phase 20)                                                                     | `typeof data.x` 로 number vs string 확인           |
 
 자주 쓰는 진단 로그 한 줄:
+
 ```ts
 useEffect(() => {
   console.log('[prefetch]', {
@@ -5194,19 +5208,20 @@ useEffect(() => {
 
 같은 "초기값 시드" 문제를 두 방법으로 풀 수 있다. 이번 프로젝트는 후자로 옮겨갔다.
 
-| 항목 | sessionStorage (Phase 5/10) | 서버 prefetch (이 Phase 19) |
-|---|---|---|
-| 데이터 소유 | 클라이언트(브라우저) | 서버 |
-| 진실의 원천 | 모호함 — 두 군데 동시 존재 | 서버 단일 |
-| 다른 기기/세션 | ❌ (탭/세션 단위) | ✅ (계정 기준) |
-| 오프라인 동작 | ✅ 가능 | ❌ 불가 |
-| 동기화 책임 | 프론트가 양쪽 챙겨야 함 | 서버에 위임 |
-| 데이터 일관성 | 깨질 가능성 (race, stale) | 보장 |
-| 코드 복잡도 | 중간 (직렬화/역직렬화 + 키 관리) | 낮음 (React Query 위임) |
-| 첫 신청자 처리 | 비어 있음(자연스러움) | 빈 응답 처리 필요 |
-| 보안 | 클라이언트에 데이터 노출 | 서버 측 인증 통과해야 접근 |
+| 항목           | sessionStorage (Phase 5/10)      | 서버 prefetch (이 Phase 19) |
+| -------------- | -------------------------------- | --------------------------- |
+| 데이터 소유    | 클라이언트(브라우저)             | 서버                        |
+| 진실의 원천    | 모호함 — 두 군데 동시 존재       | 서버 단일                   |
+| 다른 기기/세션 | ❌ (탭/세션 단위)                | ✅ (계정 기준)              |
+| 오프라인 동작  | ✅ 가능                          | ❌ 불가                     |
+| 동기화 책임    | 프론트가 양쪽 챙겨야 함          | 서버에 위임                 |
+| 데이터 일관성  | 깨질 가능성 (race, stale)        | 보장                        |
+| 코드 복잡도    | 중간 (직렬화/역직렬화 + 키 관리) | 낮음 (React Query 위임)     |
+| 첫 신청자 처리 | 비어 있음(자연스러움)            | 빈 응답 처리 필요           |
+| 보안           | 클라이언트에 데이터 노출         | 서버 측 인증 통과해야 접근  |
 
 이 프로젝트가 sessionStorage에서 서버 prefetch로 넘어간 흐름:
+
 1. 서버 API가 없을 땐 sessionStorage 외 선택지가 없었음 (Phase 5/10).
 2. 서버에 확정 후 조회 API가 생긴 순간, sessionStorage는 **불필요한 중복**으로 전락.
 3. "서버가 진실의 원천" 정책으로 일관성을 보장하면서 클라이언트 코드를 단순화.
@@ -5226,7 +5241,7 @@ sessionStorage 복원 ─┘                페이지 이동
                                      prefetch effect → 폼 채움
 ```
 
-> **결정 한 줄**: 서버에 같은 데이터를 가진 API가 존재한다면, sessionStorage 의존을 *완전히* 걷어내라. 두 캐시를 유지하면 동기화 책임이 모호해지고, 결국 어디서 어긋난다.
+> **결정 한 줄**: 서버에 같은 데이터를 가진 API가 존재한다면, sessionStorage 의존을 _완전히_ 걷어내라. 두 캐시를 유지하면 동기화 책임이 모호해지고, 결국 어디서 어긋난다.
 
 ---
 
@@ -5234,13 +5249,13 @@ sessionStorage 복원 ─┘                페이지 이동
 
 서버 응답이 일부 필드를 누락한다. 코드로는 메울 수 없는 부분이라 명시적으로 빈 값으로 두고 백엔드 보완을 추적.
 
-| 폼 필드 | 응답 출처 | 복원 가능? |
-|---|---|---|
-| 카드의 대학/학과 | `HopeUnivsResponse[].univCode/majorIdHsb` | ✅ |
-| **카드의 계열(aiBdPart)** | 응답에 없음 | ❌ 빈 값 |
-| 선호 전공/지역 | `PreferSelectsResponse.preferParts/preferAreas` | ✅ |
-| 강조 활동/간단 질문 | `SimpleQuestionResponse` | ✅ |
-| **비교과 추가 입력(`subjectNot`)** | 응답에 없음 | ❌ 빈 값 |
+| 폼 필드                            | 응답 출처                                       | 복원 가능? |
+| ---------------------------------- | ----------------------------------------------- | ---------- |
+| 카드의 대학/학과                   | `HopeUnivsResponse[].univCode/majorIdHsb`       | ✅         |
+| **카드의 계열(aiBdPart)**          | 응답에 없음                                     | ❌ 빈 값   |
+| 선호 전공/지역                     | `PreferSelectsResponse.preferParts/preferAreas` | ✅         |
+| 강조 활동/간단 질문                | `SimpleQuestionResponse`                        | ✅         |
+| **비교과 추가 입력(`subjectNot`)** | 응답에 없음                                     | ❌ 빈 값   |
 
 > 클라이언트에서 역추적도 가능하다 — 예: `(univCode, majorIdHsb)`로 `fetchAiBdCategoryList + fetchMajorListByUnivAndAiBd` 루프를 돌려 aiBdPart 찾기. 그러나 카드당 O(계열 수)의 API 호출이 누적되고, 부분 캐시로도 첫 prefetch 비용이 크다. **백엔드가 응답 필드를 추가하는 게 정답.**
 
@@ -5266,7 +5281,7 @@ prefetch는 모든 사용자에게 발사된다. 첫 신청자도 confirm 쿼리
 
 ### 교훈
 
-> 같은 데이터를 **클라이언트 캐시(sessionStorage)**와 **서버** 두 곳에 두지 마라. 어느 한쪽이 진실의 원천이고, 다른 쪽은 그것의 일시적 뷰여야 한다. 서버 API가 갖춰지는 순간 sessionStorage를 *완전히* 걷어내는 게 단순성과 데이터 일관성 면에서 이득. 동기화 책임이 모호한 두 캐시는 항상 어디서 어긋난다.
+> 같은 데이터를 **클라이언트 캐시(sessionStorage)**와 **서버** 두 곳에 두지 마라. 어느 한쪽이 진실의 원천이고, 다른 쪽은 그것의 일시적 뷰여야 한다. 서버 API가 갖춰지는 순간 sessionStorage를 _완전히_ 걷어내는 게 단순성과 데이터 일관성 면에서 이득. 동기화 책임이 모호한 두 캐시는 항상 어디서 어긋난다.
 
 ---
 
@@ -5312,6 +5327,7 @@ preferSelectsData.preferAreas = [{num:1, provCode:'1', provName:'서울'}]
 ```
 
 원인:
+
 - DropDown은 `selectedValue === option.value`로 라벨을 찾아 표시.
 - 옵션 출처(`usePreferProvsList`)는 서버가 `preferProvsCode: 1` (number)로 줘 `option.value = 1` (number).
 - 복원값은 `String(provCode) = '1'` (string).
@@ -5323,11 +5339,11 @@ preferSelectsData.preferAreas = [{num:1, provCode:'1', provName:'서울'}]
 
 세 가지 위치가 가능. 각각의 트레이드오프:
 
-| 위치 | 장점 | 단점 |
-|---|---|---|
-| **백엔드** | 단일 해결, 프론트 코드 그대로 | 배포 필요, 협의 필요 |
-| **API 함수 boundary** (`fetchXxx`) | 한 번만 normalize, 모든 사용처 안전 | 약간의 boilerplate, raw 타입 분리 |
-| **사용처마다** (`String(...)`) | 변경 범위 최소 | 새 사용처 추가 시 빠뜨리기 쉬움 — 함정 |
+| 위치                               | 장점                                | 단점                                   |
+| ---------------------------------- | ----------------------------------- | -------------------------------------- |
+| **백엔드**                         | 단일 해결, 프론트 코드 그대로       | 배포 필요, 협의 필요                   |
+| **API 함수 boundary** (`fetchXxx`) | 한 번만 normalize, 모든 사용처 안전 | 약간의 boilerplate, raw 타입 분리      |
+| **사용처마다** (`String(...)`)     | 변경 범위 최소                      | 새 사용처 추가 시 빠뜨리기 쉬움 — 함정 |
 
 이 프로젝트는 **사용처별 `String(...)` 정규화**로 둘 다 패치했다(API boundary는 다른 turn에서 시도했다 보류).
 
@@ -5352,13 +5368,13 @@ drop5: { value: String(pa1.provCode), label: pa1.provName },
 
 다음 필드들이 영향 범위:
 
-| 엔드포인트 | 필드 | 현재 응답 |
-|---|---|---|
-| `GET /admission-evaluation/univs` | `univCode` | number |
-| `GET /admission-evaluation/prefer-aiparts` | `preferAiPartsCode` | number 의심 |
-| `GET /admission-evaluation/prefer-provs` | `preferProvsCode` | **number 확인됨** |
-| `GET /admission-evaluation/hope-univs` | `univCode`, `majorIdHsb` | number |
-| `GET /admission-evaluation/prefer-selections` | `pPartCode`, `provCode` | number 의심 |
+| 엔드포인트                                    | 필드                     | 현재 응답         |
+| --------------------------------------------- | ------------------------ | ----------------- |
+| `GET /admission-evaluation/univs`             | `univCode`               | number            |
+| `GET /admission-evaluation/prefer-aiparts`    | `preferAiPartsCode`      | number 의심       |
+| `GET /admission-evaluation/prefer-provs`      | `preferProvsCode`        | **number 확인됨** |
+| `GET /admission-evaluation/hope-univs`        | `univCode`, `majorIdHsb` | number            |
+| `GET /admission-evaluation/prefer-selections` | `pPartCode`, `provCode`  | number 의심       |
 
 요청 메시지(백엔드용):
 
@@ -5396,6 +5412,7 @@ TODO 마커를 한 곳에 모아두면 잊지 않는다:
 ### 원인: React StrictMode의 의도적 이중 호출 + impure updater
 
 React 공식 가이드:
+
 > State updater functions **MUST be pure**. They should only compute and return the next state. Don't call setState inside them, don't trigger side effects (alert, fetch, mutation...), don't mutate prev state.
 
 문제의 코드는 정확히 이 규칙을 위반.
@@ -5438,6 +5455,7 @@ const handleAddCard = () => {
 ```
 
 이렇게 하면:
+
 - updater는 pure (이전 상태 조회 + 다음 상태 반환만).
 - alert는 이벤트 핸들러 본문에서 한 번만 발사.
 - StrictMode에서 updater가 두 번 돌아도 alert는 한 번.
@@ -5464,10 +5482,7 @@ alert는 사용자가 강제로 시도했을 때의 안전망이고, 정상 흐�
       return <FilledCard key={item.num} item={item} />;
     }
     return (
-      <div
-        key={`empty-${idx}`}
-        className="... border-dashed bg-gray-50 text-gray-400 ..."
-      >
+      <div key={`empty-${idx}`} className="... border-dashed bg-gray-50 text-gray-400 ...">
         비어 있음
       </div>
     );
@@ -5480,6 +5495,7 @@ alert는 사용자가 강제로 시도했을 때의 안전망이고, 정상 흐�
 ### 교훈
 
 > **setState의 updater는 pure function이다.** `(prev) => next` 외 다른 일은 하지 마라.
+>
 > - 검증/alert/console.log → handler 본문 (updater 밖)
 > - 다른 setState 호출 → handler 본문 또는 useEffect
 > - 외부 API 호출 → handler 본문 또는 useEffect
@@ -5528,6 +5544,7 @@ const showComparativeExtraSection = confirmPage
 ```
 
 **패턴의 일반화**:
+
 ```
 visible = mode === '확인' ? hasValue(value) : modeAgnosticCondition
 ```
@@ -5554,27 +5571,20 @@ const activities = [
 ];
 
 const visibleActivities = confirmPage
-  ? activities.filter(({ value }) => !!value)   // confirm: 값 있는 것만
-  : activities;                                  // edit: 전부
+  ? activities.filter(({ value }) => !!value) // confirm: 값 있는 것만
+  : activities; // edit: 전부
 
 return (
   <ContLayout type="sm">
     {visibleActivities.map(({ title, value, onChange }) => (
-      <ActivityTextarea
-        key={title}
-        title={title}
-        label={ACTIVITY_PLACEHOLDER}
-        value={value}
-        maxLength={100}
-        readOnly={confirmPage}
-        onChange={onChange ?? NOOP}
-      />
+      <ActivityTextarea key={title} title={title} label={ACTIVITY_PLACEHOLDER} value={value} maxLength={100} readOnly={confirmPage} onChange={onChange ?? NOOP} />
     ))}
   </ContLayout>
 );
 ```
 
 **얻는 것**:
+
 - 활동 4번째 추가가 한 줄(배열 원소 추가) — JSX 안 건드림.
 - 동일한 긴 placeholder 문자열을 `ACTIVITY_PLACEHOLDER` 상수로 단일화 — 문구 수정이 한 곳.
 - `NOOP = () => {}` 모듈 상수 — 매 렌더마다 새 함수 생성 회피(메모리/리렌더 최적화).
@@ -5592,10 +5602,7 @@ return (
       return <FilledCard key={item.num} item={item} />;
     }
     return (
-      <div
-        key={`empty-${idx}`}
-        className="... border-dashed bg-gray-50 text-gray-400 ..."
-      >
+      <div key={`empty-${idx}`} className="... border-dashed bg-gray-50 text-gray-400 ...">
         비어 있음
       </div>
     );
@@ -5650,12 +5657,12 @@ const isApplyCompleted = (hopeUnivsData?.length ?? 0) > 0;
 
 이러면 sessionStorage 플래그 없이 서버 진실로 가드 가능. **다만 의미가 살짝 바뀐다.**
 
-| 측면 | sessionStorage 플래그 | GET 쿼리 derivation |
-|---|---|---|
-| true 되는 시점 | Confirm 모달 "신청완료" 버튼 클릭 | Apply 페이지 submit POST 성공 |
-| 의미 | "사용자가 최종 확인까지 마침" | "임시저장 포함, 서버에 데이터 있음" |
-| 세션 끊기면 | 사라짐 (탭 닫기) | 유지 (서버에 있으니까) |
-| 다른 기기 | false | true |
+| 측면           | sessionStorage 플래그             | GET 쿼리 derivation                 |
+| -------------- | --------------------------------- | ----------------------------------- |
+| true 되는 시점 | Confirm 모달 "신청완료" 버튼 클릭 | Apply 페이지 submit POST 성공       |
+| 의미           | "사용자가 최종 확인까지 마침"     | "임시저장 포함, 서버에 데이터 있음" |
+| 세션 끊기면    | 사라짐 (탭 닫기)                  | 유지 (서버에 있으니까)              |
+| 다른 기기      | false                             | true                                |
 
 **이게 정책적으로 맞는지** 백엔드/PO와 정렬 필수.
 
@@ -5677,12 +5684,9 @@ export interface AdmissionEvaluationApplyStatusResponse {
 }
 
 // api
-export const fetchAdmissionEvaluationApplyStatus =
-  async (): Promise<AdmissionEvaluationApplyStatusResponse> => {
-    return apiClient()
-      .get('admission-evaluation/apply/status')
-      .json<AdmissionEvaluationApplyStatusResponse>();
-  };
+export const fetchAdmissionEvaluationApplyStatus = async (): Promise<AdmissionEvaluationApplyStatusResponse> => {
+  return apiClient().get('admission-evaluation/apply/status').json<AdmissionEvaluationApplyStatusResponse>();
+};
 
 // query 훅
 export function useAdmissionEvaluationApplyStatusQuery() {
@@ -5699,10 +5703,10 @@ export function useAdmissionEvaluationApplyStatusQuery() {
 
 "신청 완료"는 모호한 표현이다. 코드를 읽는 사람이 같은 단어로 다른 걸 떠올릴 수 있다. 가능한 후보:
 
-| 정의 | 어떤 동작이 true로 만드는가 |
-|---|---|
-| A. **임시저장 완료** | Apply 페이지에서 submit POST 성공 |
-| B. **확인 완료** | Confirm 페이지의 모달 "신청완료" 버튼 클릭 |
+| 정의                  | 어떤 동작이 true로 만드는가                            |
+| --------------------- | ------------------------------------------------------ |
+| A. **임시저장 완료**  | Apply 페이지에서 submit POST 성공                      |
+| B. **확인 완료**      | Confirm 페이지의 모달 "신청완료" 버튼 클릭             |
 | C. **최종 확정 완료** | 별도 확정 API 호출 (POST /apply/confirm) — 현재 미구현 |
 
 **현재 구현은 B**(sessionStorage만 세팅, 서버는 아직 모름). **GET 쿼리 derivation은 A**. **정석 API는 백엔드 정책에 따라 A·B·C 중 어느 것이라도 될 수 있음**.
@@ -5758,12 +5762,14 @@ const hasConfirmedFinal = ...;        // B/C
 먼저 각 훅이 무엇을 책임지는지 정확히 본다.
 
 `useAdmissionEvaluationHandler`:
+
 - **신청 페이지(Apply)** 폼의 선택 상태
 - 드롭다운 (selectedOption, selectedTypeOption)
 - 카드 추가/삭제 (selectedCards, handleAddCard, handleDeleteCard)
 - 자격 검증 알림 + 모달 상태 (alertMessage, isConfirmOpen)
 
 `useAdmissionQnaMutation`:
+
 - **리포트 페이지(Report)** 의 전문가 질문 제출
 - POST /admission-evaluation/qna
 
@@ -5779,11 +5785,11 @@ const hasConfirmedFinal = ...;        // B/C
 
 ### Step 77: 의사결정 — 어디에 둘 것인가
 
-| 옵션 | 적용 시점 |
-|---|---|
-| **A. 페이지에서 직접 사용** | 간단하고 한 곳에서만 쓸 때. 가장 가벼움. |
-| **B. 페이지 전용 훅으로 분리** | 로직(검증/제출/후속처리/관련 state)이 페이지 안에서 복잡해질 때. |
-| **C. 기존 다른 훅에 합침** | **책임이 같을 때만.** "같은 페이지 + 같은 종류의 상태/동작" → 거의 X. |
+| 옵션                           | 적용 시점                                                             |
+| ------------------------------ | --------------------------------------------------------------------- |
+| **A. 페이지에서 직접 사용**    | 간단하고 한 곳에서만 쓸 때. 가장 가벼움.                              |
+| **B. 페이지 전용 훅으로 분리** | 로직(검증/제출/후속처리/관련 state)이 페이지 안에서 복잡해질 때.      |
+| **C. 기존 다른 훅에 합침**     | **책임이 같을 때만.** "같은 페이지 + 같은 종류의 상태/동작" → 거의 X. |
 
 QnA 사례에선 **A 또는 B**가 정답. 페이지가 단순하면 A, 복잡해지면 B로 진화.
 
@@ -5795,18 +5801,24 @@ QnA 제출 사례에서 보였던 빠진 디테일들을 패턴화한다.
 // ❌ 부족한 mutation 호출
 const { mutate: submitQuestion } = useAdmissionQnaMutation();
 
-<Button onClick={() => submitQuestion({
-  userId: currentUser.userId ?? '',
-  question: question,
-})}>
+<Button
+  onClick={() =>
+    submitQuestion({
+      userId: currentUser.userId ?? '',
+      question: question,
+    })
+  }
+>
   질문 제출
-</Button>
+</Button>;
 ```
 
 빠진 4가지:
 
 #### ① 빈값 가드
+
 서버에 빈 입력을 보내면 검증 실패하거나(서버 부하), 더 나쁘게는 빈 질문이 저장된다.
+
 ```ts
 if (!question.trim()) {
   alert('질문을 입력해주세요.');
@@ -5815,13 +5827,17 @@ if (!question.trim()) {
 ```
 
 #### ② 인증 가드
+
 `userId ?? ''`로 빈 문자열을 그대로 보내는 건 위험. 비로그인 사용자가 페이지에 도달했을 때 가드.
+
 ```ts
 if (!currentUser.userId) return;
 ```
 
 #### ③ `isPending`로 중복 제출 차단
+
 mutation은 비동기. 사용자가 버튼을 빨리 두 번 누르면 두 번 제출된다.
+
 ```tsx
 const { mutate, isPending } = useAdmissionQnaMutation();
 
@@ -5831,6 +5847,7 @@ const { mutate, isPending } = useAdmissionQnaMutation();
 ```
 
 #### ④ `onSuccess`로 후속 처리
+
 제출 성공 시 form reset + 알림 + 관련 쿼리 invalidate 등. mutate의 두 번째 인자로 callback 전달.
 
 ```ts
@@ -5838,7 +5855,7 @@ submitQuestion(
   { userId: currentUser.userId, question },
   {
     onSuccess: () => {
-      setQuestion('');               // textarea 비우기
+      setQuestion(''); // textarea 비우기
       alert('질문이 제출되었습니다.');
     },
   },
@@ -5846,6 +5863,7 @@ submitQuestion(
 ```
 
 > **훅 정의의 onSuccess/onError vs 호출 시점의 onSuccess/onError**
+>
 > - 훅 정의(`useMutation({ onError: ... })`): 모든 호출에 공통. 에러 로깅, 공통 알림 등 "모든 호출에서 같은 일" 용도.
 > - 호출 시점(`mutate(vars, { onSuccess: ... })`): 그 호출만의 후속처리. form reset, 페이지 이동 등.
 >
@@ -5859,15 +5877,17 @@ const [question, setQuestion] = useState('');
 const { mutate: submitQuestion, isPending } = useAdmissionQnaMutation();
 
 const handleSubmit = () => {
-  if (!currentUser.userId) return;        // ② 인증 가드
-  if (!question.trim()) {                  // ① 빈값 가드
+  if (!currentUser.userId) return; // ② 인증 가드
+  if (!question.trim()) {
+    // ① 빈값 가드
     alert('질문을 입력해주세요.');
     return;
   }
   submitQuestion(
     { userId: currentUser.userId, question },
     {
-      onSuccess: () => {                   // ④ 후속 처리
+      onSuccess: () => {
+        // ④ 후속 처리
         setQuestion('');
         alert('질문이 제출되었습니다.');
       },
@@ -5878,10 +5898,11 @@ const handleSubmit = () => {
 <Button disabled={isPending} onClick={handleSubmit}>
   {/* ③ isPending */}
   {isPending ? '질문 제출 중...' : '질문 제출'}
-</Button>
+</Button>;
 ```
 
 이 4가지가 빠지면 사용자는 차례로 다음을 경험한다:
+
 1. 빈값 보냄 → 서버 검증 에러 alert ("뭐가 잘못된 거지?")
 2. 비로그인 → 401/403 → 에러 alert ("로그인은 됐는데?")
 3. 더블 클릭 → 두 번 제출 → 같은 질문 두 번 등록 ("내가 한 번만 눌렀는데?")
@@ -5894,6 +5915,7 @@ const handleSubmit = () => {
 > **mutation은 호출만 한다고 끝이 아니다.** ① 빈값 가드 ② 인증 가드 ③ isPending로 중복 차단 ④ onSuccess로 후속처리 — 4가지가 기본 세트. 빠뜨리면 사용자는 "버튼을 눌렀는데 아무 반응 없네" 또는 "왜 두 번 보내졌지" 같은 경험을 한다.
 
 > **합치고 싶다 vs 분리해야 한다의 판단**:
+>
 > - 두 훅이 같은 페이지에서만 함께 마운트되나? → 합쳐도 OK 가능성
 > - 다른 페이지에서 한쪽만 쓰나? → 무조건 분리
 > - 책임 이름이 자연스럽게 한 줄로 표현되나? → 한 훅. 두 줄 이상이면 분리.
@@ -5906,10 +5928,10 @@ const handleSubmit = () => {
 
 학종 신청은 **두 단계**로 나뉜다.
 
-| POST 엔드포인트 | 의미 | 수정 가능? |
-|---|---|---|
-| `/admission-evaluation/apply` | **초안 저장**(draft) | ✅ 다시 POST로 덮어쓰기 가능 |
-| `/admission-evaluation/submit` | **최종 확정**(final) | ❌ 이후 어떤 변경도 거부 |
+| POST 엔드포인트                | 의미                 | 수정 가능?                   |
+| ------------------------------ | -------------------- | ---------------------------- |
+| `/admission-evaluation/apply`  | **초안 저장**(draft) | ✅ 다시 POST로 덮어쓰기 가능 |
+| `/admission-evaluation/submit` | **최종 확정**(final) | ❌ 이후 어떤 변경도 거부     |
 
 쇼핑몰의 "장바구니 → 결제" 또는 은행 이체 confirm 모달 같은 2-step 패턴과 같은 결. 사용자에게 **"확인" 단계**를 제공해 실수를 막고, "신청완료 후 수정 불가" 정책을 강제하기 위함.
 
@@ -5929,11 +5951,11 @@ CONFIRMED 상태에서 POST /apply 또는 /submit 시도
   → 400 { message: "이미 신청이 완료되었습니다." }
 ```
 
-| 상태 | 사용자 입장 | 서버 측 의미 |
-|---|---|---|
-| **빈 상태** | 아직 아무것도 안 함 | 사용자별 신청 row 없음 |
-| **DRAFT** | "신청은 했지만 아직 확정 전" | 데이터 저장됐고 수정 가능 |
-| **CONFIRMED** | "최종 제출 완료" | lock — 어떤 modify도 거부 |
+| 상태          | 사용자 입장                  | 서버 측 의미              |
+| ------------- | ---------------------------- | ------------------------- |
+| **빈 상태**   | 아직 아무것도 안 함          | 사용자별 신청 row 없음    |
+| **DRAFT**     | "신청은 했지만 아직 확정 전" | 데이터 저장됐고 수정 가능 |
+| **CONFIRMED** | "최종 제출 완료"             | lock — 어떤 modify도 거부 |
 
 ### Step 80: 페이지별 흐름
 
@@ -5960,14 +5982,14 @@ CONFIRMED 상태에서 POST /apply 또는 /submit 시도
 
 각 GET이 **어느 상태에서 의미 있는지**가 학습 포인트.
 
-| GET | 의미 있는 상태 | 사용 페이지 | 역할 |
-|---|---|---|---|
-| `/hope-univs` | DRAFT, CONFIRMED | Apply, Confirm | 희망 대학 카드 |
-| `/prefer-selections` | DRAFT, CONFIRMED | Apply, Confirm | 선호 전공/지역 |
-| `/simple-questions` | DRAFT, CONFIRMED | Apply, Confirm | 강조 활동/간단 질문 |
-| `/report-header` | CONFIRMED | Report | 평가 진행 상태 |
-| `/transcript-evaluation` | CONFIRMED + 평가 완료 | Report | 학생부 평가 |
-| `/application-strategy` | CONFIRMED + 평가 완료 | Report | 추천/비추천 |
+| GET                      | 의미 있는 상태        | 사용 페이지    | 역할                |
+| ------------------------ | --------------------- | -------------- | ------------------- |
+| `/hope-univs`            | DRAFT, CONFIRMED      | Apply, Confirm | 희망 대학 카드      |
+| `/prefer-selections`     | DRAFT, CONFIRMED      | Apply, Confirm | 선호 전공/지역      |
+| `/simple-questions`      | DRAFT, CONFIRMED      | Apply, Confirm | 강조 활동/간단 질문 |
+| `/report-header`         | CONFIRMED             | Report         | 평가 진행 상태      |
+| `/transcript-evaluation` | CONFIRMED + 평가 완료 | Report         | 학생부 평가         |
+| `/application-strategy`  | CONFIRMED + 평가 완료 | Report         | 추천/비추천         |
 
 **GET은 모두 read-only.** 호출해도 상태 전이 없음. 같은 데이터를 어디서 보든 같음.
 
@@ -5975,26 +5997,29 @@ CONFIRMED 상태에서 POST /apply 또는 /submit 시도
 
 이 부분이 **가장 큰 혼동 포인트**:
 
-| 코드 이름 | 실제 동작 | 사용자 용어 |
-|---|---|---|
-| `submitAdmissionEvaluationApply` | POST /apply (draft 저장) | "**입력완료**" |
-| `submitAdmissionEvaluationSubmit` | POST /submit (최종 확정) | "**신청완료**" |
-| `useAdmissionEvaluationApplyMutation` | apply 호출용 mutation | Apply 페이지 [입력완료] |
-| `useAdmissionEvaluationConfirmMutation` | submit 호출용 mutation | Confirm 페이지 [신청완료] |
+| 코드 이름                               | 실제 동작                | 사용자 용어               |
+| --------------------------------------- | ------------------------ | ------------------------- |
+| `submitAdmissionEvaluationApply`        | POST /apply (draft 저장) | "**입력완료**"            |
+| `submitAdmissionEvaluationSubmit`       | POST /submit (최종 확정) | "**신청완료**"            |
+| `useAdmissionEvaluationApplyMutation`   | apply 호출용 mutation    | Apply 페이지 [입력완료]   |
+| `useAdmissionEvaluationConfirmMutation` | submit 호출용 mutation   | Confirm 페이지 [신청완료] |
 
 영어 "apply"가 한국어 "신청"으로 직역되지만, **코드의 `apply`는 "draft 저장"**이고 **한국어 "신청완료"는 실제로 `submit`**. 이 어긋남이 코드 읽을 때 가장 헷갈리는 부분.
 
 **장기적 개명 후보** (가독성 개선):
+
 - `submitAdmissionEvaluationApply` → `saveApplicationDraft`
 - `useAdmissionEvaluationConfirmMutation` → `useFinalizeApplicationMutation`
 
 ### Step 83: "이미 신청 완료" 에러는 언제
 
 **오직 CONFIRMED 상태에서 modify 시도할 때**:
+
 - 사용자가 한 번 [신청완료] → 모달 [신청] 완료 → 서버 CONFIRMED
 - 그 후 어떤 경로로든 /apply 또는 /submit 호출 → 400 거부
 
 발생 가능 경로:
+
 - Confirm 페이지에서 [신청완료] 또 누름 (새로고침 후)
 - Apply 페이지에서 [입력완료] 누름 (다른 탭에서 confirm한 줄 모르고)
 - 직접 URL로 /apply 진입
@@ -6025,11 +6050,11 @@ CONFIRMED 상태에서 POST /apply 또는 /submit 시도
 
 각 깊이마다 검사 도구가 다르다:
 
-| 깊이 | 도구 | 잡는 것 |
-|---|---|---|
-| 1 | `??`, `\|\|` | undefined, null (+ falsy 값) |
-| 1 + 2 | `.length`, `Object.keys(x).length` | 빈 컨테이너 |
-| 1 + 2 + 3 | `.some(predicate)` | 의미 있는 콘텐츠 |
+| 깊이      | 도구                               | 잡는 것                      |
+| --------- | ---------------------------------- | ---------------------------- |
+| 1         | `??`, `\|\|`                       | undefined, null (+ falsy 값) |
+| 1 + 2     | `.length`, `Object.keys(x).length` | 빈 컨테이너                  |
+| 1 + 2 + 3 | `.some(predicate)`                 | 의미 있는 콘텐츠             |
 
 ### Step 85: 세 가지 실제 함정 (이 프로젝트)
 
@@ -6037,18 +6062,16 @@ CONFIRMED 상태에서 POST /apply 또는 /submit 시도
 
 ```ts
 // ❌ 빈 배열은 truthy 라서 mock으로 안 떨어짐
-const hopeUnivEvaluations =
-  applicationStrategyData?.hopeUnivEvaluations || hopeUnivEvaluationsMOCK;
+const hopeUnivEvaluations = AdmissionStrategyData?.hopeUnivEvaluations || hopeUnivEvaluationsMOCK;
 ```
 
 - `undefined` → mock ✓ (의도대로)
 - `[]` → **mock 안 됨** ✗ (`[]`은 truthy)
 
 **fix**: `.length` 체크.
+
 ```ts
-const hopeUnivEvaluations = applicationStrategyData?.hopeUnivEvaluations?.length
-  ? applicationStrategyData.hopeUnivEvaluations
-  : hopeUnivEvaluationsMOCK;
+const hopeUnivEvaluations = AdmissionStrategyData?.hopeUnivEvaluations?.length ? AdmissionStrategyData.hopeUnivEvaluations : hopeUnivEvaluationsMOCK;
 ```
 
 #### 함정 ② — `!data`로 검증 분기 못함 (같은 원리)
@@ -6065,43 +6088,40 @@ if (!hopeUnivsData) {
 - `[]`(서버가 빈 배열) → **검증 건너뜀** ✗ → 빈 폼 그대로 POST
 
 **fix**: `length` 또는 의미 변수.
+
 ```ts
 const hasSavedDraft = (hopeUnivsData?.length ?? 0) > 0;
-if (!hasSavedDraft) { /* 첫 신청자 검증 */ }
+if (!hasSavedDraft) {
+  /* 첫 신청자 검증 */
+}
 ```
 
 #### 함정 ③ — `.length`도 부족, 콘텐츠 깊이까지 봐야 (깊이 3)
 
 ```ts
 // ❌ 서버가 [{title:'', content:''}] 로 줘도 length 1 이라 통과
-const hasAnyData =
-  !!datas?.academicAbility?.length ||
-  !!datas?.careerCompetency?.length ||
-  !!datas?.communityCompetency?.length;
+const hasAnyData = !!datas?.academicAbility?.length || !!datas?.careerCompetency?.length || !!datas?.communityCompetency?.length;
 ```
 
 서버가 placeholder 객체로 채워서 응답하면 length는 truthy인데 화면엔 빈 카드만 보임.
 
 **fix**: `.some(...)`로 아이템 내부 콘텐츠 확인.
-```ts
-const hasMeaningfulItems = (items?: CompetencyItem[]) =>
-  !!items?.some(({ title, content }) => !!title?.trim() || !!content?.trim());
 
-const hasAnyData =
-  hasMeaningfulItems(datas?.academicAbility) ||
-  hasMeaningfulItems(datas?.careerCompetency) ||
-  hasMeaningfulItems(datas?.communityCompetency);
+```ts
+const hasMeaningfulItems = (items?: CompetencyItem[]) => !!items?.some(({ title, content }) => !!title?.trim() || !!content?.trim());
+
+const hasAnyData = hasMeaningfulItems(datas?.academicAbility) || hasMeaningfulItems(datas?.careerCompetency) || hasMeaningfulItems(datas?.communityCompetency);
 ```
 
 `.trim()`까지 두면 공백/줄바꿈만 있는 케이스도 정리됨.
 
 ### Step 86: 정확한 깊이를 고르는 기준
 
-| 데이터 모양 | 필요한 깊이 |
-|---|---|
-| primitive (string, number) | 1 (`??`, `\|\|`) — 단 빈 문자열 `''`은 falsy주의 |
-| 배열/객체 컨테이너 | 1 + 2 (`?.length`, `Object.keys`) |
-| 컨테이너 안 아이템 | 1 + 2 + 3 (`.some(predicate)`) — 아이템이 placeholder일 가능성 있을 때 |
+| 데이터 모양                | 필요한 깊이                                                            |
+| -------------------------- | ---------------------------------------------------------------------- |
+| primitive (string, number) | 1 (`??`, `\|\|`) — 단 빈 문자열 `''`은 falsy주의                       |
+| 배열/객체 컨테이너         | 1 + 2 (`?.length`, `Object.keys`)                                      |
+| 컨테이너 안 아이템         | 1 + 2 + 3 (`.some(predicate)`) — 아이템이 placeholder일 가능성 있을 때 |
 
 **판단법**: "이 데이터가 '비어있다'고 말할 수 있는 경우의 수를 모두 적어보라." 그게 셋이면 깊이 3.
 
@@ -6111,16 +6131,19 @@ const hasAnyData =
 
 ```ts
 const isEmpty = <T>(arr?: T[]) => !arr || arr.length === 0;
-const hasMeaningfulItems = <T>(arr: T[] | undefined, predicate: (item: T) => boolean) =>
-  !!arr?.some(predicate);
+const hasMeaningfulItems = <T>(arr: T[] | undefined, predicate: (item: T) => boolean) => !!arr?.some(predicate);
 ```
 
 호출:
-```ts
-if (isEmpty(hopeUnivEvaluations)) { /* mock */ }
 
-if (hasMeaningfulItems(data?.academicAbility, ({title, content}) =>
-  !!title?.trim() || !!content?.trim())) { /* real */ }
+```ts
+if (isEmpty(hopeUnivEvaluations)) {
+  /* mock */
+}
+
+if (hasMeaningfulItems(data?.academicAbility, ({ title, content }) => !!title?.trim() || !!content?.trim())) {
+  /* real */
+}
 ```
 
 코드 의도가 영어 헬퍼 이름으로 표현됨 — `||` 한 줄 대비 의미 명확.
@@ -6131,7 +6154,7 @@ if (hasMeaningfulItems(data?.academicAbility, ({title, content}) =>
 
 > **`||`/`??`는 깊이 1까지만 잡는다.** 컨테이너 비교에는 `.length`, 아이템 내부 비교에는 `.some(predicate)`. 같은 fallback 코드가 깊이 1·2·3 어디까지 책임지는지 의식하면서 짜라.
 
-> **헬퍼로 이름 붙이면 의도가 코드에 보인다.** `applicationStrategyData?.hopeUnivEvaluations?.length` 보다 `hasSavedDraft`/`hasMeaningfulItems` 가 다음 작업자에게 친절.
+> **헬퍼로 이름 붙이면 의도가 코드에 보인다.** `AdmissionStrategyData?.hopeUnivEvaluations?.length` 보다 `hasSavedDraft`/`hasMeaningfulItems` 가 다음 작업자에게 친절.
 
 ---
 
@@ -6140,6 +6163,7 @@ if (hasMeaningfulItems(data?.academicAbility, ({title, content}) =>
 ### 배경
 
 리포트 페이지에 두 섹션이 거의 동일한 UI를 쓴다:
+
 - **희망 대학 평가 결과**: Tab + DropDown 동기화 + 카드 리스트
 - **전문가 추천 대학**: Tab + DropDown 동기화 + 카드 리스트
 
@@ -6147,22 +6171,22 @@ if (hasMeaningfulItems(data?.academicAbility, ({title, content}) =>
 
 ### Step 88: 데이터 비교
 
-| | `HopeUnivEvaluation` (희망) | `RecommUnivTab` (추천) |
-|---|---|---|
-| Tab 키 후보 | `num: number` | `position: number` |
-| Tab 라벨 | `univName + typeName + majorName` | `partName + univName` |
-| 디테일 배열 | `evaluations: Evaluation[]` | `majors: RecommMajor[]` |
-| 디테일 아이템 | `Evaluation` | `RecommMajor` (+ `position`) |
+|               | `HopeUnivEvaluation` (희망)       | `RecommUnivTab` (추천)       |
+| ------------- | --------------------------------- | ---------------------------- |
+| Tab 키 후보   | `num: number`                     | `position: number`           |
+| Tab 라벨      | `univName + typeName + majorName` | `partName + univName`        |
+| 디테일 배열   | `evaluations: Evaluation[]`       | `majors: RecommMajor[]`      |
+| 디테일 아이템 | `Evaluation`                      | `RecommMajor` (+ `position`) |
 
 → **컨테이너 로직(Tab/DropDown 동기화)은 동일**, **콘텐츠 추출과 렌더링은 다름**.
 
 ### Step 89: 접근 옵션 셋
 
-| 옵션 | 설명 | 단점 |
-|---|---|---|
+| 옵션                       | 설명                                                       | 단점                                                |
+| -------------------------- | ---------------------------------------------------------- | --------------------------------------------------- |
 | **공통 shape 으로 정규화** | 두 데이터를 공통 인터페이스로 변환 후 동일 컴포넌트에 주입 | 약간 다른 필드(예: `position`) 손실되거나 강제 매핑 |
-| **제네릭 + render-prop** | 컴포넌트는 컨테이너만 책임, 키/라벨/콘텐츠 추출은 호출자 | 약간의 보일러플레이트 |
-| **두 컴포넌트로 분리** | 그냥 두 개로 둠 | UI 변경 시 두 곳 수정 |
+| **제네릭 + render-prop**   | 컴포넌트는 컨테이너만 책임, 키/라벨/콘텐츠 추출은 호출자   | 약간의 보일러플레이트                               |
+| **두 컴포넌트로 분리**     | 그냥 두 개로 둠                                            | UI 변경 시 두 곳 수정                               |
 
 **제네릭 + render-prop이 균형이 가장 좋다** — 컨테이너 로직 단일화, 호출자가 자기 데이터 모양 그대로 다룸.
 
@@ -6173,19 +6197,12 @@ interface EvaluationTabModuleProps<T> {
   items: T[];
   selectedValue: string;
   setSelectedValue: (value: string) => void;
-  getKey: (item: T) => string;          // ← 키 추출
-  getLabel: (item: T) => string;         // ← Tab/Dropdown 라벨
-  renderContent: (item: T) => React.ReactNode;  // ← 콘텐츠 렌더링
+  getKey: (item: T) => string; // ← 키 추출
+  getLabel: (item: T) => string; // ← Tab/Dropdown 라벨
+  renderContent: (item: T) => React.ReactNode; // ← 콘텐츠 렌더링
 }
 
-export function EvaluationTabModule<T>({
-  items,
-  selectedValue,
-  setSelectedValue,
-  getKey,
-  getLabel,
-  renderContent,
-}: EvaluationTabModuleProps<T>) {
+export function EvaluationTabModule<T>({ items, selectedValue, setSelectedValue, getKey, getLabel, renderContent }: EvaluationTabModuleProps<T>) {
   const selectedIndex = Math.max(
     0,
     items.findIndex((item) => getKey(item) === selectedValue),
@@ -6218,9 +6235,7 @@ export function EvaluationTabModule<T>({
         </Tab.List>
         <Tab.ContentView>
           {items.map((item) => (
-            <Tab.Contents key={getKey(item)}>
-              {renderContent(item)}
-            </Tab.Contents>
+            <Tab.Contents key={getKey(item)}>{renderContent(item)}</Tab.Contents>
           ))}
         </Tab.ContentView>
       </Tab>
@@ -6230,6 +6245,7 @@ export function EvaluationTabModule<T>({
 ```
 
 **핵심 설계 결정**:
+
 - **제네릭 `<T>`**: 어떤 데이터 모양이든 받음
 - **`getKey`/`getLabel`/`renderContent`**: 호출자가 자기 데이터를 어떻게 표현할지 결정
 - **`findIndex`로 selectedIndex 계산**: 키 → index 매핑을 컨테이너가 알아서 처리. 기존 `Number(selectedValue) - 1` 같은 인덱스 추정보다 안전
@@ -6245,6 +6261,7 @@ export function EvaluationTabModule<T>({
 같은 컨테이너 UX를 두 데이터 타입(`HopeUnivEvaluation`, `RecommUnivTab`)이 공유해야 하는 상황. 제네릭 없이 푼다면:
 
 **❌ 시도 A: `any`로 받기**
+
 ```ts
 function EvaluationTabModule({ items }: { items: any[] }) {
   // getLabel: (item: any) => string
@@ -6255,9 +6272,11 @@ function EvaluationTabModule({ items }: { items: any[] }) {
   getLabel={(item) => item.univNamee}   // ← 오타 — TS가 못 잡음!
 />
 ```
+
 `any`는 **타입 체크를 꺼버리는** 키워드. 오타·잘못된 필드 접근이 컴파일에서 안 잡히고 런타임에 `undefined`로 잠수.
 
 **❌ 시도 B: `unknown`으로 받기**
+
 ```ts
 function EvaluationTabModule({ items }: { items: unknown[] }) {
   // ...
@@ -6267,15 +6286,19 @@ getLabel={(item) => item.univName}
 //                  ^^^^^^^^^^^^^^
 //   TS Error: Object is of type 'unknown'.
 ```
+
 `unknown`은 안전하지만 **너무 안전해서** 아무 필드도 못 씀. 매번 타입 가드/캐스팅 필요 → 사용성 0.
 
 **❌ 시도 C: 유니온 타입**
+
 ```ts
 function EvaluationTabModule({ items }: {
   items: HopeUnivEvaluation[] | RecommUnivTab[];
 }) { ... }
 ```
+
 문제 2가지:
+
 - 새 데이터 타입(`SomethingElse[]`) 추가할 때마다 컴포넌트 시그니처 수정 필요.
 - 내부에서 `item.num`(HopeUniv만 있음) 접근 시 RecommUnivTab에 없어 또 타입 에러.
 
@@ -6287,13 +6310,17 @@ function EvaluationTabModule({ items }: {
 
 ```ts
 // 값 변수 — 함수 호출 시 값이 결정됨
-function add(a: number, b: number) { return a + b; }
-add(1, 2);   // a=1, b=2
+function add(a: number, b: number) {
+  return a + b;
+}
+add(1, 2); // a=1, b=2
 
 // 타입 변수 — 함수 호출 시 타입이 결정됨
-function identity<T>(value: T): T { return value; }
-identity<string>('hello');   // T=string (명시)
-identity(42);                // T=number  (TS가 추론)
+function identity<T>(value: T): T {
+  return value;
+}
+identity<string>('hello'); // T=string (명시)
+identity(42); // T=number  (TS가 추론)
 ```
 
 `T`는 관례 이름일 뿐 아무 이름이나 가능(`<Item>`, `<DataType>` 등). 보통 한 글자(T, U, K, V)나 의미 있는 PascalCase 이름.
@@ -6314,28 +6341,31 @@ export function EvaluationTabModule<T>(
 ) { ... }
 ```
 
-| 줄 | 의미 |
-|---|---|
-| `interface EvaluationTabModuleProps<T>` | 이 인터페이스는 T라는 타입 변수를 받음. T는 인터페이스 안에서 일관된 의미로 사용 |
-| `items: T[]` | items는 T의 배열. T가 `HopeUnivEvaluation`이면 `HopeUnivEvaluation[]` |
-| `getKey: (item: T) => string` | item을 받아 string 돌려주는 함수. 호출자가 작성한 함수는 T의 필드를 직접 쓸 수 있음 |
-| `function EvaluationTabModule<T>(...)` | 이 함수도 T를 받음 — Props의 T와 **같은** T 임을 컴파일러가 연결 |
+| 줄                                      | 의미                                                                                |
+| --------------------------------------- | ----------------------------------------------------------------------------------- |
+| `interface EvaluationTabModuleProps<T>` | 이 인터페이스는 T라는 타입 변수를 받음. T는 인터페이스 안에서 일관된 의미로 사용    |
+| `items: T[]`                            | items는 T의 배열. T가 `HopeUnivEvaluation`이면 `HopeUnivEvaluation[]`               |
+| `getKey: (item: T) => string`           | item을 받아 string 돌려주는 함수. 호출자가 작성한 함수는 T의 필드를 직접 쓸 수 있음 |
+| `function EvaluationTabModule<T>(...)`  | 이 함수도 T를 받음 — Props의 T와 **같은** T 임을 컴파일러가 연결                    |
 
 호출 시:
+
 ```tsx
 <EvaluationTabModule
-  items={hopeUnivEvaluations}   // ← items 타입이 HopeUnivEvaluation[]
+  items={hopeUnivEvaluations} // ← items 타입이 HopeUnivEvaluation[]
   getKey={(item) => String(item.num)}
   //              ^^^^^^^^^^^^^^^^^
   // item이 HopeUnivEvaluation 으로 자동 추론 → num 필드 사용 가능
 />
 ```
+
 TS가 `items={...}`를 보고 **T = HopeUnivEvaluation으로 자동 추론**. 이후 모든 콜백 매개변수가 HopeUnivEvaluation으로 좁혀짐.
 
 다른 호출에선 다른 T:
+
 ```tsx
 <EvaluationTabModule
-  items={recommUnivTabs}         // ← T = RecommUnivTab으로 추론
+  items={recommUnivTabs} // ← T = RecommUnivTab으로 추론
   getKey={(item) => String(item.position)}
   //              ^^^^^^^^^^^^^^^^^^^^^^
   // item이 RecommUnivTab → position 필드 사용 (num은 없음 — RecommUnivTab엔 없으니까)
@@ -6346,14 +6376,14 @@ TS가 `items={...}`를 보고 **T = HopeUnivEvaluation으로 자동 추론**. �
 
 ```ts
 function EvaluationTabModule<T>({
-  items,         // T[]
-  getKey,        // (T) => string
+  items, // T[]
+  getKey, // (T) => string
   renderContent, // (T) => ReactNode
 }: EvaluationTabModuleProps<T>) {
   items.map((item) => {
     //         ^^^^ item: T (자동)
-    getKey(item);          // OK
-    renderContent(item);   // OK
+    getKey(item); // OK
+    renderContent(item); // OK
   });
 }
 ```
@@ -6371,6 +6401,7 @@ const EvaluationTabModule = <T>(props: ...) => { ... }
 ```
 
 회피책 3가지:
+
 ```tsx
 // ✅ 옵션 A: function 선언 (이 프로젝트의 선택)
 export function EvaluationTabModule<T>(props: ...) { ... }
@@ -6391,11 +6422,11 @@ T가 "아무거나"가 아니라 "최소한 어떤 필드는 있어야" 한다�
 ```ts
 // T가 num 필드를 반드시 가져야 함
 function Module<T extends { num: number }>(props: { items: T[] }) {
-  props.items[0].num;   // ← OK, T가 num을 갖는다고 보장됨
+  props.items[0].num; // ← OK, T가 num을 갖는다고 보장됨
 }
 
-Module({ items: hopeUnivEvaluations });   // OK (num 있음)
-Module({ items: recommUnivTabs });         // ❌ RecommUnivTab엔 num 없음
+Module({ items: hopeUnivEvaluations }); // OK (num 있음)
+Module({ items: recommUnivTabs }); // ❌ RecommUnivTab엔 num 없음
 ```
 
 우리 `EvaluationTabModule`은 T에 **아무 제약이 없다**. 대신 `getKey/getLabel/renderContent`로 호출자가 "T를 어떻게 다룰지"를 통째 위임 → 컴포넌트 자체는 T의 구체 모양을 몰라도 됨. 이게 핵심 설계 결정 중 하나.
@@ -6406,6 +6437,7 @@ Module({ items: recommUnivTabs });         // ❌ RecommUnivTab엔 num 없음
 - **render-prop**은 "렌더링을 매개변수화" 한다.
 
 둘을 결합하면:
+
 ```tsx
 <EvaluationTabModule
   items={data}                            // 어떤 데이터든
@@ -6413,22 +6445,22 @@ Module({ items: recommUnivTabs });         // ❌ RecommUnivTab엔 num 없음
 />
 ```
 
-| 역할 | 책임 |
-|---|---|
+| 역할         | 책임                                                                  |
+| ------------ | --------------------------------------------------------------------- |
 | **컴포넌트** | "Tab + DropDown 동기화"라는 컨테이너 로직만 — 데이터 모양/렌더링 모름 |
-| **호출자** | "내 데이터에서 키/라벨/콘텐츠를 어떻게 뽑을지"만 |
+| **호출자**   | "내 데이터에서 키/라벨/콘텐츠를 어떻게 뽑을지"만                      |
 
 책임이 깔끔히 양분된다.
 
 #### Step 90-8: 실전 학습 체크리스트 — 언제 제네릭을 써야 하나
 
-| 신호 | 제네릭이 답일 가능성 |
-|---|---|
-| 같은 컨테이너 UX를 여러 데이터 타입이 공유 | ✅ |
-| 호출자가 "내 데이터로 뭘 할지"를 다 정해줄 수 있음 | ✅ |
+| 신호                                                          | 제네릭이 답일 가능성    |
+| ------------------------------------------------------------- | ----------------------- |
+| 같은 컨테이너 UX를 여러 데이터 타입이 공유                    | ✅                      |
+| 호출자가 "내 데이터로 뭘 할지"를 다 정해줄 수 있음            | ✅                      |
 | 컴포넌트 안에서 데이터의 특정 필드(`item.num` 등)에 직접 접근 | ⚠️ 제약(`extends`) 필요 |
-| 그냥 `any`/`unknown`으로 해도 동작은 함 | ❌ 타입 안전성 잃음 |
-| 단일 데이터 타입에서만 쓰일 컴포넌트 | ❌ 불필요한 추상화 |
+| 그냥 `any`/`unknown`으로 해도 동작은 함                       | ❌ 타입 안전성 잃음     |
+| 단일 데이터 타입에서만 쓰일 컴포넌트                          | ❌ 불필요한 추상화      |
 
 #### Step 90-9: 짧은 비유
 
@@ -6485,7 +6517,9 @@ Module({ items: recommUnivTabs });         // ❌ RecommUnivTab엔 num 없음
 const EvaluationCard = ({ evaluation }: { evaluation: Evaluation }) => (
   <div className="p-4 mb-4 border rounded">
     <p>{evaluation.recomm}</p>
-    <p>{evaluation.univName} {evaluation.typeName} {evaluation.majorName}</p>
+    <p>
+      {evaluation.univName} {evaluation.typeName} {evaluation.majorName}
+    </p>
     <p>{evaluation.refText}</p>
     <p>전년도 경쟁률 : {evaluation.lastCR ?? '-'}</p>
   </div>
@@ -6497,7 +6531,9 @@ const RecommMajorCard = ({ major }: { major: RecommMajor }) => (
       {major.recomm}
       {major.position && <span className="ml-2">· {major.position}</span>}
     </p>
-    <p>{major.univName} {major.typeName} {major.majorName}</p>
+    <p>
+      {major.univName} {major.typeName} {major.majorName}
+    </p>
     <p>{major.refText}</p>
     <p>전년도 경쟁률 : {major.lastCR ?? '-'}</p>
   </div>
@@ -6508,12 +6544,12 @@ const RecommMajorCard = ({ major }: { major: RecommMajor }) => (
 
 ### Step 93: render-prop vs 다른 패턴
 
-| 패턴 | 언제 적합 |
-|---|---|
-| **render-prop**(이번 선택) | 콘텐츠 모양이 달라 호출자가 통제해야 할 때 |
-| **children prop** | 단일 슬롯만 필요할 때 (이번엔 키/라벨/콘텐츠 3개라 부적합) |
-| **컴포넌트 합성**(`<Tabs><Tab.Header/>...`) | 더 큰 구조 자유도 필요할 때. 보일러플레이트 ↑ |
-| **공통 shape 정규화** | 데이터 모양이 정말 같아질 수 있을 때 |
+| 패턴                                        | 언제 적합                                                  |
+| ------------------------------------------- | ---------------------------------------------------------- |
+| **render-prop**(이번 선택)                  | 콘텐츠 모양이 달라 호출자가 통제해야 할 때                 |
+| **children prop**                           | 단일 슬롯만 필요할 때 (이번엔 키/라벨/콘텐츠 3개라 부적합) |
+| **컴포넌트 합성**(`<Tabs><Tab.Header/>...`) | 더 큰 구조 자유도 필요할 때. 보일러플레이트 ↑              |
+| **공통 shape 정규화**                       | 데이터 모양이 정말 같아질 수 있을 때                       |
 
 ### 교훈
 
@@ -6532,6 +6568,7 @@ const RecommMajorCard = ({ major }: { major: RecommMajor }) => (
 > 백엔드: "그건 따로 안 줘. POST /apply가 이미 거부 응답을 주잖아 — 그걸로 알 수 있어."
 
 서버는 CONFIRMED 상태에서 POST 시도하면:
+
 ```json
 HTTP 400
 {
@@ -6545,13 +6582,13 @@ HTTP 400
 
 ### Step 94: 트레이드오프 — 사전 차단 vs 사후 처리
 
-| | dedicated status API | POST 에러 응답 |
-|---|---|---|
-| 진입 차단 (Navigation guard) | ✅ 페이지 마운트 전 | ❌ 호출 전엔 모름 |
-| 버튼 disabled 사전 표시 | ✅ | ❌ |
-| **제출 시 거부 + 안내** | ✅ | ✅ — 서버가 항상 최후 방어선 |
-| **진실의 원천이 서버** | ✅ | ✅ |
-| 백엔드 추가 작업 | 필요 | 불필요 (이미 있음) |
+|                              | dedicated status API | POST 에러 응답               |
+| ---------------------------- | -------------------- | ---------------------------- |
+| 진입 차단 (Navigation guard) | ✅ 페이지 마운트 전  | ❌ 호출 전엔 모름            |
+| 버튼 disabled 사전 표시      | ✅                   | ❌                           |
+| **제출 시 거부 + 안내**      | ✅                   | ✅ — 서버가 항상 최후 방어선 |
+| **진실의 원천이 서버**       | ✅                   | ✅                           |
+| 백엔드 추가 작업             | 필요                 | 불필요 (이미 있음)           |
 
 실용 효과는 거의 같다 — 사용자가 confirm 페이지에서 [신청완료] 누르는 순간 서버가 알려주니까. **사전 차단이 절대 필요한 UX가 아니라면 충분**.
 
@@ -6581,6 +6618,7 @@ export async function isAlreadyCompletedError(error: unknown): Promise<boolean> 
 ### Step 96: 처리 위치 — 호출자 vs mutation 훅
 
 **A. 호출자(handler)에서 try/catch**
+
 ```ts
 const handleSubmit = async () => {
   try {
@@ -6598,6 +6636,7 @@ const handleSubmit = async () => {
 ```
 
 **B. mutation 훅의 onError에서 처리** (페이지마다 중복 안 됨)
+
 ```ts
 export function useAdmissionEvaluationApplyMutation() {
   const router = useRouter();
@@ -6627,13 +6666,16 @@ return body.message === '이미 신청이 완료되었습니다.';
 한국어 문자열이 코드의 식별자. **백엔드가 메시지를 바꾸면 프론트가 즉시 깨진다.** 임시 OK지만 장기로는 안 좋다.
 
 **더 안전한 매칭**:
+
 ```ts
 // 백엔드에 에러 코드 표준화 요청
 { "code": "APPLY_ALREADY_COMPLETED", "message": "..." }
 ```
+
 프론트는 코드(언어 무관 식별자)로 분기. 다국어 지원 시에도 안전.
 
 **TODO 마커로 추적**:
+
 ```ts
 // TODO(backend): 에러 응답에 "code" 또는 "alias" 필드 표준화 요청
 // 현재는 message 문자열 매칭 (취약) — code 기반으로 전환 예정
@@ -6654,6 +6696,7 @@ await apiClient().post('/submit', { json: { userId } });
 ```
 
 실제 발생 에러:
+
 ```
 UNKNOWN: Unexpected token '"', ""mynesin24"" is not valid JSON
 ```
@@ -6707,6 +6750,7 @@ CONFIRMED 상태에서 POST 재시도
 ### 배경
 
 Apply / Confirm / Report 세 페이지의 **진입 조건**이 모두 다르다:
+
 - `/apply`: 비로그인 차단. 결제+완료된 사용자가 URL 직타로 진입 시 → Report로
 - `/confirm`: 비로그인 차단. 결제+완료된 사용자 → Report로
 - `/report`: 비로그인 차단. 미완료 사용자 → INTRO로
@@ -6716,24 +6760,24 @@ Apply / Confirm / Report 세 페이지의 **진입 조건**이 모두 다르다:
 ### Step 99: `use*` 접두사 함정 — 훅 규칙으로 검사됨
 
 처음 시도한 코드:
+
 ```ts
 // ❌ navigation.server.ts
 export async function useAdmissionEvaluationNavigationHandler() {
   const currentUser = await getCurrentUser();
-  const { data: applyStatusData } =
-    await useAdmissionEvaluationApplyStatusQuery();   // ← 훅 호출
+  const { data: applyStatusData } = await useAdmissionEvaluationApplyStatusQuery(); // ← 훅 호출
   // ...
 }
 ```
 
 위반 사항이 여러 개:
 
-| 위반 | 설명 |
-|---|---|
-| `use*` 네이밍 컨벤션 | React 규칙: "use로 시작하는 함수는 반드시 React Hook." ESLint의 `react-hooks/rules-of-hooks`가 즉시 검사 시작 |
-| async + 훅 | 훅은 동기 렌더링 컨텍스트에서만 동작 — `async function` 본문에서 훅 호출은 React가 추적 불가 |
-| 훅에 `await` | 훅은 Promise 아님. `{ data, isLoading }` 객체를 즉시 리턴. `await`은 의미 없음 |
-| 서버에서 클라이언트 훅 | `.server.ts` + `redirect` from `next/navigation` = 서버 컨텍스트. React 렌더 트리 없는 곳에서 훅 호출은 불가 |
+| 위반                   | 설명                                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `use*` 네이밍 컨벤션   | React 규칙: "use로 시작하는 함수는 반드시 React Hook." ESLint의 `react-hooks/rules-of-hooks`가 즉시 검사 시작 |
+| async + 훅             | 훅은 동기 렌더링 컨텍스트에서만 동작 — `async function` 본문에서 훅 호출은 React가 추적 불가                  |
+| 훅에 `await`           | 훅은 Promise 아님. `{ data, isLoading }` 객체를 즉시 리턴. `await`은 의미 없음                                |
+| 서버에서 클라이언트 훅 | `.server.ts` + `redirect` from `next/navigation` = 서버 컨텍스트. React 렌더 트리 없는 곳에서 훅 호출은 불가  |
 
 > **규칙 한 줄**: `use*` 접두사를 쓰면 **그 함수가 훅이라고 컴파일러·린터가 가정**한다. 훅이 아니면 다른 이름을 써라. `getXxx`, `ensureXxx`, `fetchXxx` 등.
 
@@ -6753,6 +6797,7 @@ export async function ensureAdmissionEvaluationAccess() {
 ```
 
 핵심 변화:
+
 - `use*` → 동사형 일반 함수명 (`ensureXxx`, `getXxx`)
 - `useXxxQuery()` (훅) → `fetchXxx()` (api 함수 직접 호출)
 - 반환값은 `await Promise` 결과
@@ -6761,15 +6806,17 @@ export async function ensureAdmissionEvaluationAccess() {
 
 ```ts
 // ❌ 서버에서
-alert('로그인이 필요합니다.');   // ReferenceError: alert is not defined
+alert('로그인이 필요합니다.'); // ReferenceError: alert is not defined
 redirect(INFO_PATH);
 ```
 
 `alert`는 브라우저 전용(`window.alert`). 서버 런타임(Node.js)엔 `window` 없음.
+
 - `alert` 라인에서 즉시 `ReferenceError` throw
 - redirect 도달 못 함 → 사용자는 500 에러 페이지만 봄
 
 서버에서 사용자에게 안내 전달하려면:
+
 - **옵션 A**: 그냥 redirect (도착 페이지가 알아서 안내)
 - **옵션 B**: 쿼리 파라미터에 reason 담아 보냄 → 도착 페이지(client)가 읽어 alert
 - **옵션 C**: `cookies().set('flash', 'reason')` → 도착 페이지가 읽고 지움
@@ -6809,6 +6856,7 @@ export async function ensureAdmissionEvaluationAccess(options?: {
 ```
 
 호출:
+
 ```tsx
 // apply/page.tsx
 await ensureAdmissionEvaluationAccess({ redirectIfCompleted: true });
@@ -6823,6 +6871,7 @@ await ensureAdmissionEvaluationAccess({ redirectIfNotCompleted: true });
 ### Step 103: 옵션 이름 ↔ 동작 일치의 중요성
 
 한때 시도된 패턴:
+
 ```ts
 // ❌ 옵션 이름과 동작이 어긋남
 if (isApplyCompleted && options?.redirectIfNotCompleted) {
@@ -6832,10 +6881,10 @@ if (isApplyCompleted && options?.redirectIfNotCompleted) {
 
 `redirectIfNotCompleted`(미완료면 리다이렉트) 라는 이름이 `isApplyCompleted`(완료) 인 경우에 발동 → 정반대. 한 옵션으로 두 정반대 동작을 처리하려는 충동을 막아야 함.
 
-| 의도 | 옵션 이름 |
-|---|---|
+| 의도             | 옵션 이름                |
+| ---------------- | ------------------------ |
 | 미완료면 INTRO로 | `redirectIfNotCompleted` |
-| 완료면 REPORT로 | `redirectIfCompleted` |
+| 완료면 REPORT로  | `redirectIfCompleted`    |
 
 두 정책이 정반대니 **옵션도 정확히 두 개**. 한 옵션으로 묶으면 의미가 모호.
 
@@ -6889,6 +6938,7 @@ mutation은 서버 상태를 바꾸지만 **React Query 캐시까지는 자동�
 ### Step 106: 결정적 함정 — `new QueryClient()`
 
 처음 시도한 코드:
+
 ```ts
 // ❌ queries.ts
 onSuccess: (_, { userId }) => {
@@ -6903,6 +6953,7 @@ onSuccess: (_, { userId }) => {
 `new QueryClient()` 는 **완전히 새, 독립된** QueryClient 인스턴스를 만든다. 앱이 실제로 쓰는 QueryClient(`<QueryClientProvider>` 가 들고 있는 것)는 건드리지 않는다.
 
 비유:
+
 > "방금 산 빈 노트의 메모를 지웠다" — 진짜 문제의 노트는 그대로.
 
 invalidate가 **실제 캐시엔 아무 영향 없음** → refetch 안 됨 → 화면 안 바뀜.
@@ -6913,7 +6964,7 @@ invalidate가 **실제 캐시엔 아무 영향 없음** → refetch 안 됨 → 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export function useAdmissionQnaMutation() {
-  const queryClient = useQueryClient();   // ✅ 앱이 제공한 진짜 인스턴스
+  const queryClient = useQueryClient(); // ✅ 앱이 제공한 진짜 인스턴스
   return useMutation({
     mutationFn: submitAdmissionReportQna,
     onSuccess: (_, { userId }) => {
@@ -6925,15 +6976,16 @@ export function useAdmissionQnaMutation() {
 }
 ```
 
-| | `new QueryClient()` | `useQueryClient()` |
-|---|---|---|
-| 가져오는 client | 새 빈 인스턴스 | 앱의 `QueryClientProvider`가 제공한 인스턴스 |
-| invalidate 효과 | 새 인스턴스 안 캐시만 (사실상 없음) | 앱이 실제 쓰는 캐시 → useQuery 가 refetch |
-| 사용 위치 | (이론상) 외부 코드 | React 컴포넌트/훅 본문 |
+|                 | `new QueryClient()`                 | `useQueryClient()`                           |
+| --------------- | ----------------------------------- | -------------------------------------------- |
+| 가져오는 client | 새 빈 인스턴스                      | 앱의 `QueryClientProvider`가 제공한 인스턴스 |
+| invalidate 효과 | 새 인스턴스 안 캐시만 (사실상 없음) | 앱이 실제 쓰는 캐시 → useQuery 가 refetch    |
+| 사용 위치       | (이론상) 외부 코드                  | React 컴포넌트/훅 본문                       |
 
 ### Step 108: invalidate 표준 위치 — mutation 정의 안
 
 mutation의 onSuccess를 **두 곳**에 둘 수 있다:
+
 - **mutation 정의의 onSuccess** (queries.ts) — 모든 호출에 공통
 - **mutate 호출 시의 onSuccess** (mutate(vars, { onSuccess })) — 그 호출만의 후속
 
@@ -6979,12 +7031,13 @@ submitQuestion(
 ### Step 109: alert 중복 함정
 
 정의·호출 양쪽에서 alert 띄우면 사용자에게 2번 보임:
+
 ```ts
 // queries.ts onSuccess
-alert('질문이 성공적으로 제출되었습니다.');   // 1번째
+alert('질문이 성공적으로 제출되었습니다.'); // 1번째
 
 // Report.tsx 호출 site onSuccess
-alert('질문이 제출되었습니다.');             // 2번째
+alert('질문이 제출되었습니다.'); // 2번째
 ```
 
 → 정의에서 alert 제거, 호출 site에서만.
@@ -7040,16 +7093,17 @@ onSettled: (_data, _err, { userId }) => {
 ### Step 111: Pointer Events — 마우스+터치 통합 인터페이스
 
 브라우저에는 두 가지 입력 이벤트 계열이 있다:
+
 - **MouseEvents** (`onMouseDown/Move/Up`): PC 마우스
 - **TouchEvents** (`onTouchStart/Move/End`): 모바일 터치
 
 이걸 둘 다 다루면 코드가 두 배. 대신 **Pointer Events** 는 둘 다 통합한다:
 
-| Pointer 이벤트 | 마우스 | 터치 | 펜 |
-|---|---|---|---|
+| Pointer 이벤트  | 마우스    | 터치       | 펜       |
+| --------------- | --------- | ---------- | -------- |
 | `onPointerDown` | mousedown | touchstart | pen down |
-| `onPointerMove` | mousemove | touchmove | pen move |
-| `onPointerUp` | mouseup | touchend | pen up |
+| `onPointerMove` | mousemove | touchmove  | pen move |
+| `onPointerUp`   | mouseup   | touchend   | pen up   |
 
 ```tsx
 <div
@@ -7067,7 +7121,7 @@ onSettled: (_data, _err, { userId }) => {
 
 ```tsx
 const handlePointerDown = (e: React.PointerEvent) => {
-  e.currentTarget.setPointerCapture(e.pointerId);   // ← 이 pointer는 이 요소가 끝까지 추적
+  e.currentTarget.setPointerCapture(e.pointerId); // ← 이 pointer는 이 요소가 끝까지 추적
   // ...
 };
 ```
@@ -7084,10 +7138,7 @@ const handlePointerDown = (e: React.PointerEvent) => {
   <div className="flex text-gray-300">★★★★★</div>
 
   {/* 전경: 채워진 별 5개 — width 로 채움 비율 */}
-  <div
-    className="absolute top-0 left-0 flex overflow-hidden text-yellow-400 whitespace-nowrap"
-    style={{ width: `${fillPercentage}%` }}
-  >
+  <div className="absolute top-0 left-0 flex overflow-hidden text-yellow-400 whitespace-nowrap" style={{ width: `${fillPercentage}%` }}>
     ★★★★★
   </div>
 </div>
@@ -7108,6 +7159,7 @@ const calculateValue = (clientX: number) => {
 ```
 
 `TOTAL_UNITS`가 곧 단위 해상도:
+
 - `TOTAL_UNITS = 5` → 1.0 단위 (1, 2, 3, 4, 5)
 - `TOTAL_UNITS = 10` → 0.5 단위 (0.5, 1.0, 1.5, ...) — 5 stars × 2
 - `TOTAL_UNITS = 100` → 0.05 단위 (소수점 두 자리)
@@ -7121,7 +7173,7 @@ const [hoverValue, setHoverValue] = useState<number | null>(null);
 
 const handlePointerDown = (e) => {
   // ...
-  setHoverValue(calculateValue(e.clientX));   // ← 미리보기만
+  setHoverValue(calculateValue(e.clientX)); // ← 미리보기만
 };
 
 const handlePointerMove = (e) => {
@@ -7129,11 +7181,11 @@ const handlePointerMove = (e) => {
 };
 
 const handlePointerUp = () => {
-  if (hoverValue !== null) onChange(hoverValue);   // ← 손 떼는 순간 커밋
+  if (hoverValue !== null) onChange(hoverValue); // ← 손 떼는 순간 커밋
   setHoverValue(null);
 };
 
-const displayValue = hoverValue ?? value;   // 표시: 드래그 중엔 미리보기, 아니면 확정값
+const displayValue = hoverValue ?? value; // 표시: 드래그 중엔 미리보기, 아니면 확정값
 ```
 
 이러면 **부모는 손 떼는 순간 한 번만 리렌더**. 드래그 중 매번 onChange 부르면 부모가 매 px 마다 리렌더 → 성능 저하.
@@ -7144,20 +7196,20 @@ const displayValue = hoverValue ?? value;   // 표시: 드래그 중엔 미리�
 
 ```ts
 const TOTAL_STARS = 5;
-const TOTAL_UNITS = TOTAL_STARS * 2;   // 10 — 반 별 단위로 쪼갠 총 눈금
+const TOTAL_UNITS = TOTAL_STARS * 2; // 10 — 반 별 단위로 쪼갠 총 눈금
 
 // 내부 값(컴포넌트 외부 API): 0 ~ 10 정수
-const value = 7;   // = 3.5 별
+const value = 7; // = 3.5 별
 
 // 시각 표시 (라벨용)
-const visualStars = value / 2;          // 3.5
-const fillPercentage = (value / TOTAL_UNITS) * 100;   // 70%
+const visualStars = value / 2; // 3.5
+const fillPercentage = (value / TOTAL_UNITS) * 100; // 70%
 ```
 
-| 영역 | 단위 | 예시 |
-|---|---|---|
-| 외부 (value/onChange) | 0 ~ 10 정수 | `7` |
-| 내부 시각 | 5점 만점, 0.5 단위 | "3.5 / 5" |
+| 영역                  | 단위               | 예시      |
+| --------------------- | ------------------ | --------- |
+| 외부 (value/onChange) | 0 ~ 10 정수        | `7`       |
+| 내부 시각             | 5점 만점, 0.5 단위 | "3.5 / 5" |
 
 사용자엔 익숙한 5점 만점으로 보이고, 서버엔 정수로 전송. **백엔드 정수 컬럼 그대로 사용 가능** (DB 마이그레이션 불필요).
 
@@ -7167,7 +7219,7 @@ const fillPercentage = (value / TOTAL_UNITS) * 100;   // 70%
 
 ```ts
 const handlePointerDown = (e) => {
-  if (disabled) return;   // ← 가드
+  if (disabled) return; // ← 가드
   // ...
 };
 ```
@@ -7193,6 +7245,7 @@ const handlePointerDown = (e) => {
 별점을 한 번 제출하면 다시 못 바꾸는 정책. 페이지 진입 시 사용자가 이전에 제출한 별점이 있다면 **그 값을 보여주고 잠금** 처리하고 싶다.
 
 순진한 시도:
+
 ```ts
 const [rating, setRating] = useState(0);
 const { data: satisfactionSurveyData } = useSatisfactionSurveyQuery(userId);
@@ -7205,6 +7258,7 @@ useEffect(() => {
 ```
 
 이게 동작은 하지만 **세 가지 문제**:
+
 1. 페이지 로드 → 빈 별 → useEffect 발동 → 별이 채워짐 (깜빡임)
 2. `useEffect`로 sync 코드가 매번 보임 (보일러플레이트)
 3. 캐시 변경(invalidate) 시 사용자가 드래그 중이었다면 그 입력을 덮어쓸 위험
@@ -7247,12 +7301,12 @@ const displayRating = isAlreadyRated
 
 ### Step 119: 왜 derived가 useEffect보다 깨끗한가
 
-| | useEffect로 sync | derived value |
-|---|---|---|
-| 코드 양 | useEffect 본문 5줄+ | 한 줄 ternary |
-| race condition | 가능 (data 도착 vs 사용자 입력) | 없음 (선택 명확) |
-| 깜빡임 | 있음 (빈 별 → 채워짐) | 없음 (처음부터 올바른 값) |
-| 캐시 변경에 따른 자동 갱신 | 가능하지만 setState 사이클 | 자동 (다음 렌더가 새 derived 값) |
+|                            | useEffect로 sync                | derived value                    |
+| -------------------------- | ------------------------------- | -------------------------------- |
+| 코드 양                    | useEffect 본문 5줄+             | 한 줄 ternary                    |
+| race condition             | 가능 (data 도착 vs 사용자 입력) | 없음 (선택 명확)                 |
+| 깜빡임                     | 있음 (빈 별 → 채워짐)           | 없음 (처음부터 올바른 값)        |
+| 캐시 변경에 따른 자동 갱신 | 가능하지만 setState 사이클      | 자동 (다음 렌더가 새 derived 값) |
 
 > **규칙**: "state로 따로 들고 있어야 하는가, 아니면 props/server 값에서 매번 계산 가능한가?" 후자면 derived value 가 답.
 
@@ -7275,6 +7329,7 @@ export function useSubmitSatisfactionMutation() {
 ```
 
 이러면 흐름:
+
 1. 사용자: 별점 7 드래그 → `rating = 7`
 2. [별점 남기기] 클릭 → mutate
 3. 서버 성공 → mutation onSuccess → invalidateQueries
@@ -7287,6 +7342,7 @@ export function useSubmitSatisfactionMutation() {
 ### Step 121: 새로고침 후에도 잠금 유지
 
 derived + invalidation 패턴의 보너스: **새로고침해도 잠금 유지**.
+
 - 새로고침 → 컴포넌트 마운트 → `useSatisfactionSurveyQuery` 재실행
 - 서버에 이전 제출 값 존재 → `satisfactionSurveyData.satisfiedRate = 7`
 - `isAlreadyRated = true` → 처음부터 잠긴 상태로 그려짐
@@ -7296,6 +7352,7 @@ derived + invalidation 패턴의 보너스: **새로고침해도 잠금 유지**
 ### Step 122: 다른 적용처
 
 이 패턴(`isXxx ? serverValue : localValue`)은 별점 외에 다양한 곳에 응용 가능:
+
 - **읽기 전용 폼 필드**: 이미 확정된 입력은 서버값 표시, 아니면 사용자 입력
 - **카운터의 마지막 동기화 값**: 서버 카운트 vs 사용자가 막 누른 클릭
 - **공유 cursor 위치**: 다른 사용자가 있으면 그 위치, 아니면 본인 위치
@@ -7353,6 +7410,7 @@ isAlreadyRated = true → displayRating = server 값
 ### 배경
 
 Phase 29 에서 만든 페이지 가드:
+
 ```ts
 ensureAdmissionEvaluationAccess(options?: {
   redirectIfNotCompleted?: boolean;   // → INTRO (Report 페이지)
@@ -7363,9 +7421,11 @@ ensureAdmissionEvaluationAccess(options?: {
 여기서 `redirectIfNotCompleted: true` 는 "미완료면 INTRO 로 보낸다" — **destination이 함수 안에 하드코딩**돼 있다.
 
 새 요구사항이 들어왔다:
+
 > "Confirm 페이지로 URL 직타 진입할 때 신청 미완료면 `/apply` 로 보내달라."
 
 문제: 같은 "미완료" 조건이지만 페이지마다 가야 할 곳이 다름.
+
 - Report 페이지: 미완료 → **INTRO** (애초에 보면 안 됨, 도입부로)
 - Confirm 페이지: 미완료 → **APPLY** (신청부터 하라고 입력 페이지로)
 - Apply 페이지: 미완료 → 통과 (여기서 신청 시작)
@@ -7373,6 +7433,7 @@ ensureAdmissionEvaluationAccess(options?: {
 ### Step 123: 함정 — boolean 옵션을 늘리기
 
 직관적인 시도:
+
 ```ts
 // ❌ 옵션 폭증
 options?: {
@@ -7383,6 +7444,7 @@ options?: {
 ```
 
 호출:
+
 ```ts
 // Report 페이지
 ensureAdmissionEvaluationAccess({ redirectToIntroIfNotCompleted: true });
@@ -7395,6 +7457,7 @@ ensureAdmissionEvaluationAccess({
 ```
 
 문제점:
+
 - destination이 추가될 때마다 옵션 수가 곱빼기로 증가 (INTRO/APPLY/REPORT/SETTINGS...)
 - 두 옵션이 동시에 true면 어떻게? — 모호함 → 함수 안에 우선순위 처리 코드 필요
 - 옵션 이름이 길어져 자동완성 시 구분 어려움
@@ -7412,6 +7475,7 @@ options?: {
 ```
 
 함수 본문:
+
 ```ts
 if (options?.redirectIfNotCompleted && !isApplyCompleted) {
   redirect(ADMISSION_EVALUATION_PATH[options.redirectIfNotCompleted]);
@@ -7421,6 +7485,7 @@ if (options?.redirectIfNotCompleted && !isApplyCompleted) {
 ```
 
 호출:
+
 ```ts
 // Report
 ensureAdmissionEvaluationAccess({ redirectIfNotCompleted: 'INTRO' });
@@ -7437,13 +7502,13 @@ ensureAdmissionEvaluationAccess({ redirectIfCompleted: true });
 
 ### Step 125: 이 패턴이 좋은 이유
 
-| 측면 | boolean 여러 개 | 값 enum 하나 |
-|---|---|---|
-| 옵션 개수 | destination 수만큼 증가 | 1개 고정 |
-| destination 추가 비용 | 새 옵션 추가 + 함수 본문 분기 추가 | union에 한 단어 추가 |
-| "둘 다 true" 모호함 | 우선순위 정의 필요 | 발생 불가 (값은 하나만 가능) |
-| 옵션 이름 길이 | 길어짐 | 짧고 깔끔 |
-| TypeScript 자동완성 | 옵션 6개 보임 | 값 2개 보임 |
+| 측면                  | boolean 여러 개                    | 값 enum 하나                 |
+| --------------------- | ---------------------------------- | ---------------------------- |
+| 옵션 개수             | destination 수만큼 증가            | 1개 고정                     |
+| destination 추가 비용 | 새 옵션 추가 + 함수 본문 분기 추가 | union에 한 단어 추가         |
+| "둘 다 true" 모호함   | 우선순위 정의 필요                 | 발생 불가 (값은 하나만 가능) |
+| 옵션 이름 길이        | 길어짐                             | 짧고 깔끔                    |
+| TypeScript 자동완성   | 옵션 6개 보임                      | 값 2개 보임                  |
 
 핵심 통찰: **"옵션 켜고 끄기"가 아니라 "옵션 값을 무엇으로 둘지" 가 의도일 때 enum 값**.
 
@@ -7454,6 +7519,7 @@ redirect(ADMISSION_EVALUATION_PATH[options.redirectIfNotCompleted]);
 ```
 
 `options.redirectIfNotCompleted` 의 타입이 `'INTRO' | 'APPLY'` 로 좁혀져 있어:
+
 - `ADMISSION_EVALUATION_PATH` 에 두 키 모두 있어야 컴파일 통과
 - 새 destination 추가 시 path 객체에 키 빼먹으면 컴파일 에러
 - 오타 방지
@@ -7472,12 +7538,12 @@ export const ADMISSION_EVALUATION_PATH = {
 
 이건 더 큰 설계 원칙:
 
-| | 함수가 안다 (boolean) | 호출자가 안다 (enum) |
-|---|---|---|
+|           | 함수가 안다 (boolean)       | 호출자가 안다 (enum)           |
+| --------- | --------------------------- | ------------------------------ |
 | 호출 코드 | `{ foo: true }` (의도 숨김) | `{ foo: 'APPLY' }` (의도 명시) |
-| 함수 본문 | 분기로 destination 결정 | 그냥 받은 값을 사용 |
-| 정책 변경 | 함수 본문 수정 | 호출 한 곳만 수정 |
-| 결정 위치 | 분산 (함수 + 옵션 이름) | 호출 site 한 곳 |
+| 함수 본문 | 분기로 destination 결정     | 그냥 받은 값을 사용            |
+| 정책 변경 | 함수 본문 수정              | 호출 한 곳만 수정              |
+| 결정 위치 | 분산 (함수 + 옵션 이름)     | 호출 site 한 곳                |
 
 함수는 "어떻게 redirect 할지" 만 알고, "어디로 갈지" 는 페이지가 결정. **각 페이지가 자기 정책의 책임을 진다.**
 
@@ -7498,9 +7564,9 @@ export const ADMISSION_EVALUATION_PATH = {
 Q&A 섹션 코드에서 발견한 한 줄:
 
 ```tsx
-{datas?.items?.length && datas?.items?.length === 0 && (
-  <div>...첫 회차 질문 카드...</div>
-)}
+{
+  datas?.items?.length && datas?.items?.length === 0 && <div>...첫 회차 질문 카드...</div>;
+}
 ```
 
 화면을 아무리 새로고침해도 첫 회차 카드가 안 나타남. 코드를 한참 들여다본 뒤에야 알아챔 — **조건이 영원히 false**.
@@ -7508,6 +7574,7 @@ Q&A 섹션 코드에서 발견한 한 줄:
 ### Step 128: 모순 조건 진단
 
 조건을 분해:
+
 - `datas?.items?.length` — truthy 여야 함 (즉, length가 1 이상)
 - `&& datas?.items?.length === 0` — length가 정확히 0이어야 함
 
@@ -7518,27 +7585,33 @@ Q&A 섹션 코드에서 발견한 한 줄:
 ### Step 129: 의도 복원 — items 있을 때만 렌더
 
 블록 안의 `items.slice(0, 1).map(...)` 가 단서:
+
 - 첫 항목만 잘라서 표시
 - → "items 가 1개 이상 있을 때만" 이 의도
 
 올바른 조건:
+
 ```tsx
-{(datas?.items?.length ?? 0) > 0 && (
-  <div>...첫 회차 질문 카드...</div>
-)}
+{
+  (datas?.items?.length ?? 0) > 0 && <div>...첫 회차 질문 카드...</div>;
+}
 ```
 
 ### Step 130: `length && ...` 의 또 다른 함정 — 화면에 `0` 이 찍힘
 
 위 조건을 단순히 이렇게 줄이고 싶을 수 있다:
+
 ```tsx
 // ❌ length 자체를 truthy 검사로
-{datas?.items?.length && (<div>...</div>)}
+{
+  datas?.items?.length && <div>...</div>;
+}
 ```
 
 이건 동작은 하는데 — items 가 빈 배열일 때 **화면에 숫자 `0` 이 그대로 찍힌다**.
 
 이유:
+
 - React: "truthy면 오른쪽 표현식 렌더, falsy면 그 값을 렌더"
 - `0 && <div/>` → 단락 평가(short-circuit)로 `0` 반환
 - React는 `0` 을 텍스트 노드로 렌더 (`null`, `undefined`, `false` 만 무시함)
@@ -7555,22 +7628,28 @@ items = undefined  → undefined && <div/> → undefined → 무시
 
 ```tsx
 // ✅ 명시적 비교 — 가장 명확
-{(datas?.items?.length ?? 0) > 0 && <div>...</div>}
+{
+  (datas?.items?.length ?? 0) > 0 && <div>...</div>;
+}
 
 // ✅ boolean 캐스팅 — 짧음
-{!!datas?.items?.length && <div>...</div>}
+{
+  !!datas?.items?.length && <div>...</div>;
+}
 
 // ✅ ternary — null 명시
-{datas?.items?.length ? <div>...</div> : null}
+{
+  datas?.items?.length ? <div>...</div> : null;
+}
 ```
 
 세 패턴 모두 `0` 함정 회피. 코드 컨벤션에 따라 선택. 우리 프로젝트는 명시적 비교(`> 0`)를 선호 — 읽는 사람이 의도(0보다 큰 경우)를 즉시 알 수 있음.
 
-| 패턴 | 장점 | 단점 |
-|---|---|---|
-| `length > 0` | 의도 명시, IDE/리뷰어 친화 | 길다 |
-| `!!length` | 짧음 | `!!` 가 익숙하지 않은 사람엔 noise |
-| `length ? … : null` | 거짓 분기 표현 가능 | else 가 필요 없을 때 noise |
+| 패턴                | 장점                       | 단점                               |
+| ------------------- | -------------------------- | ---------------------------------- |
+| `length > 0`        | 의도 명시, IDE/리뷰어 친화 | 길다                               |
+| `!!length`          | 짧음                       | `!!` 가 익숙하지 않은 사람엔 noise |
+| `length ? … : null` | 거짓 분기 표현 가능        | else 가 필요 없을 때 noise         |
 
 ### Step 132: React falsy 렌더 규칙 정리
 
@@ -7624,3 +7703,311 @@ ExpertQuestionSection ────► length && length === 0  (영원히 false)
                             ─────────────────────────────────
                             보너스: `length && ...` 자체도 `0` 함정 회피 위해 명시 비교
 ```
+
+---
+
+## Phase 35: 제출 검증 ① — 학생 구분(`graduationType`)으로 필수 범위를 나누기
+
+### 배경
+
+입시전문가 평가 신청에서 "성적이 다 입력됐는지" 검증할 때, **재학생과 N수생의 필수 입력 범위가 다르다**.
+
+- **재학생(고3)** — 아직 3학년이 안 끝났으니 **2학년까지만** 필수
+- **N수생** — 졸업했으니 **3학년까지** 필수
+
+이걸 코드가 알려면 "이 사람이 재학생인지 N수생인지"를 먼저 알아야 한다.
+
+### Step 134: 학생 구분 코드 이해 — `graduationType`
+
+로그인 토큰(JWT) payload 에 `graduationType` 이 들어 있고, 의미는 공통코드로 정의돼 있다. `libs/shared/config/common-code/common-code-definitions.ts` 의 `GRADUATION_TYPE_CODES`:
+
+| 코드  | 의미              |
+| ----- | ----------------- |
+| `'0'` | 출신고교 미입력   |
+| `'1'` | 고1               |
+| `'2'` | 고2               |
+| `'3'` | **고3 (재학생)**  |
+| `'4'` | **n수**           |
+| `'5'` | 검정고시          |
+
+이 서비스는 **고3·N수 전용** (고1·고2는 middleware 에서 에러 페이지로 차단). 그래서 실제로 만나는 값은 `'3'`(재학생), `'4'`/`'5'`(N수 계열) 정도다.
+
+### Step 135: 단 한 줄로 분기 기준 만들기
+
+```ts
+const isEnrolledStudent = currentUser.payload?.graduationType === '3'; // 고3 재학생
+```
+
+> **왜 문자열 비교인가?** JWT payload 의 값이 문자열(`'3'`)이라서. 같은 엔티티의 다른 코드(`useAdmissionEvaluationHandler.ts`)도 `=== '5'` 처럼 직접 문자열 비교를 쓴다 → **컨벤션을 따른다**. (코드값이 많아지면 `code('GRADUATION_TYPE_CODES', 'THIRD_YEAR')` 헬퍼로 바꾸는 게 낫지만, 여기선 한두 곳이라 직접 비교가 단순.)
+
+### Step 136: 이 한 변수로 교과·비교과 범위를 동시에 분기
+
+```ts
+// 학생부 교과(학기)
+const requiredSemesters = isEnrolledStudent
+  ? ['1-1', '1-2', '2-1', '2-2'] // 재학생: 4학기
+  : ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2']; // N수: 6학기
+
+// 학생부 비교과(학년)
+const requiredGrades = isEnrolledStudent
+  ? ([1, 2] as const) // 재학생: 1~2학년
+  : ([1, 2, 3] as const); // N수: 1~3학년
+```
+
+> **하나의 진실(`isEnrolledStudent`)을 여러 검증이 공유**한다. 같은 분기 조건을 검증마다 반복하지 말고, 위에서 한 번 계산해 내려쓴다.
+
+### 교훈
+
+> **"사용자 유형에 따라 규칙이 다르다"는 요구는, 먼저 유형 판별 값을 한 줄로 만들고, 그 값으로 데이터(목록·범위)를 분기하라.** 분기를 `if` 떡칠로 흩뿌리지 말고 "필수 목록"이라는 **데이터**로 표현하면 검증 로직이 짧아진다.
+
+---
+
+## Phase 36: 제출 검증 ② — "완료 판정"은 화면(UI)과 똑같은 기준으로
+
+### 배경
+
+교과 성적이 다 입력됐는데도 "입력 완료해 주세요" alert 이 떴다. 검증 로직이 화면 뱃지와 **다른 기준**으로 완료를 판정하고 있었기 때문.
+
+### Step 137: 처음 짠 (틀린) 코드 — `!== '입력'`
+
+```ts
+// ❌ 완료 = entered 가 정확히 '입력' 일 때만
+const isGradeIncomplete = requiredSemesters.some(
+  (semester) =>
+    gradeStatusData?.find((g) => g.semester === semester)?.entered !== '입력',
+);
+```
+
+이 코드는 "`entered` 가 `'입력'` 이 아니면 미완료"라고 본다. 그런데 서버는 완료 학기에 `'입력'` 이 아닌 다른 값(예: 과목 수 `"4"`)을 줄 수도 있다 → 완료인데도 `!== '입력'` 이 참 → 잘못 막힘.
+
+### Step 138: 진실의 원천 — 화면 뱃지가 쓰는 규칙
+
+`ui/common/BadgeButton.tsx` 를 보면 완료/미완료를 **단 하나의 기준**으로만 나눈다:
+
+```tsx
+const isNotEntered = entered === '미입력'; // 이것만 본다
+```
+
+즉 화면은 **"`'미입력'` 이면 미완료, 그 외 전부 완료"**. 검증도 이 규칙에 맞춰야 화면과 어긋나지 않는다.
+
+### Step 139: 화면과 일치시킨 (맞는) 코드 — `=== '미입력'`
+
+```ts
+const isGradeIncomplete = requiredSemesters.some((semester) => {
+  const item = gradeStatusData?.find((g) => g.semester === semester);
+  return !item || item.entered === '미입력'; // 항목이 없거나 '미입력'이면 미완료
+});
+```
+
+`!item` 도 미완료로 본다(필수 학기가 응답에 아예 없으면 입력 안 된 것).
+
+### Step 140: "최소 1개" 조건은 `!some(...)` 으로
+
+모의고사는 "4개 중 1개만 입력돼도 통과". 이건 `some` 과 `!` 의 조합으로 깔끔하게 표현한다:
+
+```ts
+// 하나라도 입력됨? → some(입력됨). 앞에 ! → "전부 미입력일 때만 true"
+const isMockIncomplete = !mockStatusData?.some((m) => m.entered !== '미입력');
+```
+
+처음엔 `entered` 값으로 순회하면서 다시 `entered` 로 `find` 하는 자기참조 버그가 있었다(식별자 `exam` 과 상태 `entered` 를 혼동). **"무엇을 순회하고(목록), 무엇으로 판정하는지(상태)"를 분리**해서 생각하면 안 헷갈린다.
+
+### Step 141: 비교과 — 빈 객체(`{}`)·`undefined` 방어 + `as const` 인덱싱
+
+비교과는 학년별 C/H/S 9개 필드(`Grade_1_C` …). 처음엔 `=== 0` 으로 미완료를 봤는데, **데이터가 비면(`{}`/`undefined`) 못 막는 구멍**이 있었다:
+
+```ts
+({})['Grade_1_C'] === 0; // undefined === 0 → false → "완료"로 오판
+```
+
+화면(`AdmissionScoreStatus.tsx`)이 완료를 **`값 === 4`** 로 보므로, 검증도 `!== 4` 로 맞추면 빈 데이터도 자동으로 미완료가 된다:
+
+```ts
+const isExtracurricularIncomplete = requiredGrades.some((grade) =>
+  (['C', 'H', 'S'] as const).some(
+    (type) => extracurricularStatusData?.[`Grade_${grade}_${type}`] !== 4,
+  ),
+);
+```
+
+> **`as const` 가 핵심.** `requiredGrades` 와 `['C','H','S']` 에 `as const` 를 붙이면 `grade` 가 `1|2|3`, `type` 이 `'C'|'H'|'S'` 로 좁혀져, 템플릿 리터럴 키 `` `Grade_${grade}_${type}` `` 가 **타입 안전하게 9개 실제 필드로** 해석된다. `as const` 가 없으면 `any` 가 되어 인덱싱 에러(`7053`)가 난다.
+
+### 교훈
+
+> **완료/상태 판정 기준은 반드시 "그 데이터를 화면에 그리는 컴포넌트"와 일치시켜라.** 화면은 `=== '미입력'`, 검증은 `!== '입력'` 이면 둘이 어긋나 "화면은 입력됨인데 제출은 막힘" 같은 버그가 난다.
+
+> **`=== 0` 같은 "특정 값" 비교는 값이 없는 경우(`undefined`)를 못 잡는다.** "완료값과 같은가?"(`=== 4`)로 뒤집으면 누락·빈 데이터까지 자연스럽게 미완료로 처리된다.
+
+> **규칙적인 반복 키(`Grade_{학년}_{유형}`)는 `as const` + 템플릿 리터럴로 타입 안전하게 순회**할 수 있다.
+
+---
+
+## Phase 37: 수정하기 복원의 함정 — 빈 문자열 트랩과 단일 복원 경로 (★)
+
+### 배경
+
+신청 완료 → 확인(confirm) → **수정하기**로 신청 페이지에 돌아오니, 서버에 데이터가 분명히 있는데도 "희망대학 최소 1개" / "선호 전공·지역" 검증이 걸렸다. 이번 작업에서 **가장 값진 버그**.
+
+### Step 142: 복원(hydration)이 한 번에 다 일어난다는 사실
+
+`useAdmissionEvaluationApplyForm` 의 복원 effect 는 서버 캐시(`useConfirm*Query`)가 준비되면 폼 state 를 **한 번만** 채운다(`hasHydrated` ref). 여기서 카드·선호전공/지역·강조활동이 **동시에** 복원된다.
+
+그리고 `useAdmissionEvaluationHandler` 는 sessionStorage 없이 **전부 `useState`** 다 → 카드(`selectedCards`)도, 선호전공/지역(`selectedTypeOption`)도 **오직 이 복원 effect 로만** 채워진다. **복원 경로가 하나**라는 게 포인트.
+
+### Step 143: 범인 — `!subjectNotData` truthy 가드
+
+복원 effect 맨 앞 가드가 이랬다:
+
+```ts
+// ❌
+if (!hopeUnivsData || !preferSelectsData || !simpleQuestionData || !subjectNotData)
+  return;
+```
+
+`subjectNotData` 는 **비교과 추가메모 문자열**이다. 메모를 안 쓴 사용자는 서버가 `''`(빈 문자열)을 준다(`fetchConfirmSubjectNot` 가 `?? ''` 폴백).
+
+```
+!''  →  true   →  return  →  복원 effect 전체가 중단됨
+```
+
+→ `setSelectedCards`, `setSelectedTypeOption` 이 **아예 실행 안 됨** → 카드·선호값이 빈 채로 남음 → 제출 시 검증에 걸림.
+
+### Step 144: 고치기 — "로딩"은 `=== undefined` 로 판별
+
+```ts
+// ✅ 로딩 전(undefined)에는 대기, 로딩된 빈 문자열('')은 통과
+if (
+  !hopeUnivsData ||
+  !preferSelectsData ||
+  !simpleQuestionData ||
+  subjectNotData === undefined
+)
+  return;
+```
+
+`setComparativeExtraInfo(subjectNotData ?? '')` 가 undefined 도 안전하게 처리하므로 부작용 없음.
+
+> **이게 일반 원칙이다.** React Query 에서 "아직 안 옴"은 `undefined`, "왔는데 비어있음"은 `''`/`[]`/`0`. `!x` 가드는 이 둘을 구분 못 한다. **로딩 판별은 `=== undefined` (또는 `isLoading`)** 로 해야, `''`/`0`/`false` 가 정상값인 필드에서 안 터진다. (Phase 26 의 "빈 응답 깊이별 판정"과 한 식구.)
+
+### Step 145: 수정 모드에서 검증을 어디까지 할지 — 드롭다운 분기
+
+검증 중 일부는 **첫 신청에서만** 의미가 있다:
+
+```ts
+// 카드 추가용 드롭다운(대학/계열/학과)은 첫 신청 때만 검증
+// (수정 모드에선 카드가 이미 복원돼 있고, 이 드롭다운은 비어 있는 게 정상)
+if (!hopeUnivsData?.length) {
+  if (!drop1.value || !drop2.value || !drop3.value) {
+    alert('대학, 계열, 학과를 모두 선택해주세요.');
+    return;
+  }
+}
+```
+
+반면 "카드 최소 1개"는 **수정 모드에서도** 검증해야 한다(수정 화면에서 카드를 0개로 만들고 제출하면 서버가 `majorIdHsbs must contain at least 1 elements` 로 거부). 그래서 이건 `if (!hopeUnivsData?.length)` **바깥**에 둔다:
+
+```ts
+if (handler.selectedCards.length === 0) {
+  alert('희망대학은 최소 1개를 선택 해주세요.');
+  return;
+}
+```
+
+> **판단 기준:** "이 입력은 수정 모드에선 비어 있는 게 정상인가?" → 그렇다면(예: 새 카드 추가용 드롭다운) 첫 신청에서만 검증. "수정 모드에서도 비면 안 되는가?" → 그렇다면(예: 카드 자체) 항상 검증.
+
+### 교훈
+
+> **truthy 가드 `!x` 는 `0`/`''`/`false` 가 정상값인 데이터에 쓰면 버그다.** 특히 복원 가드처럼 "한 번 막히면 전부 안 채워지는" 곳에선 치명적. 로딩 판별은 `=== undefined`.
+
+> **상태 복원 경로가 하나라면, 그 경로가 막히는 모든 조건을 의심하라.** 카드가 비어 보이는데 원인은 엉뚱한 `subjectNotData` 가드였다.
+
+> **검증마다 "수정 모드에서도 필요한가?"를 따져 위치를 정하라.** 첫 신청 전용은 `if (!hopeUnivsData?.length)` 안, 공통은 밖.
+
+---
+
+## Phase 38: 제출 에러·인터랙션 — `confirm` 반환값, 서버 메시지, `mutateAsync` try/catch
+
+### Step 146: `alert` 과 `confirm` 은 다르다 — 반환값을 써야 흐름이 갈린다
+
+"6개만 평가받으시겠습니까?"는 **예/아니오 질문**이므로 `confirm` 을 쓴다. 그리고 **반환값(OK=true)** 으로 흐름을 제어해야 한다:
+
+```ts
+if (handler.selectedCards.length < 6) {
+  const proceed = confirm(`희망대학을 ${n}개 선택하셨습니다. … 평가 받으시겠습니까?`);
+  if (!proceed) return; // 취소면 제출 중단
+}
+```
+
+처음엔 `confirm(...)` 만 호출하고 반환값을 무시한 채 항상 `return` 해서 **확인을 눌러도 진행이 안 되는** 버그가 있었다.
+
+### Step 147: 서버 검증 메시지를 사용자에게 그대로 보여주기
+
+mutation `onError` 에서 제네릭 문구 대신 **서버가 준 검증 메시지**를 노출:
+
+```ts
+onError: (error) => {
+  if (error.message.includes('이미 신청이 완료')) return;
+  console.error('학종 신청 실패:', error);
+  alert(APIError.message(error)); // 서버 메시지 그대로 (+ timeout/네트워크는 친화 문구로 변환)
+};
+```
+
+동작 원리:
+
+- ky 의 `beforeError` 훅 → `APIError.enrichKyError` 가 **서버 응답 body 의 `message` 를 `error.message` 에 주입**한다(`libs/shared/exception/exception.ts`). 그래서 `error.message` 에 백엔드 한글 검증 문구가 담긴다.
+- `APIError.message(error)` 는 timeout/네트워크 예외는 사용자 친화 문구로 바꾸고, 그 외엔 그 서버 메시지를 반환.
+
+> 덕분에 "신청에 실패했습니다" 같은 모호한 문구 대신 "○○를 입력해주세요" 같은 **정확한 안내**가 뜬다.
+
+### Step 148: `mutateAsync` 의 `try/catch` 는 없애면 안 된다
+
+```ts
+try {
+  await submitApply(requestData);
+  router.push('/.../confirm');
+} catch (error) {
+  const message = error instanceof Error ? error.message : '';
+  if (message.includes('이미 신청이 완료')) {
+    router.push('/.../confirm'); // 이미 완료 → 확인 페이지로 자연스럽게
+    return;
+  }
+}
+```
+
+`mutateAsync` 는 실패 시 **promise 가 reject** 된다(= `await` 지점에서 throw). `onError` 가 돌더라도 이 reject 는 별개라서, `try/catch` 가 없으면 **unhandled promise rejection** 이 된다. 게다가 "이미 신청 완료 → `/confirm` 이동"은 `router` 가 필요해 **컴포넌트 쪽 catch 에서만** 처리 가능(queries.ts 의 `onError` 엔 router 가 없음).
+
+> **역할 분담:** 일반 에러 alert = mutation `onError` / "이미 완료 → 페이지 이동" + reject 흡수 = handleSubmit `try/catch`. 둘 다 필요.
+
+### 교훈
+
+> **`confirm` 은 반환값으로 분기하라.** 호출만 하고 무시하면 "물어보긴 하는데 결과가 안 먹는" UI 가 된다.
+
+> **서버가 주는 검증 메시지를 버리지 마라.** ky `beforeError` 로 `error.message` 에 실어두면 `alert(APIError.message(error))` 한 줄로 정확한 안내를 띄울 수 있다.
+
+> **`mutateAsync` 는 reject 한다 → `try/catch` 필수.** `onError` 가 있어도 unhandled rejection 은 따로 막아야 하고, navigation 처럼 컴포넌트 컨텍스트가 필요한 후처리는 catch 에서 한다.
+
+---
+
+## Phase 35-38 한 그림 — 입시전문가 평가 "제출 검증·복원" 정리
+
+```
+[유형 분기]   graduationType === '3' ? 재학생(2학년까지) : N수(3학년까지)
+               └─ isEnrolledStudent 한 줄 → requiredSemesters / requiredGrades 데이터로 분기
+
+[완료 판정]   화면(BadgeButton)과 같은 기준으로!
+               교과/모의:  entered === '미입력' 이 미완료   (≠ '입력' 으로 짜면 깨짐)
+               비교과:     값 !== 4 가 미완료              (=== 0 은 빈 데이터를 놓침)
+               최소 1개:   !arr.some(입력됨)
+               동적 키:    as const + `Grade_${grade}_${type}`
+
+[수정 복원]   ❌ if(!subjectNotData) return   ← ''(빈 메모)에서 복원 전체 중단
+               ✅ if(subjectNotData === undefined) return   ← 로딩만 대기
+               복원 경로가 하나(useState)라 막히면 카드·선호값 전부 빔
+               검증 위치: 새 카드 드롭다운=첫 신청만 / 카드 최소1개=항상
+
+[제출/에러]   confirm → 반환값으로 분기 (if(!proceed) return)
+               onError → alert(APIError.message(error))  (서버 메시지 노출)
+               mutateAsync → try/catch 필수 (reject 흡수 + '이미완료' → /confirm)
+```
+
+> 한 문장 요약: **"유형으로 범위를 나누고, 완료 판정은 화면과 일치시키고, 복원 가드는 `=== undefined` 로, 제출 에러는 서버 메시지로."**

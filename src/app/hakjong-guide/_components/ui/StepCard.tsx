@@ -36,6 +36,10 @@ const phaseStepBg: Record<number, string> = {
   32: 'bg-pink-700',
   33: 'bg-cyan-700',
   34: 'bg-violet-700',
+  35: 'bg-emerald-700',
+  36: 'bg-orange-700',
+  37: 'bg-rose-800',
+  38: 'bg-blue-700',
 }
 
 const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; label: string }> = {
@@ -73,11 +77,15 @@ const phaseHeaderMap: Record<number, { wrap: string; num: string; text: string; 
   32: { wrap: 'bg-pink-50 border-pink-300', num: 'bg-pink-700', text: 'text-pink-900', label: 'server-first display, local fallback 패턴' },
   33: { wrap: 'bg-cyan-50 border-cyan-300', num: 'bg-cyan-700', text: 'text-cyan-900', label: 'Options API 진화 — boolean에서 enum 값으로' },
   34: { wrap: 'bg-violet-50 border-violet-300', num: 'bg-violet-700', text: 'text-violet-900', label: '조건부 렌더링의 흔한 함정 — 모순 조건과 0 함정' },
+  35: { wrap: 'bg-emerald-50 border-emerald-300', num: 'bg-emerald-700', text: 'text-emerald-900', label: '제출 검증 ① — 학생 구분(graduationType)으로 필수 범위' },
+  36: { wrap: 'bg-orange-50 border-orange-300', num: 'bg-orange-700', text: 'text-orange-900', label: '제출 검증 ② — "완료 판정"은 화면(UI)과 똑같은 기준으로' },
+  37: { wrap: 'bg-rose-50 border-rose-300', num: 'bg-rose-800', text: 'text-rose-900', label: '수정하기 복원의 함정 — 빈 문자열 트랩과 단일 복원 경로 ★' },
+  38: { wrap: 'bg-blue-50 border-blue-300', num: 'bg-blue-700', text: 'text-blue-900', label: '제출 에러·인터랙션 — confirm 반환값, 서버 메시지, mutateAsync try/catch' },
 }
 
 /* ── StepCard ─────────────────────────────────── */
 interface StepCardProps {
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38
   num: number | string
   id?: string
   title: string
@@ -107,7 +115,7 @@ export function StepCard({ phase, num, id, title, children }: StepCardProps) {
 }
 
 /* ── PhaseHeader ──────────────────────────────── */
-export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 }) {
+export function PhaseHeader({ phase }: { phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 }) {
   const s = phaseHeaderMap[phase]
   return (
     <div className={cn('flex items-center gap-3 rounded-xl px-5 py-4 border mb-4', s.wrap)}>

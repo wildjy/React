@@ -9,7 +9,7 @@ type NavItem =
 interface NavGroup {
   id: string
   label: string
-  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | null
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | null
   items: NavItem[]
 }
 
@@ -423,6 +423,50 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'phase35',
+    label: 'Phase 35 — 학생 구분으로 필수 범위',
+    phase: 35,
+    items: [
+      { id: 'step134', label: 'graduationType 코드 이해',   num: 134 },
+      { id: 'step135', label: '한 줄로 분기 기준',           num: 135 },
+      { id: 'step136', label: '교과·비교과 범위 동시 분기', num: 136 },
+    ],
+  },
+  {
+    id: 'phase36',
+    label: 'Phase 36 — 완료 판정 화면과 일치',
+    phase: 36,
+    items: [
+      { id: 'step137', label: '틀린 코드: !== \'입력\'',     num: 137 },
+      { id: 'step138', label: '진실의 원천: 화면 뱃지',      num: 138 },
+      { id: 'step139', label: '맞는 코드: === \'미입력\'',   num: 139 },
+      { id: 'step140', label: '최소 1개: !some(...)',         num: 140 },
+      { id: 'step141', label: '비교과: as const 인덱싱',    num: 141 },
+    ],
+  },
+  {
+    id: 'phase37',
+    label: 'Phase 37 — 수정하기 복원 함정 ★',
+    phase: 37,
+    items: [
+      { id: 'step142', label: '복원이 한 번에 다 일어남',   num: 142 },
+      { id: 'step143', label: '범인: !subjectNotData',        num: 143 },
+      { id: 'step144', label: '로딩은 === undefined로',      num: 144 },
+      { id: 'step145', label: '수정 모드 검증 범위',         num: 145 },
+    ],
+  },
+  {
+    id: 'phase38',
+    label: 'Phase 38 — 제출 에러·인터랙션',
+    phase: 38,
+    items: [
+      { id: 'step146', label: 'confirm 반환값으로 분기',     num: 146 },
+      { id: 'step147', label: '서버 메시지 그대로 노출',     num: 147 },
+      { id: 'step148', label: 'mutateAsync try/catch 필수',  num: 148 },
+      { id: 'phase35-38-summary', label: '35-38 한 그림',   icon: '🗺' },
+    ],
+  },
+  {
     id: 'appendix',
     label: '정리',
     phase: null,
@@ -468,6 +512,10 @@ const phaseBadgeColors: Record<number, string> = {
   32: 'bg-pink-100 text-pink-800',
   33: 'bg-cyan-100 text-cyan-800',
   34: 'bg-violet-100 text-violet-800',
+  35: 'bg-emerald-100 text-emerald-800',
+  36: 'bg-orange-100 text-orange-800',
+  37: 'bg-rose-100 text-rose-800',
+  38: 'bg-blue-100 text-blue-800',
 }
 
 /* ── 컴포넌트 ─────────────────────────────────── */
