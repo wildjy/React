@@ -4,7 +4,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "gsap:sync": "node scripts/gsap-html-to-react.mjs",
+    "gsap:watch": "node scripts/gsap-html-to-react.mjs --watch",
+    "predev": "npm run gsap:sync",
     "dev": "next dev",
+    "prebuild": "npm run gsap:sync",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

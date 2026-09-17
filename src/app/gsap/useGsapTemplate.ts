@@ -370,6 +370,64 @@ export function useGsapTemplate(rootRef: RefObject<HTMLDivElement | null>) {
     ScrollTrigger.sort();
     ScrollTrigger.refresh();
 
+    // ── 진행 표시 (mock 전용) ─────────────────────────────
+    // ⚠ 점 개수를 **SECTIONS 에서 만든다.** 마크업에 박아 두면 구간을 늘릴 때 같이 안 늘어난다.
+    // ⚠ React 로 그리지 않고 여기서 DOM 에 직접 꽂는다 — 스크롤마다 바뀌는 표시라
+    //    state 로 돌리면 프레임마다 리렌더가 돈다. 이 ul 의 안쪽은 React 가 모르는 땅이다.
+    const progressEl = root.querySelector<HTMLElement>(".gt_progress");
+    if (progressEl) progressEl.innerHTML = SECTIONS.map(() => "<li></li>").join("");
+    const dots = progressEl ? Array.from(progressEl.querySelectorAll("li")) : [];
+
+    // ⚠ **지금 어느 구간인가를 스크롤 위치로 직접 정한다.**
+    //    구간마다 onToggle 로 찍으면 경계를 지날 때만 불려서, 가운데에서 새로고침하거나
+    //    브라우저가 스크롤 위치를 되살려 주면 점이 첫 칸에 남거나 엉뚱한 데 찍힌다.
+    // ⚠ 기준은 **배경 트리거**(bgTriggers)다. 배경색이 바뀌는 지점과 점이 같이 움직여야
+    //    보이는 것과 어긋나지 않는다(구간 트리거는 start 가 'top top' 이라 더 늦다).
+    const syncDots = () => {
+      if (!dots.length) return;
+      const y = window.pageYOffset || 0;
+      let idx = 0;
+      bgTriggers.forEach((st, n) => {
+        if (st && y >= st.start) idx = n;
+      });
+      dots.forEach((dot, d) => dot.classList.toggle("active", d === idx));
+    };
+
+    // 스크롤 중에는 프레임마다 한 번만 — 스크롤 이벤트는 초당 수십 번 온다
+    let dotTick = false;
+    const onDotScroll = () => {
+      if (dotTick) return;
+      dotTick = true;
+      requestAnimationFrame(() => {
+        dotTick = false;
+        syncDots();
+      });
+    };
+    window.addEventListener("scroll", onDotScroll, { passive: true });
+    // 좌표가 다시 잡힐 때마다(로드 · 폭 변경 · 구간 재설치) 한 번 맞춘다
+    ScrollTrigger.addEventListener("refresh", syncDots);
+
+    // 눌러서 그 구간으로 이동한다.
+    // ⚠ 고정 구간의 스크롤 자리는 st.start 에 있다 — offsetTop 으로는 구할 수 없다.
+    //    다시 잴 때마다 값이 달라지므로 미리 담지 않고 **누를 때 읽는다.**
+    // ⚠ st.start 로 그냥 보내면 진행도가 0 이라 등장 연출이 아직 투명하다 —
+    //    구간 길이의 LAND_AT 만큼 들어간 자리로 보낸다. 고정하지 않는 구간은 맨 위로.
+    const LAND_AT = 0.45;
+    const dotOffs: Array<() => void> = [];
+    dots.forEach((dot, n) => {
+      const onClick = () => {
+        const st = triggers[n];
+        if (!st || !st.trigger) return;
+        const top = st.pin
+          ? st.start + (st.end - st.start) * LAND_AT
+          : st.trigger.getBoundingClientRect().top + (window.pageYOffset || 0);
+        window.scrollTo({ top: top, behavior: "smooth" });
+      };
+      dot.addEventListener("click", onClick);
+      dotOffs.push(() => dot.removeEventListener("click", onClick));
+    });
+    syncDots();
+
     // ── 끝 ────────────────────────────────────────────────
     // ⚠ 건 순서의 역순으로 전부 되돌린다. 하나라도 남기면 StrictMode 가 두 번 마운트할 때
     //    첫 번째가 남긴 트리거가 두 번째 것과 같은 요소를 두고 다툰다.
@@ -380,6 +438,11 @@ export function useGsapTemplate(rootRef: RefObject<HTMLDivElement | null>) {
       ScrollTrigger.removeEventListener("refresh", onRefresh);
       ScrollTrigger.removeEventListener("refreshInit", onRefreshInit);
       window.removeEventListener("scroll", onScroll);
+      // 진행 표시 — 리스너를 떼고 점도 지운다. 남기면 StrictMode 가 두 번 마운트할 때 점이 두 벌 생긴다.
+      ScrollTrigger.removeEventListener("refresh", syncDots);
+      window.removeEventListener("scroll", onDotScroll);
+      dotOffs.forEach((off) => off());
+      if (progressEl) progressEl.innerHTML = "";
       if (rebuildTimer) clearTimeout(rebuildTimer);
       // ⚠ 뒤 구간부터 걷는다 — 앞 구간의 고정을 먼저 떼면 뒤 구간 좌표가 그 자리에서 밀린다.
       for (let i = SECTIONS.length - 1; i >= 0; i--) revertSection(i);

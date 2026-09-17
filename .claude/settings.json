@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/gsap-sync-hook.mjs",
+            "statusMessage": "gsap 원본을 React 로 옮기는 중",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
