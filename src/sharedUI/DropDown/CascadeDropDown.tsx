@@ -1,7 +1,8 @@
 'use client';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { cn } from "../common/cn";
 import { cva, VariantProps } from 'class-variance-authority';
-import { DropDown, DropDownOptionType } from './DropDown';
+import { DropDown, DropDownOptionType, typeMode } from './DropDown';
 
 const cascadeVariants = cva('flex w-full', {
   variants: {
@@ -53,16 +54,16 @@ interface CascadeDropDownProps extends VariantProps<typeof cascadeVariants> {
     change: CascadeDropDownChange,
   ) => void;
   size?: 'sm' | 'md' | 'lg';
-  type?: 'base' | 'shadow' | 'ghost' | 'ghostShadow' | 'check';
+  type?: typeMode;
   /** 모바일에서 하단 시트로 연다 (DropDown 의 layer) */
   layer?: boolean;
-  /** 모든 단계를 잠근다 */
-  disabled?: boolean;
+  /** active: 상위를 고를 때까지 하위 잠금 · disabled: 모든 단계 잠금 */
+  disabled?: { active?: boolean; disabled?: boolean };
   addClass?: string;
 }
 
 /**
- * 상위 선택에 따라 하위 옵션이 바뀌는 연쇄 드롭다운 (대학 → 전형 → 학과 등).
+ * 상위 선택에 따라 하위 옵션이 바뀌는 연쇄 드롭다운 (drop1 → drop2 → drop3 등).
  *
  * - 어떤 단계를 고르면 그 아래 단계 값을 모두 null 로 비워 onChange 로 넘긴다.
  * - 바로 위 단계가 null 이면 그 단계는 잠긴다.
@@ -76,7 +77,7 @@ export function CascadeDropDown({
   size = 'md',
   type = 'base',
   layer = false,
-  disabled = false,
+  disabled = { active: false, disabled: false },
   addClass,
 }: CascadeDropDownProps) {
   const handleChange = (index: number, option: DropDownOptionType) => {
@@ -105,7 +106,10 @@ export function CascadeDropDown({
             size={size}
             type={type}
             layer={layer}
-            disabled={disabled || (index > 0 && values[index - 1] == null)}
+            disabled={
+              !!disabled?.disabled ||
+              (!!disabled?.active && index > 0 && values[index - 1] == null)
+            }
           />
         </div>
       ))}

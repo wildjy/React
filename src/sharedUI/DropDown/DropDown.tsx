@@ -3,7 +3,7 @@ import { cva, cx, VariantProps } from 'class-variance-authority';
 import React, { createContext, HTMLAttributes, useContext, useEffect, forwardRef, useRef, useState } from 'react';
 import { useOutHandler } from "../Stepbar/useOutHandler";
 
-type typeMode = 'base' | 'shadow' | 'ghost' | 'ghostShadow' | 'check';
+export type typeMode = 'base' | 'shadow' | 'ghost' | 'ghostShadow' | 'check';
 type alignMode = 'left' | 'center';
 type dropAlign = 'left' | 'right';
 type iconMode = 'base' | 'report';
@@ -298,16 +298,19 @@ export const DropDown: React.FC<DropDownProps> = ({
     }
   }
 
+  // 외부 value 가 바뀔 때만 내부 선택값을 맞춘다 (초기화 = null).
+  // 방향키 이동(focusIndex)마다 다시 맞추면 value 를 안 넘기는 곳에서 고른 값이 사라진다.
   useEffect(() => {
-    if(focusIndex != null && targetRef.current) {
-      const findUl = targetRef.current.querySelector('ul');
-      const optionItem = findUl?.children[focusIndex] as HTMLElement;
-      optionItem?.focus();
-    }
-    // 외부 value가 변경되면 내부 상태 업데이트
-    // 초기화 = null
-    setSelectValue(value as string | null);
-  }, [value, focusIndex]);
+    setSelectValue(value ?? null);
+  }, [value]);
+
+  // 방향키로 이동한 옵션에 포커스를 옮긴다
+  useEffect(() => {
+    if (focusIndex == null || !targetRef.current) return;
+    const findUl = targetRef.current.querySelector('ul');
+    const optionItem = findUl?.children[focusIndex] as HTMLElement;
+    optionItem?.focus();
+  }, [focusIndex]);
 
   // useEffect(() => {
   //   const currentRef = dropRef.current;
