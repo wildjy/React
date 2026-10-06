@@ -241,7 +241,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   ...props
 }) => {
   // const [isOpen, setIsOpen] = useState(false);
-  const [selectValue, setSelectValue] = useState<string | null>(value || null);
+  const [selectValue, setSelectValue] = useState<string | null>(value ?? null);
   const [focusIndex, setFocusIndex] = useState<number | null>(null);
   const targetRef = useRef<HTMLDivElement | null>(null);
   const { isOpen, setIsOpen } = useOutHandler({ refs: [targetRef] });
