@@ -1,0 +1,22 @@
+/* ═══════════════════════════════════════════════════════════
+   GSAP 스크롤 템플릿 — Tailwind 버전의 "최소 CSS"
+
+   ⚠ 이 페이지의 시각 스타일은 전부 page.tsx 의 Tailwind 유틸리티 클래스로 되어 있다.
+      이 파일에는 Tailwind 로 표현할 수 없는 것만 남긴다 — 엔진(../gsap/useGsapTemplate.ts)이
+      런타임에 **클래스 문자열을 직접 DOM 에 꽂는** 세 곳이다.
+        ① html.gt_active        — 전역 scroll-behavior/overflow-x 를 무른다 (앱 바깥 엘리먼트)
+        ② .gt_bg.is_snap        — 배경을 다시 칠할 때 한 프레임만 transition 을 끈다
+        ③ .gt_progress li       — 진행 점을 innerHTML 로 통째로 심는다(React 밖의 땅)
+        ④ .gt_nav button.on     — 목차 버튼의 활성 상태를 classList.toggle 로 켠다
+      넷 다 "정적으로 className 을 줄 수 없는" 경우라 Tailwind 가 손댈 수 없다. */
+
+html.gt_active { scroll-behavior: auto; }
+html.gt_active body { overflow-x: visible; }
+
+.gt_bg.is_snap { transition: none; }
+
+.gt_nav button.on { border-color: #00b80c; background: #eafce7; color: #00b80c; }
+
+.gt_progress li { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #dcdfe5; cursor: pointer; transition: background-color .2s; }
+.gt_progress li.active { background: #00b80c; }
+.gt_progress li::after { content: ""; position: absolute; top: -6px; right: -8px; bottom: -6px; left: -8px; }
